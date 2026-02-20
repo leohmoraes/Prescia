@@ -3,7 +3,7 @@
 # if (@get_magic_quotes_gpc()) include CONS_PATH_INCLUDE."_mqgpc.inc.php";
 
 $process = array(&$_GET, &$_POST, &$_COOKIE, &$_REQUEST);
-while (list($key, $val) = each($process)) {
+foreach ($process as $key => $val) {
 	foreach ($val as $k => $v) {
 		unset($process[$key][$k]);
 		if (is_array($v)) {
