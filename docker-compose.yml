@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+      - ./config:/var/www/html/config
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html
+    depends_on:
+      - db
+    networks:
+      - prescia-network
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: prescia_root
+      MYSQL_DATABASE: prescia
+      MYSQL_USER: prescia_user
+      MYSQL_PASSWORD: prescia_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - prescia-network
+
+networks:
+  prescia-network:
+    driver: bridge
+
+volumes:
+  db_data:
