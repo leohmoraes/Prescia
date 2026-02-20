@@ -25,13 +25,20 @@ certainly is a love-it or leave-it work.
 
 Copyright is New BSD License / BSD-new, free for use.
 
-Basic install:
+## Documentation
+
+- [Usage Reference](docs/Usage_reference.md) — Dataflow, templating, plugins, metadata XML, and quick function reference
+- [Code Reference](docs/Code_reference.md) — Full API reference for Template Core, Core, CoreFull, and Module classes
+- [FAQ](docs/faq.md) — Frequently asked questions
+- [Bot Blocklist](docs/bots.md) — Blocked user-agent patterns
+
+## Basic Install
+
 1. Unzip in desired folder (Prescia was developed to work on root, but can be tweaked to work on a sub-folder)
 2. Rename the files below:
-  config/domains.original to config/domains
-  config/settings.php.original to config/settings.php
-3. Edit the above files with your desired settings
-  Mandatory changes: CONS_MASTERPASS and CONS_MASTERMAIL
-  Suggested important changes: date_default_timezone_set(), CONS_HTTPD_ERRFILE, CONS_OVERRIDE_DB, 
-    CONS_OVERRIDE_DBUSER, CONS_OVERRIDE_DBPAS
+   - `config/domains.original` → `config/domains`
+   - `config/settings.php.original` → `config/settings.php`
+3. Edit the above files with your desired settings:
+   - **Mandatory:** `CONS_MASTERPASS` and `CONS_MASTERMAIL`
+   - **Suggested:** `date_default_timezone_set()`, `CONS_HTTPD_ERRFILE`, `CONS_OVERRIDE_DB`, `CONS_OVERRIDE_DBUSER`, `CONS_OVERRIDE_DBPAS`
 4. Fire it up
