@@ -159,7 +159,7 @@
 											}
 										} else if ($iFields[$idx]['type'] == CONS_TIPO_DATE) {
 											/**/#echo "Item is a date<br/>";
-											if (ereg("([0-9]{2})[^0-9]?([0-9]{2})[^0-9]?([0-9]{2})[^0-9]?([0-9]{2})",$regs[$c],$tuplas)) {
+											if (preg_match("/([0-9]{2})[^0-9]?([0-9]{2})[^0-9]?([0-9]{2})[^0-9]?([0-9]{2})/",$regs[$c],$tuplas)) {
 												switch ($_REQUEST['cvsData']) {
 													case "ymd":
 														$dataArray[$iFields[$idx]['name']] = $tuplas[1].$tuplas[2]."-".$tuplas[3]."-".$tuplas[4];

@@ -3,7 +3,7 @@
   | Copyleft (ɔ) 2011+, Caio Vianna de Lima Netto (www.prescia.net)
   | LICENSE TYPE: BSD-new/ɔ for Prescia (BSD/open source)
   |
-  | Remember: UTF-8 server/php and php 5.+ ARE MANDATORY, all files are UTF-8, php 5.4+ recommended
+  | Remember: UTF-8 server/php and php 8.0+ ARE MANDATORY, all files are UTF-8
   | Also, always use some rewrite engine to divert EVERYTHING not multimidia (or at least .php) to this entrypoint.
   | -----------------------------------------------
   | NOTEs:
@@ -12,7 +12,7 @@
   | + Requires short tags
   | + The ab test requires: (1) set a single domain on CONS_SINGLEDOMAIN, (2) disable CONS_CACHE, CONS_ECONOMICMODE, CONS_BOTPROTECT and CONS_FREECPU
   |	  Displayed ab test data have up to 4 numbers:
-  |		on developer mode		not on developer mode		not on developer mode, CACHE ON				not on developer mode, CACHE ON, ECONOMICMODE ON	
+  |		on developer mode		not on developer mode		not on developer mode, CACHE ON				not on developer mode, CACHE ON, ECONOMICMODE ON
   |   AB test is made to detect choke points and see how the caching is improving performance
   | -----------------------------------------------
   | Last ab test: 15.5.17 (1.01) on an i7-3770 Windows 7 Apache 2.2 php 5.4. Daisuki.com site model
