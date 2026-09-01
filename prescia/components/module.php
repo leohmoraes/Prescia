@@ -1277,14 +1277,25 @@ class CModule {
 					foreach ($this->fields[$name][CONS_XML_SERIALIZEDMODEL] as $exname => &$exfield) {
 						if (isset($data[$name."_".$exname])) {
 							$outfield = $this->sqlParameter(true,$data,$name."_".$exname,$exfield,$EnumPrunecache,true);
-							if ($outfield !== false && $outfield != 'NULL') $serialized[$exname] = $outfield; # we don't need to store NULL like in sql
+							if ($outfield !== false && $outfield['sql'] != 'NULL') $serialized[$exname] = $outfield['params'][0] ?? null; # we don't store NULL like in SQL
 						}
 					}
 					$output = $encapsulation.addslashes_EX(serialize($serialized),true,$this->parent->dbo).$encapsulation;
 				}
 			break;
 		} # switch
-		return $output;
+		if ($output === false || is_array($output)) return $output;
+		if ($output === 'NULL' || $output === 'NOW()')
+			return array('sql' => $output, 'types' => '', 'params' => array());
+		$value = $output;
+		if (strlen($value) >= 2 && $value[0] === '"' && substr($value, -1) === '"')
+			$value = substr($value, 1, -1);
+		$value = stripslashes($value);
+		if (is_numeric($value) && strpos((string)$value, '.') !== false)
+			return array('sql' => '?', 'types' => 'd', 'params' => array((float)$value));
+		if (is_numeric($value) && (string)(int)$value === (string)$value)
+			return array('sql' => '?', 'types' => 'i', 'params' => array((int)$value));
+		return array('sql' => '?', 'types' => 's', 'params' => array($value));
 	}
 #-
 	function runAction($action,$data,$silent=false,$mfo=false,$startedAt="") {
@@ -1347,6 +1358,8 @@ class CModule {
 				$this->parent->notifyEvent($this,CONS_ACTION_UPDATE,$data,$startedAt,true); # early notify
 				$sql = "UPDATE ".$this->dbname." SET ";
 				$output = "";
+				$queryTypes = "";
+				$queryParams = array();
 				$outfield = false;
 				foreach ($this->fields as $name => $field) {
 					if ($this->parent->safety && isset($field[CONS_XML_RESTRICT]) && $_SESSION[CONS_SESSION_ACCESS_LEVEL] < $field[CONS_XML_RESTRICT] && !isset($field[CONS_XML_UPDATESTAMP])) {
@@ -1356,7 +1369,11 @@ class CModule {
 					}
 					if ($name != $this->keys[0] && strpos($field[CONS_XML_SQL],"AUTO_INCREMENT") === false) { # cannot change main key or auto_increment ones
 						$outfield = $this->sqlParameter(false,$data,$name,$field,$EnumPrunecache,false,$kA,$wS);
-						if ($outfield !== false) $output .= $name."=".$outfield.",";
+						if ($outfield !== false) {
+								$output .= $name."=".$outfield['sql'].",";
+								$queryTypes .= $outfield['types'];
+								$queryParams = array_merge($queryParams,$outfield['params']);
+							}
 					} # if (not key)
 				} #foreach
 				unset($outfield);
@@ -1364,7 +1381,7 @@ class CModule {
 					# removes end ,
 					$output = substr($output,0,strlen($output)-1);
 					$sql .= $output." WHERE ".$wS;
-					if (!$this->parent->dbo->simpleQuery($sql,$this->parent->debugmode)) {
+					if (!$this->parent->dbo->queryPrepared($sql,$queryTypes,$queryParams,$r,$n,$this->parent->debugmode)) {
 						$this->parent->errorState = true;
 						$lastError = $this->parent->dbo->log[count($this->parent->dbo->log)-1];
 						if (strpos(strtolower($lastError),"duplicate") === false) {
@@ -1421,14 +1438,16 @@ class CModule {
 						$id = 1;
 					} else
 						$id++;
-					$sql = "INSERT INTO ".$this->dbname." SET id='$id',";
+						$sql = "INSERT INTO ".$this->dbname." SET id=?,";
 					$data['id'] = $id;
 				} else {
 					$id = false;
 					$sql = "INSERT INTO ".$this->dbname." SET ";
 				}
-				$output = "";
-				$hasAuto = "";
+					$output = "";
+					$queryTypes = $id !== false ? "i" : "";
+					$queryParams = $id !== false ? array((int)$id) : array();
+					$hasAuto = "";
 				$outfield = false;
 
 				foreach ($this->fields as $name => $field) {
@@ -1443,7 +1462,11 @@ class CModule {
 					if (strpos(strtolower($field[CONS_XML_SQL]),"auto_increment") === false && !($this->keys[0] == "id" && $name == $this->keys[0] && count($this->keys)>1 )) { # cannot change auto_increment or main key fields
 
 						$outfield = $this->sqlParameter(true,$data,$name,$field,$EnumPrunecache);
-						if ($outfield !== false) $output .= $name."=".$outfield.",";
+							if ($outfield !== false) {
+								$output .= $name."=".$outfield['sql'].",";
+								$queryTypes .= $outfield['types'];
+								$queryParams = array_merge($queryParams,$outfield['params']);
+							}
 
 						if ((!$outfield || !isset($data[$name]) || $data[$name] == '') && isset($field[CONS_XML_AUTOFILL]) && !isset($field[CONS_XML_DEFAULT])) {
 							if (isset($data[$field[CONS_XML_AUTOFILL]])) {
@@ -1454,7 +1477,9 @@ class CModule {
 										$data[$name] = preg_replace("/(<)([^<>]*)(>)/","",$data[$name]);
 									}
 								}
-								$output .= $name."=\"".$data[$name]."\",";
+									$output .= $name."=?,";
+									$queryTypes .= "s";
+									$queryParams[] = (string)$data[$name];
 							}
 						}
 					} else # if (not AutoIncrement)
@@ -1466,7 +1491,7 @@ class CModule {
 					# removes end ,
 					$output = substr($output,0,strlen($output)-1);
 					$sql .= $output;
-					if (!$this->parent->dbo->simpleQuery($sql,$this->parent->debugmode)) {
+						if (!$this->parent->dbo->queryPrepared($sql,$queryTypes,$queryParams,$r,$n,$this->parent->debugmode)) {
 						$this->parent->errorState = true;
 						$lastError = $this->parent->dbo->log[count($this->parent->dbo->log)-1];
 						if (strpos(strtolower($lastError),"duplicate") === false) {
@@ -1840,4 +1865,3 @@ class CModule {
 	}
 
 }
-
