@@ -71,8 +71,7 @@ else
 
 define ("CONS_GZIP_OK",isset($_SERVER['HTTP_ACCEPT_ENCODING']) && strpos( $_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false);
 
-# Force register globals and magic quotes OFF (@ php 5.4+ you can remove everything under this line)
+# Force register globals OFF for legacy installations; magic quotes was removed in PHP 5.4.
 if (version_compare(phpversion(), '5.4.0', '<')) {
 	if (@ini_get('register_globals')) include_once CONS_PATH_INCLUDE."_regglobal.inc.php";
-	if (@get_magic_quotes_gpc()) include_once CONS_PATH_INCLUDE."_mqgpc.inc.php";
 }

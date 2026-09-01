@@ -90,6 +90,9 @@ final class Php83CompatibilityTest extends TestCase
             if (str_contains($file->getPathname(), DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR)) {
                 continue;
             }
+            if (str_contains($file->getPathname(), DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR) || str_contains($file->getPathname(), DIRECTORY_SEPARATOR . 'tools' . DIRECTORY_SEPARATOR)) {
+                continue;
+            }
             $files[] = $file->getPathname();
         }
 

@@ -32,24 +32,7 @@ class CKFinder_Connector_Utils_Security
      */
     function getRidOfMagicQuotes()
     {
-        if (get_magic_quotes_gpc()) {
-            if (!empty($_GET)) {
-                $this->stripQuotes($_GET);
-            }
-            if (!empty($_POST)) {
-                $this->stripQuotes($_POST);
-            }
-            if (!empty($_COOKIE)) {
-                $this->stripQuotes($_COOKIE);
-            }
-            if (!empty($_FILES)) {
-                foreach ($_FILES as $k => $v) {
-                    if (isset($_FILES[$k]['name'])) {
-                        $this->stripQuotes($_FILES[$k]['name']);
-                    }
-                }
-            }
-        }
+        // magic_quotes_gpc was removed from PHP; input is no longer rewritten here.
     }
 
     /**
