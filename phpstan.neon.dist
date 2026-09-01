@@ -2,7 +2,8 @@ includes:
     - phpstan-baseline.neon
 
 parameters:
-    level: 0
+    # First incremental strictness step; raise to level 2 after baseline cleanup.
+    level: 1
     stubFiles:
         - tools/phpstan-framework-stubs.php
     paths:

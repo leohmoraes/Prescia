@@ -81,6 +81,17 @@ composer install
 composer test
 ```
 
+Para executar a análise estática localmente:
+
+```bash
+composer analyse
+```
+
+O projeto usa PHPStan 2.x no nível 1 como primeiro passo incremental. A baseline
+(`phpstan-baseline.neon`) não deve ser ampliada automaticamente: novos erros
+devem ser corrigidos ou acompanhados por uma issue antes de qualquer elevação
+para o nível seguinte.
+
 O workflow [`php83.yml`](.github/workflows/php83.yml) executa esses testes no GitHub Actions e também constrói a imagem Docker. A suíte é bloqueadora: enquanto a migração de short tags e outros itens legados não estiver concluída, o pipeline deverá falhar em vez de declarar compatibilidade completa.
 
 As recomendações de segurança e os critérios de aceite estão documentados no [Plano de Ação de Segurança](docs/PLANO_ACAO_SEGURANCA.md). A existência dos testes não significa que as vulnerabilidades já estejam corrigidas.

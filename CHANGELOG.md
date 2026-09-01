@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated the Docker image from PHP 8.2 to PHP 8.3.
 - Added the `mbstring` extension to the Docker image.
 - Documented PHP 8.3 requirements and compatibility test commands in `README.md`.
+- Updated PHPStan to the 2.x series and raised the initial analysis level to 1.
+- Documented the incremental analysis policy: the baseline must not grow automatically and new diagnostics require remediation or an issue.
 
 ### Compatibility checks
 - The compatibility suite checks runtime version, required extensions, PHP syntax, removed/deprecated APIs, short tags and Docker base image.
