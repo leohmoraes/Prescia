@@ -4,7 +4,8 @@
 //class mod_[name] extends CscriptedModule  {
 class CscriptedModule {
 
-	var $parent = null; // framework object
+	/** @var CPrescia|null framework object */
+	var $parent = null;
 	var $name = ""; // SET THIS TO THE SCRIPT NAME either here (inherited module) or the construct!
 	var $moduleRelation = ""; // which database module is related to this (set by "plugins" on XML)
 	var $admFolder = "adm"; // Virtual folder where eventual administrative/reports are located. Match it with your administrative plugin/page
@@ -14,6 +15,10 @@ class CscriptedModule {
 								  // most administrative systems require at least level 10 to access (bi_xmladm for instance)
 	var $customFields = array(); // fill in the loadSettings with fields that require custom handling
 	var $customPermissions = array(); // extra permissions (other than new/list), in the format 'code' => 'i18n'
+
+	function langOut($tag) {
+		return $this->parent !== null ? $this->parent->langOut($tag) : $tag;
+	}
 
 	function __construct(&$parent,$moduleRelation="") {
 		$this->parent = &$parent; // framework object
@@ -100,4 +105,3 @@ class CscriptedModule {
 		# implement this to raise errors during meta-developer checks if the plugins is not properly installed or configured
 	}
 }
-
