@@ -79,9 +79,10 @@
 			$isTest =true;
 		}
 
-		// favicon
-		$file = CONS_PATH_PAGES.$code."/files/favicon";
-		if (locateFile($file,$ext)) {
+			// favicon
+			$file = CONS_PATH_PAGES.$code."/files/favicon";
+			$ext = '';
+			if (locateFile($file,$ext)) {
 			$outputData['favicon'] = "<img src=\"/".$file."\" alt=\"\" width=\"16\" height=\"16\"/>";
 		}
 
@@ -283,4 +284,3 @@
 	}
 	$out .= "IPs monitored: $IPs\n";
 	$core->template->assign("botprotect",$out);
-

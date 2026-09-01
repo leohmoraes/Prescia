@@ -11,9 +11,10 @@
 
 		$core->template->assign("LOGGED_USER",$_SESSION[CONS_SESSION_ACCESS_USER]['name']);
 		$core->template->assign("LOGGED_USERID",$_SESSION[CONS_SESSION_ACCESS_USER]['id']);
-		// user image
-		$image = CONS_PATH_PAGES.$_SESSION['CODE'].'/files/users/t/image_'.$_SESSION[CONS_SESSION_ACCESS_USER]['id']."_2";
-		if ($_SESSION[CONS_SESSION_ACCESS_USER]['image']=='n' || !locateFile($image,$ext)) {
+			// user image
+			$image = CONS_PATH_PAGES.$_SESSION['CODE'].'/files/users/t/image_'.$_SESSION[CONS_SESSION_ACCESS_USER]['id']."_2";
+			$ext = '';
+			if ($_SESSION[CONS_SESSION_ACCESS_USER]['image']=='n' || !locateFile($image,$ext)) {
 			$core->template->assign("_imageyes");
 		} else {
 			$core->template->assign("LOGGED_USERIMAGE",$image);
@@ -58,8 +59,10 @@
 					$mObj = $core->template->get("_monitor");
 					$monitorTxt = "";
 					$c=0;
-					$totalItems = 0;
-					foreach ($monitorXml as $monitoredItem) {
+						$totalItems = 0;
+						$r = false;
+						$n = 0;
+						foreach ($monitorXml as $monitoredItem) {
 						$monitoredModule = $core->loaded($monitoredItem['module'],true);
 						$monitoredItem['sql'] = str_replace("\$id_user",$_SESSION[CONS_SESSION_ACCESS_USER]['id'],$monitoredItem['sql']);
 						$sql = $monitoredModule->get_base_sql("(".$monitoredItem['sql'].")","","");
@@ -143,5 +146,4 @@
 				$core->template->assign("CLIENT_LOGO","<img src=\"/pages/".$_SESSION['CODE']."/files/adm/logo.gif\" alt=\"\"/>");
 		}
 	}
-
 

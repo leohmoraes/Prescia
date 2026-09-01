@@ -11,9 +11,10 @@
 		foreach ($module->keys as $key) {
 			$mainFile .= $_REQUEST[$key]."_";
 			$thumbStart .= $_REQUEST[$key]."_";
-		}
-		$mainFile .= "1";
-		if (!locateFile($mainFile,$ext)) {
+			}
+			$mainFile .= "1";
+			$ext = '';
+			if (!locateFile($mainFile,$ext)) {
 			$core->log[] = "Image not found: ".$mainFile;
 			return;
 		}
@@ -88,4 +89,3 @@
 		$qs = "module=".$module->name."&field=".$_REQUEST['field']."&".implode("&",$qs);
 		$core->headerControl->internalFoward("edit_thumbnails.html?".$qs);
 	}
-
