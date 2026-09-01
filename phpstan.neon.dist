@@ -1,6 +1,8 @@
+includes:
+    - phpstan-baseline.neon
+
 parameters:
     level: 0
-    baselineFile: phpstan-baseline.neon
     paths:
         - index.php
         - prescia
