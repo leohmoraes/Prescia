@@ -146,7 +146,8 @@ function prepareDataToOutput(&$template, &$params, $data, $processed = false) { 
 class CModule {
 
 	var $name = "";
-	var $parent = null; # Framework object
+	/** @var CPrescia|null Framework object */
+	var $parent = null;
 	var $title = "";
 	var $dbname = "";
 	var $keys = array('id');

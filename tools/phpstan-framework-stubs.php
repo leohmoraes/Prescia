@@ -44,8 +44,15 @@ function tomktime(mixed ...$arguments): int {}
 function truncate(mixed $content, int $size = 50, string $final = '…', bool $stripHtml = false, bool $preserveEol = false): string {}
 function xmlParamsParser(mixed $data): array {}
 
-class CPrescia {}
-class CPresciaFull {}
+class CPrescia
+{
+    /** @var array<string, mixed> */
+    public array $templateParams = [];
+
+    public function saveConfig(bool $force = false): mixed {}
+}
+
+class CPresciaFull extends CPrescia {}
 class CKTCexternal {}
 class TTree {}
 class xmlHandler {}
