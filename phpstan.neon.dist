@@ -1,5 +1,6 @@
 parameters:
     level: 0
+    baselineFile: phpstan-baseline.neon
     paths:
         - index.php
         - prescia
@@ -8,4 +9,20 @@ parameters:
     excludePaths:
         - */vendor/*
         - */pages/_js/ckfinder/*
-    reportUnmatchedIgnoredErrors: false
+    scanFiles:
+        - prescia/lib/basic.php
+        - prescia/lib/listFiles.php
+        - prescia/lib/inputSanatizing.php
+        - prescia/lib/datetime.php
+        - prescia/lib/removeSimbols.php
+        - prescia/lib/dirBundle.php
+        - prescia/lib/locateFile.php
+        - prescia/lib/locateAnyFile.php
+        - prescia/lib/sendMail.php
+        - prescia/lib/imgHandler.php
+        - prescia/lib/xmlHandler.php
+        - prescia/lib/ttree.php
+        - prescia/core.php
+        - prescia/coreFull.php
+        - prescia/tcexternal.php
+    reportUnmatchedIgnoredErrors: true

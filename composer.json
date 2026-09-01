@@ -18,6 +18,7 @@
   "scripts": {
     "test": "phpunit --configuration phpunit.xml.dist",
     "analyse": "phpstan analyse --configuration=phpstan.neon.dist --no-progress",
+    "analyse:baseline": "phpstan analyse --configuration=phpstan.neon.dist --generate-baseline=phpstan-baseline.neon --no-progress",
     "migrate:php83": "php tools/migrate_php83.php"
   },
   "config": {
