@@ -85,7 +85,7 @@ final class Php83CompatibilityTest extends TestCase
         $files = [];
 
         foreach ($iterator as $file) {
-            if (!$file instanceof \SplFileInfo || $file->getExtension() !== 'php') {
+            if (!$file instanceof \SplFileInfo || !str_ends_with(strtolower($file->getFilename()), '.php')) {
                 continue;
             }
             if (str_contains($file->getPathname(), DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR)) {
