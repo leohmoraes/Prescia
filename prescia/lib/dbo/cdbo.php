@@ -116,6 +116,10 @@ class CDBO {
 			return false;
 		}
 
+		function fetchPrepared($sql, $types, $params, $abortOnError = false) {
+			return false;
+		}
+
 	function simpleQuery($sql,$debugmode  = null) { // SHOULD BE EXTENDED, this one is used for queries which you don't care for the result, only if the suceeded (true/false on return)
 		return false; // WHEN EXTENDING, REMOVE THIS
 

@@ -122,6 +122,15 @@ class CDBO_mysqli extends CDBO  {
 			return true;
 		}
 
+		function fetchPrepared($sql, $types, $params, $abortOnError = false) {
+			$result = null; $numrows = 0;
+			if (!$this->queryPrepared($sql, $types, $params, $result, $numrows)) return false;
+			if (!($result instanceof mysqli_result) || $numrows < 1) return false;
+			$row = $result->fetch_row();
+			$result->free();
+			return $row[0] ?? false;
+		}
+
 		function simpleQuery($sql,$debugmode  = null) {
 		if ($this->delayedconn == 1) $this->connect();
 		if (!$this->connection) return false;

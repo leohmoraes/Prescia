@@ -149,12 +149,16 @@ class mod_bi_auth extends CscriptedModule  {
 	}
 
 	function edit_parse($action,&$data) {
+		if (isset($data['password']) && $data['password'] !== '') {
+			$passwordInfo = password_get_info((string)$data['password']);
+			if (($passwordInfo['algo'] ?? 0) === 0) $data['password'] = presciaPasswordHash((string)$data['password']);
+		}
 		if (isset($data['id_group']) && $action != CONS_ACTION_DELETE && $this->parent->safety) {
 			# cannot change GROUP to a group HIGHER than YOUR level
 			# changing or deleting users from a higher group is already covered by default security
 			$groupModule = $this->parent->loaded(CONS_AUTH_GROUPMODULE);
-			$sql = "SELECT level FROM ".$groupModule->dbname." WHERE id=".$data['id_group'];
-			$newLevel = $this->parent->dbo->fetch($sql);
+			$sql = "SELECT level FROM ".$groupModule->dbname." WHERE id=?";
+			$newLevel = $this->parent->dbo->fetchPrepared($sql, 'i', array((int)$data['id_group']));
 			if ($newLevel > $_SESSION[CONS_SESSION_ACCESS_LEVEL]) {
 				$this->parent->log[] = $this->parent->langOut("cannot_change_high_level_user");
 				$this->parent->setLog(CONS_LOGGING_WARNING);
@@ -164,8 +168,8 @@ class mod_bi_auth extends CscriptedModule  {
 		if ($action == CONS_ACTION_UPDATE && !isset($data['userprefs'])) {
 			// get's original up array
 			$uMod = $this->parent->loaded(CONS_AUTH_USERMODULE);
-			$sql = "SELECT userprefs FROM ".$uMod->dbname." WHERE id=".$data['id'];
-			$up = $this->parent->dbo->fetch($sql);
+			$sql = "SELECT userprefs FROM ".$uMod->dbname." WHERE id=?";
+			$up = $this->parent->dbo->fetchPrepared($sql, 'i', array((int)$data['id']));
 			$up = presciaSafeUnserialize($up);
 			if (!is_array($up)) $up = array();
 			// note: remember to initialize new users' preferences on authControl::logUser
@@ -282,11 +286,14 @@ class mod_bi_auth extends CscriptedModule  {
 					}
 				}
 			} else if ($action == CONS_ACTION_UPDATE) { // change in this module
-				if ($earlyNotify) { // did NOT happen yet (earlyNotify)
+					if ($earlyNotify) { // did NOT happen yet (earlyNotify)
 		
 					# Activating account? if so, send an mail to the user
 					if (isset($data['active']) && $data['active'] == 'y') { // changed (or set) active
-						list($oldactive,$email,$name) = $this->parent->dbo->fetch("SELECT active,email,name FROM ".$this->parent->modules[CONS_AUTH_USERMODULE]->dbname." WHERE id=".$data['id']); //was already active? (this is why we have to run at earlyNotify)
+							$oldData = array(); $r = null; $n = 0;
+							$this->parent->dbo->queryPrepared("SELECT active,email,name FROM ".$this->parent->modules[CONS_AUTH_USERMODULE]->dbname." WHERE id=?", 'i', array((int)$data['id']), $r, $n);
+							if ($n > 0) $oldData = $this->parent->dbo->fetch_assoc($r);
+							$oldactive = $oldData['active'] ?? ''; $email = $oldData['email'] ?? ''; $name = $oldData['name'] ?? '';
 						if ($oldactive != 'y') { // no, was not active
 							# Send an e-mail to the user to tell him that his registration is approved by now
 							$maildata = $data;
@@ -295,12 +302,15 @@ class mod_bi_auth extends CscriptedModule  {
 							$html = $this->parent->prepareMail($this->activated,$maildata); 
 							sendMail($maildata['email'],$this->parent->dimconfig['pagetitle']." - ".$this->parent->langOut('registration_approved'),$html);
 							// erase authcode, we don't need it anymore
-							$this->parent->dbo->simpleQuery("UPDATE ".$this->parent->modules[CONS_AUTH_USERMODULE]->dbname." SET authcode='' WHERE id=",$data['id']);
+							$this->parent->dbo->queryPrepared("UPDATE ".$this->parent->modules[CONS_AUTH_USERMODULE]->dbname." SET authcode='' WHERE id=?", 'i', array((int)$data['id']), $r, $n);
 						}
 						
 					# if not active and sent authcode, set to active and remove authcode, warn user
 					} else if ($this->registrationMode == 2 && isset($data['authcode']) && $data['authcode'] != '' && $_SESSION[CONS_SESSION_ACCESS_LEVEL] < $this->parent->dimconfig['minlvltooptions']) { // note admins won't trigger this
-						list($oldactive,$email,$name,$ao) = $this->parent->dbo->fetch("SELECT active,email,name,authcode FROM ".$this->parent->modules[CONS_AUTH_USERMODULE]->dbname." WHERE id=".$data['id']); //was already active? (this is why we have to run at earlyNotify)
+						$oldData = array(); $r = null; $n = 0;
+						$this->parent->dbo->queryPrepared("SELECT active,email,name,authcode FROM ".$this->parent->modules[CONS_AUTH_USERMODULE]->dbname." WHERE id=?", 'i', array((int)$data['id']), $r, $n);
+						if ($n > 0) $oldData = $this->parent->dbo->fetch_assoc($r);
+						$oldactive = $oldData['active'] ?? ''; $email = $oldData['email'] ?? ''; $name = $oldData['name'] ?? ''; $ao = $oldData['authcode'] ?? '';
 						if ($oldactive == 'n') {
 							if ($ao == $data['authcode']) {
 								// ok, send mail and warn
@@ -310,7 +320,7 @@ class mod_bi_auth extends CscriptedModule  {
 								$html = $this->parent->prepareMail($this->activated,$maildata); 
 								sendMail($maildata['email'],$this->parent->dimconfig['pagetitle']." - ".$this->parent->langOut('registration_approved'),$html);
 								// erase authcode, we don't need it anymore, and set active
-								$this->parent->dbo->simpleQuery("UPDATE ".$this->parent->modules[CONS_AUTH_USERMODULE]->dbname." SET active='y',authcode='' WHERE id=",$data['id']);
+								$this->parent->dbo->queryPrepared("UPDATE ".$this->parent->modules[CONS_AUTH_USERMODULE]->dbname." SET active='y',authcode='' WHERE id=?", 'i', array((int)$data['id']), $r, $n);
 								// visual feedback
 								$this->parent->log[] = $this->langOut('account_activated');
 							} else {

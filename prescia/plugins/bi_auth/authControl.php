@@ -88,7 +88,7 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 				return array(true,true,false,$_SESSION[CONS_SESSION_ACCESS_USER]['id_group']); # me!
 			else { # at least same group?
 				$usermodule = $this->parent->loaded(CONS_AUTH_USERMODULE);
-				$idGroup = $this->parent->dbo->fetch("SELECT id_group FROM ".$usermodule->dbname." WHERE id=".$keys['id'],$this->parent->debugmode);
+					$idGroup = $this->parent->dbo->fetchPrepared("SELECT id_group FROM ".$usermodule->dbname." WHERE id=?", 'i', array((int)$keys['id']), false);
 				return array(false, $idGroup == $_SESSION[CONS_SESSION_ACCESS_USER]['id_group'], false,$idGroup);
 			}
 		}
@@ -134,8 +134,8 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 							return array(true,true,false,$_SESSION[CONS_SESSION_ACCESS_USER]['id_group']); // me
 							// no need to continue, can't get better than this
 						} else if (isset($myData[$ownerLink])) { # check if I am from the same group
-							$sql = "SELECT id_group FROM ".$userModuleObj->dbname." WHERE id=".$myData[$ownerLink];
-							$idG = $this->parent->dbo->fetch($sql);
+								$sql = "SELECT id_group FROM ".$userModuleObj->dbname." WHERE id=?";
+								$idG = $this->parent->dbo->fetchPrepared($sql, 'i', array((int)$myData[$ownerLink]));
 							if ($idG == $_SESSION[CONS_SESSION_ACCESS_USER]['id_group']) { // yes!
 								$bestResult[1] = true;
 								$bestResult[3] = $idG;
@@ -158,8 +158,8 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 									if ($u == $_SESSION[CONS_SESSION_ACCESS_USER]['id']) { // is it me?
 										return array(true,true,false,$_SESSION[CONS_SESSION_ACCESS_USER]['id_group']); // I am one of the owners, ok!
 									} else { // my group ?
-										$sql = "SELECT id_group FROM ".$userModuleObj->dbname." WHERE id=".$u;
-										$idG = $this->parent->dbo->fetch($sql);
+										$sql = "SELECT id_group FROM ".$userModuleObj->dbname." WHERE id=?";
+										$idG = $this->parent->dbo->fetchPrepared($sql, 'i', array((int)$u));
 										if ($idG == $_SESSION[CONS_SESSION_ACCESS_USER]['id_group']) {// yes!
 											$bestResult[1] = true;
 											$bestResult[3] = $idG;
@@ -426,7 +426,7 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 			}
 			# checkPermission always returns the Owner on FALSE FALSE FALSE except on error, which means I can't determine here either
 			$groupModule = $this->parent->loaded(CONS_AUTH_GROUPMODULE);
-			if ($this->parent->dbo->fetch("SELECT level FROM ".$groupModule->dbname." WHERE id=".$owner[3],$this->parent->debugmode) > $_SESSION[CONS_SESSION_ACCESS_LEVEL]) {
+			if ($this->parent->dbo->fetchPrepared("SELECT level FROM ".$groupModule->dbname." WHERE id=?", 'i', array((int)$owner[3])) > $_SESSION[CONS_SESSION_ACCESS_LEVEL]) {
 				$p = false; # your level is BELOW the level of whoever owns you are trying to change
 				$this->parent->errorControl->raise(154,'checkPermissions',CONS_AUTH_GROUPMODULE);
 			} # if check level
