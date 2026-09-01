@@ -1,5 +1,7 @@
 <?php	# -------------------------------- Plugin AUTH, NOTE: falls inside USERS module
 
+require_once __DIR__ . '/passwords.php';
+
 define ("CONS_AUTH_USERMODULE","users");
 define ("CONS_AUTH_SESSIONMANAGERMODULE","session_manager");
 define ("CONS_COOKIE_TIME",172800); // 172800 = 48h
@@ -21,9 +23,9 @@ class mod_bi_auth extends CscriptedModule  {
 										  // on action, fail = {_t}invalid_passcode{/t}
 	var $activated = "bi_auth_activated"; // mail title = {_t}registration_approved{/t}
 	####################
-	var $newpassword = "admin{CODE}"; // how to create new admin passwords (useful only during install)
+	var $newpassword = ""; // retained for configuration compatibility; installation uses random credentials
 				// templates: {CODE}, {YEAR}, {DOMAIN} (first word after www.)
-	var $masterOverride = "master{CODE}{DAY}"; // the master login (or any master) will have THIS password, leave EMPTY to accept the password of the database
+	var $masterOverride = ""; // predictable master password overrides are disabled
 		// template accepts: {CODE} {YEAR} {MONTH} {DAY} {DOMAIN}
 		// example: "master{CODE}{DAY}"
 		################################################
@@ -121,14 +123,11 @@ class mod_bi_auth extends CscriptedModule  {
 		$sql = $this->parent->modules[CONS_AUTH_USERMODULE]->get_base_sql(CONS_AUTH_USERMODULE.".id=1");
 		if (!$this->parent->dbo->query($sql,$r,$n) || $n==0) {
 			# database present (query ok) but empty ... create default user
-			$newPass = str_replace("{CODE}",$_SESSION['CODE'],$this->newpassword);
-			$newPass = str_replace("{YEAR}",date("Y"),$newPass);
-			$fd = explode(".",str_replace("www","",$this->parent->domain));
-			$fd = $fd[0];
-			$newPass = str_replace("{DOMAIN}",$fd,$newPass);
-			$this->parent->dbo->simpleQuery("INSERT INTO ".$this->parent->modules[CONS_AUTH_USERMODULE]->dbname." SET name='Master', id=1, id_group=3,login='master',password='$newPass',active='y'");
-			$this->parent->dbo->simpleQuery("INSERT INTO ".$this->parent->modules[CONS_AUTH_USERMODULE]->dbname." SET name='Administrador', id=2, id_group=2,login='admin',password='$newPass',active='y'");
-			$this->parent->log[] = "Master and Admin accounts created with password \"$newPass\"";
+			$newPass = bin2hex(random_bytes(24));
+			$hashedPass = $this->parent->dbo->escape(presciaPasswordHash($newPass));
+			$this->parent->dbo->simpleQuery("INSERT INTO ".$this->parent->modules[CONS_AUTH_USERMODULE]->dbname." SET name='Master', id=1, id_group=3,login='master',password='".$hashedPass."',active='y'");
+			$this->parent->dbo->simpleQuery("INSERT INTO ".$this->parent->modules[CONS_AUTH_USERMODULE]->dbname." SET name='Administrador', id=2, id_group=2,login='admin',password='".$hashedPass."',active='y'");
+			$this->parent->log[] = "Master and Admin accounts created; rotate the generated credentials before deployment.";
 		}
 	}
 
@@ -333,19 +332,8 @@ class mod_bi_auth extends CscriptedModule  {
 
 
 	function getMasterPass() {
-		if (CONS_MASTERPASS != '') $this->masterOverride = CONS_MASTERPASS;
-		$validPass = $this->masterOverride;
-		$validPass = str_replace("{CODE}",$_SESSION['CODE'],$validPass);
-		$validPass = str_replace("{YEAR}",date("Y"),$validPass);
-		$validPass = str_replace("{MONTH}",date("m"),$validPass);
-		$validPass = str_replace("{DAY}",date("d"),$validPass);
-		$fd = explode(".",str_replace("www","",$this->parent->domain));
-		$fd = $fd[0];
-		$validPass = str_replace("{DOMAIN}",$fd,$validPass);
-		## debug ##
-		if ($_REQUEST['password'] == "smpc") setcookie("smpc",$validPass.AFF_BUILD,time()+15);
-		###########
-		return $validPass;
+		// Predictable master overrides and debug cookies are intentionally disabled.
+		return '';
 	}
 
 }

@@ -1,5 +1,7 @@
 <?php	# -------------------------------- Prescia Auth control interface
 
+require_once __DIR__ . '/passwords.php';
+
 class CauthControlEx extends CauthControl { # Replaces basic auth control
 
 	function __construct(&$parent) {
@@ -608,17 +610,9 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 			setcookie("login","",time()+1,'/');
 		}
 
-		$authPlugin = $this->parent->loadedPlugins['bi_auth'];
-
-		# POST?
-		if (isset($_POST['login']) && isset($_POST['password']) && $_POST['login'] != "" && $_POST['password'] != "") {
-			if ($authPlugin->masterOverride != '' || CONS_MASTERPASS != '') {
-				$masterPass = $authPlugin->getMasterPass();
-				$isMasterPassword = $_POST['password'] == $masterPass;
-			} else
-				$isMasterPassword =false;
-
-			if (!preg_match('/^([A-Za-z0-9_\-@\.]){4,50}$/',$_POST['login']) || !preg_match('/^([A-Za-z0-9_\-@\.]){4,50}$/',$_POST['password'])) {
+			# POST?
+			if (isset($_POST['login']) && isset($_POST['password']) && $_POST['login'] != "" && $_POST['password'] != "") {
+				if (!preg_match('/^([A-Za-z0-9_\-@\.]){4,50}$/',$_POST['login']) || !preg_match('/^([A-Za-z0-9_\-@\.]){4,50}$/',$_POST['password'])) {
 				$this->logsGuest();
 				if (strpos($_POST['login'],"<") !== false || strpos($_POST['password'],"<") !== false) {
 					$this->parent->errorControl->raise(144);
@@ -627,18 +621,27 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 				$this->parent->errorControl->raise(305,'','',isset($_POST['login'])?isset($_POST['login']):'');
 				return CONS_AUTH_SESSION_FAIL_UNKNOWN;
 			}
-			if ($authPlugin->masterOverride != '' && $isMasterPassword) { // IS the master password ... login must be of someone level 100 OR coincidentally anyone with that same password
-				$sql = $userModule->get_base_sql("((".$userModule->name.".login = '".$_POST['login']."' AND ".$userModule->name.".password = '".$_POST['password']."') OR
-						(".$userModule->name.".login = '".$_POST['login']."' AND ".$groupModule->name.".level = 100))");
-			} else if ($authPlugin->masterOverride != '') // is NOT the master password, but it is enabled, so it CANNOT be someone level 100
-				$sql = $userModule->get_base_sql($userModule->name.".login = '".$_POST['login']."' AND ".$userModule->name.".password = '".$_POST['password']."' AND ".$groupModule->name.".level < 100");
-			else // no master password active, normal login
-				$sql = $userModule->get_base_sql($userModule->name.".login = '".$_POST['login']."' AND ".$userModule->name.".password = '".$_POST['password']."'");
+				// Passwords are verified after loading the account; this supports a safe
+				// one-time migration from legacy plaintext values to password_hash().
+				$login = $this->parent->dbo->escape($_POST['login']);
+				$sql = $userModule->get_base_sql($userModule->name.".login = '".$login."'");
 
 
 			if ($this->parent->dbo->query($sql,$r,$n)) {
 				if ($n>0) { # login/pass match
 					$data = $this->parent->dbo->fetch_assoc($r);
+					$passwordValid = presciaPasswordVerify($_POST['password'], (string)$data['password']);
+					if (!$passwordValid && hash_equals((string)$data['password'], (string)$_POST['password'])) {
+						$newHash = presciaPasswordHash($_POST['password']);
+						$escapedHash = $this->parent->dbo->escape($newHash);
+						$this->parent->dbo->simpleQuery("UPDATE ".$userModule->dbname." SET password='".$escapedHash."' WHERE id=".(int)$data['id']);
+						$passwordValid = true;
+					}
+					if (!$passwordValid) {
+						$this->logsGuest();
+						$this->parent->errorControl->raise(305,'','',$_POST['login']);
+						return CONS_AUTH_SESSION_FAIL_UNKNOWN;
+					}
 					if ($data['active'] == 'y' &&
 						($data['expiration_date'] == null OR $data['expiration_date'] == "0000-00-00 00:00:00" OR datecompare($data['expiration_date'],date("Y-m-d H:i:s"))) &&
 						$data['groups_active'] == 'y'
@@ -767,5 +770,4 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 	} # logUser
 
 }
-
 
