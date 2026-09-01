@@ -637,6 +637,11 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 						$this->parent->dbo->simpleQuery("UPDATE ".$userModule->dbname." SET password='".$escapedHash."' WHERE id=".(int)$data['id']);
 						$passwordValid = true;
 					}
+					if ($passwordValid && presciaPasswordNeedsRehash((string)$data['password'])) {
+						$newHash = presciaPasswordHash($_POST['password']);
+						$escapedHash = $this->parent->dbo->escape($newHash);
+						$this->parent->dbo->simpleQuery("UPDATE ".$userModule->dbname." SET password='".$escapedHash."' WHERE id=".(int)$data['id']);
+					}
 					if (!$passwordValid) {
 						$this->logsGuest();
 						$this->parent->errorControl->raise(305,'','',$_POST['login']);
