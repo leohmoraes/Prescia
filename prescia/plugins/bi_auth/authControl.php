@@ -644,9 +644,10 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 					}
 					if ($data['active'] == 'y' &&
 						($data['expiration_date'] == null OR $data['expiration_date'] == "0000-00-00 00:00:00" OR datecompare($data['expiration_date'],date("Y-m-d H:i:s"))) &&
-						$data['groups_active'] == 'y'
-						) { # active and not expirated account!
-						$sql = "DELETE FROM ".$authModule->dbname." WHERE id_user=".$data['id'];
+							$data['groups_active'] == 'y'
+							) { # active and not expirated account!
+							session_regenerate_id(true);
+							$sql = "DELETE FROM ".$authModule->dbname." WHERE id_user=".$data['id'];
 						$this->parent->dbo->simpleQuery($sql);
 						$newkey = md5($data['login'].date("Hms"));
 						$sql = "INSERT INTO ".$authModule->dbname." SET ip='$ip',lastaction=NOW(),id_user='".$data['id']."',revalidatecode='$newkey',startdate=NOW()";
@@ -770,4 +771,3 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 	} # logUser
 
 }
-

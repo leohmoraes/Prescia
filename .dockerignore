@@ -7,6 +7,8 @@
 # Temporary files
 _temp/*
 !_temp/.gitkeep
+*.log
+composer.lock
 
 # Documentation
 *.md

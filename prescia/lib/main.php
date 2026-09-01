@@ -12,6 +12,17 @@ error_reporting(E_ALL); // Error handling, leave E_ALL. Only the weak hide their
 setlocale ( LC_CTYPE, 'C' ); // UTF-8 performance/compatibility improvement
 
 # Get session kicking
+ini_set('session.use_only_cookies', '1');
+ini_set('session.use_trans_sid', '0');
+ini_set('session.use_strict_mode', '1');
+session_set_cookie_params(array(
+	'lifetime' => 0,
+	'path' => '/',
+	'domain' => '',
+	'secure' => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'),
+	'httponly' => true,
+	'samesite' => 'Lax',
+));
 $SID = session_id(); // SID constant is not trustworthy
 if (!isset($_REQUEST[$SID]) || (isset($_REQUEST[$SID]) && preg_match('/^([a-zA-Z0-9,\-]+)$/',$_REQUEST[$SID]))) {
 	session_start();
