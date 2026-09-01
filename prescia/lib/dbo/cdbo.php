@@ -112,10 +112,18 @@ class CDBO {
 	    } // query
 
 		/** Execute a parameterized query. Connectors should override this method. */
+		/**
+		 * @param mixed &$result Driver-specific result object or false.
+		 * @param int &$numrows Number of rows returned by the driver.
+		 * @return bool Whether execution succeeded.
+		 */
 		function queryPrepared($sql, $types, $params, &$result, &$numrows, $debugmode = null) {
+			$result = false;
+			$numrows = 0;
 			return false;
 		}
 
+		/** @return mixed First column of the first row, or false when unavailable. */
 		function fetchPrepared($sql, $types, $params, $abortOnError = false) {
 			return false;
 		}

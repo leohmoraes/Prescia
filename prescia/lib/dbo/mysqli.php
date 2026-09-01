@@ -72,8 +72,10 @@ class CDBO_mysqli extends CDBO  {
     	$this->connection = false;
 	} // close
 
-	function query($sql, &$result, &$numrows, $debugmode= null) {
-		if ($this->delayedconn == 1) $this->connect();
+		function query($sql, &$result, &$numrows, $debugmode= null) {
+			$result = false;
+			$numrows = 0;
+			if ($this->delayedconn == 1) $this->connect();
 		if (!$this->connection) return false;
     	$this->dbc++;
     	if (is_array($sql)) $sql = $this->sqlarray_echo($sql);
@@ -98,7 +100,9 @@ class CDBO_mysqli extends CDBO  {
 	    } // query
 
 		function queryPrepared($sql, $types, $params, &$result, &$numrows, $debugmode = null) {
-			if ($this->delayedconn == 1) $this->connect();
+			$result = false;
+			$numrows = 0;
+				if ($this->delayedconn == 1) $this->connect();
 			if (!$this->connection || strlen($types) !== count($params)) return false;
 			$this->dbc++;
 			$numrows = 0;
