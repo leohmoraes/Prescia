@@ -26,6 +26,7 @@ A documentação canônica está em [`docs/`](docs/) em Markdown (convertida das
 | [**Code Reference**](docs/Code_reference.md) | **Referência completa da API** de Template Core, Core, CoreFull e Module (`components/module.php`) — propriedades, métodos e auxiliares de instalação |
 | [**FAQ**](docs/faq.md) | Problemas de CMS, módulos e plugins, depuração de **404** (BI_DEV), páginas de **manutenção** (`maint.txt`, `heavymaint.html`), **EconomicMode** |
 | [**Bot Blocklist**](docs/bots.md) | Padrões de user-agent bloqueados com `CONS_BOTPROTECT` ativo; veja o FAQ para desativar via EconomicMode |
+| [**Plano de Ação de Segurança**](docs/PLANO_ACAO_SEGURANCA.md) | Correções priorizadas para autenticação, sessão, uploads, Docker e compatibilidade com PHP 8.3 |
 
 ### Arquivos de texto legados
 
@@ -40,7 +41,7 @@ Cópias antigas em texto puro permanecem apenas para referência; prefira os arq
 
 ## Requisitos
 
-- PHP 8+ com **mysqli** (driver MySQL)
+- PHP **8.3** com **mysqli**, **pdo_mysql** e **mbstring**
 - Apache com `mod_rewrite` (recomendado)
 - MySQL 8+ (ou compatível)
 
@@ -70,6 +71,19 @@ docker compose up --build
 - **MySQL:** `localhost:3306` — banco `prescia`, usuário `prescia_user`, senha `prescia_pass` (veja `docker-compose.yml`)
 
 Na primeira build, a imagem copia `config/domains.original` e `config/settings.php.original` se os arquivos de destino não existirem. Monte o diretório do projeto para desenvolvimento com alterações ao vivo.
+
+### Testes de compatibilidade
+
+Os testes automatizados exigem PHP 8.3 e Composer. Eles verificam a versão do runtime, extensões obrigatórias, sintaxe de todos os arquivos PHP, ausência de APIs removidas ou obsoletas, short tags e a versão da imagem Docker.
+
+```bash
+composer install
+composer test
+```
+
+O workflow [`php83.yml`](.github/workflows/php83.yml) executa esses testes no GitHub Actions e também constrói a imagem Docker. A suíte é bloqueadora: enquanto a migração de short tags e outros itens legados não estiver concluída, o pipeline deverá falhar em vez de declarar compatibilidade completa.
+
+As recomendações de segurança e os critérios de aceite estão documentados no [Plano de Ação de Segurança](docs/PLANO_ACAO_SEGURANCA.md). A existência dos testes não significa que as vulnerabilidades já estejam corrigidas.
 
 ---
 

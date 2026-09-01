@@ -5,6 +5,23 @@ All notable changes to the Prescia framework will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - 2026-08-31
+
+### Added
+- Added PHPUnit-based PHP 8.3 compatibility tests in `tests/Php83CompatibilityTest.php`.
+- Added Composer project metadata and the `composer test` command.
+- Added GitHub Actions validation for PHP 8.3, required extensions and Docker build in `.github/workflows/php83.yml`.
+- Added the prioritized security remediation plan in `docs/PLANO_ACAO_SEGURANCA.md`.
+
+### Changed
+- Updated the Docker image from PHP 8.2 to PHP 8.3.
+- Added the `mbstring` extension to the Docker image.
+- Documented PHP 8.3 requirements and compatibility test commands in `README.md`.
+
+### Compatibility checks
+- The compatibility suite checks runtime version, required extensions, PHP syntax, removed/deprecated APIs, short tags and Docker base image.
+- The suite is intentionally blocking while known legacy constructs remain; passing the suite is required before declaring PHP 8.3 compatibility.
+
 ## [Unreleased] - 2026-02-20
 
 ### Breaking Changes
