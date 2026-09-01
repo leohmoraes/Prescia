@@ -523,8 +523,8 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 		# Logs any user out and reset to Guest, kills cookies and sessions
 		if (isset($_SESSION[CONS_SESSION_ACCESS_USER]) && isset($_SESSION[CONS_SESSION_ACCESS_USER]['id']) && $_SESSION[CONS_SESSION_ACCESS_LEVEL] > 0) {
 			$authModule = $this->parent->loaded(CONS_AUTH_SESSIONMANAGERMODULE);
-			$sql = "DELETE FROM ".$authModule->dbname." WHERE id_user=".$_SESSION[CONS_SESSION_ACCESS_USER]['id'];
-			$this->parent->dbo->simpleQuery($sql);
+			$sql = "DELETE FROM ".$authModule->dbname." WHERE id_user=?";
+			$this->parent->dbo->queryPrepared($sql, 'i', array((int)$_SESSION[CONS_SESSION_ACCESS_USER]['id']), $r, $n);
 		}
 		$_SESSION[CONS_SESSION_ACCESS_USER] = array();
 		$_SESSION[CONS_SESSION_ACCESS_LEVEL] = CONS_SESSION_ACCESS_LEVEL_GUEST;
@@ -551,8 +551,8 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 		# someone already logged catch
 		if (isset($_SESSION[CONS_SESSION_ACCESS_USER]) && isset($_SESSION[CONS_SESSION_ACCESS_USER]['id']) && $_SESSION[CONS_SESSION_ACCESS_LEVEL] > 0) {
 			$authModule = $this->parent->loaded(CONS_AUTH_SESSIONMANAGERMODULE);
-			$sql = "UPDATE ".$authModule->dbname." SET lastaction=NOW() WHERE id_user=".$_SESSION[CONS_SESSION_ACCESS_USER]['id'];
-			$this->parent->dbo->simpleQuery($sql);
+				$sql = "UPDATE ".$authModule->dbname." SET lastaction=NOW() WHERE id_user=?";
+				$this->parent->dbo->queryPrepared($sql, 'i', array((int)$_SESSION[CONS_SESSION_ACCESS_USER]['id']), $r, $n);
 			return CONS_AUTH_SESSION_KEEP; # someone (not guest) is logged, ignore login procedures until logs-off/time out
 		}
 
@@ -572,15 +572,15 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 		if (isset($_COOKIE['scookie']) && $_COOKIE['scookie'] != "" && isset($_COOKIE['login']) && is_numeric($_COOKIE['login'])) {
 
 			$accept_sc = false; # sc = session cookie (cookie saves a login/session key pair, but no password)
-			$sql = $authModule->get_base_sql(CONS_AUTH_SESSIONMANAGERMODULE.".revalidatecode = '".$_COOKIE['scookie']."' AND ".CONS_AUTH_SESSIONMANAGERMODULE.".id_user = ".$_COOKIE['login']);
+			$sql = $authModule->get_base_sql(CONS_AUTH_SESSIONMANAGERMODULE.".revalidatecode = ? AND ".CONS_AUTH_SESSIONMANAGERMODULE.".id_user = ?");
 			$data = array();
 			$r = null; $n = 0;
-			if ($this->parent->dbo->query($sql,$r,$n)) {
+			if ($this->parent->dbo->queryPrepared($sql, 'si', array((string)$_COOKIE['scookie'], (int)$_COOKIE['login']), $r, $n)) {
 				if ($n>0) {
 					$data = $this->parent->dbo->fetch_assoc($r);
 					if ($ip == $data['ip']) { # must maintain same IP
-						$sql = $userModule->get_base_sql(CONS_AUTH_USERMODULE.".id = ".$data['id_user']);
-						$this->parent->dbo->query($sql,$r,$n);
+						$sql = $userModule->get_base_sql(CONS_AUTH_USERMODULE.".id = ?");
+						$this->parent->dbo->queryPrepared($sql, 'i', array((int)$data['id_user']), $r, $n);
 						if ($n>0) {
 							$userdata = $this->parent->dbo->fetch_assoc($r);
 							$accept_sc = true;
@@ -589,8 +589,8 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 				}
 			}
 			if ($accept_sc) { # valid session cookie
-				$sql = "UPDATE ".$authModule->dbname." SET ip='$ip',lastaction=NOW() WHERE id_user='".$data['id_user']."'";
-				$ok = $this->parent->dbo->simpleQuery($sql);
+					$sql = "UPDATE ".$authModule->dbname." SET ip=?,lastaction=NOW() WHERE id_user=?";
+					$ok = $this->parent->dbo->queryPrepared($sql, 'si', array((string)$ip, (int)$data['id_user']), $r, $n);
 				if ($ok) { # managed to refresh cookie
 					$returnCode = $this->logUser($data['id_user'],CONS_AUTH_SESSION_KEEP);
 					if ($returnCode == CONS_AUTH_SESSION_NEW) {
@@ -632,14 +632,12 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 					$passwordValid = presciaPasswordVerify($_POST['password'], (string)$data['password']);
 					if (!$passwordValid && hash_equals((string)$data['password'], (string)$_POST['password'])) {
 						$newHash = presciaPasswordHash($_POST['password']);
-						$escapedHash = $this->parent->dbo->escape($newHash);
-						$this->parent->dbo->simpleQuery("UPDATE ".$userModule->dbname." SET password='".$escapedHash."' WHERE id=".(int)$data['id']);
+						$this->parent->dbo->queryPrepared("UPDATE ".$userModule->dbname." SET password=? WHERE id=?", 'si', array($newHash, (int)$data['id']), $r, $n);
 						$passwordValid = true;
 					}
 					if ($passwordValid && presciaPasswordNeedsRehash((string)$data['password'])) {
 						$newHash = presciaPasswordHash($_POST['password']);
-						$escapedHash = $this->parent->dbo->escape($newHash);
-						$this->parent->dbo->simpleQuery("UPDATE ".$userModule->dbname." SET password='".$escapedHash."' WHERE id=".(int)$data['id']);
+						$this->parent->dbo->queryPrepared("UPDATE ".$userModule->dbname." SET password=? WHERE id=?", 'si', array($newHash, (int)$data['id']), $r, $n);
 					}
 					if (!$passwordValid) {
 						$this->logsGuest();
@@ -651,11 +649,11 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 							$data['groups_active'] == 'y'
 							) { # active and not expirated account!
 							session_regenerate_id(true);
-							$sql = "DELETE FROM ".$authModule->dbname." WHERE id_user=".$data['id'];
-						$this->parent->dbo->simpleQuery($sql);
+							$sql = "DELETE FROM ".$authModule->dbname." WHERE id_user=?";
+						$this->parent->dbo->queryPrepared($sql, 'i', array((int)$data['id']), $r, $n);
 						$newkey = md5($data['login'].date("Hms"));
-						$sql = "INSERT INTO ".$authModule->dbname." SET ip='$ip',lastaction=NOW(),id_user='".$data['id']."',revalidatecode='$newkey',startdate=NOW()";
-						$ok = $this->parent->dbo->simpleQuery($sql);
+						$sql = "INSERT INTO ".$authModule->dbname." SET ip=?,lastaction=NOW(),id_user=?,revalidatecode=?,startdate=NOW()";
+						$ok = $this->parent->dbo->queryPrepared($sql, 'sis', array((string)$ip, (int)$data['id'], (string)$newkey), $r, $n);
 						if ($ok) { # managed to create session
 							$returnCode = $this->logUser($data['id'],CONS_AUTH_SESSION_NEW); # logs user
 							if ($returnCode == CONS_AUTH_SESSION_NEW) {
@@ -697,8 +695,8 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 		# successCodes: CONS_AUTH_SESSION_NEW or CONS_AUTH_SESSION_KEEP
 		$groupModule = $this->parent->loaded(CONS_AUTH_GROUPMODULE);
 		$loginModule = $this->parent->loaded(CONS_AUTH_USERMODULE);
-		$sql = $loginModule->get_base_sql(CONS_AUTH_USERMODULE.".id='".$loginId."'");
-		$this->parent->dbo->query($sql,$r,$n);
+		$sql = $loginModule->get_base_sql(CONS_AUTH_USERMODULE.".id=?");
+		$this->parent->dbo->queryPrepared($sql, 'i', array((int)$loginId), $r, $n);
 		if ($n>0) {
 			$_SESSION[CONS_SESSION_ACCESS_USER] = $this->parent->dbo->fetch_assoc($r);
 			// initialize user preferences
