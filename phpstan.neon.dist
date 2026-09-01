@@ -13,6 +13,7 @@ parameters:
         - */pages/_js/ckfinder/*
     scanFiles:
         - prescia/lib/basic.php
+        - prescia/lib/arrayToString.php
         - prescia/lib/listFiles.php
         - prescia/lib/inputSanatizing.php
         - prescia/lib/datetime.php
@@ -21,10 +22,13 @@ parameters:
         - prescia/lib/locateFile.php
         - prescia/lib/locateAnyFile.php
         - prescia/lib/sendMail.php
+        - prescia/lib/storeFile.php
+        - prescia/lib/quota.php
         - prescia/lib/imgHandler.php
         - prescia/lib/xmlHandler.php
         - prescia/lib/ttree.php
         - prescia/core.php
         - prescia/coreFull.php
         - prescia/tcexternal.php
+        - prescia/console.php
     reportUnmatchedIgnoredErrors: true
