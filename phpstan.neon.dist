@@ -3,6 +3,8 @@ includes:
 
 parameters:
     level: 0
+    stubFiles:
+        - tools/phpstan-framework-stubs.php
     paths:
         - index.php
         - prescia
