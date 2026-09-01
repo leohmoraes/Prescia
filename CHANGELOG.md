@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added Composer project metadata and the `composer test` command.
 - Added GitHub Actions validation for PHP 8.3, required extensions and Docker build in `.github/workflows/php83.yml`.
 - Added the prioritized security remediation plan in `docs/PLANO_ACAO_SEGURANCA.md`.
+- Added the conservative migration helper in `tools/migrate_php83.php`, with dry-run, timestamped backups and a security blocker report.
 
 ### Changed
 - Updated the Docker image from PHP 8.2 to PHP 8.3.

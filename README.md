@@ -85,6 +85,22 @@ O workflow [`php83.yml`](.github/workflows/php83.yml) executa esses testes no Gi
 
 As recomendações de segurança e os critérios de aceite estão documentados no [Plano de Ação de Segurança](docs/PLANO_ACAO_SEGURANCA.md). A existência dos testes não significa que as vulnerabilidades já estejam corrigidas.
 
+### Migração assistida
+
+O script [`tools/migrate_php83.php`](tools/migrate_php83.php) faz uma varredura conservadora, identifica APIs removidas, propõe a conversão de short tags e verifica a imagem Docker. Por padrão, ele executa somente um **dry-run** e gera um relatório em `_temp/php83-migration-report.md`:
+
+```bash
+php tools/migrate_php83.php
+```
+
+Depois de revisar o relatório, use `--apply` para aplicar somente as alterações mecânicas e criar um backup timestampado antes de cada arquivo alterado:
+
+```bash
+php tools/migrate_php83.php --apply
+```
+
+O script **não altera automaticamente** senhas, SQL, CSRF, sessões, uploads ou autorização. Esses itens exigem implementação específica, revisão e testes conforme as issues de segurança. O backup deve ser preservado até `composer test` e os testes de integração passarem.
+
 ---
 
 ## Estrutura do projeto (essencial)

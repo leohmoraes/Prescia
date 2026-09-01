@@ -14,7 +14,8 @@
     }
   },
   "scripts": {
-    "test": "phpunit --configuration phpunit.xml.dist"
+    "test": "phpunit --configuration phpunit.xml.dist",
+    "migrate:php83": "php tools/migrate_php83.php"
   },
   "config": {
     "sort-packages": true,
