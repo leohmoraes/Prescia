@@ -1,4 +1,4 @@
-<? #<- please ensure short tags is enabled on your apache
+<?php #<- please ensure short tags is enabled on your apache
   /* -------------------------------- Prescia ENTRYPOINT
   | Copyleft (ɔ) 2011+, Caio Vianna de Lima Netto (www.prescia.net)
   | LICENSE TYPE: BSD-new/ɔ for Prescia (BSD/open source)

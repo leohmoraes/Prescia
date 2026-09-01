@@ -1,4 +1,4 @@
-<?	# -------------------------------- Plugin permissions (Automatically added to groups)
+<?php	# -------------------------------- Plugin permissions (Automatically added to groups)
 
 class mod_bi_permissions extends CscriptedModule  {
 

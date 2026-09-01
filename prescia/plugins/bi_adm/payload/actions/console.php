@@ -1,4 +1,4 @@
-<?
+<?php
 
 	include_once CONS_PATH_SYSTEM."console.php";
 

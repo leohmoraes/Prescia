@@ -1,4 +1,4 @@
-<? /* ----- BB thread
+<?php /* ----- BB thread
  * Behaves 3 different ways depending on operationmode of the thread
  * Note that the correct template must have been loaded (that is done on default.php)
  * + BB MODE: list of posts, just like a normal forum

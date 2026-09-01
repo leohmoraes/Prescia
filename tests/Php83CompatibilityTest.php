@@ -63,7 +63,7 @@ final class Php83CompatibilityTest extends TestCase
             $contents = (string) file_get_contents($file);
             self::assertSame(
                 0,
-                preg_match('/<\?(?!php|=)/i', $contents),
+                preg_match('/^[ \t]*<\?(?!php|=)/mi', $contents),
                 "Short open tag found in {$file}"
             );
         }

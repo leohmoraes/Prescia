@@ -1,4 +1,4 @@
-<?
+<?php
 
 	if (!$core->authControl->checkPermission('bi_adm','can_importexport'))
 		$core->fastClose(403);

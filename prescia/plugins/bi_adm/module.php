@@ -1,4 +1,4 @@
-<?	# -------------------------------- Advanced Admin (Codde's Nekoi), requires prototype/scriptaculous
+<?php	# -------------------------------- Advanced Admin (Codde's Nekoi), requires prototype/scriptaculous
 
 # NOTE: admFolder in this can be a list of comma delimited folders
 # ADMIN MENU: will create normal new/list for modules that are not flagged as systemModule="true"

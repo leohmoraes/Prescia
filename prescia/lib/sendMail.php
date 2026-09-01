@@ -1,4 +1,4 @@
-<?/*--------------------------------\
+<?php/*--------------------------------\
   | sendMail : Improved version of PHP's mail function
   | Made for Prescia family framework (cc) Caio Vianna de Lima Netto @ www.prescia.net
   | -r parameter for postfix

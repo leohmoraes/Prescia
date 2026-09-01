@@ -1,4 +1,4 @@
-<?/* -------------------------------- Prescia Console
+<?php/* -------------------------------- Prescia Console
   | Copyleft (ɔ) 2011+, Caio Vianna de Lima Netto (www.prescia.net)
   | LICENSE TYPE: BSD-new/ɔ
 -*/

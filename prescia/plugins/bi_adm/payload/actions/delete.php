@@ -1,4 +1,4 @@
-<?
+<?php
 
 	if (!isset($_REQUEST['module']) || !$core->loaded($_REQUEST['module'])) {
 		# master check if this is a valid module

@@ -1,4 +1,4 @@
-<? /* EDIT PANEL TOC (you can search these strings):
+<?php /* EDIT PANEL TOC (you can search these strings):
  * CONSTANTS AND VARIABLES
  * CALLBACK
  * USER PREFERENCES

@@ -1,4 +1,4 @@
-<?
+<?php
 	// master options (remove if not master)
 	if ($_SESSION[CONS_SESSION_ACCESS_LEVEL]<100) $core->template->assign("_master");
 	if ($_SESSION[CONS_SESSION_ACCESS_LEVEL]<99) $core->template->assign("_highadmin");

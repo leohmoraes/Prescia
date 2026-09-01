@@ -1,4 +1,4 @@
-<? // ------------------------ Honeypot list bootup (catching is done inside core::checkDirectLink)
+<?php // ------------------------ Honeypot list bootup (catching is done inside core::checkDirectLink)
    // do not call this if you already know the useragent is a bot (double check is pointless)
 
 if (!isset($_SESSION[CONS_SESSION_HONEYPOTLIST])) {

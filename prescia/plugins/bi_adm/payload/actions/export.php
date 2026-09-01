@@ -1,4 +1,4 @@
-<?
+<?php
 	return; // em manutenção
 
 	// erro que deu: na linha 38 não achou $fT[$idx], o $iFields pode estar sendo gerado com defeito?

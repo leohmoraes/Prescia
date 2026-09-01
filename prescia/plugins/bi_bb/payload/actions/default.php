@@ -1,4 +1,4 @@
-<?
+<?php
 
 	if ($this->parent->action == "preview" || $this->parent->action == "profile") $_REQUEST['nocache'] = true; 
 

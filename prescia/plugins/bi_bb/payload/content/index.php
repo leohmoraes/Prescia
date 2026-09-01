@@ -1,4 +1,4 @@
-<?
+<?php
 
 	$showFullList = isset($_REQUEST['all']) && $_REQUEST['all'] == "true"; // send all=true to show the lists regardless of parenting, and the last threads with paging 
 

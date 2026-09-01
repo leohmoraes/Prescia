@@ -1,4 +1,4 @@
-<?
+<?php
 	$this->tCaptcha('safetycode',true);
 	if(isset($_POST['haveinfo']) and $_POST['haveinfo'] == "1") {
 

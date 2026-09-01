@@ -1,4 +1,4 @@
-<?
+<?php
 
 	if (!isset($_REQUEST['module']) || $core->loaded($_REQUEST['module']) === false) {
 		$core->errorControl->raise(512,"list",(isset($_REQUEST['module'])?$_REQUEST['module']:''));

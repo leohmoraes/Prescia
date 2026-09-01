@@ -1,4 +1,4 @@
-<?
+<?php
 
 	// this code is taken from default.php
 

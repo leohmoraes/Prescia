@@ -1,4 +1,4 @@
-<?
+<?php
 
 	if (isset($_REQUEST['haveinfo'])){  
 		if (isset($_REQUEST['makedir'])) {

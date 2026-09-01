@@ -1,4 +1,4 @@
-<?	# -------------------------------- Prescia error control
+<?php	# -------------------------------- Prescia error control
 
 # Level 0 (lowest level, might not even be logged)
 define ("CONS_ERROR_NOTICE",0); # Hidden notice CONS_LOGGING_NOTICE

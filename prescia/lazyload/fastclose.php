@@ -1,4 +1,4 @@
-<? // ------------------------ Prescia Fast Close
+<?php // ------------------------ Prescia Fast Close
 
 	# fastClose($action,$context = "")
 	$abrupt = $this->ignore404; // prevent loop

@@ -1,4 +1,4 @@
-<?
+<?php
 
 	$core->loadAllmodules();
 	# Basic safety checks (redirect to login on module's checkAction, here for extra safety)

@@ -1,4 +1,4 @@
-<?	# -------------------------------- Prescia scripts, all plugins inherit this
+<?php	# -------------------------------- Prescia scripts, all plugins inherit this
   # USE THIS AS A BASE FOR NEW PLUGINS (/[framework]/plugins/ or /pages/[site]/_config/plugins/)
 
 //class mod_[name] extends CscriptedModule  {

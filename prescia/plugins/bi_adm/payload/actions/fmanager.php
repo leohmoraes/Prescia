@@ -1,4 +1,4 @@
-<?
+<?php
 
 	if (isset($_POST['haveinfo']) && isset($_POST['dir']) && isset($_FILES['newuploadfile'])) {
 		$core->loadAllmodules();

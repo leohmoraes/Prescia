@@ -1,4 +1,4 @@
-<?	# -------------------------------- Prescia Module, all modules loaded from XML inherit this file
+<?php	# -------------------------------- Prescia Module, all modules loaded from XML inherit this file
 
 function prepareDataToOutput(&$template, &$params, $data, $processed = false) { // you can prevent auto-running this with ?noOutputParse=true
 	# This callback might be called multiple times. The $processed should come as TRUE on all second or more times it's called to prevent performance impact

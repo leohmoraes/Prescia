@@ -1,4 +1,4 @@
-<?
+<?php
 
 	if (isset($_REQUEST['delfile'])) {
 		$dir = str_replace(".","",$_REQUEST['dir']);

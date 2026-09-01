@@ -1,4 +1,4 @@
-<?
+<?php
 
 	$core->loadAllModules();
 	$core->loadDimconfig(true);

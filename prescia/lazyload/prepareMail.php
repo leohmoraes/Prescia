@@ -1,4 +1,4 @@
-<? // ------------------------ Prescia prepareMail. Will look for $name if cannot find $name_$lang
+<?php // ------------------------ Prescia prepareMail. Will look for $name if cannot find $name_$lang
 
 	# prepareMail($name="",$fillArray=array()) {
 

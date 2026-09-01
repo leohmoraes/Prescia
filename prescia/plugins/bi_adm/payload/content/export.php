@@ -1,4 +1,4 @@
-<?
+<?php
 	return; // EM MANUTENÇÃO
 
 	$core->loadAllmodules();

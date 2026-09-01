@@ -1,4 +1,4 @@
-<? // ------------------------ Prescia readfile
+<?php // ------------------------ Prescia readfile
 
 	# readfile($file,$ext="",$exit=true,$filename="",$forceAttach=false,$cachetime=6000) {
 

@@ -1,4 +1,4 @@
-<?	# -------------------------------- Safe FileManager
+<?php	# -------------------------------- Safe FileManager
 
 
 class mod_bi_fm extends CscriptedModule  {

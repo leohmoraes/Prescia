@@ -1,2 +1,2 @@
-<?
+<?php
 	$this->tCaptcha('safetycode');

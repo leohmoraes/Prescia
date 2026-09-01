@@ -1,4 +1,4 @@
-<?
+<?php
 
 	$r = $core->checkHackAttempt(cleanString($_REQUEST['searchfield']));
 	$parameters = array();

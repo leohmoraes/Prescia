@@ -1,4 +1,4 @@
-<?	# -------------------------------- Developer Tools plugin
+<?php	# -------------------------------- Developer Tools plugin
 
 class mod_bi_dev extends CscriptedModule  {
 

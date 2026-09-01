@@ -1,4 +1,4 @@
-<?
+<?php
 
 	$cols = $_REQUEST['cols'];
 	$rows = $_REQUEST['rows'];

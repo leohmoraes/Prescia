@@ -1,4 +1,4 @@
-<?/* -------------------------------- Prescia extra core functions
+<?php/* -------------------------------- Prescia extra core functions
   | Copyleft (ɔ) 2011+, Caio Vianna de Lima Netto (www.prescia.net)
   | LICENSE TYPE: BSD-new/ɔ
   | These functions are not used so often, so to reduce parse time from the PHP compiler, they where removed from the core.php

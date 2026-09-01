@@ -1,4 +1,4 @@
-<? return array(
+<?php return array(
 # "TERM" => "TRANSLATION",
 "toggle_navigation" => "Toggle Navigation",
 "about" => "About",

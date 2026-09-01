@@ -1,4 +1,4 @@
-<?
+<?php
 
 	// safety: are we logged to perform actions? if not, kick out to 403 (unless you are registering)
 	// we test post include (self) because that's the most basic permission

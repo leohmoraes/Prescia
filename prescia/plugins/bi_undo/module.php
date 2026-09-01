@@ -1,4 +1,4 @@
-<?	# -------------------------------- bi_undo plugin
+<?php	# -------------------------------- bi_undo plugin
 
 if (CONS_DB_HOST=='') $this->errorControl->raise(4,'bi_undo','UNDO module requires database');
 

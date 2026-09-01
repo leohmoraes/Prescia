@@ -1,4 +1,4 @@
-<?	# -------------------------------- SEO Plugin
+<?php	# -------------------------------- SEO Plugin
 
 define ("CONS_SEO_LOADED","aff_seo"); # array of alias that are to be published in the place of default pages
 if (CONS_DB_HOST=='') $this->errorControl->raise(4,'bi_seo','SEO module requires database');

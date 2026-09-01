@@ -1,4 +1,4 @@
-<?
+<?php
 
 	if (!isset($_REQUEST['module'])) $this->fastClose(404);
 	$module = $core->loaded($_REQUEST['module']);

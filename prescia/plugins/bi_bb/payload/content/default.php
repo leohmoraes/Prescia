@@ -1,4 +1,4 @@
-<? /* ----------------------------------------- Default script for bb pages
+<?php /* ----------------------------------------- Default script for bb pages
  *
  */
 

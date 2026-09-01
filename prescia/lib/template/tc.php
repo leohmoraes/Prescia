@@ -1,4 +1,4 @@
-<? /* ------------------------
+<?php /* ------------------------
    | Caio's Template Engine
    | Version: 6.0 (simpla version)
    | (cc) Caio Vianna de Lima Netto

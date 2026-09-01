@@ -1,4 +1,4 @@
-<?	# -------------------------------- Plugin AUTH, NOTE: falls inside USERS module
+<?php	# -------------------------------- Plugin AUTH, NOTE: falls inside USERS module
 
 define ("CONS_AUTH_USERMODULE","users");
 define ("CONS_AUTH_SESSIONMANAGERMODULE","session_manager");

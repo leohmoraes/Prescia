@@ -1,4 +1,4 @@
-<?
+<?php
 
 	$module = $core->loaded($_REQUEST['module']);
 

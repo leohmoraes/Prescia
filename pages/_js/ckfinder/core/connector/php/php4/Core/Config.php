@@ -417,7 +417,7 @@ class CKFinder_Connector_Core_Config
         }
 
         reset($GLOBALS['config']['ResourceType']);
-        while (list($_key,$_resourceTypeNode) = each($GLOBALS['config']['ResourceType'])) {
+        foreach ($GLOBALS['config']['ResourceType'] as $_key => $_resourceTypeNode) {
             if ($_resourceTypeNode['name'] === $resourceTypeName) {
                 $this->_resourceTypeConfigCache[$resourceTypeName] = new CKFinder_Connector_Core_ResourceTypeConfig($_resourceTypeNode);
 

@@ -1,4 +1,4 @@
-<?
+<?php
 
 	if (!$core->authControl->checkPermission('bi_labels','can_editlabels')) {
 		$core->action = 403;

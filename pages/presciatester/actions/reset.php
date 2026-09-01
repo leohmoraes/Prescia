@@ -1,4 +1,4 @@
-<?
+<?php
 	if (isset($_REQUEST['haveinfo'])) {
 		$this->dbo->simpleQuery("TRUNCATE dbp");
 		$this->dbo->simpleQuery("TRUNCATE dba");

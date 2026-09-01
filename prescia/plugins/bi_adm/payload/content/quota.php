@@ -1,4 +1,4 @@
-<?
+<?php
 
 	$usedSpace = quota(CONS_FMANAGER,true)*1024;
 	$core->loadDimconfig(true);

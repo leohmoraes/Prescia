@@ -1,4 +1,4 @@
-<?
+<?php
 
 	$p = isset($_REQUEST['p_init']) && is_numeric($_REQUEST['p_init'])?$_REQUEST['p_init']:0; // item starting this page
 	

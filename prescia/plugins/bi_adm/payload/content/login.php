@@ -1,4 +1,4 @@
-<?
+<?php
 
 	$b = getbrowser(false);
 	$core->template->assign("browser",$b[0]);

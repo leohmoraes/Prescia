@@ -1,4 +1,4 @@
-<?/* -------------------------------- Prescia - simple text captcha
+<?php/* -------------------------------- Prescia - simple text captcha
   | Copyleft (ɔ) 2011+, Caio Vianna de Lima Netto (www.prescia.net)
   | LICENSE TYPE: BSD-new/ɔ
   | This is pretty much a placeholder, but should work for basic safety since bots are THAT stupid

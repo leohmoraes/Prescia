@@ -1,4 +1,4 @@
-<?
+<?php
 
 	define("CONS_MAX_MUP",100); // maximum files to process WARNING (will still process)
 

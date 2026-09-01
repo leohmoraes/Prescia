@@ -1,4 +1,4 @@
-<? // removes magic quotes, function proposed at http://php.net/manual/en/security.magicquotes.disabling.php
+<?php // removes magic quotes, function proposed at http://php.net/manual/en/security.magicquotes.disabling.php
 
 # if (@get_magic_quotes_gpc()) include CONS_PATH_INCLUDE."_mqgpc.inc.php";
 

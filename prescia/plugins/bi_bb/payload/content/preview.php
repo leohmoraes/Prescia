@@ -1,4 +1,4 @@
-<?
+<?php
 
 	$core->addLink("ckeditor/ckeditor.js",true);
 	$core->addLink("validators.js");

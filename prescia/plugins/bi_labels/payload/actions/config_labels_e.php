@@ -1,4 +1,4 @@
-<?
+<?php
 
 	$core->layout = 2;
 	$currentLabels = isset($core->dimconfig['_labels'])?$core->dimconfig['_labels']:array();

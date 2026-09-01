@@ -1,4 +1,4 @@
-<?  # -------------------------------- Prescia Simple Header Control
+<?php  # -------------------------------- Prescia Simple Header Control
 
 define("CONS_HC_HEADER",0);
 define("CONS_HC_PRAGMA",1);

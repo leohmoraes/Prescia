@@ -1,4 +1,4 @@
-<?
+<?php
 
 	$core->loadAllmodules();
 	$tp = $core->template->get("_modules");

@@ -1,4 +1,4 @@
-<?
+<?php
 
 	// This file is the same as edit.php, with removed features
 

@@ -1,4 +1,4 @@
-<?/* -------------------------------- Prescia Core (Debug mode)
+<?php/* -------------------------------- Prescia Core (Debug mode)
   | Copyleft (ɔ) 2012+, Caio Vianna de Lima Netto (www.prescia.net)
   | LICENSE TYPE: BSD-new/ɔ
 -*/

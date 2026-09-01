@@ -1,4 +1,4 @@
-<?
+<?php
 
 	$core->layout = 2;
 	if (!isset($_REQUEST['m'])) $core->fastClose(404);

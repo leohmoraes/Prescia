@@ -1,4 +1,4 @@
-<?	# -------------------------------- CMS plugin
+<?php	# -------------------------------- CMS plugin
 	# Contentman tags start as {CONTENTMAN} for code 1, then {CONTENTMAN#} where # > 1
 
 if (CONS_DB_HOST=='') $this->errorControl->raise(4,'bi_cms','CMS module requires database');

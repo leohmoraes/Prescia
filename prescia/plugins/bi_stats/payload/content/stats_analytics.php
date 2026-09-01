@@ -1,4 +1,4 @@
-<?
+<?php
 
 	$graphWidth = 400;
 	

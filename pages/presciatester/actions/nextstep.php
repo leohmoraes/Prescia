@@ -1,4 +1,4 @@
-<?
+<?php
 	$ok = false;
 	if (isset($_REQUEST['haveinfo'])) {
 		$step = $this->dimconfig['presciastage'];

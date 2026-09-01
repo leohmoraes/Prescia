@@ -1,4 +1,4 @@
-<?	# -------------------------------- Prescia International (i18n/l10n) control
+<?php	# -------------------------------- Prescia International (i18n/l10n) control
 	# Requires datetime.php
 
 class CintlControl {

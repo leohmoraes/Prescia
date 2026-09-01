@@ -1,4 +1,4 @@
-<?	# -------------------------------- Prescia cache control
+<?php	# -------------------------------- Prescia cache control
 	# NOTE: all caches automatically add LANGUAGE and USER ID (if not common)
 
 class CCacheControl {

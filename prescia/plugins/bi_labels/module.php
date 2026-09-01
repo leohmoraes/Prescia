@@ -1,4 +1,4 @@
-<?	# -------------------------------- Label system
+<?php	# -------------------------------- Label system
 
 # NOTE: admFolder in this can be a list of comma delimited folders
 

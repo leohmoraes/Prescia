@@ -1,4 +1,4 @@
-<? # will gzip files, if possible. Note this will also auto-detect the latest jquery min version if you call jquery.js
+<?php # will gzip files, if possible. Note this will also auto-detect the latest jquery min version if you call jquery.js
 
 
 	define ('CONS_CACHE_TIME',604800); // 7 days

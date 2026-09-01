@@ -1,4 +1,4 @@
-<?/* Main function pack
+<?php/* Main function pack
   | Made for Prescia family framework (cc) Caio Vianna de Lima Netto (www.prescia.net)
   | Free to use, change and redistribute, but please keep the above disclamer.
   | Last update: 14.8.23

@@ -1,4 +1,4 @@
-<?	# -------------------------------- BB Plugin
+<?php	# -------------------------------- BB Plugin
 
 if (CONS_DB_HOST=='') $this->errorControl->raise(4,'bi_bb','Bulleting Board/Blogger module requires database');
 if (!isset($this->loadedPlugins['bi_adm'])) $this->errorControl->raise(4,'bi_bb','Bulleting Board/Blogger module requires the ADMIN module');

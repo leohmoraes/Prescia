@@ -1,4 +1,4 @@
-<?	# -------------------------------- Plugin GROUPS (automatically added by plugin AUTH)
+<?php	# -------------------------------- Plugin GROUPS (automatically added by plugin AUTH)
 
 define ("CONS_AUTH_GROUPMODULE","groups");
 if (CONS_DB_HOST=='') $this->errorControl->raise(4,'bi_groups','GROUPS module requires database');

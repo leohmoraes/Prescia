@@ -1,4 +1,4 @@
-<?
+<?php
 
 	if (!$core->authControl->checkPermission('bi_fm','change_fmp')) return; // cannot change permissions
 

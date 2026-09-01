@@ -1,4 +1,4 @@
-<?
+<?php
 	$core->loadDimconfig(true);
 
 	// info

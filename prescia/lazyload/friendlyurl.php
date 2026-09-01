@@ -1,4 +1,4 @@
-<?/* -------------------------------- Prescia extra core functions
+<?php/* -------------------------------- Prescia extra core functions
   | Copyleft (ɔ) 2011+, Caio Vianna de Lima Netto (www.prescia.net)
   | LICENSE TYPE: BSD-new/ɔ
   | Translates a URL to another URL using friendly url rules

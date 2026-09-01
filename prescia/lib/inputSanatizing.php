@@ -1,4 +1,4 @@
-<?/*--------------------------------\
+<?php/*--------------------------------\
   | Input Bundle: Implements functions for cleaning or preparing input/text fields
   | Made for Prescia family framework (cc) Caio Vianna de Lima Netto @ prescia.net
   | Free to use, change and redistribute, but please keep the above disclamer.

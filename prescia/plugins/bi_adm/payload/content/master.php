@@ -1,4 +1,4 @@
-<?
+<?php
 
 
 	$highResponseTime = 1000; // ms

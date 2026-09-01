@@ -1,4 +1,4 @@
-<? /* -------------------------------------------------
+<?php /* -------------------------------------------------
  * content/default.php
  * This file runs AFTER the actions/ are done, also AFTER the template is created, but nothing is in it at this point.
  * So, mandatory commands here are at least a $this->loadTemplate();

@@ -1,4 +1,4 @@
-<?
+<?php
 /*
   $zipfile = new zipfile($arquivo_zip,false);  // nome apenas necessario se for enviar na hora, ai coloque o nome e true, e depois echo no $zipfile->file();
   $zipfile->addFileAndRead ($arquivo,$arquivo_path_in_zip);   // para cada arquivo

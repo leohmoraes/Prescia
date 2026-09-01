@@ -1,4 +1,4 @@
-<? /* ----------------------------------------- Default script for admin pages
+<?php /* ----------------------------------------- Default script for admin pages
  *
  */
 

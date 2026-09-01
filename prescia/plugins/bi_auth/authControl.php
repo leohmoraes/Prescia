@@ -1,4 +1,4 @@
-<?	# -------------------------------- Prescia Auth control interface
+<?php	# -------------------------------- Prescia Auth control interface
 
 class CauthControlEx extends CauthControl { # Replaces basic auth control
 

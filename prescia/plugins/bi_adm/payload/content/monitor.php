@@ -1,4 +1,4 @@
-<? 
+<?php
 
 	if (!$core->authControl->checkPermission('bi_adm','can_monitor'))		
 		$core->fastClose(403);

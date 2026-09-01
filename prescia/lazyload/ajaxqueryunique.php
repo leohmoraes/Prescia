@@ -1,4 +1,4 @@
-<? /* this file is captured by Prescia to check if a field is unique in a database, as per the functions on validators.js:
+<?php /* this file is captured by Prescia to check if a field is unique in a database, as per the functions on validators.js:
 	Mandatory fields:
 		module: which module we will look into
  		field: which field we will search for

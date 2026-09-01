@@ -1,4 +1,4 @@
-<?
+<?php
 
 	$core->layout = 2;
 

@@ -1,4 +1,4 @@
-<?
+<?php
 
 	if (isset($_REQUEST['haveinfo'])) {
 		$module = $core->loaded($_REQUEST['module']);

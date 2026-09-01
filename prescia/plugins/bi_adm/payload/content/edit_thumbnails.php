@@ -1,4 +1,4 @@
-<?
+<?php
 
 	define ("CONS_MAX_W",700);
 
