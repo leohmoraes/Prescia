@@ -1,6 +1,6 @@
-<?php // removes magic quotes, function proposed at http://php.net/manual/en/security.magicquotes.disabling.php
+<?php // Legacy input-normalization helper retained only for old installations.
 
-# if (@get_magic_quotes_gpc()) include CONS_PATH_INCLUDE."_mqgpc.inc.php";
+# This helper is intentionally not loaded on PHP 8+.
 
 $process = array(&$_GET, &$_POST, &$_COOKIE, &$_REQUEST);
 foreach ($process as $key => $val) {

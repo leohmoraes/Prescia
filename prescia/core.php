@@ -369,7 +369,7 @@ class CPrescia extends CPresciaVar {
 				$this->errorControl->raise(109,$cronLock);
 			}
 			// lock cron if not locked
-				cWriteFile(CONS_PATH_CACHE.$_SESSION['CODE']."/cronlock.php", "<?php \\$cronLock=\"".date("Y-m-d H:i:s")."\"; ?>");
+				cWriteFile(CONS_PATH_CACHE.$_SESSION['CODE']."/cronlock.php", '<?php $cronLock="'.date("Y-m-d H:i:s").'"; ?>');
 		} else return;
 
 		include_once CONS_PATH_SYSTEM."lazyload/cron.php";
