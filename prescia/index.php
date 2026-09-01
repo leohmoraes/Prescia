@@ -182,6 +182,7 @@ $core->headerControl->showHeaders();
 foreach ($core->onEcho as $scriptName) {
 	$core->loadedPlugins[$scriptName]->onEcho($PAGE);
 }
+$PAGE = presciaInjectCsrfFields($PAGE);
 # -- collect and serve
 $error = ob_get_contents();
 ob_end_clean();

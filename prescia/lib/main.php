@@ -12,6 +12,7 @@ error_reporting(E_ALL); // Error handling, leave E_ALL. Only the weak hide their
 setlocale ( LC_CTYPE, 'C' ); // UTF-8 performance/compatibility improvement
 
 # Get session kicking
+require_once __DIR__ . "/csrf.php";
 ini_set('session.use_only_cookies', '1');
 ini_set('session.use_trans_sid', '0');
 ini_set('session.use_strict_mode', '1');
@@ -35,6 +36,7 @@ if (isset($_REQUEST['nosession'])) {
 	session_destroy();
 	session_start();
 }
+presciaValidateCsrf();
 
 # Ip handling
 include_once CONS_PATH_INCLUDE."ipv6.php";
