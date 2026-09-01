@@ -214,7 +214,7 @@ class CKTemplate {
 			$thattime = filemtime($cfile);
 			if ($thistime < $thattime) {
 				$temp = cReadFile($cfile);
-				$temp = @unserialize($temp);
+				$temp = presciaSafeUnserialize($temp);
 				if ($temp !== false) {
 					$this->copyfrom($temp);
 					unset($temp);

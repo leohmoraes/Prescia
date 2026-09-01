@@ -60,7 +60,7 @@ if (!$freepass) {
 	
 	# step 2: load ip controller (non session related) and check it
 	if (is_file($filename)) {
-		$thd = @unserialize(cReadFile($filename));
+		$thd = presciaSafeUnserialize(cReadFile($filename));
 		if (!is_array($thd)) $thd = array();
 	} else
 		$thd = array();

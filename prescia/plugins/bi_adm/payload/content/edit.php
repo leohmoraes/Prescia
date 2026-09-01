@@ -718,7 +718,7 @@
 	foreach ($module->fields as $name => $field) { // FOR EACH FIELD ON THIS MODULE/DATABASE ...
 		if ($field[CONS_XML_TIPO] == CONS_TIPO_SERIALIZED) {
 			if (isset($data[$name]) && $data[$name] != '') {
-				$data[$name] = @unserialize($data[$name]);
+				$data[$name] = presciaSafeUnserialize($data[$name]);
 				if ($data[$name] === false) {
 					unset($data[$name]);
 					$core->errorControl->raise(188,$name,$module->name);

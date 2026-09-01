@@ -188,13 +188,13 @@
 			if (CONS_ECONOMICMODE)
 				echo "Economic mode on, cache control disabled";
 			else if (is_file(CONS_PATH_LOGS."cachecontrol.dat")) {
-				$cc = unserialize(cReadFile(CONS_PATH_LOGS."cachecontrol.dat"));
+				$cc = presciaSafeUnserialize(cReadFile(CONS_PATH_LOGS."cachecontrol.dat"));
 				if ($cc !== false) {
 					echo "Date, Page average loadtime, Cache throttle %\n<br/>";
 					foreach ($cc as $ccitem) {
 						echo $ccitem[0].", ".number_format($ccitem[1])."ms, ".floor(100*$ccitem[2])."%\n<br/>";
 					}
-					$cc = unserialize(cReadFile(CONS_PATH_CACHE."cachecontrol.dat"));
+					$cc = presciaSafeUnserialize(cReadFile(CONS_PATH_CACHE."cachecontrol.dat"));
 					if ($cc !== false)
 						echo "CURRENT: ".number_format($cc[0])."ms, ".floor(100*$cc[1])."%";
 					else

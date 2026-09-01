@@ -106,7 +106,7 @@
 	############################ USER PREFERENCES #####################
 
 	$up = $_SESSION[CONS_SESSION_ACCESS_USER]['userprefs'];
-	if (!is_array($up)) $up = @unserialize($up);
+	if (!is_array($up)) $up = presciaSafeUnserialize($up);
 	$smartFields = array();
 	$mustReset= false;
 	$useSF = false;
@@ -141,7 +141,7 @@
 		$file = CONS_PATH_CACHE.$_SESSION['CODE']."/admin".$_SESSION[CONS_SESSION_ACCESS_USER]['id_group'].".cache"; // HTML output with normal menu
 		if (!is_file($file)) $this->buildAdminMenu(); // no cache, create it
 		if (is_file($file)) { // we have the cache of admin.xml (might had some error above)
-			$admxml = unserialize(cReadFile($file));
+			$admxml = presciaSafeUnserialize(cReadFile($file));
 			if (is_object($admxml)) {
 				function checkXMLlisting(&$xml,$moduleName) {
 					// does the current node have the listing for my module

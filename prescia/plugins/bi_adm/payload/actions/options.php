@@ -8,7 +8,7 @@
 			$core->setLog(CONS_LOGGING_WARNING);
 		} else {
 
-			$dimconfigMD = unserialize(cReadFile(CONS_PATH_CACHE.$_SESSION['CODE']."/meta/_dimconfig.dat"));
+			$dimconfigMD = presciaSafeUnserialize(cReadFile(CONS_PATH_CACHE.$_SESSION['CODE']."/meta/_dimconfig.dat"));
 
 			foreach ($core->dimconfig as $name => $v) {
 				if (!isset($dimconfigMD[$name])) {

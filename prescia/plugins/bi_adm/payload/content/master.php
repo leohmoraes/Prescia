@@ -18,7 +18,7 @@
 
 	$admObj = $core->loadedPlugins['bi_adm'];
 
-	$domains = unserialize(cReadFile(CONS_PATH_CACHE."domains.dat"));
+	$domains = presciaSafeUnserialize(cReadFile(CONS_PATH_CACHE."domains.dat"));
 
 	$codes = array();
 
@@ -99,7 +99,7 @@
 		$file = CONS_PATH_DINCONFIG.$code."/din.dat";
 		$dinconfig = array();
 		if (is_file($file)) {
-			$dinconfig = unserialize(cReadFile($file));
+			$dinconfig = presciaSafeUnserialize(cReadFile($file));
 			if (isset($dinconfig['_ignoreoncp'])) continue;
 			if (is_array($dinconfig)) {
 				if ((isset($dinconfig['adminmail']) && strpos($dinconfig['adminmail'],"@") !== false) &&
@@ -171,7 +171,7 @@
 		// cron
 		$file = CONS_PATH_LOGS.$code."/scripttime.dat";
 		if (is_file($file)) {
-			$statsdata = unserialize(cReadFile($file));
+			$statsdata = presciaSafeUnserialize(cReadFile($file));
 			if ($statsdata !== false && !$isTest) $outputData['cron']++;
 		} else {
 			$statsdata = false;
@@ -271,7 +271,7 @@
 	$out = "";
 	$IPs = 0;
 	foreach ($throttleFiles as $tf) {
-		$thd = @unserialize(cReadFile(CONS_PATH_TEMP.$tf));
+		$thd = presciaSafeUnserialize(cReadFile(CONS_PATH_TEMP.$tf));
 		preg_match("@throttle_(.*)\.dat@",$tf,$regs);
 		$ip = str_replace("_",":",$regs[1]);
 		foreach ($thd as $thname => $thditem) {

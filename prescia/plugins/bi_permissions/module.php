@@ -92,7 +92,7 @@ class mod_bi_permissions extends CscriptedModule  {
 			$perm = array();
 			$allperm = $this->parent->permissionTemplate; // get default permission array
 			if (isset($data['permissions']) && $data['permissions'] != "")
-				$perm = unserialize($data['permissions']); // loads
+				$perm = presciaSafeUnserialize($data['permissions']); // loads
 			// merge with standard permissions to make sure we have ALL permissions (example: a new module was added and this group still don't have permissions set?)
 			foreach($perm as $name => $permission)
 				$allperm[$name] = $permission; // if a permission is lacking, will not override, thus using default

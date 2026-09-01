@@ -107,7 +107,7 @@ function prepareDataToOutput(&$template, &$params, $data, $processed = false) { 
 				}
 			} elseif ($field[CONS_XML_TIPO] == CONS_TIPO_SERIALIZED && ($field[CONS_XML_SERIALIZED] == 1 || $field[CONS_XML_SERIALIZED] == 3) && isset($data[$fname])) {
 				# serialized field with READ or ALL serialization mode
-				$s = @unserialize($data[$fname]);
+				$s = presciaSafeUnserialize($data[$fname]);
 				if ($s !== false) {
 					foreach ($s as $skey => $scontent) {
 						$data[$fname."_".$skey] = $scontent;
@@ -437,7 +437,7 @@ class CModule {
 		// send $noJoin to get only THIS table, with no auto joining linked tables
 	  $sql = false;
 	  if (!$this->parent->debugmode && !$noJoin && is_file(CONS_PATH_CACHE.$_SESSION['CODE']."/".$this->dbname."_list.cache") && !isset($_REQUEST['nocache'])) {
-		$sql = unserialize(cReadFile(CONS_PATH_CACHE.$_SESSION['CODE']."/".$this->dbname."_list.cache"));
+		$sql = presciaSafeUnserialize(cReadFile(CONS_PATH_CACHE.$_SESSION['CODE']."/".$this->dbname."_list.cache"));
 	  }
 	  if (!$sql) {
 	  	$sql = array("SELECT" => array(), "FROM" => array(), "LEFT" => array(), "WHERE" => array(), "GROUP" => array(), "ORDER" => array(), "LIMIT" => array(), "HAVING" => array());
@@ -1253,7 +1253,7 @@ class CModule {
 						if ($data[$name][0] == '[') # JSON
 							$output = @json_decode($data[$name]);
 						else
-							$output = @unserialize($data[$name]); # we will serialize the whole thing
+							$output = presciaSafeUnserialize($data[$name]); # we will serialize the whole thing
 						if ($output === false) {
 							$this->parent->errorControl->raise(189,$name,$this->name);
 							$output= "";
@@ -1271,7 +1271,7 @@ class CModule {
 					$sql = "SELECT $name FROM ".$this->dbname." WHERE $wS";
 					$serialized = $this->parent->dbo->fetch($sql);
 					if ($serialized === false) $serialized = array();
-					else $serialized = @unserialize($serialized);
+					else $serialized = presciaSafeUnserialize($serialized);
 					
 					$serializedFields = 0;
 					foreach ($this->fields[$name][CONS_XML_SERIALIZEDMODEL] as $exname => &$exfield) {
@@ -1616,7 +1616,7 @@ class CModule {
 				if (isset($_REQUEST['p_size']) && is_numeric($_REQUEST['p_size']) && $_REQUEST['p_size']>=0) # came numeric value
 					$this->parent->templateParams['p_size'] = $_REQUEST['p_size'];
 				else if (isset($_SESSION[CONS_SESSION_ACCESS_USER]['userprefs'])) { # non numeric, try user preferences
-					$up = is_array($_SESSION[CONS_SESSION_ACCESS_USER]['userprefs'])?$_SESSION[CONS_SESSION_ACCESS_USER]['userprefs']:unserialize($_SESSION[CONS_SESSION_ACCESS_USER]['userprefs']);
+					$up = is_array($_SESSION[CONS_SESSION_ACCESS_USER]['userprefs'])?$_SESSION[CONS_SESSION_ACCESS_USER]['userprefs']:presciaSafeUnserialize($_SESSION[CONS_SESSION_ACCESS_USER]['userprefs']);
 					if (isset($up['pfim']) && is_numeric($up['pfim']) && $up['pfim']>0)
 						$this->parent->templateParams['p_size'] = $up['pfim'];
 					else

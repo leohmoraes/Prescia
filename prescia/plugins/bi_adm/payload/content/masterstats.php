@@ -2,7 +2,7 @@
 
 	if ($_SESSION[CONS_SESSION_ACCESS_LEVEL]<99 || strpos(CONS_MASTERDOMAINS,$_SESSION['DOMAIN'])===false) $core->fastClose(403);
 
-	$domains = unserialize(cReadFile(CONS_PATH_CACHE."domains.dat"));
+	$domains = presciaSafeUnserialize(cReadFile(CONS_PATH_CACHE."domains.dat"));
 	$innerWidth = 390;
 	$graphHeight = 50;
 	$codes = array();
@@ -33,7 +33,7 @@
 		$file = CONS_PATH_LOGS.$code."/scripttime.dat";
 		if (is_file($file)) {
 
-			$statsdata = unserialize(cReadFile($file));
+			$statsdata = presciaSafeUnserialize(cReadFile($file));
 			for ($c=0;$c<count($statsdata[5]);$c++) {
 				$sum += $statsdata[5][$c][0];
 			}

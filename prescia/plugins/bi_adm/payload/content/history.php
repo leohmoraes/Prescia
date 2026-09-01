@@ -11,12 +11,12 @@
 		$core->fastClose(404);
 	
 	// now get just the history array
-	$data = unserialize($undodata['history']);
+	$data = presciaSafeUnserialize($undodata['history']);
 	if ($data === false) // history array corrupt!
 		$core->errorControl->raise(519,$undodata['modulo'],$undodata['modulo']);
 
 	// file array?
-	$files = unserialize($undodata['files']);
+	$files = presciaSafeUnserialize($undodata['files']);
 	
 	$module = $core->loaded($undodata['modulo']);
 	if ($module === false) // invalid module 

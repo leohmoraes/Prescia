@@ -150,7 +150,7 @@ class CintlControl {
 				$ofMD = filemtime($file); # modify date of ORIGINAL file
 				$cMD = cReadFile($cacheMTFile); # modify date of ORIGINAL file when CACHE file was created
 				if ($cMD == $ofMD) { # valid cache file (it was created from the current original file)
-					$newData = @unserialize(cReadFile($cacheFile));
+					$newData = presciaSafeUnserialize(cReadFile($cacheFile));
 					if (is_array($newData)) {
 						$this->parent->template->lang_replacer = array_merge($this->parent->template->lang_replacer,$newData);
 						return true;

@@ -42,6 +42,7 @@ final class Php83CompatibilityTest extends TestCase
             '/\bereg(?:i)?\s*\(/i',
             '/\beach\s*\(/i',
             '/\bcreate_function\s*\(/i',
+            '/\bunserialize\s*\([^,)]*\)/i',
             '/\bget_magic_quotes_gpc\s*\(/i',
         ];
 

@@ -46,7 +46,7 @@ class mod_bi_undo extends CscriptedModule  {
 			if ($n>0) {
 				for ($c=0;$c<$n;$c++) {
 					list($id,$files) = $core->dbo->fetch_row($r);
-					$files = @unserialize($files);
+					$files = presciaSafeUnserialize($files);
 					if ($files) {
 						foreach ($files as $file) {
 							if (is_file(CONS_FMANAGER."_undodata/".$file))
@@ -91,7 +91,7 @@ class mod_bi_undo extends CscriptedModule  {
 
 		$realdados = array();
 		$canUndo = true;
-		$history = unserialize($undodados['history']);
+		$history = presciaSafeUnserialize($undodados['history']);
 		foreach ($module->fields as $fname => $fields) {
 			// fill up $_REQUEST to simulate and edit/add
 			if (isset($history[$fname])) {
@@ -140,7 +140,7 @@ class mod_bi_undo extends CscriptedModule  {
 			// ok, we can undo
 			// any files to undo this?
 			if ($undodados['files'] != "") {
-				$files = unserialize($undodados['files']);
+				$files = presciaSafeUnserialize($undodados['files']);
 				if ($files !== false) {
 					foreach ($files as $file => $exists) {
 						if ($exists && is_file(CONS_FMANAGER."_undodata/".$file)) {

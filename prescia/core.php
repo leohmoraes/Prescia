@@ -51,7 +51,7 @@ class CPrescia extends CPresciaVar {
 		if (!isset($_SESSION['CODE']) || !isset($_SESSION['DOMAIN']) || $_SESSION['DOMAIN'] != $this->domain || (isset($_REQUEST['nocache']) && !isset($_COOKIE['prescia_cls']))) { # no data, different domain or forced reload
 			$errCode = 102;
 			$hasFile = is_file(CONS_PATH_CACHE."domains.dat");
-			if ($hasFile) $domainList = unserialize(cReadFile(CONS_PATH_CACHE."domains.dat"));
+			if ($hasFile) $domainList = presciaSafeUnserialize(cReadFile(CONS_PATH_CACHE."domains.dat"));
 			if (isset($_REQUEST['nocache']) || !$hasFile || $domainList===false) { # This is a cached script. Performance is mandatory
 				$errCode = 101;
 				$domainList = $this->builddomains();
@@ -145,11 +145,11 @@ class CPrescia extends CPresciaVar {
 			$this->cacheControl->dumpTemplateCaches();
 		}
 		if (!$this->dbless) {
-			$theModules = unserialize(cReadFile(CONS_PATH_CACHE.$_SESSION['CODE']."/meta/_modules.dat"));
+			$theModules = presciaSafeUnserialize(cReadFile(CONS_PATH_CACHE.$_SESSION['CODE']."/meta/_modules.dat"));
 			if ($theModules === false) {
 				# try again, this might be a parallel access issue
 				sleep(1);
-				$theModules = unserialize(cReadFile(CONS_PATH_CACHE.$_SESSION['CODE']."/meta/_modules.dat"));
+				$theModules = presciaSafeUnserialize(cReadFile(CONS_PATH_CACHE.$_SESSION['CODE']."/meta/_modules.dat"));
 			}
 			if ($theModules === false) {
 				$this->errorControl->raise(106);
@@ -729,7 +729,7 @@ class CPrescia extends CPresciaVar {
 	function loadPermissions() {
 		# loads permissionTemplate
 		if (is_null($this->permissionTemplate)) {
-			$this->permissionTemplate = @unserialize(cReadFile(CONS_PATH_CACHE.$_SESSION['CODE']."/meta/_permissions.dat"));
+			$this->permissionTemplate = presciaSafeUnserialize(cReadFile(CONS_PATH_CACHE.$_SESSION['CODE']."/meta/_permissions.dat"));
 			if ($this->permissionTemplate === false) {
 				$this->errorControl->raise(3);
 				$this->close(true);
@@ -752,9 +752,9 @@ class CPrescia extends CPresciaVar {
 	 */
 	function loadDimconfig($force = false) {
 		if (!isset($_SESSION[CONS_SESSION_CONFIG]) || ($force && !isset($this->dimconfig['_forced']))) {
-			$this->dimconfig = unserialize(cReadFile(CONS_PATH_DINCONFIG.$_SESSION['CODE']."/din.dat"));
+			$this->dimconfig = presciaSafeUnserialize(cReadFile(CONS_PATH_DINCONFIG.$_SESSION['CODE']."/din.dat"));
 			if (($this->dimconfig === false || !is_array($this->dimconfig)) && is_file(CONS_PATH_DINCONFIG.$_SESSION['CODE']."/din.bck")) {
-				$this->dimconfig = unserialize(cReadFile(CONS_PATH_DINCONFIG.$_SESSION['CODE']."/din.bck"));
+				$this->dimconfig = presciaSafeUnserialize(cReadFile(CONS_PATH_DINCONFIG.$_SESSION['CODE']."/din.bck"));
 				if ($this->dimconfig !== false) {
 					$this->errorControl->raise(160);
 					$this->saveConfig();
@@ -808,7 +808,7 @@ class CPrescia extends CPresciaVar {
 		foreach($this->modules as $mod) {
 			if (!$mod->loaded) { # this does the same as core::loaded, but optimized for all
 				$moduleName = $mod->name;
-				$loadedData = unserialize(cReadFile(CONS_PATH_CACHE.$_SESSION['CODE']."/meta/$moduleName.dat"));
+				$loadedData = presciaSafeUnserialize(cReadFile(CONS_PATH_CACHE.$_SESSION['CODE']."/meta/$moduleName.dat"));
 				if ($loadedData) {
 					# IMPORTANT: this is also loaded in loaded()
 					list(
@@ -847,7 +847,7 @@ class CPrescia extends CPresciaVar {
 		if (isset($this->modules[$moduleName])) {
 			if (!$this->modules[$moduleName]->loaded) {
 				# loads module, it was only referenced
-				$loadedData = unserialize(cReadFile(CONS_PATH_CACHE.$_SESSION['CODE']."/meta/$moduleName.dat"));
+				$loadedData = presciaSafeUnserialize(cReadFile(CONS_PATH_CACHE.$_SESSION['CODE']."/meta/$moduleName.dat"));
 				if ($loadedData) {
 					list(
 						 $this->modules[$moduleName]->keys,
@@ -1101,7 +1101,7 @@ class CPrescia extends CPresciaVar {
 		$data = $this->cacheControl->getCachedContent('dimconfig_auto');
 		if ($data === false) {
 			$data = $this->dimconfig;
-			$dimconfigMD = unserialize(cReadFile(CONS_PATH_CACHE.$_SESSION['CODE']."/meta/_dimconfig.dat"));
+			$dimconfigMD = presciaSafeUnserialize(cReadFile(CONS_PATH_CACHE.$_SESSION['CODE']."/meta/_dimconfig.dat"));
 			foreach ($data as $name => $content) {
 				if (isset($dimconfigMD[$name])) {
 					if ($dimconfigMD[$name][CONS_XML_TIPO] == CONS_TIPO_UPLOAD) {

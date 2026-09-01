@@ -154,7 +154,7 @@ class mod_bi_adm extends CscriptedModule  {
 			$this->skin = isset($this->parent->dimconfig['bi_adm_skin']) && $this->parent->dimconfig['bi_adm_skin'] != ''?$this->parent->dimconfig['bi_adm_skin']:CONS_ADM_BASESKIN;
 			if (isset($_SESSION[CONS_SESSION_ACCESS_USER]['userprefs']) && $_SESSION[CONS_SESSION_ACCESS_USER]['userprefs'] != '') {
 				$up = $_SESSION[CONS_SESSION_ACCESS_USER]['userprefs'];
-				if (!is_array($up)) $up = @unserialize($up);
+				if (!is_array($up)) $up = presciaSafeUnserialize($up);
 				if (is_array($up)) {
 					$this->parent->storage['up'] = $up;
 					$this->skin = $up['skin'];
@@ -390,7 +390,7 @@ class mod_bi_adm extends CscriptedModule  {
 
 		} else {
 
-			@$this->menudata = unserialize(cReadFile($file));
+			@$this->menudata = presciaSafeUnserialize(cReadFile($file));
 			if ($this->menudata === false || !is_object($this->menudata)) {
 				$this->parent->log[] = "Error loading admin menu";
 				$this->parent->setLog(CONS_LOGGING_ERROR);
@@ -500,7 +500,7 @@ class mod_bi_adm extends CscriptedModule  {
 			}
 			unset($xml);
 		} else // use cache
-			$monitorXml = unserialize(cReadFile($monitorXmlCache));
+			$monitorXml = presciaSafeUnserialize(cReadFile($monitorXmlCache));
 		return $monitorXml;
 	}
 }

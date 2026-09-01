@@ -5,6 +5,7 @@
 -*/
 
 # Basic start
+require_once __DIR__ . "/serialization.php";
 function getmicrotime() { list($usec, $sec) = explode(" ", microtime()); return ((float)$usec + (float)$sec); } # we want to time things ASAP
 $temp = getmicrotime();
 define ("CONS_STARTTIME",$temp);

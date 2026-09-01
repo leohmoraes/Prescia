@@ -46,7 +46,7 @@
 	// user options (ipp)
 	$up = isset($_SESSION[CONS_SESSION_ACCESS_USER]['userprefs'])?$_SESSION[CONS_SESSION_ACCESS_USER]['userprefs']:false;
 	if ($up !== false) {
-		if (!is_array($up)) $up = @unserialize($up);
+		if (!is_array($up)) $up = presciaSafeUnserialize($up);
 		$ipp = $up['pfim'];
 	} else
 		$ipp = 15;

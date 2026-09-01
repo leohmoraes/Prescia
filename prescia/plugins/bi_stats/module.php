@@ -78,7 +78,7 @@ class mod_bi_stats extends CscriptedModule  {
 					}
 					$this->parent->cacheControl->addCachedContent('bdstats',serialize($output),true);
 				} else
-					$output = unserialize($output);
+					$output = presciaSafeUnserialize($output);
 				print_r($output);
 			} else
 				echo "err";
@@ -478,7 +478,7 @@ class mod_bi_stats extends CscriptedModule  {
 		$totalTime = scriptTime() * 1000;
 		$file = CONS_PATH_LOGS.$_SESSION['CODE']."/scripttime.dat";
 		$data = array(date('H'),0,0,0,0,0,array()); // hour, max time w/o cache, max time w/ cache, bot hits today, normal hits today, last week average, browser array
-		if (is_file($file)) $data = unserialize(cReadFile($file));
+		if (is_file($file)) $data = presciaSafeUnserialize(cReadFile($file));
 		if (!is_array($data) || count($data)<5) $data = array(date('H'),0,0,0,0,0,array()); // error above
 		if ($data[0] != date('H')) $data = array(date('H'),0,0,0,0,0,array()); // reset
 		if (CONS_CACHE && $this->parent->cacheControl->contentFromCache) {

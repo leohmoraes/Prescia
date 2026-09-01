@@ -9,7 +9,7 @@
 	echo "<html><body>Choose site:<br/><br/><select onchange=\"document.location='/index.php?changelocalsite='+this.value+'&amp;nosession=true&amp;nocache=true&amp;debugmode=true';\"><option></option>";
 
 	if (!is_file(CONS_PATH_CACHE."domains.dat")) $domains = $this->builddomains();
-	else $domains = unserialize(cReadFile(CONS_PATH_CACHE."domains.dat"));
+	else $domains = presciaSafeUnserialize(cReadFile(CONS_PATH_CACHE."domains.dat"));
 	if ($domains == false || count($domains) == 0) $domains = $this->builddomains();
 
 	$codes = array();

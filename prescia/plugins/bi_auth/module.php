@@ -166,7 +166,7 @@ class mod_bi_auth extends CscriptedModule  {
 			$uMod = $this->parent->loaded(CONS_AUTH_USERMODULE);
 			$sql = "SELECT userprefs FROM ".$uMod->dbname." WHERE id=".$data['id'];
 			$up = $this->parent->dbo->fetch($sql);
-			$up = @unserialize($up);
+			$up = presciaSafeUnserialize($up);
 			if (!is_array($up)) $up = array();
 			// note: remember to initialize new users' preferences on authControl::logUser
 			if (isset($data['user_prefs_skin'])) $up['skin'] = $data['user_prefs_skin'];
@@ -180,7 +180,7 @@ class mod_bi_auth extends CscriptedModule  {
 			if ($up['menufont']<8 || $up['menufont']>16) $up['menufont'] = 12;
 			$data['userprefs'] = serialize($up);
 			if ($data['id'] == $_SESSION[CONS_SESSION_ACCESS_USER]['id']) {
-				$_SESSION[CONS_SESSION_ACCESS_USER]['userprefs'] = unserialize($data['userprefs']);
+				$_SESSION[CONS_SESSION_ACCESS_USER]['userprefs'] = presciaSafeUnserialize($data['userprefs']);
 			}
 		}
 		return true;
@@ -192,7 +192,7 @@ class mod_bi_auth extends CscriptedModule  {
 
 		if ($field == "history") {
 			if ($action) return false; // do not show when adding
-			$history = unserialize($data['history']);
+			$history = presciaSafeUnserialize($data['history']);
 			$output = "";
 			if (is_array($history)) {
 				foreach ($history as $item) {
@@ -206,7 +206,7 @@ class mod_bi_auth extends CscriptedModule  {
 		} else if ($field=="userprefs" && isset($this->parent->loadedPlugins['bi_adm'])) { // THIS IS ABOUT NEKOI'S bi_ADM
 			$admObj = $this->parent->loadedPlugins['bi_adm'];
 			$up = isset($data['userprefs'])?$data['userprefs']:'';
-			$up = unserialize($up);
+			$up = presciaSafeUnserialize($up);
 			if (!is_array($up)) $up = array();
 			if (!isset($up['skin'])) $up['skin'] = defined("CONS_ADM_BASESKIN")?CONS_ADM_BASESKIN:'base';
 			if (!isset($up['init'])) $up['init'] = 'index';

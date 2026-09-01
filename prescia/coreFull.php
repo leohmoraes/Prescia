@@ -113,7 +113,7 @@ class CPresciaFull extends CPrescia {
 
 		# Dimconfig
 		if (is_file(CONS_PATH_DINCONFIG.$_SESSION['CODE']."/din.dat"))
-			$this->dimconfig = unserialize(cReadFile(CONS_PATH_DINCONFIG.$_SESSION['CODE']."/din.dat"));
+			$this->dimconfig = presciaSafeUnserialize(cReadFile(CONS_PATH_DINCONFIG.$_SESSION['CODE']."/din.dat"));
 		if ($this->dimconfig === false) $this->dimconfig = array(); # Error on load
 		$this->checkConfig();
 		# clear the meta cache

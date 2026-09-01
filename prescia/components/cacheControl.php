@@ -81,7 +81,7 @@ class CCacheControl {
 				return $_SESSION[CONS_SESSION_CACHE][$tag_ns]['payload'];
 			}
 		} else if (is_file(CONS_PATH_CACHE.$_SESSION["CODE"]."/caches/$tag.cache")) { // in file is shared cache
-			$fileContent = unserialize(cReadFile(CONS_PATH_CACHE.$_SESSION["CODE"]."/caches/$tag.cache"));
+			$fileContent = presciaSafeUnserialize(cReadFile(CONS_PATH_CACHE.$_SESSION["CODE"]."/caches/$tag.cache"));
 			if ($expiration != 0) {
 				$passedSeconds = time_diff(date("Y-m-d H:i:s"),$fileContent['time']);
 				if ($expiration>$passedSeconds) {
@@ -117,7 +117,7 @@ class CCacheControl {
 			$passedSeconds = time_diff(date("Y-m-d H:i:s"),$_SESSION[CONS_SESSION_CACHE][$tag_ns]['time']);
 			return $passedSeconds*1000;
 		} else if (is_file(CONS_PATH_CACHE.$_SESSION["CODE"]."/caches/$tag.cache")) { // shared
-			$fileContent = unserialize(cReadFile(CONS_PATH_CACHE.$_SESSION["CODE"]."/caches/$tag.cache"));
+			$fileContent = presciaSafeUnserialize(cReadFile(CONS_PATH_CACHE.$_SESSION["CODE"]."/caches/$tag.cache"));
 			$passedSeconds = time_diff(date("Y-m-d H:i:s"),$fileContent['time']);
 			return $passedSeconds*1000;
 		} else
@@ -153,7 +153,7 @@ class CCacheControl {
 		
 		// loads cachecontrol
 		if (is_file(CONS_PATH_CACHE."cachecontrol.dat")) {
-			$cc = unserialize(cReadFile(CONS_PATH_CACHE."cachecontrol.dat")); // see updateCacheControl
+			$cc = presciaSafeUnserialize(cReadFile(CONS_PATH_CACHE."cachecontrol.dat")); // see updateCacheControl
 			if (is_array($cc)) {
 				$this->parent->storage['CORE_CACHECONTROL'] = $cc;
 				$average = $cc[0];
@@ -221,7 +221,7 @@ class CCacheControl {
 		$cmod =  $this->parent->storage['CORE_CACHECONTROL'][1];
 		$cc = array();
 		if (is_file(CONS_PATH_LOGS."cachecontrol.dat")) {
-			$cc = unserialize(cReadFile(CONS_PATH_LOGS."cachecontrol.dat"));
+			$cc = presciaSafeUnserialize(cReadFile(CONS_PATH_LOGS."cachecontrol.dat"));
 			if (!is_array($cc)) $cc = array();
 		}
 		$thisEntry = array(date("Y-m-d H:i:s"),$average,$cmod);

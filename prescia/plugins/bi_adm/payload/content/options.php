@@ -27,7 +27,7 @@
 	if ($_SESSION[CONS_SESSION_ACCESS_LEVEL]<$core->dimconfig['minlvltooptions'])
 		$core->fastClose(403);
 
-	$dimconfigMD = unserialize(cReadFile(CONS_PATH_CACHE.$_SESSION['CODE']."/meta/_dimconfig.dat"));
+	$dimconfigMD = presciaSafeUnserialize(cReadFile(CONS_PATH_CACHE.$_SESSION['CODE']."/meta/_dimconfig.dat"));
 	// fields that are NOT in the dimconfigMD are considered VC
 
 	$hasImages = false; // if we have images, so we load shadowbox
@@ -286,7 +286,7 @@
 	if ($_SESSION[CONS_SESSION_ACCESS_LEVEL] == 100) {
 		$core->template->assign("_hiddenoptions",$temp);
 		if (!CONS_ONSERVER && CONS_SITESELECTOR ) {
-			$domains = unserialize(cReadFile(CONS_PATH_CACHE."domains.dat"));
+			$domains = presciaSafeUnserialize(cReadFile(CONS_PATH_CACHE."domains.dat"));
 			$codes = array();
 			foreach ($domains as $url => $code) {
 				if (!isset($codes[$code])) {

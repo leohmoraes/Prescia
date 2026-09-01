@@ -460,7 +460,7 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 				$p = $this->parent->permissionTemplate;
 				$restore = true;
 			} else {
-				$currentP = @unserialize($_SESSION[CONS_SESSION_ACCESS_USER]["groups_permissions"]);
+				$currentP = presciaSafeUnserialize($_SESSION[CONS_SESSION_ACCESS_USER]["groups_permissions"]);
 				$p = $this->parent->permissionTemplate;
 				if ($currentP === false) { # error on unserialize
 					$restore = true;
@@ -509,7 +509,7 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 				$_SESSION[CONS_SESSION_ACCESS_USER]['groups_permissions'] = $groupdata['permissions'];
 				$_SESSION[CONS_SESSION_ACCESS_USER]['groups_level'] = $groupdata['level'];
 			    $_SESSION[CONS_SESSION_ACCESS_LEVEL] = $groupdata['level'];
-			    $_SESSION[CONS_SESSION_ACCESS_PERMISSIONS] = unserialize($groupdata['permissions']);
+			    $_SESSION[CONS_SESSION_ACCESS_PERMISSIONS] = presciaSafeUnserialize($groupdata['permissions']);
 			    $this->parent->lockPermissions();
 			} else {
 				# group not found or error
@@ -703,7 +703,7 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 			if ($_SESSION[CONS_SESSION_ACCESS_USER]['userprefs'] == '')
 				$_SESSION[CONS_SESSION_ACCESS_USER]['userprefs'] = array();
 			else
-				$_SESSION[CONS_SESSION_ACCESS_USER]['userprefs'] = @unserialize($_SESSION[CONS_SESSION_ACCESS_USER]['userprefs']);
+				$_SESSION[CONS_SESSION_ACCESS_USER]['userprefs'] = presciaSafeUnserialize($_SESSION[CONS_SESSION_ACCESS_USER]['userprefs']);
 			if (!is_array($_SESSION[CONS_SESSION_ACCESS_USER]['userprefs'])) $_SESSION[CONS_SESSION_ACCESS_USER]['userprefs'] = array();
 			// check all user preferences
 			if (!isset($_SESSION[CONS_SESSION_ACCESS_USER]['userprefs']['skin'])) {
@@ -741,13 +741,13 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 			}
 			//--
 			$_SESSION[CONS_SESSION_ACCESS_LEVEL] = $_SESSION[CONS_SESSION_ACCESS_USER]['groups_level'];
-			$_SESSION[CONS_SESSION_ACCESS_PERMISSIONS] = @unserialize($_SESSION[CONS_SESSION_ACCESS_USER]['groups_permissions']);
+			$_SESSION[CONS_SESSION_ACCESS_PERMISSIONS] = presciaSafeUnserialize($_SESSION[CONS_SESSION_ACCESS_USER]['groups_permissions']);
 			if (!is_array($_SESSION[CONS_SESSION_ACCESS_PERMISSIONS]))
 				$_SESSION[CONS_SESSION_ACCESS_PERMISSIONS] = array();
 			$this->parent->lockPermissions();
 			// check and update history
 			if (!is_array($_SESSION[CONS_SESSION_ACCESS_USER]['history']))
-				$_SESSION[CONS_SESSION_ACCESS_USER]['history'] = unserialize($_SESSION[CONS_SESSION_ACCESS_USER]['history']);
+				$_SESSION[CONS_SESSION_ACCESS_USER]['history'] = presciaSafeUnserialize($_SESSION[CONS_SESSION_ACCESS_USER]['history']);
 			if (!$_SESSION[CONS_SESSION_ACCESS_USER]['history']) $_SESSION[CONS_SESSION_ACCESS_USER]['history'] = array();
 			if (count($_SESSION[CONS_SESSION_ACCESS_USER]['history'])>=10) { # FILO
 				array_shift($_SESSION[CONS_SESSION_ACCESS_USER]['history']);
