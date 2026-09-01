@@ -60,14 +60,10 @@ class mod_bi_fm extends CscriptedModule  {
 		}
 
 		if ($this->isInsideSafe($this->parent->original_context_str) && $this->parent->action != '404') {
-			$arquivo = $this->parent->original_action;
-			$arquivo_path = $this->parent->original_context_str.$arquivo;
-			$arquivo_path = substr($arquivo_path,1);
-			if ($ext == "") {
-				$ext = explode(".",$file);
-				$ext = array_pop($ext);
-			}
-			$ext = strtolower($ext);
+				$arquivo = $this->parent->original_action;
+				$arquivo_path = $this->parent->original_context_str.$arquivo;
+				$arquivo_path = substr($arquivo_path,1);
+				$ext = strtolower((string) pathinfo($arquivo_path, PATHINFO_EXTENSION));
 			$compareFile = substr($arquivo_path,strlen(CONS_FMANAGER.CONS_FMANAGER_SAFE."/"));
 			//--
 			$canDownload = $this->canSee($compareFile);
@@ -87,9 +83,11 @@ class mod_bi_fm extends CscriptedModule  {
 	function onCron($isDay=false) { # cron Triggered, isDay or isHour
 		###### -> Construct should add this module to the onCron array
 		if ($isDay) {
-			$mod = $this->parent->loaded($this->moduleRelation);
-			$sql = "SELECT filenm FROM ".$mod->dbname." WHERE has_expiration='y' AND expiration_date <> '0000-00-00' AND expiration_date < NOW()";
-			if ($this->parent->dbo->query($sql,$r,$n) && $n>0) {
+				$mod = $this->parent->loaded($this->moduleRelation);
+				$sql = "SELECT filenm FROM ".$mod->dbname." WHERE has_expiration='y' AND expiration_date <> '0000-00-00' AND expiration_date < NOW()";
+				$r = false;
+				$n = 0;
+				if ($this->parent->dbo->query($sql,$r,$n) && $n>0) {
 				// clean up files which reached expiration
 				for ($c=0;$c<$n;$c++) {
 					list($filenm) = $this->parent->dbo->fetch_row($r);
@@ -221,4 +219,3 @@ class mod_bi_fm extends CscriptedModule  {
 		}
 	}
 }
-
