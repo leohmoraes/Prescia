@@ -80,7 +80,7 @@ class CDBO {
 	} // close
 
 	function query($sql, &$result, &$numrows, $debugmode= null) { // SHOULD BE EXTENDED, replace $result with resource/object for result, $numrows with rows returned. Returns true on sucess
-		return false; // WHEN EXTENDING, REMOVE THIS
+			return false; // WHEN EXTENDING, REMOVE THIS
 
 		// COPY/PASTE ALL CONTENT TO GUARANTEE DEBUGMODE AND BENCHMARK ARE IN PLACE
 		
@@ -109,7 +109,12 @@ class CDBO {
       			echo $err."\n<br/>\n".$sql;
       		return false;
     	}
-    } // query
+	    } // query
+
+		/** Execute a parameterized query. Connectors should override this method. */
+		function queryPrepared($sql, $types, $params, &$result, &$numrows, $debugmode = null) {
+			return false;
+		}
 
 	function simpleQuery($sql,$debugmode  = null) { // SHOULD BE EXTENDED, this one is used for queries which you don't care for the result, only if the suceeded (true/false on return)
 		return false; // WHEN EXTENDING, REMOVE THIS

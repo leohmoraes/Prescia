@@ -95,9 +95,34 @@ class CDBO_mysqli extends CDBO  {
       			echo $sql."\n (echo from dbo)<br/>\n".$err;
       		return false;
     	}
-    } // query
+	    } // query
 
-	function simpleQuery($sql,$debugmode  = null) {
+		function queryPrepared($sql, $types, $params, &$result, &$numrows, $debugmode = null) {
+			if ($this->delayedconn == 1) $this->connect();
+			if (!$this->connection || strlen($types) !== count($params)) return false;
+			$this->dbc++;
+			$numrows = 0;
+			$stmt = $this->connection->prepare($sql);
+			if ($stmt === false) {
+				$this->errorRaised = true;
+				$this->log[] = $this->connection->error;
+				return false;
+			}
+			$bind = array($types);
+			foreach ($params as $index => $value) $bind[] =& $params[$index];
+			if (!call_user_func_array(array($stmt, 'bind_param'), $bind) || !$stmt->execute()) {
+				$this->errorRaised = true;
+				$this->log[] = $stmt->error;
+				$stmt->close();
+				return false;
+			}
+			$result = $stmt->get_result();
+			if ($result instanceof mysqli_result) $numrows = $result->num_rows;
+			$stmt->close();
+			return true;
+		}
+
+		function simpleQuery($sql,$debugmode  = null) {
 		if ($this->delayedconn == 1) $this->connect();
 		if (!$this->connection) return false;
 		if (is_array($sql)) $sql = $this->sqlarray_echo($sql);

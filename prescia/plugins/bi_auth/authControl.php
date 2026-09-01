@@ -623,11 +623,10 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 			}
 				// Passwords are verified after loading the account; this supports a safe
 				// one-time migration from legacy plaintext values to password_hash().
-				$login = $this->parent->dbo->escape($_POST['login']);
-				$sql = $userModule->get_base_sql($userModule->name.".login = '".$login."'");
+				$sql = $userModule->get_base_sql($userModule->name.".login = ?");
 
 
-			if ($this->parent->dbo->query($sql,$r,$n)) {
+			if ($this->parent->dbo->queryPrepared($sql, 's', array((string)$_POST['login']), $r, $n)) {
 				if ($n>0) { # login/pass match
 					$data = $this->parent->dbo->fetch_assoc($r);
 					$passwordValid = presciaPasswordVerify($_POST['password'], (string)$data['password']);
