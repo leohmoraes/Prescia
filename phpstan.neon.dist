@@ -1,0 +1,11 @@
+parameters:
+    level: 0
+    paths:
+        - index.php
+        - prescia
+        - pages
+        - tests
+    excludePaths:
+        - */vendor/*
+        - */pages/_js/ckfinder/*
+    reportUnmatchedIgnoredErrors: false
