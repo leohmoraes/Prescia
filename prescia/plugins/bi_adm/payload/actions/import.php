@@ -130,10 +130,12 @@
 												/**/#echo "old parent not found<br/>";
 											}
 
-											if (!isset($linkerCache[$iFields[$idx]['name']])) # do I have a cache for this table?
-												$linkerCache[$iFields[$idx]['name']] = array(); # no
-											if (!isset($linkerCache[$iFields[$idx]['name']][$regs[$c]])) { # do not have this item cached, look for it
-												if (isset($_REQUEST['exactlinkers']))
+								if (!isset($linkerCache[$iFields[$idx]['name']])) # do I have a cache for this table?
+									$linkerCache[$iFields[$idx]['name']] = array(); # no
+								if (!isset($linkerCache[$iFields[$idx]['name']][$regs[$c]])) { # do not have this item cached, look for it
+									$r = false;
+									$n = 0;
+									if (isset($_REQUEST['exactlinkers']))
 													$sql = $iFields[$idx]['remoteModule']->get_base_sql("(".$iFields[$idx]['remoteModule']->title." LIKE \"".cleanString($regs[$c])."\" OR ".$iFields[$idx]['remoteModule']->keys[0]."=\"".cleanString($regs[$c])."\")");
 												else
 													$sql = $iFields[$idx]['remoteModule']->get_base_sql("(".$iFields[$idx]['remoteModule']->title." LIKE \"%".cleanString($regs[$c])."%\" OR ".$iFields[$idx]['remoteModule']->keys[0]."=\"".cleanString($regs[$c])."\")");
@@ -339,4 +341,3 @@
 		}
 		return $dA;
 	}
-
