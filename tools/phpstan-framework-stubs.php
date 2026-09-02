@@ -9,6 +9,7 @@
  */
 
 function addslashes_EX(mixed $value, bool $isHtml = true, mixed $dbo = false): string {}
+/** @param array<int|string, scalar|array<int|string, scalar>>|false $array @param array<int, int|string> $exclude */
 function arrayToString(mixed $array = false, array $exclude = [], bool $noArrays = false): string {}
 function cWriteFile(string $file, string $content, bool $append = false, bool $binary = false): bool {}
 function dieFreakingThumbs(string $folder): void {}
@@ -16,8 +17,10 @@ function cleanString(mixed $data, bool $isHtml = false, bool $allowAdvanced = fa
 function console(mixed $core, mixed $command): mixed {}
 function cropImage(mixed ...$arguments): mixed {}
 function datecalc(mixed ...$arguments): mixed {}
-function adodb_daylight_sv(array &$date, bool $isGmt = false): mixed {}
+/** @param array<string, int|string> $date */
+function adodb_daylight_sv(array &$date, bool $isGmt = false): void {}
 function datecompare(mixed ...$arguments): mixed {}
+/** @return array{0: list<string>, 1: string, 2: string, 3: string} */
 function extractUri(string $installRoot = '', string $uri = ''): array {}
 function fd(mixed $date, string $mask = 'd/m/Y'): string {}
 function fv(mixed $value): string {}
@@ -25,6 +28,7 @@ function getmicrotime(): float {}
 function htmlentities_ex(mixed $value, mixed ...$arguments): string {}
 function humanSize(mixed $size): string {}
 function isMail(mixed $mail, bool $allowExtended = false): int {}
+/** @return list<string> */
 function listFiles(mixed ...$arguments): array {}
 function locateAnyFile(mixed ...$arguments): mixed {}
 function locateFile(mixed ...$arguments): mixed {}
@@ -44,7 +48,8 @@ function stripHTML(mixed ...$arguments): string {}
 function time_diff(mixed ...$arguments): mixed {}
 function tomktime(mixed ...$arguments): int {}
 function truncate(mixed $content, int $size = 50, string $final = '…', bool $stripHtml = false, bool $preserveEol = false): string {}
-function xmlParamsParser(mixed $data): array {}
+/** @return array<string, string>|string */
+function xmlParamsParser(mixed $data): array|string {}
 
 class CPrescia
 {

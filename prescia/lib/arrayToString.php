@@ -8,7 +8,11 @@
 
 	# items on excludethese will NOT be outputed.
 	# if noArray is specified, no arrays will be outputed.
-	function arrayToString( $array = false, $excludethese = array(), $noArrays=false ) {
+		/**
+		 * @param array<int|string, scalar|array<int|string, scalar>>|false $array
+		 * @param array<int, int|string> $excludethese
+		 */
+		function arrayToString( $array = false, $excludethese = array(), $noArrays=false ) {
 	  $p_qs = "";
 	  if (!$array) {
 	  	$array = array_merge($_GET, $_POST);
@@ -26,5 +30,4 @@
 	  }
 	  return $p_qs;
   }
-
 

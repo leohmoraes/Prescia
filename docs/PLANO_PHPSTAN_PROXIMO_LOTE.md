@@ -16,6 +16,8 @@
 
 **Lote D — métodos:** alinhadas as chamadas de `CKTemplate`, `runclasses()`, `checkPermission()` e `checkHTML()`. As duas funções locais anteriormente chamadas `appendActs()` foram separadas em `appendAdminActs()` e `appendLogActs()` para eliminar a colisão de assinaturas durante a análise.
 
+**Lote E iniciado:** adicionados contratos genéricos para `arrayToString()`, `extractUri()`, `listFiles()`, `xmlParamsParser()` e `adodb_daylight_sv()` nos arquivos procedurais e nos stubs do PHPStan. Os contratos preservam as diferenças entre listas, arrays associativos e o retorno `string|array` de `xmlParamsParser()`.
+
 ## Conclusão executiva
 
 A última execução do PHPStan terminou com falha, mas as correções recentes reduziram os erros diretamente relacionados a cabeçalhos PHP inválidos, constantes de configuração e resultados de consultas não inicializados. O próximo lote não deve elevar o nível de análise. A prioridade é eliminar as causas estruturais que ainda geram a maior parte do relatório: contexto global ausente, chamadas de módulos/plugins sem contratos, variáveis indefinidas remanescentes e símbolos legados que ainda não possuem bootstrap ou stub confiável.

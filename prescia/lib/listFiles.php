@@ -6,7 +6,8 @@
   | Uses:
 -*/
 
-	function listFiles($path,$eregfilter='',$orddata = false, $ordname = false, $recurse = false) {
+		/** @return list<string> */
+		function listFiles($path,$eregfilter='',$orddata = false, $ordname = false, $recurse = false) {
 	  if ($path == '') $path = './';
 	  $array = array();
 	  $cont = 0;
