@@ -1,5 +1,7 @@
 <?php
 
+/** @var CPrescia $core Runtime payload context injected by the framework. */
+
 	if (!isset($_REQUEST['module']) || !$core->loaded($_REQUEST['module'])) {
 		# master check if this is a valid module
 		$core->log[] = "Module not found";

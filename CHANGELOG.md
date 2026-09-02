@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed PHP 8.3 compatibility-test file discovery by resolving the repository root and filtering excluded directories relative to that root.
 - Fixed legacy `<?php/*` headers in framework libraries so PHP 8.3 and PHPStan parse and load them as PHP instead of emitting their source as plain text.
 - Initialized legacy database query result variables before calls across core, lazy-loading and plugin flows, and fixed image/template typos involving `$im_dest`, `$minuatura` and `$str_daylabels`.
+- Started explicit payload context contracts for `$core` and `$this` in the `bi_adm` and `bi_stats` payloads using PHPDoc annotations that document the framework-injected `CPrescia` and `CModule` contexts.
 
 ### Compatibility checks
 - The compatibility suite checks runtime version, required extensions, PHP syntax, removed/deprecated APIs, short tags and Docker base image.

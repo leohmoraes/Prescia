@@ -1,4 +1,6 @@
 <?php
+
+/** @var CPrescia $core Runtime payload context injected by the framework. */
 	if (!isset($_REQUEST['module']) || !($module = $core->loaded($_REQUEST['module'])) || !$module) {
 		# master check if this is a valid module
 		$core->errorControl->raise(512,"reorder",(isset($_REQUEST['module'])?$_REQUEST['module']:''));

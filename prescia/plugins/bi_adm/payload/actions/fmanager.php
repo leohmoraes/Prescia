@@ -1,5 +1,8 @@
 <?php
 
+/** @var CPrescia $core Runtime payload context injected by the framework. */
+/** @var CModule $this Runtime module context injected by the framework. */
+
 	if (isset($_POST['haveinfo']) && isset($_POST['dir']) && isset($_FILES['newuploadfile'])) {
 		$core->loadAllmodules();
 		$dir = str_replace(".","",$_POST['dir']);

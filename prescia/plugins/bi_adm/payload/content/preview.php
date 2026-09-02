@@ -1,5 +1,7 @@
 <?php
 
+/** @var CPrescia $core Runtime payload context injected by the framework. */
+
 	// This file is the same as edit.php, with removed features
 
 	######################################## VARIABLES ####################################

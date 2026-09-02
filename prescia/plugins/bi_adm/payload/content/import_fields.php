@@ -1,5 +1,8 @@
 <?php
 
+/** @var CPrescia $core Runtime payload context injected by the framework. */
+/** @var CModule $this Runtime module context injected by the framework. */
+
 	$core->layout = 2;
 	if (!isset($_REQUEST['module'])) echo "ERRO";
 	else {

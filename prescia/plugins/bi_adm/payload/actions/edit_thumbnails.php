@@ -1,5 +1,8 @@
 <?php
 
+/** @var CPrescia $core Runtime payload context injected by the framework. */
+/** @var CModule $this Runtime module context injected by the framework. */
+
 	if (isset($_REQUEST['haveinfo'])) {
 		$module = $core->loaded($_REQUEST['module']);
 		$field = $_REQUEST['field'];

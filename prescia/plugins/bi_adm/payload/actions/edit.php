@@ -1,5 +1,7 @@
 <?php
 
+/** @var CPrescia $core Runtime payload context injected by the framework. */
+
 	define("CONS_MAX_MUP",100); // maximum files to process WARNING (will still process)
 
 	if (!isset($_REQUEST['module']) || !($module = $core->loaded($_REQUEST['module'])) || !$module) {

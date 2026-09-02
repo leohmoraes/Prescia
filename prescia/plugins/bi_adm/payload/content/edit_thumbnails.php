@@ -1,5 +1,7 @@
 <?php
 
+/** @var CPrescia $core Runtime payload context injected by the framework. */
+
 	define ("CONS_MAX_W",700);
 
 	# For sure the module is set (checked at action), load parameters

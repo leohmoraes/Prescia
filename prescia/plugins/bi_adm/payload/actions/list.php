@@ -1,5 +1,8 @@
 <?php
 
+/** @var CPrescia $core Runtime payload context injected by the framework. */
+/** @var CModule $this Runtime module context injected by the framework. */
+
 	if (!isset($_REQUEST['module']) || $core->loaded($_REQUEST['module']) === false) {
 		$core->errorControl->raise(512,"list",(isset($_REQUEST['module'])?$_REQUEST['module']:''));
 		$core->action = "404";

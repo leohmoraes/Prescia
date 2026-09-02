@@ -1,5 +1,7 @@
 <?php
 
+/** @var CPrescia $core Runtime payload context injected by the framework. */
+
 	$core->layout = 2;
 
 	$statsfullObj = $core->loaded('statsdaily'); // per page and date, 5 years

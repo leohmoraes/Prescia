@@ -1,5 +1,8 @@
 <?php
 
+/** @var CPrescia $core Runtime payload context injected by the framework. */
+/** @var CModule $this Runtime module context injected by the framework. */
+
 	if (isset($_REQUEST['delfile'])) {
 		$dir = str_replace(".","",$_REQUEST['dir']);
 		if ($dir!= "" && $dir[0] == "/") $dir = substr($dir,1);

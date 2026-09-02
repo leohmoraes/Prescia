@@ -1,5 +1,7 @@
 <?php
 
+/** @var CPrescia $core Runtime payload context injected by the framework. */
+
 	$module = $core->loaded($_REQUEST['module']);
 
 	$core->template->assign("module",$module->name);

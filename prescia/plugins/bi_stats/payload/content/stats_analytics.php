@@ -1,5 +1,8 @@
 <?php
 
+/** @var CPrescia $core Runtime payload context injected by the framework. */
+/** @var CModule $this Runtime module context injected by the framework. */
+
 	$graphWidth = 400;
 	
 	$core->addLink("calendar/dyncalendar.css");

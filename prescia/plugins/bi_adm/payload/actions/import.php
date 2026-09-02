@@ -1,5 +1,8 @@
 <?php
 
+/** @var CPrescia $core Runtime payload context injected by the framework. */
+/** @var CModule $this Runtime module context injected by the framework. */
+
 	if (!$core->authControl->checkPermission('bi_adm','can_importexport'))
 		$core->fastClose(403);
 

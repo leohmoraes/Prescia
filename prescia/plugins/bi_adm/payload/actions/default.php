@@ -1,5 +1,8 @@
 <?php
 
+/** @var CPrescia $core Runtime payload context injected by the framework. */
+/** @var CModule $this Runtime module context injected by the framework. */
+
 	$core->loadAllmodules();
 	# Basic safety checks (redirect to login on module's checkAction, here for extra safety)
 	if ($_SESSION[CONS_SESSION_ACCESS_LEVEL]<$this->admRestrictionLevel) $this->parent->action = "login";

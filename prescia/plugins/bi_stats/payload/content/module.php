@@ -1,5 +1,7 @@
 <?php
 
+/** @var CModule $this Runtime module context injected by the framework. */
+
 	$graphWidth = 200;
 	$this->loadAllModules();
 

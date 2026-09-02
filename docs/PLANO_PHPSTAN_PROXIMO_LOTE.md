@@ -6,6 +6,8 @@
 **Status:** Planejamento aprovado para execução incremental  
 **Autor:** **Manus AI**
 
+**Execução iniciada:** o primeiro lote recebeu contratos PHPDoc explícitos nos payloads de `bi_adm` e `bi_stats`, documentando `$core` como contexto `CPrescia` e `$this` como contexto `CModule` quando o arquivo é incluído pelo módulo.
+
 ## Conclusão executiva
 
 A última execução do PHPStan terminou com falha, mas as correções recentes reduziram os erros diretamente relacionados a cabeçalhos PHP inválidos, constantes de configuração e resultados de consultas não inicializados. O próximo lote não deve elevar o nível de análise. A prioridade é eliminar as causas estruturais que ainda geram a maior parte do relatório: contexto global ausente, chamadas de módulos/plugins sem contratos, variáveis indefinidas remanescentes e símbolos legados que ainda não possuem bootstrap ou stub confiável.

@@ -1,5 +1,7 @@
 <?php
 
+/** @var CPrescia $core Runtime payload context injected by the framework. */
+
 	$usedSpace = quota(CONS_FMANAGER,true)*1024;
 	$core->loadDimconfig(true);
 	$quota = isset($core->dimconfig['quota'])?$core->dimconfig['quota']:CONS_MAX_QUOTA;

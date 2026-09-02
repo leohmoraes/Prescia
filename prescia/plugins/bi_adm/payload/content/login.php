@@ -1,5 +1,7 @@
 <?php
 
+/** @var CPrescia $core Runtime payload context injected by the framework. */
+
 	$b = getbrowser(false);
 	$core->template->assign("browser",$b[0]);
 	$core->template->assign("fullbrowser",isset($_SERVER['HTTP_USER_AGENT'])?$_SERVER['HTTP_USER_AGENT']:"");

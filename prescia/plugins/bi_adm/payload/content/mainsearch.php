@@ -1,5 +1,7 @@
 <?php
 
+/** @var CPrescia $core Runtime payload context injected by the framework. */
+
 	$r = $core->checkHackAttempt(cleanString($_REQUEST['searchfield']));
 	$parameters = array();
 	foreach ($core->modules as $mname => &$module) {
