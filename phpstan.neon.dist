@@ -4,6 +4,8 @@ includes:
 parameters:
     # First incremental strictness step; raise to level 2 after baseline cleanup.
     level: 1
+    bootstrapFiles:
+        - tools/phpstan-bootstrap.php
     stubFiles:
         - tools/phpstan-framework-stubs.php
     paths:
