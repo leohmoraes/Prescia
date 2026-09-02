@@ -1396,6 +1396,8 @@ class CModule {
 					# removes end ,
 					$output = substr($output,0,strlen($output)-1);
 					$sql .= $output." WHERE ".$wS;
+					$r = false;
+					$n = 0;
 					if (!$this->parent->dbo->queryPrepared($sql,$queryTypes,$queryParams,$r,$n,$this->parent->debugmode)) {
 						$this->parent->errorState = true;
 						$lastError = $this->parent->dbo->log[count($this->parent->dbo->log)-1];
@@ -1506,6 +1508,8 @@ class CModule {
 					# removes end ,
 					$output = substr($output,0,strlen($output)-1);
 					$sql .= $output;
+						$r = false;
+						$n = 0;
 						if (!$this->parent->dbo->queryPrepared($sql,$queryTypes,$queryParams,$r,$n,$this->parent->debugmode)) {
 						$this->parent->errorState = true;
 						$lastError = $this->parent->dbo->log[count($this->parent->dbo->log)-1];
@@ -1725,6 +1729,8 @@ class CModule {
 
 			$this->parent->templateParams['p_init'] = 0;
 
+			$r = false;
+			$n = 0;
 			$ok = $this->parent->dbo->query($sql,$r,$n,$this->parent->debugmode);
 			$endTime = getmicrotime();
 			if (!$ok)
@@ -1737,8 +1743,10 @@ class CModule {
 				$this->parent->lastFirstset = $tp->firstReturnedSet;
 			$n = $total; #<-- will be used for paging display
 
-  		} else { # can't use fast paging ... normal (slower) then
+		} else { # can't use fast paging ... normal (slower) then
 
+			$r = false;
+			$n = 0;
 			if (!$this->parent->dbo->query($sql,$r,$n,$this->parent->debugmode) && $this->parent->debugmode)
 				$this->parent->errorControl->raise(146,$this->parent->dbo->log[count($this->parent->dbo->log)-1],$this->name);
 			$endTime = getmicrotime();

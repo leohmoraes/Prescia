@@ -38,6 +38,7 @@ class CintlControl {
 	}
 #-
 	function getCurrency($getCode) {
+		$code = $this->selectedCode;
 		return isset($this->i18n[$code])?($getCode?$this->i18n[$code][6]:$this->i18n[$code][5]):'$';
 	}
 #-
@@ -90,7 +91,7 @@ class CintlControl {
 #-
 	function formatValue($value,$code="") {
 		if ($code=="") $code = $this->selectedCode;
-		$valor = str_replace(",",".",$valor);
+		$valor = str_replace(",",".",$value);
 		if (strpos($valor,".")>0) {
 			$valor = explode(".",$valor);
 			$last = array_pop($valor);
