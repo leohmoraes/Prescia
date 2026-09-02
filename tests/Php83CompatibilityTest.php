@@ -37,6 +37,8 @@ final class Php83CompatibilityTest extends TestCase
 
     public function testRemovedAndDeprecatedRuntimeApisAreAbsentFromApplicationCode(): void
     {
+        $files = $this->phpFiles();
+        self::assertNotEmpty($files);
         $patterns = [
             '/\bmysql_(?:connect|query|fetch|num_rows|error|close|select_db|insert_id)\s*\(/i',
             '/\bereg(?:i)?\s*\(/i',
@@ -46,7 +48,7 @@ final class Php83CompatibilityTest extends TestCase
             '/\bget_magic_quotes_gpc\s*\(/i',
         ];
 
-        foreach ($this->phpFiles() as $file) {
+        foreach ($files as $file) {
             $contents = (string) file_get_contents($file);
             foreach ($patterns as $pattern) {
                 self::assertSame(
@@ -60,7 +62,10 @@ final class Php83CompatibilityTest extends TestCase
 
     public function testApplicationDoesNotDependOnShortOpenTags(): void
     {
-        foreach ($this->phpFiles() as $file) {
+        $files = $this->phpFiles();
+        self::assertNotEmpty($files);
+
+        foreach ($files as $file) {
             $contents = (string) file_get_contents($file);
             self::assertSame(
                 0,
@@ -79,22 +84,36 @@ final class Php83CompatibilityTest extends TestCase
     /** @return list<string> */
     private function phpFiles(): array
     {
+        $root = realpath(self::ROOT);
+        if ($root === false || !is_dir($root)) {
+            return [];
+        }
+
         $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator(self::ROOT, \FilesystemIterator::SKIP_DOTS)
+            new \RecursiveDirectoryIterator(
+                $root,
+                \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::CURRENT_AS_FILEINFO
+            )
         );
         $files = [];
 
         foreach ($iterator as $file) {
-            if (!$file instanceof \SplFileInfo || !str_ends_with(strtolower($file->getFilename()), '.php')) {
+            if (!$file instanceof \SplFileInfo || !$file->isFile() || strtolower($file->getExtension()) !== 'php') {
                 continue;
             }
-            if (str_contains($file->getPathname(), DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR)) {
+
+            $path = $file->getRealPath();
+            if ($path === false) {
                 continue;
             }
-            if (str_contains($file->getPathname(), DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR) || str_contains($file->getPathname(), DIRECTORY_SEPARATOR . 'tools' . DIRECTORY_SEPARATOR)) {
+
+            $relativePath = ltrim(substr($path, strlen($root)), DIRECTORY_SEPARATOR);
+            $segments = explode(DIRECTORY_SEPARATOR, $relativePath);
+            if (array_intersect($segments, ['vendor', 'tests', 'tools']) !== []) {
                 continue;
             }
-            $files[] = $file->getPathname();
+
+            $files[] = $path;
         }
 
         sort($files);
