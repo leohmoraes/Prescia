@@ -1,4 +1,5 @@
-<?php/*--------------------------------\
+<?php
+/*--------------------------------\
   | IPv6 Functions
   | Free to use, change and redistribute, but please keep the above disclamer.
 -*/

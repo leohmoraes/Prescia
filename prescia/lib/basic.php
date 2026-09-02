@@ -1,4 +1,5 @@
-<?php/*--------------------------------\
+<?php
+/*--------------------------------\
   | Basic Bundle: Functions that often (if not always) are used
   | Made for Prescia family framework (cc) Caio Vianna de Lima Netto
   | Free to use, change and redistribute, but please keep the above disclamer.

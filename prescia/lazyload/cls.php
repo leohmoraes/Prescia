@@ -1,4 +1,5 @@
-<?php/* -------------------------------- Prescia CLS - Change Local site
+<?php
+/* -------------------------------- Prescia CLS - Change Local site
   | Copyleft (ɔ) 2011+, Caio Vianna de Lima Netto (www.prescia.net)
   | LICENSE TYPE: BSD-new/ɔ
 -*/

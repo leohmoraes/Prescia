@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documented the incremental analysis policy: the baseline must not grow automatically and new diagnostics require remediation or an issue.
 - Started typing the central component contracts, including `CModule`, authentication, cache, error, header, internationalization and scripted-module properties.
 - Fixed PHP 8.3 compatibility-test file discovery by resolving the repository root and filtering excluded directories relative to that root.
+- Fixed legacy `<?php/*` headers in framework libraries so PHP 8.3 and PHPStan parse and load them as PHP instead of emitting their source as plain text.
 
 ### Compatibility checks
 - The compatibility suite checks runtime version, required extensions, PHP syntax, removed/deprecated APIs, short tags and Docker base image.

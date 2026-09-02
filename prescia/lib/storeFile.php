@@ -1,4 +1,5 @@
-<?php/*--------------------------------\
+<?php
+/*--------------------------------\
   | storeFile : Simple upload handing, with type control
   | Made for Prescia free framework (cc) Caio Vianna de Lima Netto
   | Free to use, change and redistribute, but please keep the above disclamer.

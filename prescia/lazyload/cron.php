@@ -1,4 +1,5 @@
-<?php/* -------------------------------- Prescia Cron
+<?php
+/* -------------------------------- Prescia Cron
   | Copyleft (ɔ) 2011+, Caio Vianna de Lima Netto (www.prescia.net)
   | LICENSE TYPE: BSD-new/ɔ
   | NOTE: forcecron=day|hour|true only works if you are logged as master

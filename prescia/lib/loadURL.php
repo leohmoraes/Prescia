@@ -1,4 +1,5 @@
-<?php/*--------------------------------\
+<?php
+/*--------------------------------\
   | loadURL : Loads a remote URL using fsockopen, returns an array with header and content
   | Made for Prescia family framework (cc) Caio Vianna de Lima Netto @ www.prescia.net
   | Free to use, change and redistribute, but please keep the above disclamer.

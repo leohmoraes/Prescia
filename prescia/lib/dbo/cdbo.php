@@ -1,4 +1,5 @@
-<?php/*--------------------------------\
+<?php
+/*--------------------------------\
   | dbo.php - Master version
   | if you want more logging, set quickmode to false after creating the object
   | last change: 14.8.20 to support some php 5.4 improvements

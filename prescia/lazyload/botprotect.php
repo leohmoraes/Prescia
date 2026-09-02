@@ -1,4 +1,5 @@
-<?php/* -------------------------------- Prescia BOTPROTECT - local protection against DOS or FLOOD
+<?php
+/* -------------------------------- Prescia BOTPROTECT - local protection against DOS or FLOOD
   | Copyleft (ɔ) 2011+, Caio Vianna de Lima Netto (www.prescia.net)
   | LICENSE TYPE: BSD-new/ɔ
   | Requires: basic.php (will load datetime if needed)

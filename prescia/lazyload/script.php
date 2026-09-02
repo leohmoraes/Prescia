@@ -1,4 +1,5 @@
-<?php/* -------------------------------- Prescia - Scripts
+<?php
+/* -------------------------------- Prescia - Scripts
   | Copyleft (ɔ) 2011+, Caio Vianna de Lima Netto (www.prescia.net)
   | LICENSE TYPE: BSD-new/ɔ
   | Automate the inclusion of multiple scripts here

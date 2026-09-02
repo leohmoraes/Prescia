@@ -1,4 +1,5 @@
-<?php/* -------------------------------- Domain cache
+<?php
+/* -------------------------------- Domain cache
   | Copyleft (ɔ) 2011+, Caio Vianna de Lima Netto (www.prescia.net)
   | LICENSE TYPE: BSD-new/ɔ
   | reads from main domains file, create the cache and in the process fill in my $_SESSION['CODE']

@@ -1,4 +1,5 @@
-<?php/* -------------------------------- Prescia Core (non-debug)
+<?php
+/* -------------------------------- Prescia Core (non-debug)
   | Copyleft (ɔ) 2011+, Caio Vianna de Lima Netto (www.prescia.net)
   | LICENSE TYPE: BSD-new/ɔ for Prescia
   | This code is optimized, and as such, please check core.php.txt for comments and documentation (line by line)

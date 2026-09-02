@@ -1,4 +1,5 @@
-<?php/* -------------------------------- Prescia URL Dispatch Manager (UDM)
+<?php
+/* -------------------------------- Prescia URL Dispatch Manager (UDM)
   | Copyleft (ɔ) 2011+, Caio Vianna de Lima Netto (www.prescia.net)
   | LICENSE TYPE: BSD-new/ɔ
   | This will translate virtual folders to queries on the root folder

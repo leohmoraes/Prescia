@@ -1,4 +1,5 @@
-<?php/*--------------------------------\
+<?php
+/*--------------------------------\
   | mysqli - Mysqli database connector
   | NOTE: the connection on this module reffer to mysqli object. However, this class was optimized for ONE MYSQLI OBJECT RUNNING AT A TIME
   | These optimizations are noted where a #(*) exists (use of procedural mode for performance)

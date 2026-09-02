@@ -1,4 +1,5 @@
-<?php/* -------------------------------- Prescia Core variables and constants
+<?php
+/* -------------------------------- Prescia Core variables and constants
   | Copyleft (ɔ) 2011+, Caio Vianna de Lima Netto (www.prescia.net)
   | LICENSE TYPE: BSD-new/ɔ
 -*/
