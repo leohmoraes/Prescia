@@ -705,6 +705,8 @@ class CPrescia extends CPresciaVar {
 			$this->dbo->simpleQuery("UPDATE $dbname SET $updateString WHERE $keyString"); // direct DB query to prevent notifies and overhead
 		} else { // we are supposed to self-destruct
 			$myKeys = implode(",",$module->keys);
+			$r = false;
+			$n = 0;
 			$this->dbo->query("SELECT $myKeys FROM ($dbname) WHERE $keyString",$r,$n);
 
 			if ($startedAt == '') $startedAt = $module->name;

@@ -34,6 +34,8 @@ class mod_bi_seo extends CscriptedModule  {
 			$seo = $this->parent->loaded($this->moduleRelation);
 			$sql = "SELECT * FROM ".$seo->dbname." WHERE alias=\"".$context_for_seo.$this->parent->action."\" AND lang='".$_SESSION[CONS_SESSION_LANG]."'";
 
+			$r = false;
+			$n = 0;
 			$this->parent->dbo->query($sql,$r,$n);
 			if ($n>0) {
 				
@@ -130,6 +132,8 @@ class mod_bi_seo extends CscriptedModule  {
 		if ($module->name == $this->moduleRelation && !$earlyNotify) {
 			$seo = $this->parent->loaded($this->moduleRelation);
 			$sql = "SELECT DISTINCT(alias) FROM ".$seo->dbname;
+			$r = false;
+			$n = 0;
 			$this->parent->dbo->query($sql,$r,$n);
 			$this->parent->loadDimconfig(true);
 			$newC = array();
@@ -152,6 +156,8 @@ class mod_bi_seo extends CscriptedModule  {
 				$_SESSION[CONS_SEO_LOADED] = array();
 				$seo = $this->parent->loaded($this->moduleRelation);
 				$sql = "SELECT page,alias FROM ".$seo->dbname." WHERE publicar='y' AND lang='".$_SESSION[CONS_SESSION_LANG]."'";
+				$r = false;
+				$n = 0;
 				$this->parent->dbo->query($sql,$r,$n);
 				for ($c=0;$c<$n;$c++) {
 					$dados = $this->parent->dbo->fetch_row($r);

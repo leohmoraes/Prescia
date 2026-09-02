@@ -99,6 +99,8 @@
 					# TODO: not working with multiple keys!
 					// items that were sucessful:
 					$sql = "SELECT ".$module->title." as title, ".$module->keys[0]." as id FROM ".$module->dbname." WHERE ".$module->keys[0]." IN (".implode(",",$okKeys).")";
+					$r = false;
+					$n = 0;
 					$core->dbo->query($sql,$r,$n);
 					// show item names/ids being edited
 					$itemlist = array();
@@ -110,6 +112,8 @@
 
 					// items that were NOT sucessful:
 					$sql = "SELECT ".$module->title." as title, ".$module->keys[0]." as id FROM ".$module->dbname." WHERE ".$module->keys[0]." IN (".implode(",",$errorKeys).")";
+					$r = false;
+					$n = 0;
 					$core->dbo->query($sql,$r,$n);
 					// show item names/ids being edited
 					$itemlist = array();

@@ -82,6 +82,8 @@
 			$sql = $basesql;
 			for($pos=0;$pos<$keyscount;$pos++) // build WHERE based on keys
 				$sql['WHERE'][] = $module->name.".".$keys[$pos]."=\"".$regs[$pos+1]."\"";
+			$r = false;
+			$n = 0;
 			if ($core->dbo->query($sql,$r,$n) && $n>0) { // get data
 				$data = $core->dbo->fetch_assoc($r);
 				$data['width'] = $lData['sw'];

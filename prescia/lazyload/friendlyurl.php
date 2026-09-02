@@ -73,6 +73,8 @@ foreach ($m as $moduletxt) {
 		$sql['WHERE'][] = $param['filter'];
 
 
+	$r = false;
+	$n = 0;
 	if ($this->dbo->query($sql,$r,$n) && $n>0) { // found!
 		$this->action = $param['page'];
 		$result = $this->dbo->fetch_assoc($r);

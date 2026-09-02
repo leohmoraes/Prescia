@@ -42,6 +42,8 @@ class mod_bi_undo extends CscriptedModule  {
 			$core = &$this->parent;
 			$undoModule = $this->parent->loaded($this->moduleRelation);
 			$sql = "SELECT id, files FROM ".$undoModule->dbname." WHERE files<>'' AND data<NOW() - INTERVAL 1 WEEK";
+			$r = false;
+			$n = 0;
 			$core->dbo->query($sql,$r,$n);
 			if ($n>0) {
 				for ($c=0;$c<$n;$c++) {
@@ -209,6 +211,8 @@ class mod_bi_undo extends CscriptedModule  {
 				if (isset($this->internalMemory[$module->name])) $this->internalMemory[$module->name] = array();
 				$module->getKeys($ws,$ka,$data);
 				$sql = "SELECT * FROM ".$module->dbname." WHERE $ws";
+				$r = false;
+				$n = 0;
 				$ok =$this->parent->dbo->query($sql,$r,$n);
 				if ($ok && $n>0) {
 					$data = $this->parent->dbo->fetch_assoc($r);

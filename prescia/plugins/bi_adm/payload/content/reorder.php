@@ -20,6 +20,8 @@
   	$min_id = 0;
 	$item = $core->template->get("_item");
 	$temp = "";
+	$r = false;
+	$n = 0;
 	$core->dbo->query($sql,$r,$n);
 	for ($c=0;$c<$n;$c++) {
 	$dados = $core->dbo->fetch_assoc($r);

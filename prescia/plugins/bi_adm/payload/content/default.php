@@ -69,6 +69,8 @@
 						$sql['ORDER'] = array();
 						$sql['SELECT'] = array("count(*) as myresult");
 						if (!isset($monitoredItem['monitor_level'])) $monitoredItem['monitor_level'] = 'low';
+						$r = false;
+						$n = 0;
 						$ok = $core->dbo->query($sql,$r,$n);
 						if ($ok) {
 							if ($n>0) list($n) = $core->dbo->fetch_row($r);

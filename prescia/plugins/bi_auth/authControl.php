@@ -152,6 +152,8 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 						if (count($remoteOwners)>0) { // yes, we can have a level 2 check
 							$where = $module->getRemoteKeys($remoteModule,$myData); // build WHERE to locate remote module item (we need to fetch the links to users)
 							$sql = "SELECT ".implode(",".$remoteModule->name.".",$remoteOwners)." FROM ".$remoteModule->dbname." as ".$remoteModule->name." WHERE ".implode(" AND ",$where);
+							$r = false;
+							$n = 0;
 							if ($this->parent->dbo->query($sql,$r,$n) && $n>0) { // get keys (should return 1 field)
 								$users = $this->parent->dbo->fetch_row($r);
 								foreach ($users as $u) {
@@ -501,6 +503,8 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 			$_SESSION[CONS_SESSION_ACCESS_PERMISSIONS] = $this->parent->permissionTemplate;
 		} else {
 			$sql = $groups->get_base_sql("id=".$this->parent->dimconfig['guest_group']);
+			$r = false;
+			$n = 0;
 			if ($this->parent->dbo->query($sql,$r,$n) && $n>0) {
 				$groupdata = $this->parent->dbo->fetch_assoc($r);
 				if (!isset($_SESSION[CONS_SESSION_ACCESS_USER])) $_SESSION[CONS_SESSION_ACCESS_USER] = array();

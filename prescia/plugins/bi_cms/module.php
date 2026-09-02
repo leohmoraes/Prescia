@@ -30,6 +30,8 @@ class mod_bi_cms extends CscriptedModule  {
 			$this->rebuildCM();
 			$cm = $this->parent->loaded($this->moduleRelation);
 			$sql = "SELECT DISTINCT(page) FROM ".$cm->dbname;
+			$r = false;
+			$n = 0;
 			$this->parent->dbo->query($sql,$r,$n);
 			$this->parent->loadDimconfig(true);
 			$newC = array();
@@ -134,6 +136,8 @@ class mod_bi_cms extends CscriptedModule  {
 		if ($module->name == $this->moduleRelation && !$earlyNofity) {
 			$cm = $this->parent->loaded($this->moduleRelation);
 			$sql = "SELECT DISTINCT(page) FROM ".$cm->dbname." WHERE publish='y'";
+			$r = false;
+			$n = 0;
 			$this->parent->dbo->query($sql,$r,$n);
 			$this->parent->loadDimconfig(true);
 			$newC = array();
@@ -288,6 +292,8 @@ class mod_bi_cms extends CscriptedModule  {
 			$cm = $this->parent->loaded($this->moduleRelation);
 			$this->serveThisPage = $this->serveThisPage != '' ? $this->serveThisPage : $this->parent->context_str.$this->parent->action;
 			$sql = "SELECT id,content,header,code,title,meta,metakeys,page FROM ".$cm->dbname." WHERE page='".$this->serveThisPage."' AND lang='".$_SESSION[CONS_SESSION_LANG]."' ORDER BY code ASC";
+			$r = false;
+			$n = 0;
 			if ($this->parent->dbo->query($sql,$r,$n) && $n>0) {
 				$this->cmscache = array();
 				for ($c=0;$c<$n;$c++)
@@ -302,6 +308,8 @@ class mod_bi_cms extends CscriptedModule  {
 	function getparent($id) { // return the parent data (other than 0) from this entry
 		$cm = $this->parent->loaded($this->moduleRelation);
 		$sql = "SELECT id,id_parent,content,header,code,title,meta,metakeys,page FROM ".$cm->dbname." WHERE id=$id";
+		$r = false;
+		$n = 0;
 		while ($this->parent->dbo->query($sql,$r,$n) && $n>0) {
 			$data = $this->parent->dbo->fetch_assoc($r);
 			if ($data['id_parent'] == '0') return $data;

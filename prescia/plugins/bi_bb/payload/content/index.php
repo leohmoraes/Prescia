@@ -24,6 +24,8 @@
 				if ($processed) return $data;
 				// now, get latest post per forum (we could cache the last post on the database eventually)
 				$sql = "SELECT t.id, t.title, t.urla, p.date, a.login FROM bb_post as p, bb_thread as t, auth_users as a WHERE p.id_forum=".$data['id']." AND t.id = p.id_forumthread AND a.id = p.id_author ORDER BY p.date DESC LIMIT 1";
+				$r = false;
+				$n = 0;
 				if ($params['core']->dbo->query($sql,$r,$n) && $n>0) {
 					$newData = $params['core']->dbo->fetch_row($r);
 					$data['lp_id'] = $newData[0];
@@ -40,6 +42,8 @@
 				}
 				// now, get first thread per forum (same, could be cached)
 				$sql = "SELECT t.title, t.date, t.urla, a.login FROM bb_thread as t, auth_users as a WHERE t.id_forum=".$data['id']." AND a.id = t.id_author ORDER BY t.date DESC LIMIT 1";
+				$r = false;
+				$n = 0;
 				if ($params['core']->dbo->query($sql,$r,$n) && $n>0) {
 					$newData = $params['core']->dbo->fetch_row($r);
 					$data['lt_title'] = $newData[0];
@@ -77,6 +81,8 @@
 				if ($processed) return $data;
 				// now, get first thread per forum 
 				$sql = "SELECT t.title, t.date, t.urla, a.login FROM bb_thread as t, auth_users as a WHERE t.id_forum=".$data['id']." AND a.id = t.id_author ORDER BY t.date DESC LIMIT 1";
+				$r = false;
+				$n = 0;
 				if ($params['core']->dbo->query($sql,$r,$n) && $n>0) {
 					$newData = $params['core']->dbo->fetch_row($r);
 					$data['lt_title'] = $newData[0];

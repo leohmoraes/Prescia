@@ -516,9 +516,9 @@ class CKTemplate {
 
   			if ($m>=1 && $m<=12) return $this->str_monthlabels[$m-1];
   			else return "";
-		case "day": // same as above, with day
-			$d = date('w',$content);
-			if ($d !== false) return $this->$str_daylabels[$d];
+			case "day": // same as above, with day
+				$d = date('w',$content);
+				if ($d !== false) return $this->str_daylabels[$d];
   			else return "";
 		case "past": // how long has passed, in i18n. Send "true" as a parameter to short the past time in one leter
 			$sdif = time_diff(date("Y-m-d H:i:s"),$content);

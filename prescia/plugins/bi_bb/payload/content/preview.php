@@ -9,6 +9,8 @@
 	} else { // previewing a POST, so we must load all the thread data
 		$core->template->assign("_previewTHREAD");
 		$core->template->assign("id_forumthread",$_POST['id_forumthread']);
+		$r = false;
+		$n = 0;
 		$core->dbo->query("SELECT title,urla FROM bb_thread WHERE id_forum=".$_POST['id_forum']." AND id=".$_POST['id_forumthread'],$r,$n);
 		if ($n == 0) {
 			$core->fastClose(503);
@@ -19,6 +21,8 @@
 	}
 
 	// get FORUM data
+	$r = false;
+	$n = 0;
 	$core->dbo->query("SELECT f.title,f.operationmode, f2.title FROM (bb_forum as f) LEFT JOIN bb_forum as f2 ON (f2.id = f.id_parent) WHERE f.id=".$_POST['id_forum'],$r,$n);
 	list($ftitle, $op,$ptitle) = $core->dbo->fetch_row($r);
 

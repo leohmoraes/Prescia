@@ -5,6 +5,8 @@
 	$ip = cleanString($_REQUEST['ip']);
 
 	$rt = $core->loaded('statsrt');
+	$r = false;
+	$n = 0;
 	if ($core->dbo->query("SELECT * from ".$rt->dbname." WHERE ip='$ip'",$r,$n) && $n>0) {
 		$dados = $core->dbo->fetch_assoc($r);
 		echo "Hora de entrada: ".fd($dados['data_ini'],"H:i:s")."\n";

@@ -72,6 +72,8 @@
 			}
 			
 			$n=-1;
+			$r = false;
+			$n = 0;
 			if ($this->dbo->query($sql,$r,$n) && $n>0) { // found!
 				$matched = true;
 				if ($n>1) {

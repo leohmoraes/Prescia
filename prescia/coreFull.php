@@ -671,6 +671,8 @@ class CPresciaFull extends CPrescia {
 			} else {
 				# checks if all fields are ok
 				$sql = "SHOW FIELDS FROM ".CONS_SQL_QUOTE.$module->dbname.CONS_SQL_QUOTE;
+				$r = false;
+				$n = 0;
 				$this->dbo->query($sql,$r,$n);
 				$camposdb = array();
 				$data = $this->dbo->fetch_row($r);
@@ -693,6 +695,8 @@ class CPresciaFull extends CPrescia {
 				}
 				# checks keys and uniques
 				$sql = "SHOW KEYS FROM ".CONS_SQL_QUOTE.$module->dbname.CONS_SQL_QUOTE;
+				$r = false;
+				$n = 0;
 				$this->dbo->query($sql,$r,$n);
 				$camposdb = array();
 				$uniquedb = array();

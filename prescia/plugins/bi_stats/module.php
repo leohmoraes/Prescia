@@ -54,6 +54,8 @@ class mod_bi_stats extends CscriptedModule  {
 				if ($output === false) {
 					$sql = "SELECT sum(hits), browser FROM stats_browser WHERE data>NOW() - INTERVAL 1 YEAR GROUP BY browser";
 					$output = array('IE' => 0,'FF' => 0, 'SA' => 0, 'OP' => 0, 'CH' => 0, 'UN' => 0, 'mob' =>0,'total' =>0);
+					$r = false;
+					$n = 0;
 					if ($this->parent->dbo->query($sql,$r,$n) && $n>0) {
 						for ($c=0;$c<$n;$c++) {
 							list($h,$b) = $this->parent->dbo->fetch_row($r);
@@ -131,6 +133,8 @@ class mod_bi_stats extends CscriptedModule  {
 		}
 		$sql .= implode(" AND ",$where);
 		$sql .= " GROUP BY data".($filterPage!=''?',page':'').($filterLang!=''?',lang':'');
+		$r = false;
+		$n = 0;
 		if ($this->parent->dbo->query($sql,$r,$n) && $n>0) {
 			$stats[] = $this->parent->dbo->fetch_row($r); // if more come, WHAT!?
 		}
@@ -148,6 +152,8 @@ class mod_bi_stats extends CscriptedModule  {
 		$sql .= implode(" AND ",$where);
 		$sql .= " GROUP BY data".($filterPage!=''?',page':'').($filterLang!=''?',lang':'');
 		$sql .= " ORDER BY data DESC";
+		$r = false;
+		$n = 0;
 		if ($this->parent->dbo->query($sql,$r,$n) && $n>0) {
 			for ($c=0;$c<$n;$c++)
 				$stats[] = $this->parent->dbo->fetch_row($r);
@@ -251,6 +257,8 @@ class mod_bi_stats extends CscriptedModule  {
 				}
 			}
 			if ($isBot) {
+				$r = false;
+				$n = 0;
 				$core->dbo->query("SELECT hits FROM ".$core->modules['statsbots']->dbname." WHERE data='".date("Y-m-d")."'",$r,$n);
 				if ($n==0) {
 					# first bot visit
@@ -276,6 +284,8 @@ class mod_bi_stats extends CscriptedModule  {
 			# -- prepare cookie/IP monitoring variables
 			$logByIP = false;
 			$alreadyVisited = false;
+			$r = false;
+			$n = 0;
 			if ($core->dbo->query("SELECT page,fullpath FROM ".$core->modules['statsrt']->dbname." WHERE ip='".CONS_IP."'",$r,$n) && $n != 0) {
 				list($page,$fullpath) = $core->dbo->fetch_row($r);
 				$alreadyVisited = true; // by IP
@@ -314,6 +324,8 @@ class mod_bi_stats extends CscriptedModule  {
 						} else if (strpos($domain,".mail.") !== false || substr($domain,0,5) == "mail." || strpos($domain,".webmail.") !== false || substr($domain,0,8) == "webmail.") {
 							$domain = "MAIL";
 						} else if (strlen($domain)>50) $domain = substr($domain,0,47)."...";
+						$r = false;
+						$n = 0;
 						$core->dbo->query("SELECT hits, pages FROM ".$core->modules['statsref']->dbname." WHERE data='".date("Y-m-d")."' AND referer=\"$domain\" AND entrypage=\"".$pageToBelogged."\"",$r,$n);
 						if ($n>0)
 							list($hits,$pages) = $core->dbo->fetch_row($r);
@@ -526,6 +538,8 @@ class mod_bi_stats extends CscriptedModule  {
 		// 6 is browser stats on last week
 		$data[6] = array(); // browser
 		$sb = $this->parent->loaded('statsbrowser');
+		$r = false;
+		$n = 0;
 		$this->parent->dbo->query("SELECT sum(hits), browser FROM ".$sb->dbname." WHERE data>NOW() - INTERVAL 1 MONTH GROUP BY browser",$r,$n);
 		for($c=0;$c<$n;$c++) {
 			list($count,$browser) = $this->parent->dbo->fetch_row($r);
@@ -554,6 +568,8 @@ class mod_bi_stats extends CscriptedModule  {
 			$previousDay = datecalc(date("Y-m-d"),0,0,-1);
 			$x = $core->dbo->fetch("SELECT hits FROM ".$core->modules['statsdaily']->dbname." WHERE data='".$previousDay."'");
 			if ($x === false) { # nothing yet registered on history
+				$r = false;
+				$n = 0;
 				if ($core->dbo->query("SELECT SUM(hits), SUM(uhits), SUM(bhits), SUM(rhits), hid, page,lang FROM ".$core->modules['stats']->dbname." WHERE data='".$previousDay."' GROUP BY hid, page, lang",$r,$n)) {
 					for ($c=0;$c<$n;$c++) {
 						list($hits,$uhits,$bhits,$rhits,$hid,$page,$lang) = $core->dbo->fetch_row($r);
@@ -565,6 +581,8 @@ class mod_bi_stats extends CscriptedModule  {
 			# daily referers:
 			$x = $core->dbo->fetch("SELECT hits FROM ".$core->modules['statsrefdaily']->dbname." WHERE data='".$previousDay."'");
 			if ($x===false ) { # nothing yet registered on history
+				$r = false;
+				$n = 0;
 				if ($core->dbo->query("SELECT referer,entrypage,hits FROM ".$core->modules['statsref']->dbname." WHERE data='".$previousDay."'",$r,$n)){
 					for ($c=0;$c<$n;$c++) {
 						list($ref,$ep,$hits) = $core->dbo->fetch_row($r);

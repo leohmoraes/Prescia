@@ -25,6 +25,8 @@
 				$sepQuote = trim(stripslashes($_POST['sepQuote']));
 				$sql = "SELECT * FROM ".$module->dbname;
 				$output = "";
+				$r = false;
+				$n = 0;
 				if ($core->dbo->query($sql,$r,$n)) {
 					$core->layout = 2;
 					header("Content-Description: File Transfer");
@@ -65,6 +67,8 @@
 				$sizes[] = 0;
 				$sql = "SELECT * FROM ".$module->dbname;
 				$output = "";
+				$r = false;
+				$n = 0;
 				if ($core->dbo->query($sql,$r,$n)) {
 					$core->layout = 2;
 					header("Content-Description: File Transfer");

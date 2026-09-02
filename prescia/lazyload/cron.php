@@ -77,6 +77,8 @@ if ($forceCron=='day' || $forceCron=='all' || (date("d") != $this->dimconfig['_c
 				$this->dbo->simpleQuery($sql);
 			} else {
 				$sql = "SELECT * FROM ".$module->dbname." WHERE ".$module->options[CONS_MODULE_AUTOCLEAN];
+				$r = false;
+				$n = 0;
 				$this->dbo->query($sql,$r,$n);
 				if ($n>0) {
 					$this->safety = false;
@@ -148,6 +150,8 @@ if ($forceCron=='hour' || $forceCron=='all' || $this->dimconfig['_cronH'] != dat
 				$this->dbo->simpleQuery($sql);
 			} else {
 				$sql = "SELECT * FROM ".$module->dbname." WHERE ".$module->options[CONS_MODULE_AUTOCLEAN];
+				$r = false;
+				$n = 0;
 				$this->dbo->query($sql,$r,$n);
 				if ($n>0) {
 					$this->safety = false;

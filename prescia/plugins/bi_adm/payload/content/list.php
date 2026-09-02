@@ -1171,6 +1171,8 @@
 	if (isset($_REQUEST['vaction']) && $_REQUEST['vaction'] == "mark" && isset($_REQUEST['markmode']) && $_REQUEST['markmode'] == "true") { // yes, mark all
 		// fetch ALL resulting keys
 		$_REQUEST['multiSelectedIds'] = array();
+		$r = false;
+		$n = 0;
 		$core->dbo->query($sql,$r,$n);
 		for ($c=0;$c<$n;$c++) {
 			$msidata = $core->dbo->fetch_assoc($r);

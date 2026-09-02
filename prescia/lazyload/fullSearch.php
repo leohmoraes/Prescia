@@ -44,6 +44,8 @@ foreach ($parameters as $mod) {
 	$order = isset($mod['order'])?$mod['order']:'';
 
 	$sql = $module->get_base_sql($where,$order,$limit);
+	$r = false;
+	$n = 0;
 	$this->dbo->query($sql,$r,$n);
 
 	$dateField = isset($mod['date'])?$mod['date']:'';

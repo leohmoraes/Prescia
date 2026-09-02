@@ -140,6 +140,8 @@
 												else
 													$sql = $iFields[$idx]['remoteModule']->get_base_sql("(".$iFields[$idx]['remoteModule']->title." LIKE \"%".cleanString($regs[$c])."%\" OR ".$iFields[$idx]['remoteModule']->keys[0]."=\"".cleanString($regs[$c])."\")");
 												$sql['SELECT'] = array($iFields[$idx]['remoteModule']->keys[0]);
+												$r = false;
+												$n = 0;
 												$core->dbo->query($sql,$r,$n);
 												if ($n == 1) {
 													list($coreID) = $core->dbo->fetch_row($r);

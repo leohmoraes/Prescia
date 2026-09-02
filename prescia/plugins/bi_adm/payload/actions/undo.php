@@ -12,6 +12,8 @@
 	// load up what we want to undo
 	$undo = $core->loaded('bi_undo');
 	$sql = $undo->get_base_sql($undo->name.".id=".$_REQUEST['id']);
+	$r = false;
+	$n = 0;
 	$core->dbo->query($sql,$r,$n);
 	if ($n == 0) {
 		$core->fastClose(404);

@@ -67,6 +67,8 @@
 
 				$sql = "SELECT ".$rmodule->title." FROM ".$rmodule->dbname." as ".$rmodule->name." WHERE ".implode(" AND ",$where);
 								
+				$r = false;
+				$n = 0;
 				if ($core->dbo->query($sql,$r,$n) && $n == 1) { 
 					$fieldDT['conteudo'] = $core->dbo->fetch_row($r);
 					$fieldDT['conteudo'] = $fieldDT['conteudo'][0];

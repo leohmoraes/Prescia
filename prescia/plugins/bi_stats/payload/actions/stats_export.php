@@ -9,6 +9,8 @@
 
 	// hits, unique hits, browsing hits (interested), returning hits (24h)
 	$sql = "SELECT data,sum(hits),sum(uhits),sum(bhits),sum(rhits) FROM ".$statsfullObj->dbname." GROUP BY data ORDER BY data DESC";
+	$r = false;
+	$n = 0;
 	$core->dbo->query($sql,$r,$n);
 	for ($c=0;$c<$n;$c++) {
 		list($data,$hits,$uhits,$bhits,$rhits) = $core->dbo->fetch_row($r);
@@ -16,6 +18,8 @@
 	}
 
 	$sql = "SELECT data,sum(hits) FROM ".$statsrObj->dbname." WHERE referer=\"\" GROUP BY data ORDER BY data DESC";
+	$r = false;
+	$n = 0;
 	$core->dbo->query($sql,$r,$n);
 	for ($c=0;$c<$n;$c++) {
 		list($data,$khits) = $core->dbo->fetch_row($r);

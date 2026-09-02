@@ -113,6 +113,8 @@ class mod_bi_auth extends CscriptedModule  {
 
 
 		$sql = $this->parent->modules[CONS_AUTH_GROUPMODULE]->get_base_sql("id=1");
+		$r = false;
+		$n = 0;
 		if (!$this->parent->dbo->query($sql,$r,$n) || $n==0) {
 			# database present (query ok) but empty ... create default groups
 			$this->parent->dbo->simpleQuery("INSERT INTO ".$this->parent->modules[CONS_AUTH_GROUPMODULE]->dbname." SET name='Guest', level=0, id=1, permissions=''");
@@ -121,6 +123,8 @@ class mod_bi_auth extends CscriptedModule  {
 			$this->parent->dbo->simpleQuery("INSERT INTO ".$this->parent->modules[CONS_AUTH_GROUPMODULE]->dbname." SET name='Default User', level=5, id=4, permissions=''");
 		}
 		$sql = $this->parent->modules[CONS_AUTH_USERMODULE]->get_base_sql(CONS_AUTH_USERMODULE.".id=1");
+		$r = false;
+		$n = 0;
 		if (!$this->parent->dbo->query($sql,$r,$n) || $n==0) {
 			# database present (query ok) but empty ... create default user
 			$newPass = bin2hex(random_bytes(24));

@@ -165,6 +165,8 @@ class mod_bi_bb extends CscriptedModule  {
 		if (!$earlyNotify && $module->name == "forum" && isset($data['id_parent']) && $data['id_parent'] != 0 && $action != CONS_ACTION_DELETE) {
 			// we changed a forum that have a parent. We will FORCE same language and operation mode as parent
 			$objForum = $this->parent->loaded('forum');
+			$r = false;
+			$n = 0;
 			if ($this->parent->dbo->query("SELECT lang,operationmode FROM ".$objForum->dbname." WHERE id=".$data['id_parent'],$r,$n) && $n>0) {
 				list($lang,$om) = $this->parent->dbo->fetch_row($r);
 				if ((isset($data['lang']) && $data['lang'] != $lang) ||
@@ -183,6 +185,8 @@ class mod_bi_bb extends CscriptedModule  {
 		$maxTAG = 1;
 		$mod = $this->parent->loaded($this->moduleRelation);
 		$sql = "SELECT ".$mod->name.".tags FROM ".$mod->dbname." as ".$mod->name." WHERE ".$mod->name.".tags<>''".($filter != ""?" AND ".$filter:"");
+		$r = false;
+		$n = 0;
 		$this->parent->dbo->query($sql,$r,$n);
 		for ($c=0;$c<$n;$c++) {
 			list($ttags) = $this->parent->dbo->fetch_row($r);
@@ -208,6 +212,8 @@ class mod_bi_bb extends CscriptedModule  {
 		$mod = $this->parent->loaded($this->moduleRelation);
 		$sql = "SELECT ".$mod->name.".date FROM ".$mod->dbname." as ".$mod->name." ".($filter!=""?"WHERE $filter":"")." ORDER BY ".$mod->name.".date DESC";
 		$result = array();
+		$r = false;
+		$n = 0;
 		$this->parent->dbo->query($sql,$r,$n);
 		for($c=0;$c<$n;$c++) {
 			list($date) = $this->parent->dbo->fetch_row($r);

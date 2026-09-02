@@ -229,6 +229,8 @@ class CModule {
 				if (!is_array($sql)) $sql = $this->parent->dbo->sqlarray_break($sql);
 				$sql['ORDER'] = explode(",",$this->name.".".$this->options[CONS_MODULE_PARENT]." ASC".($order != ''?','.$order:''));
 			}
+			$r = false;
+			$n = 0;
 			if (!$this->parent->dbo->query($sql,$r,$n)) {
 				$this->parent->errorControl->raise(146,$this->parent->dbo->log[count($this->parent->dbo->log)-1],$this->name,'on getContents');
 			}
@@ -246,6 +248,8 @@ class CModule {
 			return $treeObj;
 		} else {
 			$sql = $this->get_base_sql('',$order);
+			$r = false;
+			$n = 0;
 			$this->parent->dbo->query($sql,$r,$n);
 			for ($c=0;$c<$n;$c++) {
 				$tmpData = $this->parent->dbo->fetch_assoc($r);
@@ -949,6 +953,8 @@ class CModule {
 			$newvalue = str_replace("'","",str_replace('"','',$fieldData[2]));
 			if ($maxItems == 0 || $maxItems == '*') continue; // er, shouldn't even get here
 			$sql = "SELECT ".implode(",",$this->keys)." FROM ".$this->dbname." WHERE $field=\"".$data[$field]."\"$order";
+			$r = false;
+			$n = 0;
 			if ($this->parent->dbo->query($sql,$r,$n) && $n>$maxItems) {
 				$otherData = $this->parent->dbo->fetch_assoc($r);
 				// set otherData to new enum
@@ -1832,6 +1838,8 @@ class CModule {
 		$fd = fopen ($bck, "wb");
 		if ($fd) {
 			$sql = "SELECT * FROM ".$this->dbname;
+			$r = false;
+			$n = 0;
 			$this->parent->dbo->query($sql,$r,$n);
 			$baseLine = "INSERT INTO ".$this->dbname." (";
 			foreach ($this->fields as $fn=>&$f)

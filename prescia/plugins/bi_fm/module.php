@@ -169,6 +169,8 @@ class mod_bi_fm extends CscriptedModule  {
 			// test manually in the database, if no cache available
 			$mod = $this->parent->loaded('bi_fm');
 			$sql = "SELECT id_allowed_group,allowed_users,has_expiration,expiration_date FROM ".$mod->dbname." WHERE filenm LIKE \"".$file."\"";
+			$r = false;
+			$n = 0;
 			if ($this->parent->dbo->query($sql,$r,$n) && $n == 1) {
 				list($idG,$idU,$heD,$eD) = $this->parent->dbo->fetch_row($r);
 				$idU = explode(",",$idU);
@@ -207,6 +209,8 @@ class mod_bi_fm extends CscriptedModule  {
 
 		$mod = $this->parent->loaded('bi_fm');
 		$sql = "SELECT id_allowed_group,allowed_users,has_expiration,expiration_date,filenm FROM ".$mod->dbname." WHERE filenm LIKE \"".$dir."%\"";
+		$r = false;
+		$n = 0;
 		if ($this->parent->dbo->query($sql,$r,$n)) {
 			for ($c=0;$c<$n;$c++) {
 				list($idG,$idU,$heD,$eD,$fln) = $this->parent->dbo->fetch_row($r);

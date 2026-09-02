@@ -56,6 +56,8 @@ foreach ($modules as $mod) {
 	$sql = $module->get_base_sql('','',$itemsPerModule);
 
 	$hasCategory = $hasCategory || (isset($category[$rssId]) && $category[$rssId] != "");
+	$r = false;
+	$n = 0;
 	$this->dbo->query($sql,$r,$n);
 	$dateField = "";
 

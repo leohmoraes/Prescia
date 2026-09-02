@@ -157,6 +157,8 @@
 
 		$msi_nfiltered = implode(",",$msi_nfiltered);
 		$sql = "SELECT ".$module->title." as title, ".$module->keys[0]." as id FROM ".$module->dbname." WHERE ".$module->keys[0]." IN ($msi_nfiltered)";
+		$r = false;
+		$n = 0;
 		$core->dbo->query($sql,$r,$n);
 		if ($n == 0) {
 			// no return? some error or the keys specified don't exist

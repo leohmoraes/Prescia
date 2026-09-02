@@ -42,6 +42,8 @@
 					  s.data>NOW()-INTERVAL 1 MONTH AND
 					  ".$statmod->name.".".$statmod->keys[0]."=s.hid
 				GROUP BY s.hid";
+		$r = false;
+		$n = 0;
 		$this->dbo->query($sql,$r,$n);
 		for ($c=0;$c<$n;$c++) {
 			$data = $this->dbo->fetch_assoc($r);

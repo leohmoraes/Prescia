@@ -287,6 +287,8 @@ class mod_bi_dev extends CscriptedModule  {
 			foreach ($this->parent->modules[$module]->keys as $key)
 				$keys[] = $key; # SELECT keys
 			$sql = "SELECT ".implode(",",$keys)." FROM ".$this->parent->modules[$module]->dbname;
+			$r = false;
+			$n = 0;
 			$this->parent->dbo->query($sql,$r,$n);
 			$report[] = "-Module '".$this->parent->modules[$module]->dbname."' opened with $n entries, each with ".count($keys)." key".(count($keys)>1?"s":"");
 			$keystore[$this->parent->modules[$module]->name] = array();
@@ -328,6 +330,8 @@ class mod_bi_dev extends CscriptedModule  {
 			if (count($moduleLinks)>0) {
 				# I want something from this module
 				$sql = "SELECT ".implode(",",$desired)." FROM ".$module->dbname;
+				$r = false;
+				$n = 0;
 				$this->parent->dbo->query($sql,$r,$n);
 				$report[] = "-Performing integrity check on table '".$module->dbname."' with $n entries";
 				for ($c=0;$c<$n;$c++) {

@@ -20,6 +20,8 @@
 
 	// hits, unique hits, browsing hits (interested), returning hits (24h)
 	$sql = "SELECT data,sum(hits),sum(uhits),sum(bhits),sum(rhits) FROM ".$statsfullObj->dbname." GROUP BY data ORDER BY data DESC";
+	$r = false;
+	$n = 0;
 	$core->dbo->query($sql,$r,$n);
 	for ($c=0;$c<$n;$c++) {
 		list($data,$hits,$uhits,$bhits,$rhits) = $core->dbo->fetch_row($r);
@@ -29,6 +31,8 @@
 
 	// khits = bookmarks
 	$sql = "SELECT data,sum(hits) FROM ".$statsrObj->dbname." WHERE referer=\"\" GROUP BY data ORDER BY data DESC";
+	$r = false;
+	$n = 0;
 	$core->dbo->query($sql,$r,$n);
 	for ($c=0;$c<$n;$c++) {
 		list($data,$khits) = $core->dbo->fetch_row($r);
@@ -90,6 +94,8 @@
 	}
 
 	$sql = "SELECT data,hour,sum(hits),sum(uhits) FROM ".$statsObj->dbname." WHERE data>='$yesterday' GROUP BY data,hour ORDER BY data DESC";
+	$r = false;
+	$n = 0;
 	$core->dbo->query($sql,$r,$n);
 	for ($c=0;$c<$n;$c++) {
 		list($data,$hour,$hits,$uhits) = $core->dbo->fetch_row($r);
@@ -122,6 +128,8 @@
 	$max = 1;
 	$maxu = 1;
 	$horarios = array();
+	$r = false;
+	$n = 0;
 	$core->dbo->query("SELECT sum(hits) as hits,sum(uhits) as uhits, data, hour FROM ".$statsObj->dbname." WHERE data<'$df' AND data>='$di' GROUP BY data, hour",$r,$n);
 	for ($c=0;$c<$n;$c++) {
 		$data = $core->dbo->fetch_assoc($r);
@@ -217,6 +225,8 @@
 
 	# gets the top pages on this month
 	$sql = "SELECT sum( hits ) AS h, page,hid FROM ".$statsh->dbname." WHERE DATA > NOW() - INTERVAL 32 DAY AND page <> 'setres' AND page <> '' GROUP BY page,hid ORDER BY h DESC LIMIT 20";
+	$r = false;
+	$n = 0;
 	$core->dbo->query($sql,$r,$n);
 	$pagesTotal = $n;
 	$where = array();
@@ -235,6 +245,8 @@
 
 	# now fill up the stats for each valid page
 	$sql = "SELECT hits, page, data, hid FROM ".$statsh->dbname." WHERE data > NOW( ) - INTERVAL 32 DAY AND (".implode(" OR ",$where).") ORDER BY DATA ASC";
+	$r = false;
+	$n = 0;
 	$core->dbo->query($sql,$r,$n);
 	for ($c=0;$c<$n;$c++) {
 		list($hits,$page,$data,$hid) = $core->dbo->fetch_row($r);
@@ -275,6 +287,8 @@
 	
 	# day #
 	$sql = "SELECT sum(hits) as hits, referer FROM ".$refD->dbname." WHERE data > NOW() - INTERVAL 2 DAY GROUP BY referer ORDER BY hits DESC LIMIT 100";
+	$r = false;
+	$n = 0;
 	$core->dbo->query($sql,$r,$n);
 	$refs = array();
 	$total = 0;
@@ -295,6 +309,8 @@
 
 	# month #
 	$sql = "SELECT sum(hits) as h, referer FROM ".$refH->dbname." WHERE data > NOW() - INTERVAL 31 DAY  GROUP BY referer HAVING h>2 ORDER BY h DESC LIMIT 100";
+	$r = false;
+	$n = 0;
 	$core->dbo->query($sql,$r,$n);
 	$refs = array();
 	$total = 0;
@@ -315,6 +331,8 @@
 
 	# entry #
 	$sql = "SELECT sum(hits) as h, referer, entrypage FROM ".$refH->dbname." WHERE data > NOW() - INTERVAL 31 DAY GROUP BY referer,entrypage ORDER BY h DESC LIMIT 100";
+	$r = false;
+	$n = 0;
 	$core->dbo->query($sql,$r,$n);
 	$refs = array();
 	$total = 0;
@@ -338,6 +356,8 @@
 	$sql = "SELECT DISTINCT(page) FROM ".$pathmod->dbname." WHERE data > NOW() - INTERVAL 31 DAY";
 	$pagesObj = $core->template->get("_pages");
 	$output = "";
+	$r = false;
+	$n = 0;
 	$core->dbo->query($sql,$r,$n);
 	for ($c=0;$c<$n;$c++) {
 		$data = $core->dbo->fetch_assoc($r);
@@ -376,6 +396,8 @@
 
 	$sql = "SELECT hits, browser, data FROM ".$statsb->dbname." WHERE data>=NOW() - INTERVAL 31 DAY ORDER BY data ASC";
 
+	$r = false;
+	$n = 0;
 	$core->dbo->query($sql,$r,$n);
 	$total  =0;
 	$mobtotal = 0;
@@ -448,6 +470,8 @@
 
 	// complete stats
 	$sql = "SELECT sum(hits) as hits, browser FROM ".$statsb->dbname." WHERE data>=NOW() - INTERVAL 31 DAY GROUP BY browser ORDER BY hits DESC";
+	$r = false;
+	$n = 0;
 	$core->dbo->query($sql,$r,$n);
 	$obj = $core->template->get("_browserEX");
 	$output = "";
@@ -477,6 +501,8 @@
 
 	$statsb = $core->loaded('statsres');
 	$sql = "SELECT sum(hits) as hits, resolution FROM ".$statsb->dbname." WHERE data>=NOW() - INTERVAL 31 DAY GROUP BY resolution ORDER BY hits DESC";
+	$r = false;
+	$n = 0;
 	$core->dbo->query($sql,$r,$n);
 	$res=array();
 	$total  =0;
@@ -540,6 +566,8 @@
 	
 	#################################### LANGUAGE ############################################
 	$sql = "SELECT sum(uhits) as hits, lang FROM stats_hitsh WHERE data>NOW() - INTERVAL 1 MONTH GROUP BY lang ORDER BY lang ASC";
+	$r = false;
+	$n = 0;
 	$core->dbo->query($sql,$r,$n);
 	
 	$t = 0;

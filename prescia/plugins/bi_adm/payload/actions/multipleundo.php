@@ -17,6 +17,8 @@
 			$ok = 0;
 			foreach ($u as $id) {
 				$sql = $undo->get_base_sql($undo->name.".id=".$id);
+				$r = false;
+				$n = 0;
 				$core->dbo->query($sql,$r,$n);
 				if ($n != 0) {
 					$sucess = $plugin->undo($id,$r);

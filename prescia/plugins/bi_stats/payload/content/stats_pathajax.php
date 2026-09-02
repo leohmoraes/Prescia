@@ -23,6 +23,8 @@
 	}
 
 	$statsh = $core->loaded('statsdaily');
+	$r = false;
+	$n = 0;
 	$core->dbo->query("SELECT data,SUM(hits) as shits FROM ".$statsh->dbname." WHERE data >= '$weekAgo' AND page=\"$page\" GROUP BY data ORDER BY data ASC",$r,$n);
 	$biggest = 1;
 	for ($c=0;$c<$n;$c++) {
@@ -56,6 +58,8 @@
 	## ENTRY PAGES ##
 	$statspath = $core->loaded('statspath');
 	$sql = "SELECT sum(hits) as shits, page FROM ".$statspath->dbname." WHERE pagefoward='$page' AND data >= '$dataini' AND data < '$datafim' GROUP BY page ORDER BY shits DESC";
+	$r = false;
+	$n = 0;
 	$core->dbo->query($sql,$r,$n);
 	$graphObj = $core->template->get("_pg");
 	$output = "";
@@ -94,6 +98,8 @@
 
 	## EXIT PAGES ##
 	$sql = "SELECT sum(hits) as shits, pagefoward FROM ".$statspath->dbname." WHERE page='$page' AND data >= '$dataini' AND data < '$datafim' GROUP BY pagefoward ORDER BY shits DESC";
+	$r = false;
+	$n = 0;
 	$core->dbo->query($sql,$r,$n);
 	$graphObj = $core->template->get("_pg2");
 	$output = "";

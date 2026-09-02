@@ -9,6 +9,8 @@
 	
 	# day #
 	$sql = "SELECT sum(hits) as hits, referer FROM ".$refD->dbname." WHERE data > NOW() - INTERVAL 2 DAY GROUP BY referer ORDER BY hits DESC";
+	$r = false;
+	$n = 0;
 	$core->dbo->query($sql,$r,$n);
 	$refs = array();
 	$total = 0;
@@ -29,6 +31,8 @@
 
 	# month #
 	$sql = "SELECT sum(hits) as h, referer FROM ".$refH->dbname." WHERE data > NOW() - INTERVAL 1 MONTH  GROUP BY referer HAVING h>2 ORDER BY h DESC";
+	$r = false;
+	$n = 0;
 	$core->dbo->query($sql,$r,$n);
 	$refs = array();
 	$total = 0;
@@ -49,6 +53,8 @@
 	
 	# entry #
 	$sql = "SELECT sum(hits) as h, referer, entrypage FROM ".$refH->dbname." WHERE data > NOW() - INTERVAL 1 MONTH GROUP BY referer,entrypage HAVING h>1 ORDER BY h DESC LIMIT 100";
+	$r = false;
+	$n = 0;
 	$core->dbo->query($sql,$r,$n);
 	$refs = array();
 	$total = 0;
@@ -69,6 +75,8 @@
 	# Query
 	$statsq = $core->loaded('statsquery');
 	$sql = "SELECT sum(count) as hits, query, engine FROM ".$statsq->dbname." WHERE data>NOW() - INTERVAL 1 MONTH GROUP BY engine, query ORDER BY hits DESC LIMIT 100";
+	$r = false;
+	$n = 0;
 	$core->dbo->query($sql,$r,$n);
 	$query=array();
 	$biggest = 1;
