@@ -28,6 +28,7 @@ A documentação canônica está em [`docs/`](docs/) em Markdown (convertida das
 | [**Bot Blocklist**](docs/bots.md) | Padrões de user-agent bloqueados com `CONS_BOTPROTECT` ativo; veja o FAQ para desativar via EconomicMode |
 | [**Plano de Ação de Segurança**](docs/PLANO_ACAO_SEGURANCA.md) | Correções priorizadas para autenticação, sessão, uploads, Docker e compatibilidade com PHP 8.3 |
 | [**Plano PHPStan nível 1**](docs/PLANO_PHPSTAN_NIVEL_1.md) | Diagnóstico e sequência priorizada para reduzir erros estáticos sem ampliar a baseline |
+| [**Plano do próximo lote PHPStan**](docs/PLANO_PHPSTAN_PROXIMO_LOTE.md) | Priorização dos diagnósticos remanescentes após as correções do CI |
 
 ### Arquivos de texto legados
 
