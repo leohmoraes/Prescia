@@ -28,7 +28,7 @@
 
 class CauthControl { # This class can be overridden by any auth module
 
-	var $parent = null;
+	public ?CPrescia $parent = null;
 
 	function __construct(&$parent) {
 		$this->parent = &$parent;
@@ -94,4 +94,3 @@ class CauthControl { # This class can be overridden by any auth module
 
 
 }
-

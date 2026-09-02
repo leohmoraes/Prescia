@@ -3,11 +3,11 @@
 
 class CCacheControl {
 
-	var $parent = null;
-	var $cachepath = '';
-	var $cacheseed = '';
-	var $contentFromCache = false;
-	var $noCache = false; // some script requested that this page not to be cached
+	public ?CPrescia $parent = null;
+	public string $cachepath = '';
+	public string $cacheseed = '';
+	public bool $contentFromCache = false;
+	public bool $noCache = false; // some script requested that this page not to be cached
 
 	function __construct(&$parent) {
 		$this->parent = &$parent;

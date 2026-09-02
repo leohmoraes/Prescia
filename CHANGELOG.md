@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documented PHP 8.3 requirements and compatibility test commands in `README.md`.
 - Updated PHPStan to the 2.x series and raised the initial analysis level to 1.
 - Documented the incremental analysis policy: the baseline must not grow automatically and new diagnostics require remediation or an issue.
+- Started typing the central component contracts, including `CModule`, authentication, cache, error, header, internationalization and scripted-module properties.
 
 ### Compatibility checks
 - The compatibility suite checks runtime version, required extensions, PHP syntax, removed/deprecated APIs, short tags and Docker base image.

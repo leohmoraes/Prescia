@@ -34,9 +34,10 @@ function prepareDataToOutput(&$template, &$params, $data, $processed = false) { 
 						$data[$fnamedata."t"] = "";
 						$data[$fnamedata."tr"] = "";
 						$data[$fnamedata."s"] = "";
-						$file = CONS_FMANAGER.$params['module']->name."/".($c==1?"":"t/").$fname.$keystring."_$c";
-						$fileout = CONS_PATH_PAGES.$_SESSION['CODE']."/files/".$params['module']->name."/".($c==1?"":"t/").$fname.$keystring."_$c";
-						if ($data[$fname] == 'y' && locateAnyFile($file,$ext,CONS_FILESEARCH_EXTENSIONS)) {
+							$file = CONS_FMANAGER.$params['module']->name."/".($c==1?"":"t/").$fname.$keystring."_$c";
+							$fileout = CONS_PATH_PAGES.$_SESSION['CODE']."/files/".$params['module']->name."/".($c==1?"":"t/").$fname.$keystring."_$c";
+							$ext = '';
+							if ($data[$fname] == 'y' && locateAnyFile($file,$ext,CONS_FILESEARCH_EXTENSIONS)) {
 							$fileout .= ".".$ext;
 							$data[$fnamedata] = $fileout;
 							$popped = explode("/",$file);
@@ -74,9 +75,10 @@ function prepareDataToOutput(&$template, &$params, $data, $processed = false) { 
 					 }
 				} else if ($data[$fname]== 'y') { // file w/o image, present
 					$file = CONS_FMANAGER.$params['module']->name."/".$fname.$keystring."_1";
-					$fileout = CONS_PATH_PAGES.$_SESSION['CODE']."/files/".$params['module']->name."/".$fname.$keystring."_1";
-					$fnamedata = $fname."_1";
-					if (locateAnyFile($file,$ext)) {
+						$fileout = CONS_PATH_PAGES.$_SESSION['CODE']."/files/".$params['module']->name."/".$fname.$keystring."_1";
+						$fnamedata = $fname."_1";
+						$ext = '';
+						if (locateAnyFile($file,$ext)) {
 						$data[$fnamedata] = CONS_INSTALL_ROOT.$fileout.$ext;
 						$data[$fnamedata."s"] = humanSize(filesize($file));
 						$popped = explode("/",$file);
@@ -145,22 +147,28 @@ function prepareDataToOutput(&$template, &$params, $data, $processed = false) { 
 
 class CModule {
 
-	var $name = "";
-	/** @var CPrescia|null Framework object */
-	var $parent = null;
-	var $title = "";
-	var $dbname = "";
-	var $keys = array('id');
-	var $plugins = array(); # script plugins this module has (the actual objects are stored on the core::loadedPlugins
-	var $order = ""; # SQL default order
-	var $permissionOverride = ""; # permission string that overrides default
-	var $unique = array(); # unique keys (The framework will create them, but won't remove any extra keys)
-	var $hash = array(); # non-unique keys (The framework will create them, but won't remove any extra keys)
-	var $linker = false; # this module is a linker module (have only 2 fields, which are links)
-	var $options = array();
-	var $fields = array();
-	var $freeModule = false; # this module does not link to a user or group, thus controled ALWAYS by "World" area of permission string. Also helps with caching
-	var $loaded = false;
+	public string $name = "";
+	/** Framework object. */
+	public ?CPrescia $parent = null;
+	public string $title = "";
+	public string $dbname = "";
+	/** @var list<string> */
+	public array $keys = array('id');
+	/** @var list<string> */
+	public array $plugins = array(); # script plugins this module has (the actual objects are stored on the core::loadedPlugins
+	public string $order = ""; # SQL default order
+	public string $permissionOverride = ""; # permission string that overrides default
+	/** @var array<int|string, mixed> */
+	public array $unique = array(); # unique keys (The framework will create them, but won't remove any extra keys)
+	/** @var array<int|string, mixed> */
+	public array $hash = array(); # non-unique keys (The framework will create them, but won't remove any extra keys)
+	public bool $linker = false; # this module is a linker module (have only 2 fields, which are links)
+	/** @var array<int|string, mixed> */
+	public array $options = array();
+	/** @var array<string, array<int|string, mixed>> */
+	public array $fields = array();
+	public bool $freeModule = false; # this module does not link to a user or group, thus controled ALWAYS by "World" area of permission string. Also helps with caching
+	public bool $loaded = false;
 
 	function __construct(&$parent, $name,$dbname="") {
 		$this->parent = &$parent;
@@ -1754,7 +1762,7 @@ class CModule {
 			$gt = $tp->get($tag);
 			$this->parent->cacheControl->addCachedContent($cacheTAG,array('payload'=>$gt,'count'=>$n,'lfs' => $this->parent->lastFirstset, 'lrc' => $this->parent->lastReturnCode),$this->freeModule); # note how freeModule defines shared or not cache
 		}
-		unset ($this->templateParans['grouping']);
+			unset ($this->parent->templateParams['grouping']);
 		return $n;
 	} # runContent
 

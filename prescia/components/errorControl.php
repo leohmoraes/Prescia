@@ -26,9 +26,10 @@ define ("CONS_MAX_LOGFILESIZE",100000); # Maximum size of a DAILY error log
 
 class CErrorControl {
 
-	var $parent = null;
-	var $ERRORS = array();
-	var $errorCount = 0;
+	public ?CPrescia $parent = null;
+	/** @var array<int, int> */
+	public array $ERRORS = array();
+	public int $errorCount = 0;
 
 	function __construct(&$parent) {
 		$this->parent = &$parent;
@@ -368,4 +369,3 @@ class CErrorControl {
 	} # dumpUnexpectedOutput
 
 }
-
