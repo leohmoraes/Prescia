@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+require_once __DIR__ . '/phpstan-constants.php';
 
 /**
  * PHPStan-only bootstrap.
