@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initialized legacy database query result variables before calls across core, lazy-loading and plugin flows, and fixed image/template typos involving `$im_dest`, `$minuatura` and `$str_daylabels`.
 - Started explicit payload context contracts for `$core` and `$this` in the `bi_adm` and `bi_stats` payloads using PHPDoc annotations that document the framework-injected `CPrescia` and `CModule` contexts.
 - Started the undefined-variable remediation batch by initializing prepared-query result handles in `CModule` and correcting the `$code`/`$valor` parameter typos in `CintlControl`.
+- Started the legacy-symbol remediation batch by adding precise PHPStan stubs for `dieFreakingThumbs()`, `adodb_daylight_sv()` and the dynamically instantiated `CDBO_0` driver class.
 
 ### Compatibility checks
 - The compatibility suite checks runtime version, required extensions, PHP syntax, removed/deprecated APIs, short tags and Docker base image.

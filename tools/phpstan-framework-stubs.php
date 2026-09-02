@@ -11,10 +11,12 @@
 function addslashes_EX(mixed $value, bool $isHtml = true, mixed $dbo = false): string {}
 function arrayToString(mixed $array = false, array $exclude = [], bool $noArrays = false): string {}
 function cWriteFile(string $file, string $content, bool $append = false, bool $binary = false): bool {}
+function dieFreakingThumbs(string $folder): void {}
 function cleanString(mixed $data, bool $isHtml = false, bool $allowAdvanced = false, mixed $dbo = false): string {}
 function console(mixed $core, mixed $command): mixed {}
 function cropImage(mixed ...$arguments): mixed {}
 function datecalc(mixed ...$arguments): mixed {}
+function adodb_daylight_sv(array &$date, bool $isGmt = false): mixed {}
 function datecompare(mixed ...$arguments): mixed {}
 function extractUri(string $installRoot = '', string $uri = ''): array {}
 function fd(mixed $date, string $mask = 'd/m/Y'): string {}
@@ -53,6 +55,7 @@ class CPrescia
 }
 
 class CPresciaFull extends CPrescia {}
+class CDBO_0 extends CDBO {}
 class CKTCexternal {}
 class TTree {}
 class xmlHandler {}
