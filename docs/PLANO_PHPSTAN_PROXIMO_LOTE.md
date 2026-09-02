@@ -18,6 +18,8 @@
 
 **Lote E iniciado:** adicionados contratos genéricos para `arrayToString()`, `extractUri()`, `listFiles()`, `xmlParamsParser()` e `adodb_daylight_sv()` nos arquivos procedurais e nos stubs do PHPStan. Os contratos preservam as diferenças entre listas, arrays associativos e o retorno `string|array` de `xmlParamsParser()`.
 
+**Lote F oficializado:** a revisão da baseline passa a ser uma etapa independente, executada após a validação do Lote E. Nenhum diagnóstico novo poderá ser incluído na baseline para encobrir regressões.
+
 ## Conclusão executiva
 
 A última execução do PHPStan terminou com falha, mas as correções recentes reduziram os erros diretamente relacionados a cabeçalhos PHP inválidos, constantes de configuração e resultados de consultas não inicializados. O próximo lote não deve elevar o nível de análise. A prioridade é eliminar as causas estruturais que ainda geram a maior parte do relatório: contexto global ausente, chamadas de módulos/plugins sem contratos, variáveis indefinidas remanescentes e símbolos legados que ainda não possuem bootstrap ou stub confiável.
@@ -69,6 +71,26 @@ As chamadas de métodos incompatíveis devem ser revisadas junto com as assinatu
 
 **Critério de aceite:** não existem sobrescritas com tipos incompatíveis nos componentes tratados; chamadas de métodos usam a quantidade e os tipos de argumentos definidos pelo contrato; não são adicionados casts indiscriminados.
 
+### Lote F — Revisão controlada da baseline
+
+O Lote F consolida o resultado das correções dos Lotes A a E e revisa a baseline do PHPStan sem reduzir a qualidade da análise. A baseline é um registro temporário de diagnósticos conhecidos e justificados. Ela não deve ser usada para ocultar erros introduzidos por alterações recentes.
+
+A primeira etapa consiste em executar o PHPStan no commit resultante do Lote E e salvar o relatório completo. A segunda etapa compara cada diagnóstico atual com a baseline, classificando-o como corrigido, preexistente, regressão ou não reproduzível. A terceira etapa remove da baseline os diagnósticos comprovadamente corrigidos. A quarta etapa registra separadamente os diagnósticos preexistentes que ainda exigem correção.
+
+| Etapa | Atividade | Evidência obrigatória |
+|---:|---|---|
+| 1 | Executar PHPStan, PHPUnit e o teste de compatibilidade PHP 8.3 no mesmo commit | URLs das execuções e status dos jobs |
+| 2 | Comparar o relatório atual com `phpstan-baseline.neon` | Contagem por identificador, arquivo e linha |
+| 3 | Remover entradas referentes a diagnósticos corrigidos | Diff revisado da baseline |
+| 4 | Classificar os diagnósticos restantes | Relatório de preexistentes, regressões e não reproduzíveis |
+| 5 | Atualizar o plano e a Issue #43 | Commit e comentário técnico vinculados |
+
+O Lote F não autoriza a inclusão automática de novos padrões `ignoreErrors`. Cada nova exceção deve conter uma justificativa, escopo de arquivo ou identificador específico, origem conhecida e uma condição para remoção. Diagnósticos de segurança, compatibilidade PHP 8.3 e erros introduzidos por commits recentes não podem ser adicionados à baseline.
+
+**Métricas:** o relatório deve informar o total de diagnósticos, o total fora da baseline, a quantidade de entradas removidas, a quantidade de regressões e o número de símbolos ausentes. As métricas devem ser comparáveis com as execuções anteriores do CI.
+
+**Critério de aceite:** a baseline não aumenta por causa de erros novos; todas as entradas removidas correspondem a diagnósticos comprovadamente corrigidos; não existem regressões fora da baseline sem uma tarefa registrada; o PHPUnit, o teste de compatibilidade PHP 8.3 e o PHPStan permanecem configurados no CI; e dois ciclos consecutivos do CI não apresentam aumento de diagnósticos fora da baseline antes da avaliação do nível 2.
+
 ## Ordem de execução
 
 | Ordem | Entrega | Resultado esperado |
@@ -78,8 +100,8 @@ As chamadas de métodos incompatíveis devem ser revisadas junto com as assinatu
 | 3 | Variáveis indefinidas restantes | Remover riscos de execução e estabilizar o fluxo de análise. |
 | 4 | Funções e classes ausentes | Completar contratos específicos e o `scanFiles`. |
 | 5 | Propriedades e métodos incompatíveis | Consolidar a hierarquia tipada dos plugins. |
-| 6 | Tipos iteráveis e revisão da baseline | Reduzir a baseline apenas para diagnósticos justificados. |
-| 7 | Avaliação para nível 2 em diretórios modernizados | Elevar o nível somente onde o nível 1 estiver estável. |
+| 6 | Lote F — revisão controlada da baseline | Remover entradas corrigidas e classificar os diagnósticos restantes sem ocultar regressões. |
+| 7 | Avaliação para nível 2 em diretórios modernizados | Elevar o nível somente onde o nível 1 estiver estável após dois ciclos consecutivos. |
 
 ## Regras de implementação
 
