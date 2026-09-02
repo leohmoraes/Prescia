@@ -27,6 +27,7 @@ A documentação canônica está em [`docs/`](docs/) em Markdown (convertida das
 | [**FAQ**](docs/faq.md) | Problemas de CMS, módulos e plugins, depuração de **404** (BI_DEV), páginas de **manutenção** (`maint.txt`, `heavymaint.html`), **EconomicMode** |
 | [**Bot Blocklist**](docs/bots.md) | Padrões de user-agent bloqueados com `CONS_BOTPROTECT` ativo; veja o FAQ para desativar via EconomicMode |
 | [**Plano de Ação de Segurança**](docs/PLANO_ACAO_SEGURANCA.md) | Correções priorizadas para autenticação, sessão, uploads, Docker e compatibilidade com PHP 8.3 |
+| [**Plano PHPStan nível 1**](docs/PLANO_PHPSTAN_NIVEL_1.md) | Diagnóstico e sequência priorizada para reduzir erros estáticos sem ampliar a baseline |
 
 ### Arquivos de texto legados
 
