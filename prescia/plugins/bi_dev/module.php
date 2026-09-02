@@ -12,6 +12,7 @@ class mod_bi_dev extends CscriptedModule  {
 
 	function __construct(&$parent,$moduleRelation="") {
 		$this->parent = &$parent; // framework object
+		$this->moduleRelation = $moduleRelation;
 		$this->loadSettings();
 	}
 
@@ -960,7 +961,7 @@ class mod_bi_dev extends CscriptedModule  {
 			$thereAreErrors = false;
 			if ($this->devCheckHTML || isset($_REQUEST['dev_test'])) {
 				if (!function_exists('checkHTML')) include CONS_PATH_INCLUDE."checkHTML.php";
-				$log = checkHTML($PAGE,false);
+				$log = checkHTML($PAGE);
 				if (count($log)>0) {
 					$thereAreErrors = true;
 					$this->log[] = implode("<br/>",$log); // for dev_test

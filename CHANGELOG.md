@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Started the undefined-variable remediation batch by initializing prepared-query result handles in `CModule` and correcting the `$code`/`$valor` parameter typos in `CintlControl`.
 - Started the legacy-symbol remediation batch by adding precise PHPStan stubs for `dieFreakingThumbs()`, `adodb_daylight_sv()` and the dynamically instantiated `CDBO_0` driver class.
 - Aligned the seven PHPStan-reported child properties in `bi_adm`, `bi_bb`, `bi_dev`, `bi_labels` and `bi_undo`; `admFolder` now explicitly models its runtime string/list lifecycle.
+- Corrected Lote D method contracts: preserved CKTemplate's legacy fourth constructor argument, removed the obsolete second `runclasses()` argument, aligned `checkPermission()` calls to three parameters, corrected `checkHTML()` usage, and separated duplicate nested action-log helpers.
 
 ### Compatibility checks
 - The compatibility suite checks runtime version, required extensions, PHP syntax, removed/deprecated APIs, short tags and Docker base image.

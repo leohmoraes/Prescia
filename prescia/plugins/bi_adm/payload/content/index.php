@@ -42,7 +42,7 @@
 		$maxActions = $shown>0?$shown:10;
 		$temp = "";
 		$template = $core->template->get("_actions");
-		function appendActs(&$core,&$output,&$template,$data,$limit=20) {
+		function appendAdminActs(&$core,&$output,&$template,$data,$limit=20) {
 			$added = 0;
 			$size = count($data);
 			for ($c=$size-1;$c>=0;$c--) {
@@ -67,14 +67,14 @@
 		$previousDay = date("Ymd");
 		$added = 0;
 		if (is_file(CONS_PATH_LOGS.$_SESSION['CODE']."/act".$previousDay.".log"))
-			$added = appendActs($core,$temp,$template,explode("\n",cReadFile(CONS_PATH_LOGS.$_SESSION['CODE']."/act".$previousDay.".log")),$maxActions);
+			$added = appendAdminActs($core,$temp,$template,explode("\n",cReadFile(CONS_PATH_LOGS.$_SESSION['CODE']."/act".$previousDay.".log")),$maxActions);
 		$maxActions -= $added;
 		if ($maxActions>0) {
 			// 1 day ago
 			$previousDay = datecalc(date("Y-m-d"),0,0,-1);
 			$previousDay = str_replace("-","",$previousDay);
 			if (is_file(CONS_PATH_LOGS.$_SESSION['CODE']."/act".$previousDay.".log"))
-				appendActs($core,$temp,$template,explode("\n",cReadFile(CONS_PATH_LOGS.$_SESSION['CODE']."/act".$previousDay.".log")),$maxActions);
+				appendAdminActs($core,$temp,$template,explode("\n",cReadFile(CONS_PATH_LOGS.$_SESSION['CODE']."/act".$previousDay.".log")),$maxActions);
 		}
 		$core->template->assign("_actions",$temp);
 		$core->cacheControl->addCachedContent('admindex_actionlog',$temp,true);

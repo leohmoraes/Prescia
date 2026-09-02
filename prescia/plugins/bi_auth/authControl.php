@@ -11,7 +11,7 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 	function canCreate(&$module,&$data) { # Multi-key OK!
 		$Owner = $this->checkOwner($module,$data,true);
 		$this->parent->lockPermissions(); # Load permissions to this, in case something changed
-		if (!$this->checkPermission($module,CONS_ACTION_INCLUDE,$Owner,$data)) {
+		if (!$this->checkPermission($module,CONS_ACTION_INCLUDE,$Owner)) {
 			$this->parent->errorControl->raise(184,'',$module->name);
 			return false;
 		}
@@ -22,7 +22,7 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 		# NOTE: send NEW data. checkOwner will already test CURRENT data
 		$Owner = $this->checkOwner($module,$data,false);
 		$this->parent->lockPermissions(); # Load permissions to this, in case something changed
-		if (!$this->checkPermission($module,CONS_ACTION_UPDATE,$Owner,$data)) {
+		if (!$this->checkPermission($module,CONS_ACTION_UPDATE,$Owner)) {
 			$this->parent->errorControl->raise(184,'',$module->name);
 			return false;
 		}

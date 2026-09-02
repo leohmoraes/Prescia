@@ -1365,7 +1365,7 @@ class CModule {
 				if ($this->parent->safety && $_SESSION[CONS_SESSION_ACCESS_LEVEL] < 100) {
 					$Owner = $this->parent->authControl->checkOwner($this,$kA); // array with isOwner and isSameGroup
 					$this->parent->lockPermissions(); # Load permissions to this, in case something changed
-					if (!$this->parent->authControl->checkPermission($this,CONS_ACTION_UPDATE,$Owner,$data)) {
+					if (!$this->parent->authControl->checkPermission($this,CONS_ACTION_UPDATE,$Owner)) {
 						$this->parent->errorControl->raise(151,'',$this->name);
 						return false;
 					}
@@ -1597,7 +1597,7 @@ class CModule {
 				$Owner = $this->parent->authControl->checkOwner($this,$kA); // array with isOwner and isSameGroup
 				if ($this->parent->safety && $_SESSION[CONS_SESSION_ACCESS_LEVEL] < 100) {
 					$this->parent->lockPermissions($this,$data,$Owner);
-					if (!$this->parent->authControl->checkPermission($this,CONS_ACTION_DELETE,$Owner,$data)) {
+					if (!$this->parent->authControl->checkPermission($this,CONS_ACTION_DELETE,$Owner)) {
 						$this->parent->errorControl->raise(149,'',$this->name);
 						return false;
 					}

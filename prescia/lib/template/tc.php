@@ -47,7 +47,7 @@ class CKTemplate {
 
   private $iec = 0; // anti-loop device
 
-  function __construct($parent = null, $mypath = "", $debugmode = false) { // parent must be a CKTemplate too
+  function __construct($parent = null, $mypath = "", $debugmode = false, $legacyMode = false) { // parent must be a CKTemplate too; legacyMode is retained for compatibility
 	$this->clear();
 	$this->cache = null;
 	if ($parent == null) {
@@ -780,7 +780,7 @@ class CKTemplate {
 	$this->flushcache();
 	if ($arrayin !== false && !$recursive) $this->fill($arrayin);
 	if (!$recursive && CKAUTORESET) $this->reset();
-	$this->runclasses($arrayin,true);
+	$this->runclasses($arrayin);
 	foreach ($this->contents as $key => $content) {
 	  if ( $content[0] == "" || !in_array( $content[0],$emptyme)) {
 		if (is_object($content[2])) {
