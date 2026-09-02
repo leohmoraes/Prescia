@@ -44,11 +44,13 @@ if (!CONS_USE_I18N) $this->errorControl->raise(4,'bi_adm','ADVADM module require
 class mod_bi_adm extends CscriptedModule  {
 
 	// config ----
-	var $admFolder = 'adm';
+	/** @var string|array<int, string> */
+	public string|array $admFolder = 'adm';
 	var $testDomainHash = "test"; # these will be considered test domains (instr)
 	// internals -----
 	var $skin = ''; // gets from dimconfig or userprefs, do not change here
-	var $customPermissions = array('can_monitor' => 'can_monitor',
+	/** @var array<string, string> */
+	public array $customPermissions = array('can_monitor' => 'can_monitor',
 								   'can_undo' => 'can_undo',
 								   'can_importexport' => 'can_importexport',
 								   'can_fm' => 'can_fm',

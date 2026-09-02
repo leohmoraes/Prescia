@@ -28,7 +28,8 @@ class mod_bi_bb extends CscriptedModule  {
 	var $ignorefolders = ""; // leave empty or it will ignore root. Use this for sub-folders that are not part of the bi_bb, thus all bi_bb scripts will be ignored. Comma delimited
 	######################
 
-	var $customPermissions = array('can_flag' => 'can_flag',
+	/** @var array<string, string> */
+	public array $customPermissions = array('can_flag' => 'can_flag',
 								   'can_blog' => 'can_blog', // the standard settings is for every mode. This is just for blog/article (if you disable main permission, this is useless)
 								   'can_prop' => 'can_prop'
 									);
@@ -241,4 +242,3 @@ class mod_bi_bb extends CscriptedModule  {
 			$this->parent->runContent('forum',$this->parent->template,array('(forum.id_parent=0 OR forum.id_parent is NULL)  AND forum.urla<>"" AND forum.lang="'.$_SESSION[CONS_SESSION_LANG].'"','forum.ordem asc',''),'_topforums',false,'frameforuns');
 	}	
 }
-

@@ -5,9 +5,11 @@
 class mod_bi_labels extends CscriptedModule  {
 
 	// config ----
-	var $admFolder = 'adm';
+	/** @var string|array<int, string> */
+	public string|array $admFolder = 'adm';
 	// internals -----
-	var $customPermissions = array('can_editlabels' => 'can_editlabels',
+	/** @var array<string, string> */
+	public array $customPermissions = array('can_editlabels' => 'can_editlabels',
 									);
 	var $isAdminPage;
 	private $contextfriendlyfolderlist = array();

@@ -8,7 +8,8 @@ class CscriptedModule {
 	public ?CPrescia $parent = null;
 	public string $name = ""; // SET THIS TO THE SCRIPT NAME either here (inherited module) or the construct!
 	public string $moduleRelation = ""; // which database module is related to this (set by "plugins" on XML)
-	public string $admFolder = "adm"; // Virtual folder where eventual administrative/reports are located. Match this with your administrative plugin/page
+	/** @var string|array<int, string> Virtual administrative folders before/after normalization. */
+	public string|array $admFolder = "adm"; // Virtual folder where eventual administrative/reports are located. Match this with your administrative plugin/page
 	/** @var array<int|string, mixed> */
 	public array $admOptions = array(); // pages that this script will add on the admin (add just the page name, not the folder, since it will use the above)
 							   // each entry comes as "page" => "term"

@@ -2,7 +2,7 @@
 
 class mod_bi_dev extends CscriptedModule  {
 
-	var $name = "bi_dev";
+	public string $name = "bi_dev";
 	var $devDisable = false;
 	private $devCheckHTML = true;
 	private $overheadTime = 0;

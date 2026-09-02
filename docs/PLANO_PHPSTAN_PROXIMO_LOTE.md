@@ -12,6 +12,8 @@
 
 **Lote C iniciado:** foram adicionados contratos específicos para `dieFreakingThumbs()`, `adodb_daylight_sv()` e a classe dinâmica `CDBO_0`, todos identificados no relatório do CI como símbolos ausentes.
 
+**Lote D — propriedades:** corrigidas as sete sobrescritas incompatíveis em `bi_adm`, `bi_bb`, `bi_dev`, `bi_labels` e `bi_undo`. O contrato de `admFolder` foi ampliado de forma explícita para `string|array<int, string>`, refletindo a normalização por `explode()` usada pelo runtime.
+
 ## Conclusão executiva
 
 A última execução do PHPStan terminou com falha, mas as correções recentes reduziram os erros diretamente relacionados a cabeçalhos PHP inválidos, constantes de configuração e resultados de consultas não inicializados. O próximo lote não deve elevar o nível de análise. A prioridade é eliminar as causas estruturais que ainda geram a maior parte do relatório: contexto global ausente, chamadas de módulos/plugins sem contratos, variáveis indefinidas remanescentes e símbolos legados que ainda não possuem bootstrap ou stub confiável.

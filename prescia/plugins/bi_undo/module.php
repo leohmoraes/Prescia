@@ -5,7 +5,7 @@ if (CONS_DB_HOST=='') $this->errorControl->raise(4,'bi_undo','UNDO module requir
 class mod_bi_undo extends CscriptedModule  {
 
 
-	var $name = "bi_undo";
+	public string $name = "bi_undo";
 	var $internalMemory = array(); // will prefetch data to store on the first notify pass, and actually store on second (which means it was sucessful)
 
 	function __construct(&$parent,$moduleRelation="") {
