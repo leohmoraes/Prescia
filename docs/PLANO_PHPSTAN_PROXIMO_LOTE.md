@@ -22,6 +22,8 @@
 
 **Diagnóstico inicial do Lote F:** a execução [PHP static analysis — execução 33582848768][6], no commit `4c8846b`, falhou com mais de 1000 diagnósticos. O formatter limitou a saída aos primeiros 1000 registros. A baseline contém `ignoreErrors: []`, portanto nenhum diagnóstico está sendo ocultado.
 
+**Fase F1 — primeiro ciclo:** foram inicializados os resultados `$r` e `$n` nos fluxos de autenticação, sessão, carregamento de usuário e no teste de integração `presciatester`. A correção preserva a distinção entre resultado inexistente (`false`/`null`) e contagem vazia (`0`), sem alterar a decisão de sucesso das consultas.
+
 ## Conclusão executiva
 
 A última execução do PHPStan terminou com falha, mas as correções recentes reduziram os erros diretamente relacionados a cabeçalhos PHP inválidos, constantes de configuração e resultados de consultas não inicializados. O próximo lote não deve elevar o nível de análise. A prioridade é eliminar as causas estruturais que ainda geram a maior parte do relatório: contexto global ausente, chamadas de módulos/plugins sem contratos, variáveis indefinidas remanescentes e símbolos legados que ainda não possuem bootstrap ou stub confiável.

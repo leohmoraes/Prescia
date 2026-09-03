@@ -118,6 +118,8 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 				$kA = array();
 				$module->getKeys($wS, $kA, $keys,"",true); # locks all my keys to fetch whole table
 				$sql = $module->get_base_sql($wS);
+				$r = false;
+				$n = 0;
 				$this->parent->dbo->query($sql,$r,$n,$this->parent->debugmode);
 				if ($n>0) {
 					$myData = $this->parent->dbo->fetch_assoc($r);
@@ -528,6 +530,8 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 		if (isset($_SESSION[CONS_SESSION_ACCESS_USER]) && isset($_SESSION[CONS_SESSION_ACCESS_USER]['id']) && $_SESSION[CONS_SESSION_ACCESS_LEVEL] > 0) {
 			$authModule = $this->parent->loaded(CONS_AUTH_SESSIONMANAGERMODULE);
 			$sql = "DELETE FROM ".$authModule->dbname." WHERE id_user=?";
+			$r = false;
+			$n = 0;
 			$this->parent->dbo->queryPrepared($sql, 'i', array((int)$_SESSION[CONS_SESSION_ACCESS_USER]['id']), $r, $n);
 		}
 		$_SESSION[CONS_SESSION_ACCESS_USER] = array();
@@ -555,7 +559,9 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 		# someone already logged catch
 		if (isset($_SESSION[CONS_SESSION_ACCESS_USER]) && isset($_SESSION[CONS_SESSION_ACCESS_USER]['id']) && $_SESSION[CONS_SESSION_ACCESS_LEVEL] > 0) {
 			$authModule = $this->parent->loaded(CONS_AUTH_SESSIONMANAGERMODULE);
-				$sql = "UPDATE ".$authModule->dbname." SET lastaction=NOW() WHERE id_user=?";
+			$r = false;
+			$n = 0;
+			$sql = "UPDATE ".$authModule->dbname." SET lastaction=NOW() WHERE id_user=?";
 				$this->parent->dbo->queryPrepared($sql, 'i', array((int)$_SESSION[CONS_SESSION_ACCESS_USER]['id']), $r, $n);
 			return CONS_AUTH_SESSION_KEEP; # someone (not guest) is logged, ignore login procedures until logs-off/time out
 		}
@@ -571,6 +577,8 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 		$groupModule = $this->parent->loaded(CONS_AUTH_GROUPMODULE);
 		$authModule = $this->parent->loaded(CONS_AUTH_SESSIONMANAGERMODULE);
 		$ip = CONS_IP;
+		$r = null;
+		$n = 0;
 
 		# COOKIES?
 		if (isset($_COOKIE['scookie']) && $_COOKIE['scookie'] != "" && isset($_COOKIE['login']) && is_numeric($_COOKIE['login'])) {
@@ -700,6 +708,8 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 		$groupModule = $this->parent->loaded(CONS_AUTH_GROUPMODULE);
 		$loginModule = $this->parent->loaded(CONS_AUTH_USERMODULE);
 		$sql = $loginModule->get_base_sql(CONS_AUTH_USERMODULE.".id=?");
+		$r = null;
+		$n = 0;
 		$this->parent->dbo->queryPrepared($sql, 'i', array((int)$loginId), $r, $n);
 		if ($n>0) {
 			$_SESSION[CONS_SESSION_ACCESS_USER] = $this->parent->dbo->fetch_assoc($r);

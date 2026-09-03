@@ -371,7 +371,9 @@
 				$ok = !$this->runAction('prescialinker',CONS_ACTION_INCLUDE,$data);
 				if (!$ok) break;
 				$this->errorState = false;
-				if (!$this->dbo->query("SELECT alpha,beta,oneofakind FROM dbp LIMIT 2",$r,$n) || $n !=2) {
+					$r = false;
+					$n = 0;
+					if (!$this->dbo->query("SELECT alpha,beta,oneofakind FROM dbp LIMIT 2",$r,$n) || $n !=2) {
 					$this->log[] = "FAILED to select 2 Presciator";
 					$ok = false;
 					break;

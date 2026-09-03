@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Started Lote E by adding generic array contracts to the procedural helpers `arrayToString()`, `extractUri()`, `listFiles()`, `xmlParamsParser()` and `adodb_daylight_sv()`, including their PHPStan stubs.
 - Officialized Lote F as the controlled PHPStan baseline-review stage, with regression safeguards, mandatory metrics and a two-cycle stability gate before level 2.
 - Expanded Lote F with an operational strategy for the current `1000+` diagnostic report, prioritizing undefined variables, validating object contracts and prohibiting baseline additions for regressions.
+- Started Fase F1 by initializing database result handles and row counts in authentication, session, user-loading and integration-test flows without changing query success semantics.
 
 ### Compatibility checks
 - The compatibility suite checks runtime version, required extensions, PHP syntax, removed/deprecated APIs, short tags and Docker base image.
