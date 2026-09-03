@@ -20,11 +20,13 @@
 
 **Lote F oficializado:** a revisão da baseline passa a ser uma etapa independente, executada após a validação do Lote E. Nenhum diagnóstico novo poderá ser incluído na baseline para encobrir regressões.
 
+**Diagnóstico inicial do Lote F:** a execução [PHP static analysis — execução 33582848768][6], no commit `4c8846b`, falhou com mais de 1000 diagnósticos. O formatter limitou a saída aos primeiros 1000 registros. A baseline contém `ignoreErrors: []`, portanto nenhum diagnóstico está sendo ocultado.
+
 ## Conclusão executiva
 
 A última execução do PHPStan terminou com falha, mas as correções recentes reduziram os erros diretamente relacionados a cabeçalhos PHP inválidos, constantes de configuração e resultados de consultas não inicializados. O próximo lote não deve elevar o nível de análise. A prioridade é eliminar as causas estruturais que ainda geram a maior parte do relatório: contexto global ausente, chamadas de módulos/plugins sem contratos, variáveis indefinidas remanescentes e símbolos legados que ainda não possuem bootstrap ou stub confiável.
 
-O relatório do CI associado ao commit `22c3615` contém **2.126 diagnósticos**. Desse total, **1.797** pertencem às categorias de variável `$core` ou `$this` possivelmente ausente. Esses avisos são predominantemente consequência de arquivos de payload e scripts incluídos fora do contexto de uma classe ou de um bootstrap de aplicação. Eles devem ser tratados por contratos de entrada e separação de código, não por declarações globais artificiais.
+O relatório histórico do CI associado ao commit `22c3615` continha **2.126 diagnósticos**. O relatório atual do Lote F excedeu o limite de 1000 registros e, por isso, não deve ser usado para estimar o total real. A leitura dos registros exibidos confirma que `variable.undefined` é a categoria dominante, seguida por acessos a propriedades privadas ou ausentes, métodos e símbolos não encontrados. A estratégia deve tratar as causas por fluxo e contrato, não adicionar supressões globais.
 
 | Categoria | Diagnósticos | Prioridade | Estratégia |
 |---|---:|---:|---|
@@ -36,6 +38,25 @@ O relatório do CI associado ao commit `22c3615` contém **2.126 diagnósticos**
 | Métodos e assinaturas | 3 | P1 | Corrigir chamadas incompatíveis ou ampliar contratos precisos. |
 | Constantes ausentes | 3 | P1 | Definir no bootstrap estático quando forem configuração externa. |
 | Tipos iteráveis e retornos | 1 | P2 | Completar tipos genéricos nas funções procedurais. |
+
+### Estratégia operacional do Lote F
+
+O Lote F será executado em ciclos curtos e mensuráveis. Cada ciclo deve partir do mesmo commit analisado pelo CI, preservar a baseline atual e produzir um relatório completo ou explicitamente limitado. Quando o formatter limitar a saída, a equipe deve registrar essa limitação e usar o identificador, arquivo e linha dos diagnósticos disponíveis sem inferir que o número exibido representa o total.
+
+| Fase | Tratamento | Regra de decisão |
+|---:|---|---|
+| F1 | Variáveis indefinidas | Corrigir primeiro variáveis de banco, sessão, upload, imagem e requisição; inicializar no menor escopo comum e preservar `false`, `null`, lista vazia e valor válido. |
+| F2 | Propriedades privadas ou ausentes | Confirmar a classe real do objeto; declarar a propriedade no contrato correto ou substituir o acesso por uma API pública. Não alterar visibilidade apenas para silenciar o PHPStan. |
+| F3 | Métodos ausentes | Mapear a classe concreta e o carregamento dinâmico; corrigir o call site quando o método estiver incorreto ou adicionar uma declaração precisa quando o método existir em runtime. |
+| F4 | Funções, classes e constantes ausentes | Localizar a origem real, ajustar `scanFiles` ou o bootstrap sem efeitos colaterais e criar stub somente quando o símbolo for opcional ou dinâmico. |
+| F5 | Erros de inclusão e sintaxe de padrões | Corrigir caminhos, arquivos ausentes e expressões regulares inválidas no código ou na configuração; não criar `ignoreErrors` para problemas executáveis. |
+| F6 | Baseline | Remover entradas somente quando o diagnóstico desaparecer e a correção estiver coberta por revisão ou teste. A baseline continua vazia até que um diagnóstico preexistente seja comprovado e justificado. |
+
+Os diagnósticos de `variable.undefined` devem ser agrupados por arquivo, variável e fluxo de execução. Para cada correção, o registro deve indicar o valor inicial, a condição que garante a atribuição e o consumidor do valor. Os diagnósticos de contexto `$core` e `$this` devem continuar sendo tratados por contratos de payload e não por variáveis globais artificiais.
+
+As categorias `property.private`, `property.notFound`, `method.notFound`, `class.notFound`, `function.notFound`, `constant.notFound`, `require.fileNotFound`, `includeOnce.fileNotFound`, `function.inner` e `constructor.unusedParameter` devem receber tarefas separadas quando a causa não puder ser resolvida no mesmo componente. Essa separação evita que uma alteração de tipagem esconda um problema de carregamento ou comportamento.
+
+**Métrica de cada ciclo:** registrar o commit analisado, o total reportado ou o limite do formatter, a contagem por identificador, o número de erros fora da baseline, a quantidade de entradas removidas e o número de regressões. Quando o CI reportar `1000+`, a métrica deve ser registrada como limite superior e não como total exato.
 
 ## Escopo do próximo lote
 
@@ -118,5 +139,6 @@ A contagem foi extraída do log da execução [PHP static analysis — execuçã
 [3]: https://github.com/leohmoraes/Prescia/actions/runs/33580767190 "Prescia — PHP 8.3 compatibility workflow run"
 [4]: https://github.com/leohmoraes/Prescia/actions/runs/33580767192 "Prescia — PHP static analysis workflow run"
 [5]: https://github.com/leohmoraes/Prescia/issues/43 "Prescia Issue #43 — Atualizar PHPStan e elevar gradualmente o nível de análise"
+[6]: https://github.com/leohmoraes/Prescia/actions/runs/33582848768 "Prescia — PHP static analysis workflow run for baseline review"
 
 > Este documento define o próximo lote de execução. Ele não substitui o relatório do CI nem autoriza elevar o PHPStan ao nível 2 antes dos critérios de aceite serem atingidos.
