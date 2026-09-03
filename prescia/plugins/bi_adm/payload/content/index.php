@@ -1,7 +1,7 @@
 <?php
 
 /** @var CPrescia $core Runtime payload context injected by the framework. */
-/** @var CModule $this Runtime module context injected by the framework. */
+/** @var mod_bi_adm $this Runtime module context injected by the framework. */
 	// master options (remove if not master)
 	if ($_SESSION[CONS_SESSION_ACCESS_LEVEL]<100) $core->template->assign("_master");
 	if ($_SESSION[CONS_SESSION_ACCESS_LEVEL]<99) $core->template->assign("_highadmin");

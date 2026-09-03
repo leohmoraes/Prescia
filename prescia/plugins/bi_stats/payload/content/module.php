@@ -1,6 +1,6 @@
 <?php
 
-/** @var CModule $this Runtime module context injected by the framework. */
+/** @var mod_bi_stats $this Runtime module context injected by the framework. */
 
 	$graphWidth = 200;
 	$this->loadAllModules();

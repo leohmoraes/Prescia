@@ -61,7 +61,7 @@ class mod_bi_adm extends CscriptedModule  {
 	private $menudata = array();
 	public $isAdminPage = false; // cache test result
 	private $hasUndo = false; // cache for testing if have Undo module
-	private $hasStats = false; // cache for testing if have stats module
+	protected bool $hasStats = false; // cache for testing if have stats module
 
 	function loadSettings() {
 		$this->name = "bi_adm";

@@ -1,7 +1,7 @@
 <?php
 
 /** @var CPrescia $core Runtime payload context injected by the framework. */
-/** @var CModule $this Runtime module context injected by the framework. */
+/** @var mod_bi_stats $this Runtime module context injected by the framework. */
 
 	$graphWidth = 400;
 	

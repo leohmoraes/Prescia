@@ -26,6 +26,8 @@
 
 **Fase F2 — primeiro ciclo:** as propriedades de conexão de `CDBO` usadas pelos drivers filhos foram alteradas de `private` para `protected`, preservando o encapsulamento contra consumidores externos e permitindo a herança prevista pelo driver. Também foram corrigidos dois acessos incorretos a `$this->fields` e um typo em `$ownerlink` no controle de autorização, substituindo-os pelo módulo e pela variável de fluxo corretos.
 
+**Fase F2 — segundo ciclo iniciado:** `CPresciaVar::$headerControl` foi declarado como estado do controlador inicializado pelo construtor de `CPrescia`. Os payloads de `bi_adm` e `bi_stats` que recebem o módulo por `$this` deixaram de declarar o tipo genérico `CModule` e passaram a referenciar `mod_bi_adm` ou `mod_bi_stats`. A propriedade `hasStats` foi exposta como `protected` porque é consumida pelos payloads administrativos incluídos no contexto do módulo.
+
 ## Conclusão executiva
 
 A última execução do PHPStan terminou com falha, mas as correções recentes reduziram os erros diretamente relacionados a cabeçalhos PHP inválidos, constantes de configuração e resultados de consultas não inicializados. O próximo lote não deve elevar o nível de análise. A prioridade é eliminar as causas estruturais que ainda geram a maior parte do relatório: contexto global ausente, chamadas de módulos/plugins sem contratos, variáveis indefinidas remanescentes e símbolos legados que ainda não possuem bootstrap ou stub confiável.
