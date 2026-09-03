@@ -7,12 +7,12 @@
 
 class CDBO {
 
-	private $ctype = '';
-  	private $connection = false; // MySQL resource OR MySQLi Object
-  	private $host = "";
-  	private $user = "";
-  	private $password = "";
-  	private $database = "";
+	protected $ctype = '';
+	protected $connection = false; // MySQL resource OR MySQLi Object
+	protected $host = "";
+	protected $user = "";
+	protected $password = "";
+	protected $database = "";
 	public $serverVersion = 0;
   	public $debugmode = false;
   	public $log = array();

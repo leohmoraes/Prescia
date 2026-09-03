@@ -24,6 +24,8 @@
 
 **Fase F1 — primeiro ciclo:** foram inicializados os resultados `$r` e `$n` nos fluxos de autenticação, sessão, carregamento de usuário e no teste de integração `presciatester`. A correção preserva a distinção entre resultado inexistente (`false`/`null`) e contagem vazia (`0`), sem alterar a decisão de sucesso das consultas.
 
+**Fase F2 — primeiro ciclo:** as propriedades de conexão de `CDBO` usadas pelos drivers filhos foram alteradas de `private` para `protected`, preservando o encapsulamento contra consumidores externos e permitindo a herança prevista pelo driver. Também foram corrigidos dois acessos incorretos a `$this->fields` e um typo em `$ownerlink` no controle de autorização, substituindo-os pelo módulo e pela variável de fluxo corretos.
+
 ## Conclusão executiva
 
 A última execução do PHPStan terminou com falha, mas as correções recentes reduziram os erros diretamente relacionados a cabeçalhos PHP inválidos, constantes de configuração e resultados de consultas não inicializados. O próximo lote não deve elevar o nível de análise. A prioridade é eliminar as causas estruturais que ainda geram a maior parte do relatório: contexto global ausente, chamadas de módulos/plugins sem contratos, variáveis indefinidas remanescentes e símbolos legados que ainda não possuem bootstrap ou stub confiável.

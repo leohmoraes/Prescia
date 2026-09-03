@@ -149,7 +149,7 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 					} else if ($module->fields[$ownerLink][CONS_XML_MODULE] == CONS_AUTH_GROUPMODULE && $_SESSION[CONS_SESSION_ACCESS_USER]['id_group'] == $myData[$ownerLink]) { // group link, same group?
 						$bestResult = array(false,true,false,$myData[$ownerLink]); # yes, same group
 					} else { # neither a user nor group link. level 2 check?
-						$remoteModule = $this->parent->loaded($this->fields[$ownerLink][CONS_XML_MODULE]); // remote module
+						$remoteModule = $this->parent->loaded($module->fields[$ownerLink][CONS_XML_MODULE]); // remote module
 						$remoteOwners = $this->getOwners($remoteModule,false,false); // remote link to USER owners
 						if (count($remoteOwners)>0) { // yes, we can have a level 2 check
 							$where = $module->getRemoteKeys($remoteModule,$myData); // build WHERE to locate remote module item (we need to fetch the links to users)
@@ -172,9 +172,9 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 								}
 							}
 						} else { // owner is NOT linkable to a user, so perhaps it's reverse (links to a module the user links to)
-							$remoteModule = $this->parent->loaded($this->fields[$ownerLink][CONS_XML_MODULE]); // remote module
+						$remoteModule = $this->parent->loaded($module->fields[$ownerLink][CONS_XML_MODULE]); // remote module
 							$key = $userModuleObj->get_key_from($remoteModule,$ownerLink,false); // get which field on users links to this
-							if ($key != '' && $_SESSION[CONS_SESSION_ACCESS_USER][$key] == $myData[$ownerlink]) {
+				if ($key != '' && $_SESSION[CONS_SESSION_ACCESS_USER][$key] == $myData[$ownerLink]) {
 								if (!$bestResult[1]) { // best would still be group
 									$bestResult[2] = true;
 									$bestResult[3] = 0;
