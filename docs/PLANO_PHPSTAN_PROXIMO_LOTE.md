@@ -28,6 +28,45 @@
 
 **Fase F2 — segundo ciclo iniciado:** `CPresciaVar::$headerControl` foi declarado como estado do controlador inicializado pelo construtor de `CPrescia`. Os payloads de `bi_adm` e `bi_stats` que recebem o módulo por `$this` deixaram de declarar o tipo genérico `CModule` e passaram a referenciar `mod_bi_adm` ou `mod_bi_stats`. A propriedade `hasStats` foi exposta como `protected` porque é consumida pelos payloads administrativos incluídos no contexto do módulo.
 
+**Fase F2 — terceiro ciclo planejado:** o próximo ciclo tratará exclusivamente os acessos a propriedades que continuam ausentes após o commit `aac6fc9` e a execução [PHP static analysis — execução 33704528222][7]. O ciclo não alterará a baseline e não adicionará propriedades genéricas às classes apenas para reduzir a contagem do relatório.
+
+### Plano de ação da Fase F2 — terceiro ciclo
+
+O objetivo do terceiro ciclo é separar propriedades que pertencem ao núcleo `CPrescia` de propriedades que pertencem aos módulos concretos. O diagnóstico será corrigido no ponto em que o contrato estiver errado, e não no consumidor por meio de casts indiscriminados ou supressões.
+
+| Ordem | Escopo | Diagnósticos observados | Ação prevista | Evidência exigida |
+|---:|---|---|---|---|
+| 1 | `bi_stats` | `template`, `dbo` e `modules` | Confirmar se o include executa com o módulo ou com o núcleo como `$this`; ajustar o PHPDoc ou usar `$core` explicitamente | Trecho do carregador e lista de call sites |
+| 2 | `bi_adm` | `layout` | Verificar se o valor é estado do núcleo, do módulo ou uma dependência injetada; declarar no contrato correto somente se o módulo realmente o possuir | Declaração da classe e fluxo de inclusão |
+| 3 | `bi_auth` | `action`, `account_welcome` e `account_activation_required` | Distinguir parâmetros locais, propriedades de configuração e estado do núcleo; corrigir o acesso ou declarar propriedades tipadas quando fizerem parte do módulo | Assinatura, inicialização e consumidores |
+| 4 | Todos os payloads tratados | `property.notFound` residual | Reexecutar PHPStan e comparar por arquivo, classe, propriedade e linha | Relatório antes/depois e contagem por identificador |
+
+#### Procedimento de execução
+
+Primeiro, será criado um inventário dos diagnósticos `property.notFound` no commit `aac6fc9`, incluindo arquivo, linha, classe inferida pelo PHPStan e contexto real do `include` ou `include_once`. Em seguida, cada propriedade será classificada como **núcleo**, **módulo**, **parâmetro local**, **propriedade legítima não declarada** ou **referência incorreta**.
+
+Depois da classificação, as correções serão aplicadas em commits pequenos. Um PHPDoc será alterado somente quando o escopo de execução comprovar o tipo concreto de `$this`. Uma propriedade será declarada somente na classe que a inicializa e consome como parte de seu estado. Uma referência será substituída por uma API pública ou pelo objeto correto quando o valor pertencer a outra camada.
+
+O ciclo terminará com a execução do PHPStan, do PHPUnit e do teste de compatibilidade com PHP 8.3. Os resultados serão comparados com a execução `33704528222`. Diagnósticos de métodos ausentes, funções ausentes e arquivos não encontrados serão registrados para a Fase F3 ou para o lote de símbolos, mas não serão misturados a este ciclo salvo quando forem consequência direta de uma correção de contexto.
+
+#### Regras de decisão
+
+| Situação encontrada | Decisão |
+|---|---|
+| A propriedade é inicializada em `CPrescia` e consumida pelo payload | Usar `CPrescia` como contexto ou acessar a dependência por `$core`. |
+| A propriedade é inicializada em `mod_bi_adm`, `mod_bi_stats` ou `mod_bi_auth` | Declarar o tipo na classe concreta e manter o PHPDoc do payload especializado. |
+| O nome corresponde a um parâmetro ou variável local | Corrigir o acesso para usar a variável existente; não criar uma propriedade. |
+| A propriedade é acessada por um include, mas é privada na classe proprietária | Preferir método protegido ou público com contrato claro; ampliar visibilidade somente se o include fizer parte do escopo legítimo da classe. |
+| A origem não puder ser comprovada | Não alterar o código nem a baseline; registrar o caso para investigação separada. |
+
+#### Critérios de aceite do terceiro ciclo
+
+O ciclo será considerado concluído quando cada diagnóstico de propriedade tratado possuir uma classificação e uma correção justificadas. Os payloads modificados deverão declarar o contexto real de `$this`, sem introduzir variáveis globais artificiais. As propriedades novas ou alteradas deverão ter inicialização compatível com todos os caminhos de construção da classe. O PHPStan deverá apresentar redução nos diagnósticos `property.notFound` sem aumento equivalente de `method.notFound`, `variable.undefined` ou erros de inclusão. PHPUnit e o teste de compatibilidade PHP 8.3 deverão permanecer aprovados. A baseline deverá continuar sem novas entradas.
+
+#### Métricas obrigatórias
+
+O registro do ciclo deverá informar o commit analisado, a URL da execução do CI, o total reportado ou o limite do formatter, a contagem de `property.notFound` antes e depois, a quantidade de propriedades reclassificadas, a quantidade de propriedades declaradas, a quantidade de referências corrigidas e qualquer regressão introduzida. Se o formatter voltar a limitar a saída a `1000+`, esse valor será registrado como limite superior, e não como total exato.
+
 ## Conclusão executiva
 
 A última execução do PHPStan terminou com falha, mas as correções recentes reduziram os erros diretamente relacionados a cabeçalhos PHP inválidos, constantes de configuração e resultados de consultas não inicializados. O próximo lote não deve elevar o nível de análise. A prioridade é eliminar as causas estruturais que ainda geram a maior parte do relatório: contexto global ausente, chamadas de módulos/plugins sem contratos, variáveis indefinidas remanescentes e símbolos legados que ainda não possuem bootstrap ou stub confiável.
@@ -146,5 +185,6 @@ A contagem foi extraída do log da execução [PHP static analysis — execuçã
 [4]: https://github.com/leohmoraes/Prescia/actions/runs/33580767192 "Prescia — PHP static analysis workflow run"
 [5]: https://github.com/leohmoraes/Prescia/issues/43 "Prescia Issue #43 — Atualizar PHPStan e elevar gradualmente o nível de análise"
 [6]: https://github.com/leohmoraes/Prescia/actions/runs/33582848768 "Prescia — PHP static analysis workflow run for baseline review"
+[7]: https://github.com/leohmoraes/Prescia/actions/runs/33704528222 "Prescia — PHP static analysis workflow run after Fase F2 cycle two"
 
 > Este documento define o próximo lote de execução. Ele não substitui o relatório do CI nem autoriza elevar o PHPStan ao nível 2 antes dos critérios de aceite serem atingidos.
