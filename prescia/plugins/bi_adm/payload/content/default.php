@@ -2,6 +2,9 @@
  *
  */
 
+/** @var CPrescia $core Runtime payload context injected by the framework. */
+/** @var mod_bi_adm $this Runtime module context injected by the framework. */
+
  	// loads frame
  	
  	$core->loadTemplate();
@@ -148,4 +151,3 @@
 				$core->template->assign("CLIENT_LOGO","<img src=\"/pages/".$_SESSION['CODE']."/files/adm/logo.gif\" alt=\"\"/>");
 		}
 	}
-

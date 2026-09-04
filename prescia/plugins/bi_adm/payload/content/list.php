@@ -4,6 +4,9 @@
  * USER PREFERENCES
 -*/
 
+/** @var CPrescia $core Runtime payload context injected by the framework. */
+/** @var mod_bi_adm $this Runtime module context injected by the framework. */
+
 
 	############################ CONSTANTS AND VARIABLES #####################
 

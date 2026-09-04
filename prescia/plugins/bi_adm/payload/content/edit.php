@@ -14,6 +14,9 @@
  * CLEAN-UP
 -*/
 
+/** @var CPrescia $core Runtime payload context injected by the framework. */
+/** @var mod_bi_adm $this Runtime module context injected by the framework. */
+
 	// We use the same scripts as in the list.html to handle ajax lists, get them
 	$listHTML = new CKTemplate($core->template);
 	$listHTML->fetch(CONS_PATH_SYSTEM."plugins/".$this->name."/payload/template/list.html");
@@ -901,4 +904,3 @@
 	$core->template->assign("_selecttree_field","");
 	$core->template->assign("_serializearray_field","");
 	####################################### -------- #######################################
-
