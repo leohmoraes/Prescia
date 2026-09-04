@@ -365,6 +365,7 @@
 	foreach ($module->fields as $name => $field) {
 		if ($name == "ordem") $hasOrder = true;
 		$content = ""; // content blank or false means this field will not be shown
+		$compare = "="; // default comparison when the requested operator is absent or invalid
 		$fillDT = array('field' => $name,
 						'width' => '90%'); // data for the INPUT html
 		$outdata = array('name' => $name); // data for the whole search HTML (content =$fillDT)
@@ -733,7 +734,7 @@
 							$sql['WHERE'][] = $remoteModule->name.".".$remoteModule->keys[0]." = '".$_REQUEST[$lmod."_".$lfname]."'";
 							$filtering++;
 							$skeys .= "<input type=\"hidden\" name=\"match_".$lmod."_".$lfname."\" value=\"".$_REQUEST['match_'.$lmod."_".$lfname]."\"/>";
-							$skeys .= "<input type=\"hidden\" name=\"$name\" value=\"".$_REQUEST[$lmod."_".$lfname]."\"/>";
+					$skeys .= "<input type=\"hidden\" name=\"".$lmod."_".$lfname."\" value=\"".$_REQUEST[$lmod."_".$lfname]."\"/>";
 						}
 					} // if (keys)
 				} // foreach (field in remote module)
@@ -836,7 +837,9 @@
 	$availablewidth = 100-($maxwidth*$usedColumns); // how many % are available as extra, max 99 same reason
 
 
-	$imageDetected = false;
+		$imageDetected = false;
+		$numThumbs = 0;
+		$lastThumb = array(0,0);
 
 	$columnWidth = array();
 	foreach ($toShow as $field) { // evaluates column size AND thumbnail configuration
@@ -1043,7 +1046,7 @@
 					break;
 					case CONS_TIPO_ENUM:
 						if (CONS_LIST_AJAXEDITOR && !isset($linkField[CONS_XML_READONLY])) { # use ajax editor for enum fields on the list! Keep in mind that the ajax that treats this must be on the page
-							$temp = isset($module->fields[$name][CONS_XML_MANDATORY])?'':"<option value=''></option>";
+							$temp = isset($module->fields[$field][CONS_XML_MANDATORY])?'':"<option value=''></option>";
 							preg_match("@ENUM \(([^)]*)\).*@",$module->fields[$field][CONS_XML_SQL],$regs);
 							$xtp = "<option value=\"{enum}\" {\}".$field."|selected|{enum}}>{enum_translated}</option>";
 							$tp = new CKTemplate($core->template);
@@ -1087,7 +1090,7 @@
 								$innersql['SELECT'][] = "if (".$rmd->name.".".$rmd->keys[0]."='".$_REQUEST['affrefererkeys']."',1,0) as selected";
 							}
 							$core->runContent($rmd,$tp,$innersql,'_items',false);
-							$la = '<span id="la_'.$possibleField.'_ara" style="width:90%"><select onchange="selectChange(\'la_'.$possibleField.'\');" style="width:100%;margin:0px;border:1px;padding:1px;font-size:9px" name="la_'.$field.'" id="la_'.$field.'">'.$tp->techo().'</select><span>';
+							$la = '<span id="la_'.$field.'_ara" style="width:90%"><select onchange="selectChange(\'la_'.$field.'\');" style="width:100%;margin:0px;border:1px;padding:1px;font-size:9px" name="la_'.$field.'" id="la_'.$field.'">'.$tp->techo().'</select><span>';
 							$laFields[] = $field;
 							unset($tp);
 						}
@@ -1224,11 +1227,12 @@
 
 
 
-	############################ RELATED LINKS #####################
+		############################ RELATED LINKS #####################
 
-	// detect relate links (supports only ONE at this point (first found))
-	if ($core->layout == 0) { //relatewithlinker
-		foreach ($core->modules as $mname => $modobj) {
+		// detect relate links (supports only ONE at this point (first found))
+		if ($core->layout == 0) { //relatewithlinker
+			$isLinker = false;
+			foreach ($core->modules as $mname => $modobj) {
 			$isLinker = false;
 			$prevKey = "";
 			if ($modobj->linker) {
