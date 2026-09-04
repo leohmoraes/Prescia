@@ -30,6 +30,10 @@
 
 **Fase F2 — terceiro ciclo planejado:** o próximo ciclo tratará exclusivamente os acessos a propriedades que continuam ausentes após o commit `aac6fc9` e a execução [PHP static analysis — execução 33704528222][7]. O ciclo não alterará a baseline e não adicionará propriedades genéricas às classes apenas para reduzir a contagem do relatório.
 
+**Fase F2 — terceiro ciclo, análise executada:** a execução [PHP static analysis — execução 33707202232][8], associada ao commit `4a711bb`, atingiu o limite do formatter de 1.000 diagnósticos. O recorte disponível contém 962 registros `variable.undefined`, além de `property.notFound`, `require.fileNotFound`, `class.notFound`, `function.notFound`, `constant.notFound` e outras categorias. Como o limite impede estimar o total real, os números serão tratados como limite inferior do relatório exibido.
+
+O recorte de propriedades confirmou os seguintes alvos para o terceiro ciclo: `mod_bi_adm::$layout`; `mod_bi_auth::$action`, `$account_activation_required` e `$account_welcome`; e `mod_bi_stats::$modules`, `$template` e `$dbo`. A investigação deve começar pelos payloads de `bi_stats`, porque `modules`, `template` e `dbo` aparentam pertencer ao núcleo `CPrescia`, e depois revisar os três estados de autenticação e o acesso a `layout` no administrador. Os 962 diagnósticos de variáveis indefinidas permanecem registrados para a Fase F1 e não serão misturados às correções de contrato deste ciclo.
+
 ### Plano de ação da Fase F2 — terceiro ciclo
 
 O objetivo do terceiro ciclo é separar propriedades que pertencem ao núcleo `CPrescia` de propriedades que pertencem aos módulos concretos. O diagnóstico será corrigido no ponto em que o contrato estiver errado, e não no consumidor por meio de casts indiscriminados ou supressões.
