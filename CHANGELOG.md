@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Officialized Lote F as the controlled PHPStan baseline-review stage, with regression safeguards, mandatory metrics and a two-cycle stability gate before level 2.
 - Expanded Lote F with an operational strategy for the current `1000+` diagnostic report, prioritizing undefined variables, validating object contracts and prohibiting baseline additions for regressions.
 - Started Fase F1 by initializing database result handles and row counts in authentication, session, user-loading and integration-test flows without changing query success semantics.
+- Completed the Fase F2 third-cycle payload contract corrections: core state in `bi_stats` and `bi_adm` now uses the injected parent/core object, and `bi_auth` no longer references undeclared module properties for the action and translation keys.
 - Started Fase F2 by changing CDBO connection state to protected for legitimate driver inheritance and correcting invalid authorization references to module fields and ownerLink.
 - Started the second Fase F2 cycle by declaring CPresciaVar::$headerControl, specializing payload PHPDocs to concrete plugin modules and exposing the legitimately consumed bi_adm::$hasStats state as protected.
 - Executed the PHPStan analysis for Fase F2 cycle three; the CI formatter exposed 1,000 diagnostics, including 962 `variable.undefined` records and the remaining module-property contract targets documented in the PHPStan plan.

@@ -142,7 +142,7 @@ class mod_bi_auth extends CscriptedModule  {
 			require_once(CONS_PATH_SYSTEM."plugins/".$this->name."/authControl.php");
 			$this->parent->authControl = new CauthControlEx($this->parent);
 		}
-		if ($this->registrationMode == 2 && $this->action == "authuser" && isset($_REQUEST['authcode']) && isset($_REQUEST['user']) && is_numeric($_REQUEST['user'])) {
+		if ($this->registrationMode == 2 && $this->parent->action == "authuser" && isset($_REQUEST['authcode']) && isset($_REQUEST['user']) && is_numeric($_REQUEST['user'])) {
 			$data = array("id" => $_REQUEST['user'],
 						  "active" => "y",
 						  "authcode" => addslashes_EX($ao,false,$this->parent->dbo));
@@ -284,7 +284,7 @@ class mod_bi_auth extends CscriptedModule  {
 						if ($this->registrationMode == 2)
 							$data['authcode'] = md5($data['login'].date("His")).date("Ymd");
 						$html = $this->parent->prepareMail($this->registrationMode == 1 ? $this->welcomemail : $this->activatemail,$data); 
-						sendMail($data['email'],$this->parent->dimconfig['pagetitle']." - ".$this->parent->langOut($this->registrationMode==1?$this->account_welcome:$this->account_activation_required),$html);
+						 sendMail($data['email'],$this->parent->dimconfig['pagetitle']." - ".$this->parent->langOut($this->registrationMode==1?'account_welcome':'account_activation_required'),$html);
 					} else {
 						$this->parent->errorControl->raise(527,"user: ".$data['login'],'bi_auth');
 					}

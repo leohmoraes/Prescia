@@ -10,7 +10,7 @@
 
 	$moduleToPage = array();
 
-	foreach ($this->modules as $name => $module) {
+		foreach ($this->parent->modules as $name => $module) {
 		if (isset($module->options[CONS_MODULE_PUBLIC]) && $module->options[CONS_MODULE_PUBLIC] != "" && strpos($module->options[CONS_MODULE_PUBLIC],"?") !== false && count($module->keys)==1) {
 			$page = explode("?",$module->options[CONS_MODULE_PUBLIC]); # remove parameters
 			if (strpos($page[1],$module->keys[0]."={".$module->keys[0]."}")!==false) { # the key provided is really this module's key?
@@ -22,7 +22,7 @@
 		}
 	}
 
-	$obj = $this->template->get("_modules");
+		$obj = $this->parent->template->get("_modules");
 	$temp = "";
 	$selmod = isset($_REQUEST['stm'])?$_REQUEST['stm']:'';
 	foreach ($moduleToPage as $name => $page) {
@@ -30,7 +30,7 @@
 					   'selected' => $name == $selmod ? 1 : 0);
 		$temp .= $obj->techo($dados);
 	}
-	$this->template->assign("_modules",$temp);
+		$this->parent->template->assign("_modules",$temp);
 
 	$max = 1;
 	if ($selmod != "") {
@@ -46,9 +46,9 @@
 				GROUP BY s.hid";
 		$r = false;
 		$n = 0;
-		$this->dbo->query($sql,$r,$n);
+		$this->parent->dbo->query($sql,$r,$n);
 		for ($c=0;$c<$n;$c++) {
-			$data = $this->dbo->fetch_assoc($r);
+				$data = $this->parent->dbo->fetch_assoc($r);
 			$data['page'] = $page;
 			$stats[] = $data;
 			if ($data['hits']>$max) $max = $data['hits'];
@@ -65,7 +65,7 @@
 		$min = ceil($max/20);
 
 		$temp = "";
-		$obj = $this->template->get("_item");
+		$obj = $this->parent->template->get("_item");
 		foreach ($stats as $statdata) {
 			if ($statdata['hits'] <= $min) break;
 			$dados = array('titulo' => $statdata['titulo'],
@@ -77,11 +77,11 @@
 			$temp .= $obj->techo($dados);
 
 		}
-		$this->template->assign("_item",$temp);
-		$this->template->assign("max",$max);
-		$this->template->assign("min",$min);
+		$this->parent->template->assign("_item",$temp);
+		$this->parent->template->assign("max",$max);
+		$this->parent->template->assign("min",$min);
 	} else {
-		$this->template->assign("_moduleSelected","");
+		$this->parent->template->assign("_moduleSelected","");
 	}
 
 

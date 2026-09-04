@@ -32,6 +32,8 @@
 
 **Fase F2 — terceiro ciclo, análise executada:** a execução [PHP static analysis — execução 33707202232][8], associada ao commit `4a711bb`, atingiu o limite do formatter de 1.000 diagnósticos. O recorte disponível contém 962 registros `variable.undefined`, além de `property.notFound`, `require.fileNotFound`, `class.notFound`, `function.notFound`, `constant.notFound` e outras categorias. Como o limite impede estimar o total real, os números serão tratados como limite inferior do relatório exibido.
 
+**Fase F2 — terceiro ciclo, correção aplicada:** os acessos a `modules`, `template` e `dbo` no payload de `bi_stats` foram reclassificados como estado de `CPrescia` e passaram a usar `$this->parent`. O payload `bi_adm` passou a alterar `$core->layout`, e não uma propriedade inexistente de `mod_bi_adm`. No `bi_auth`, `action` passou a ser lido de `$this->parent`, enquanto os rótulos de e-mail foram convertidos em chaves literais de tradução (`account_welcome` e `account_activation_required`) em vez de propriedades não declaradas. Nenhuma entrada foi adicionada à baseline.
+
 O recorte de propriedades confirmou os seguintes alvos para o terceiro ciclo: `mod_bi_adm::$layout`; `mod_bi_auth::$action`, `$account_activation_required` e `$account_welcome`; e `mod_bi_stats::$modules`, `$template` e `$dbo`. A investigação deve começar pelos payloads de `bi_stats`, porque `modules`, `template` e `dbo` aparentam pertencer ao núcleo `CPrescia`, e depois revisar os três estados de autenticação e o acesso a `layout` no administrador. Os 962 diagnósticos de variáveis indefinidas permanecem registrados para a Fase F1 e não serão misturados às correções de contrato deste ciclo.
 
 ### Plano de ação da Fase F2 — terceiro ciclo
