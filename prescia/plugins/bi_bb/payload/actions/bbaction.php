@@ -1,6 +1,9 @@
 <?php
 
-	// safety: are we logged to perform actions? if not, kick out to 403 (unless you are registering)
+/** @var CPrescia $core Runtime payload context injected by the framework. */
+/** @var mod_bi_bb $this Runtime module context injected by the framework. */
+
+		// safety: are we logged to perform actions? if not, kick out to 403 (unless you are registering)
 	// we test post include (self) because that's the most basic permission
 	if (!$core->authControl->checkPermission('FORUMPOST',CONS_ACTION_INCLUDE,array(true,false,false)) && $_POST['bbaction'] != 'profile') {
 		$core->action = 403;
@@ -13,9 +16,10 @@
 		return;
 	}
 
-	$_REQUEST['nocache'] = true; // no caches on actions
+		$_REQUEST['nocache'] = true; // no caches on actions
+		$ok = false;
 
-	// ok let's get to work
+		// ok let's get to work
 	switch ($_POST['bbaction']) {
 		case 'tpreview': // preview a thread
 			if (!$core->queryOk(array("#id_forum","ttitle","fmessage"))) {
