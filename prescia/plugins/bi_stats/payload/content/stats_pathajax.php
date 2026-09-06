@@ -1,4 +1,8 @@
-<?php /* ---------------------------------
+<?php
+
+/** @var CPrescia $core Core context assigned by mod_bi_stats::onShow(). */
+
+/* ---------------------------------
    | PART OF stats MODULE
 --*/
 

@@ -387,3 +387,10 @@ Foram adicionados os contratos PHPDoc correspondentes. A validação focalizada 
 A skill `phpstan-legacy-remediation` foi aplicada a `prescia/plugins/bi_stats/payload/content/stats_ref.php`. O carregador `mod_bi_stats::onShow()` foi confirmado como origem do include, com `$core` disponibilizado como contexto `CPrescia`.
 
 Foi adicionado o contrato PHPDoc de `CPrescia $core`. A validação focalizada terminou com `[OK] No errors`, o `php -l` passou e `git diff --check` foi aprovado. A análise global atual caiu de 428 para 409 diagnósticos, redução de 19 ocorrências, sem alteração da baseline.
+
+
+### Lote B — payload bi_stats: stats_pathajax.php
+
+A skill `phpstan-legacy-remediation` foi aplicada a `prescia/plugins/bi_stats/payload/content/stats_pathajax.php`. O carregador `mod_bi_stats::onShow()` foi confirmado como origem do include, com `$core` disponibilizado como contexto `CPrescia`.
+
+Foi adicionado o contrato PHPDoc de `CPrescia $core`. A validação focalizada terminou com `[OK] No errors`, o `php -l` passou e `git diff --check` foi aprovado. A análise global atual caiu de 409 para 391 diagnósticos, redução de 18 ocorrências, sem alteração da baseline.
