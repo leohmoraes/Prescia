@@ -288,3 +288,12 @@ A execução `34040527721` ainda apresentava sete diagnósticos `function.notFou
 Os dois blocos foram convertidos para closures recursivas locais com `use (&$removeNull)`. O PHPStan focalizado passou a reportar somente o diagnóstico de contexto `$this` já conhecido; não restaram ocorrências de `function.inner` ou `function.notFound` relacionadas a `removeNull`. A sintaxe PHP 8.3 também foi aprovada.
 
 Essa redução será acompanhada no próximo workflow completo, pois a execução que originou o diagnóstico foi anterior ao patch. A baseline permanece inalterada.
+
+
+### Lote de propriedades — driver CDBO_mysqli
+
+O relatório `34040527721` concentrava aproximadamente 87 ocorrências de `property.notFound` em `prescia/lib/dbo/mysqli.php`. A revisão mostrou que os campos (`connection`, `log`, `debugmode`, `delayedconn`, `dbc`, `dbt`, `quickmode`, `errorRaised` e outros) já pertencem à classe-base `CDBO`; o problema era a ausência dos arquivos reais do driver no conjunto `scanFiles` do PHPStan.
+
+A configuração agora descobre `prescia/lib/dbo/cdbo.php` e `prescia/lib/dbo/mysqli.php`. O contrato dinâmico `CDBO_0` continua separado em `tools/phpstan-dynamic-classes.php` e passa a estender a classe-base real, sem duplicar propriedades. A análise focalizada dos dois drivers terminou com `[OK] No errors`, eliminando os diagnósticos de propriedade desse arquivo. Nenhuma entrada foi adicionada à baseline.
+
+O próximo lote deve repetir essa classificação para os demais arquivos com `property.notFound`, distinguindo propriedades herdadas que precisam de descoberta estática de propriedades realmente ausentes em módulos e payloads.

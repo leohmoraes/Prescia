@@ -26,6 +26,8 @@ parameters:
         - prescia/lib/dirBundle.php
         - prescia/lib/locateFile.php
         - prescia/lib/locateAnyFile.php
+        - prescia/lib/dbo/cdbo.php
+        - prescia/lib/dbo/mysqli.php
         - prescia/lib/sendMail.php
         - prescia/lib/storeFile.php
         - prescia/lib/quota.php
