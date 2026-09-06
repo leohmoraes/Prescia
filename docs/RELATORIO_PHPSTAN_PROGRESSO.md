@@ -230,3 +230,16 @@ A correção adicionou o contrato PHPDoc de `CPrescia $core` e inicializou `$ext
 | `bi_bb/payload/content/profile.php` | **Concluído** | PHPStan focalizado sem erros; sintaxe PHP 8.3 aprovada |
 
 O arquivo deixa de ser pendência do ranking histórico. O próximo alvo deverá ser escolhido após uma nova análise global, pois os contratos recentes de `preview.php`, `forum.php` e `profile.php` podem alterar a distribuição dos diagnósticos restantes.
+
+
+## Atualização adicional — aplicação da skill em `script.php`
+
+A skill `phpstan-legacy-remediation` foi aplicada a `prescia/lazyload/script.php`. O contexto foi confirmado no método `CPrescia::addScript()`, que inclui o arquivo com `$this` como núcleo, `$scriptname` como nome do script e `$parameters` como array opcional.
+
+Foram adicionados os contratos PHPDoc `CPrescia $this`, `string $scriptname` e `array<string, mixed> $parameters`. O PHPStan focalizado terminou com **0 erros**, o `php -l` passou e `git diff --check` foi aprovado. A análise global caiu de **446 para 422 diagnósticos**, uma redução de **24 ocorrências**, correspondente aos erros anteriormente atribuídos ao arquivo. A baseline permaneceu inalterada.
+
+| Arquivo | Situação | Validação |
+|---|---|---|
+| `prescia/lazyload/script.php` | **Concluído** | PHPStan focalizado sem erros; PHP 8.3 syntax check aprovado; 24 diagnósticos removidos da análise global |
+
+O próximo alvo deve ser recalculado a partir do relatório global de 422 diagnósticos. Os workflows de CI serão acompanhados após o push do commit desta atualização.

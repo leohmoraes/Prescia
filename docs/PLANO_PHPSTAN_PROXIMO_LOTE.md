@@ -359,3 +359,10 @@ A análise PHPStan focalizada terminou com `[OK] No errors`; o arquivo também p
 A skill `phpstan-legacy-remediation` foi aplicada a `prescia/plugins/bi_bb/payload/content/profile.php`. O carregador `mod_bi_bb::onShow()` foi confirmado como origem do include, portanto `$core` recebeu o contrato PHPDoc `CPrescia`. A função `locateFile()` recebe `$ext` por referência; a variável foi inicializada no ramo autenticado imediatamente antes da chamada, preservando o contrato executável da função.
 
 O PHPStan focalizado terminou com `[OK] No errors` e o arquivo passou no `php -l` do PHP 8.3. A baseline permaneceu inalterada. Com isso, `profile.php` deixa de ser pendência do lote bi_bb; o próximo alvo deve ser recalculado a partir de uma análise global atualizada.
+
+
+### Lote B — lazy-load de scripts: script.php
+
+A skill `phpstan-legacy-remediation` foi aplicada a `prescia/lazyload/script.php`. O carregador `CPrescia::addScript(string $scriptname, array $parameters = [])` foi confirmado em `prescia/core.php`, estabelecendo `$this` como `CPrescia`, `$scriptname` como `string` e `$parameters` como `array<string, mixed>` no include.
+
+Foram adicionados os três contratos PHPDoc correspondentes. A validação focalizada terminou com `[OK] No errors`, o `php -l` passou e `git diff --check` não encontrou problemas. A análise global caiu de 446 para 422 diagnósticos, redução de 24 ocorrências, sem alteração da baseline.

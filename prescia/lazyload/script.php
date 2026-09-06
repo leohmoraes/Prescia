@@ -1,4 +1,9 @@
 <?php
+
+/** @var CPrescia $this Core context that includes this lazy-load. */
+/** @var string $scriptname Script name requested by CPrescia::addScript(). */
+/** @var array<string, mixed> $parameters Optional script parameters. */
+
 /* -------------------------------- Prescia - Scripts
   | Copyleft (ɔ) 2011+, Caio Vianna de Lima Netto (www.prescia.net)
   | LICENSE TYPE: BSD-new/ɔ
@@ -74,4 +79,3 @@
 			$this->storage['_scripts_prettify_added'] = true;
 		break;
 	}
-
