@@ -6,7 +6,10 @@
  * + ARTICLES MODE: there are no comments, only ONE post, so no pagination and stuff, just the _masterpost
  */
 
-	if (!isset($core->storage['friendlyurldata']) ||
+/** @var CPrescia $core Runtime payload context injected by the framework. */
+/** @var mod_bi_bb $this Runtime module context injected by the framework. */
+
+		if (!isset($core->storage['friendlyurldata']) ||
 	    !isset($core->storage['friendlyurlmodule'])) $core->fastClose(404);
 
 	// ############################# URL handling
@@ -107,35 +110,9 @@
 		    WHERE p.id_forumthread = $idt AND p.id_forum = $idf AND
 		    	  u.id = p.id_author
 		    ORDER BY p.date ASC";
-	
-	// where we start?
-	$tempini = isset($_REQUEST['p_init']) && is_numeric($_REQUEST['p_init'])? $_REQUEST['p_init']:0; // apparent start 
-	if ($mode != 'bb') {
-		// always show the FIRST main post
-		$_REQUEST['p_init'] = 0;
-		$core->templateParams['mainpost'] = true; // we will use on callback to treat includehtml
-		$mainPost = $core->runContent('forumpost',$core->template,$sql,"_masterpost",1,"masterpost".$idt."idf".$idf,"getuseravatar");
-		unset($core->templateParams['mainpost']);
-		// this is the real starting point (add one because we showed the main post already)
-		$_REQUEST['p_init'] = $tempini + 1;
-	} else
-		// bb mode works normally
-		$_REQUEST['p_init'] = $tempini;
 
-	// comments	
-	if ($mode != "articles") {
-		$total = $core->runContent('forumpost',$core->template,$sql,"_post",$ipp,"postsforidt".$idt."idf".$idf."p".$tempini,"getuseravatar");
-		// paging
-		if ($mode != 'bb') $total--; // removes main post of non bb, so totals are ok
-		if ($total > $ipp)
-			$core->template->createPaging("_paginacao",$total,$tempini,$ipp);
-		else
-			$core->template->assign("_paginacao");
-		$core->template->assign("pg_2",$core->template->get("_paginacao"));
-	}
-
-	// callback that loads user avatars or default image
-	function getuseravatar(&$template, &$params, $data, $processed=false) {
+	// Callback that loads user avatars or the default image without declaring a global function.
+	$getUserAvatar = static function (&$template, &$params, $data, $processed = false) {
 		if ($processed) return $data;
 		if ($data['image'] == 'n')
 			$params['excludes'][] = "_imageyes";
@@ -146,7 +123,7 @@
 			locateFile($data['image'],$ext);
 		}
 		if (isset($params['mainpost']) && $data['includehtml'] != '') {
-			$file = "";			
+			$file = "";
 			if (is_file(CONS_PATH_PAGES.$_SESSION['CODE']."/template/".$data['includehtml'])) {
 				$file = CONS_PATH_PAGES.$_SESSION['CODE']."/template/".$data['includehtml'];
 			} else if (is_file(CONS_PATH_PAGES.$_SESSION['CODE']."/template/".$data['includehtml'].".html")) {
@@ -165,5 +142,30 @@
 			}
 		}
 		return $data;
-	}
+	};
 
+		// where we start?
+		$tempini = isset($_REQUEST['p_init']) && is_numeric($_REQUEST['p_init'])? $_REQUEST['p_init']:0; // apparent start
+	if ($mode != 'bb') {
+		// always show the FIRST main post
+		$_REQUEST['p_init'] = 0;
+		$core->templateParams['mainpost'] = true; // we will use on callback to treat includehtml
+		$mainPost = $core->runContent('forumpost',$core->template,$sql,"_masterpost",1,"masterpost".$idt."idf".$idf,$getUserAvatar);
+		unset($core->templateParams['mainpost']);
+		// this is the real starting point (add one because we showed the main post already)
+		$_REQUEST['p_init'] = $tempini + 1;
+	} else
+		// bb mode works normally
+		$_REQUEST['p_init'] = $tempini;
+
+	// comments
+	if ($mode != "articles") {
+		$total = $core->runContent('forumpost',$core->template,$sql,"_post",$ipp,"postsforidt".$idt."idf".$idf."p".$tempini,$getUserAvatar);
+		// paging
+		if ($mode != 'bb') $total--; // removes main post of non bb, so totals are ok
+		if ($total > $ipp)
+			$core->template->createPaging("_paginacao",$total,$tempini,$ipp);
+		else
+			$core->template->assign("_paginacao");
+		$core->template->assign("pg_2",$core->template->get("_paginacao"));
+	}
