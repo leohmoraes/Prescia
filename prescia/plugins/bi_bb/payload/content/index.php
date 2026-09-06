@@ -1,5 +1,8 @@
 <?php
 
+/** @var CPrescia $core Core context assigned by mod_bi_bb::onRender(). */
+/** @var mod_bi_bb $this Module context assigned by the framework include. */
+
 	$showFullList = isset($_REQUEST['all']) && $_REQUEST['all'] == "true"; // send all=true to show the lists regardless of parenting, and the last threads with paging 
 
 	if (!$this->blockforumlist) {
@@ -125,7 +128,7 @@
 		$core->template->assign("mode",$this->mainthreadsAsBB?"bb":"articles");
 		$lang = $_SESSION[CONS_SESSION_LANG];
 		if ($this->mainthreadsAsBB) {
-			$this->templateParams['ipp'] = $this->showlastthreads;
+				$core->templateParams['ipp'] = $this->showlastthreads;
 			$sql = "SELECT t.id, t.title, t.image as image,t.date, t.urla as turla, a.login as author_login,
 						   p.date as pdate, u.login, count(distinct p2.id) as totalposts,
 						   f.title as forum_title, f.urla as urla

@@ -44,6 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Started Fase F5 by hardening `prescia/lazyload/botprotect.php` against empty crawler regex configuration. Empty blacklist/whitelist patterns now become a non-matching safe pattern before `preg_match()`, eliminating both `regexp.pattern` diagnostics without changing configured pattern behavior.
 - Refactored the two recursive local `removeNull()` functions in `bi_cms` into scoped recursive closures. This removes the associated `function.inner` and `function.notFound` diagnostics without introducing global functions; only the preexisting payload-context diagnostic remains in the focused file.
 - Added the real `CDBO` and `CDBO_mysqli` driver files to PHPStan discovery and kept `CDBO_0` as the explicit dynamic subclass contract. The focused driver analysis now reports no `property.notFound` diagnostics for inherited connection, logging, timing or query state.
+- Started the undefined-variable remediation batch in `bi_bb` by documenting the injected `CPrescia`/`mod_bi_bb` payload context and correcting pagination state from module-local `$templateParams` to `$core->templateParams`. The `index.php` payload now passes focused PHPStan with no errors.
 
 ### Compatibility checks
 - The compatibility suite checks runtime version, required extensions, PHP syntax, removed/deprecated APIs, short tags and Docker base image.

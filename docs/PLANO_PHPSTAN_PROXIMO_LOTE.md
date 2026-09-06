@@ -297,3 +297,12 @@ O relatório `34040527721` concentrava aproximadamente 87 ocorrências de `prope
 A configuração agora descobre `prescia/lib/dbo/cdbo.php` e `prescia/lib/dbo/mysqli.php`. O contrato dinâmico `CDBO_0` continua separado em `tools/phpstan-dynamic-classes.php` e passa a estender a classe-base real, sem duplicar propriedades. A análise focalizada dos dois drivers terminou com `[OK] No errors`, eliminando os diagnósticos de propriedade desse arquivo. Nenhuma entrada foi adicionada à baseline.
 
 O próximo lote deve repetir essa classificação para os demais arquivos com `property.notFound`, distinguindo propriedades herdadas que precisam de descoberta estática de propriedades realmente ausentes em módulos e payloads.
+
+
+### Lote B — primeiro ciclo: contexto e paginação do bi_bb index
+
+A verificação completa do commit `0237763` contabilizou 595 diagnósticos `variable.undefined`, com alta concentração nos payloads do `bi_bb`. O primeiro arquivo tratado foi `prescia/plugins/bi_bb/payload/content/index.php`, que apresentava referências indefinidas a `$this` e `$core` por depender de variáveis injetadas pelo include do módulo.
+
+Foram adicionados contratos PHPDoc explícitos para `CPrescia $core` e `mod_bi_bb $this`, refletindo o contexto confirmado em `mod_bi_bb::onRender()`. A revisão também encontrou um acesso funcionalmente incorreto a `$this->templateParams['ipp']`: `templateParams` pertence ao núcleo e é preparado pelo motor de módulos. A referência foi corrigida para `$core->templateParams['ipp']`.
+
+O PHPStan focalizado agora retorna `[OK] No errors` para o payload. Não foram adicionadas entradas à baseline e nenhuma variável global fictícia foi criada.
