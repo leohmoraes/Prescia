@@ -47,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Started the undefined-variable remediation batch in `bi_bb` by documenting the injected `CPrescia`/`mod_bi_bb` payload context and correcting pagination state from module-local `$templateParams` to `$core->templateParams`. The `index.php` payload now passes focused PHPStan with no errors.
 - Continued the undefined-variable remediation in `prescia/lazyload/friendlyurl.php` by documenting its real `CPrescia::friendlyurl(array $param)` include contract. The focused analysis now passes with no errors, without inventing defaults for matching parameters.
 - Continued the undefined-variable remediation in `prescia/lazyload/fastclose.php` by documenting the `CPrescia::fastClose($action, $context)` include contract. The focused analysis now passes with no errors.
+- Reworked missing-path handling in both entrypoints and the legacy CKEditor loader. Configuration, database connector and CKEditor implementation paths are now calculated, checked with `is_file()` and reported through explicit `RuntimeException`s before inclusion. This removes the PHPStan `require.fileNotFound` and `includeOnce.fileNotFound` diagnostics without adding production placeholder files.
 
 ### Compatibility checks
 - The compatibility suite checks runtime version, required extensions, PHP syntax, removed/deprecated APIs, short tags and Docker base image.

@@ -320,3 +320,12 @@ Foram adicionados contratos PHPDoc para `CPrescia $this` e `array<string, mixed>
 Após a correção de `friendlyurl.php`, o ranking do workflow `34041355257` apontou `prescia/lazyload/fastclose.php` com 31 referências indefinidas. O arquivo é incluído exclusivamente por `CPrescia::fastClose($action, $context)`, e as referências eram ao núcleo `$this` e ao parâmetro `$action` recebido pelo método.
 
 Foram adicionados contratos PHPDoc para `CPrescia $this` e `string $action`. A análise focalizada terminou com `[OK] No errors`, sem inicializar estados de erro artificialmente e sem alterar o fluxo de encerramento rápido.
+
+
+### Lote de caminhos — includes obrigatórios e integração CKEditor
+
+A execução `34041574378` apresentava quatro diagnósticos `require.fileNotFound` nos entrypoints, referentes a `config/settings.php` e ao driver dinâmico `prescia/lib/dbo/0.php`, além de dois `includeOnce.fileNotFound` em `pages/_js/ckeditor/ckeditor.php` para integrações PHP legadas ausentes.
+
+A correção não criou arquivos de produção fictícios. Nos dois entrypoints, os caminhos de configuração e driver agora são calculados em variáveis, verificados com `is_file()` e interrompem o bootstrap com `RuntimeException` descritiva quando a instalação não fornece uma dependência obrigatória. No CKEditor, a implementação é resolvida relativa a `__DIR__`, validada antes do include e também gera uma exceção explícita quando a integração não está instalada.
+
+A análise focalizada dos três arquivos eliminou todos os diagnósticos de caminho ausente. Restaram somente sete referências a `$PAGE` em `index.php`, que pertencem ao próximo lote de variáveis de contexto. A baseline não foi alterada.
