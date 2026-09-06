@@ -5,6 +5,8 @@
   | NOTE: forcecron=day|hour|true only works if you are logged as master
 -*/
 
+/** @var CPrescia $this Runtime cron context injected by the framework. */
+/** @var bool|string $forceCron Cron mode supplied by CPrescia::cronCheck(). */
 
 if ($forceCron=='day' || $forceCron=='all' || (date("d") != $this->dimconfig['_cronD'] && $forceCron != 'hour')) { // Daily cron
 
@@ -30,7 +32,7 @@ if ($forceCron=='day' || $forceCron=='all' || (date("d") != $this->dimconfig['_c
 	}
 
 	// reset 404 caches
-	$core->dimconfig['_404cache'] = array();
+	$this->dimconfig['_404cache'] = array();
 
 	// backup main files
 	$this->loadDimconfig(true);
@@ -49,7 +51,7 @@ if ($forceCron=='day' || $forceCron=='all' || (date("d") != $this->dimconfig['_c
 		$httpderrlog = str_replace("{d}",date("d"),$httpderrlog);
 		if (is_file(CONS_HTTPD_ERRDIR.$httpderrlog) && filesize(CONS_HTTPD_ERRDIR.$httpderrlog)>1048576) {
 			# php log has more than 1Mb, come on!
-			$this->raise(604,"size=".filesize(CONS_HTTPD_ERRDIR.$httpderrlog),"PHP error log too big");
+			$this->errorControl->raise(604,"size=".filesize(CONS_HTTPD_ERRDIR.$httpderrlog),"PHP error log too big");
 		}
 	} else {
 		$httpderrlog = "";
@@ -237,5 +239,3 @@ if ($forceCron=='hour' || $forceCron=='all' || $this->dimconfig['_cronH'] != dat
 
 	$this->dimconfig['_cronH'] = date("H");
 }
-
-
