@@ -336,3 +336,12 @@ A análise focalizada dos três arquivos eliminou todos os diagnósticos de cami
 Após a remoção dos caminhos ausentes, o entrypoint ainda apresentava sete ocorrências `variable.undefined` para `$PAGE`. O valor é produzido por `renderCache()` ou `showTemplate()` quando a requisição não é de arquivo; porém, os hooks `onEcho`, o tratamento de saída inesperada, o honeypot, a compressão e o echo final ficam fora desse ramo.
 
 A correção inicializa `$PAGE` como string vazia imediatamente antes do teste `servingFile`, no menor escopo comum a todos os consumidores. Os ramos de cache e template continuam substituindo esse valor pelo conteúdo real, enquanto o caminho de arquivo mantém um buffer definido antes do fechamento. O PHPStan focalizado de `index.php` agora retorna `[OK] No errors`, sem alteração da baseline.
+
+
+### Lote B — agrupamento por diretório e primeiro arquivo bi_bb
+
+A execução `34042207669` apresentou 494 diagnósticos `variable.undefined`. O agrupamento por diretório mostrou 255 ocorrências em `prescia/plugins`, 130 em `prescia/lazyload`, 40 em `pages/presciatester`, 32 em `pages/prescia`, 22 em `prescia/lib`, 9 em `pages/_newProjectTemplate`, 4 em `prescia/components` e 2 em `prescia/coreFull.php`.
+
+O primeiro arquivo selecionado foi `prescia/plugins/bi_bb/payload/content/preview.php`, com 26 ocorrências. Todas eram referências ao `$core` injetado pelo include de `mod_bi_bb::onRender()`. Foram adicionados contratos PHPDoc para `CPrescia $core` e `mod_bi_bb $this`, sem alterar a lógica de preview ou inicializar estado artificial.
+
+A análise PHPStan focalizada terminou com `[OK] No errors`; o arquivo também passou no PHP 8.3 syntax check. A baseline permanece inalterada.

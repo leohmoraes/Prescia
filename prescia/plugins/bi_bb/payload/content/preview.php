@@ -1,5 +1,8 @@
 <?php
 
+/** @var CPrescia $core Core context assigned by mod_bi_bb::onRender(). */
+/** @var mod_bi_bb $this Module context assigned by the framework include. */
+
 	$core->addLink("ckeditor/ckeditor.js",true);
 	$core->addLink("validators.js");
 
