@@ -212,3 +212,15 @@ A correção aplicada substitui os acessos diretos por `hasStatsModule()` e `has
 | Regressões de sintaxe nos arquivos tratados | — | 0 |
 
 O restante do relatório inclui diagnósticos independentes no próprio `module.php`, como variáveis indefinidas e uma função interna, que serão tratados em lotes separados da Fase F1 ou F3. Não serão adicionadas propriedades genéricas nem supressões à baseline para silenciar esses diagnósticos.
+
+
+### Resultado da Fase F2 — ciclo de visibilidade administrativa
+
+A execução [PHP static analysis — execução 34006455888][9], associada ao commit `d4d58ab`, não apresentou ocorrências de `property.private`, `property.protected` ou `property.notFound` no relatório disponível. A execução correspondente de compatibilidade PHP 8.3, [34006455901][10], terminou com sucesso.
+
+O ciclo corrigiu quatro acessos diretos em payloads administrativos sem tornar propriedades internas públicas. A solução adicionou dois métodos públicos de leitura em `mod_bi_adm`, preservando `hasStats` como `protected` e `hasUndo` como `private`. A validação focalizada dos dois payloads modificados terminou com zero erros no PHPStan, e os arquivos alterados passaram na verificação sintática do PHP 8.3.
+
+Com o conjunto de violações de visibilidade estabilizado, a próxima etapa é a **Fase F3 — métodos ausentes ou incompatíveis**. O primeiro inventário deve separar `method.notFound`, `method.private`, `method.protected` e `method.callable` de erros de funções globais ausentes. A análise deve partir do relatório do commit `d4d58ab` e manter a baseline vazia.
+
+[9]: https://github.com/leohmoraes/Prescia/actions/runs/34006455888 "Prescia — PHP static analysis after F2 visibility correction"
+[10]: https://github.com/leohmoraes/Prescia/actions/runs/34006455901 "Prescia — PHP 8.3 compatibility after F2 visibility correction"
