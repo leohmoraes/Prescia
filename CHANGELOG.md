@@ -153,3 +153,4 @@ This is the first formal changelog entry. Previous versions (2004-2025) were mai
 - **2011+**: Prescia framework released under BSD-new license
 - **500+ Sites**: Served over 500 production sites worldwide before open source release
 - **2025**: PHP 8+ migration and modernization effort initiated
+- Continued the grouped undefined-variable remediation in `bi_bb/payload/content/forum.php` by documenting the injected `CPrescia`/`mod_bi_bb` context and initializing the query string before the operation-mode switch. Focused PHPStan and PHP 8.3 syntax validation now pass with no errors.

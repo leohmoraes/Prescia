@@ -1,5 +1,8 @@
 <?php
 
+/** @var CPrescia $core Core context assigned by mod_bi_bb::onRender(). */
+/** @var mod_bi_bb $this Module context assigned by the framework include. */
+
 	$p = isset($_REQUEST['p_init']) && is_numeric($_REQUEST['p_init'])?$_REQUEST['p_init']:0; // item starting this page
 	
 	$up = isset($_SESSION[CONS_SESSION_ACCESS_USER]['userprefs'])?$_SESSION[CONS_SESSION_ACCESS_USER]['userprefs']:false;
@@ -21,6 +24,7 @@
 	$this->parent->template->constants['PAGE_TITLE'] .= " - ".$fdata['title'];
 
 	$mode = $fdata['operationmode'];
+	$sql = '';
 	
 	switch ($mode) {
 		case "bb": // order by last post, gather data from last post, gather totals

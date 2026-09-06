@@ -345,3 +345,10 @@ A execução `34042207669` apresentou 494 diagnósticos `variable.undefined`. O 
 O primeiro arquivo selecionado foi `prescia/plugins/bi_bb/payload/content/preview.php`, com 26 ocorrências. Todas eram referências ao `$core` injetado pelo include de `mod_bi_bb::onRender()`. Foram adicionados contratos PHPDoc para `CPrescia $core` e `mod_bi_bb $this`, sem alterar a lógica de preview ou inicializar estado artificial.
 
 A análise PHPStan focalizada terminou com `[OK] No errors`; o arquivo também passou no PHP 8.3 syntax check. A baseline permanece inalterada.
+
+
+### Lote B — segundo payload bi_bb: forum.php
+
+O segundo arquivo priorizado em `prescia/plugins/bi_bb` foi `payload/content/forum.php`, com 23 diagnósticos `variable.undefined`. O carregador confirma que o arquivo é avaliado no contexto de `mod_bi_bb::onRender()`, recebendo `$core` como `CPrescia` e `$this` como `mod_bi_bb`. Foram adicionados contratos PHPDoc explícitos para ambos. Também foi inicializado `$sql` antes do `switch` de `operationmode`, preservando os três modos válidos e eliminando o diagnóstico de fluxo possivelmente não atribuído.
+
+A análise PHPStan focalizada terminou com `[OK] No errors`; o arquivo também passou no PHP 8.3 syntax check. A baseline permanece inalterada.
