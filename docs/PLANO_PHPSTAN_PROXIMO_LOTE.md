@@ -279,3 +279,12 @@ A correção normaliza cada configuração para um padrão local. Quando a lista
 | Novas entradas na baseline | 0 |
 
 O próximo ciclo F5 deve tratar caminhos ausentes de forma conservadora: arquivos de configuração e drivers opcionais não devem ser inventados no runtime; bibliotecas legadas sem uso devem ser excluídas da análise por caminho documentado, enquanto includes necessários devem receber caminhos existentes e verificáveis.
+
+
+### Correção adicional — funções locais recursivas em bi_cms
+
+A execução `34040527721` ainda apresentava sete diagnósticos `function.notFound` e cinco `function.inner`. Quatro de `function.notFound` e duas ocorrências de `function.inner` vinham dos dois blocos recursivos `removeNull()` em `prescia/plugins/bi_cms/module.php`. Como essas funções eram declaradas dentro de métodos e só eram usadas pelo respectivo fluxo de construção da árvore CMS, a correção adequada não era um stub global.
+
+Os dois blocos foram convertidos para closures recursivas locais com `use (&$removeNull)`. O PHPStan focalizado passou a reportar somente o diagnóstico de contexto `$this` já conhecido; não restaram ocorrências de `function.inner` ou `function.notFound` relacionadas a `removeNull`. A sintaxe PHP 8.3 também foi aprovada.
+
+Essa redução será acompanhada no próximo workflow completo, pois a execução que originou o diagnóstico foi anterior ao patch. A baseline permanece inalterada.

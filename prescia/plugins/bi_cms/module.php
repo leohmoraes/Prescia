@@ -222,14 +222,14 @@ class mod_bi_cms extends CscriptedModule  {
 			// no, make it
 			$cm = $this->parent->loaded($this->moduleRelation);
 			$this->cmstree = $cm->getContents();
-			function removeNull($tree) {
+			$removeNull = function ($tree) use (&$removeNull): void {
 				if (isset($tree->data['page']) && ($tree->data['page'] == '/'))
 					$tree->data['page'] = "#";
 				$t = $tree->total();
 				for ($c=0;$c<$t;$c++)
-					removeNull($tree->branchs[$c]);
-			}
-			removeNull($this->cmstree);
+					$removeNull($tree->branchs[$c]);
+			};
+			$removeNull($this->cmstree);
 		}
 		$cmt = clone $this->cmstree;
 		if ($selected !=0) $cmt->selectWholeBranch($selected);
@@ -260,14 +260,14 @@ class mod_bi_cms extends CscriptedModule  {
 			// no, make it
 			$cm = $this->parent->loaded($this->moduleRelation);
 			$this->cmstree = $cm->getContents();
-			function removeNull($tree) {
+			$removeNull = function ($tree) use (&$removeNull): void {
 				if (isset($tree->data['page']) && ($tree->data['page'] == '/'))
 				$tree->data['page'] = "#";
 				$t = $tree->total();
 				for ($c=0;$c<$t;$c++)
-				removeNull($tree->branchs[$c]);
-			}
-			removeNull($this->cmstree);
+				$removeNull($tree->branchs[$c]);
+			};
+			$removeNull($this->cmstree);
 		}
 		$cmt = clone $this->cmstree;
 		// build/echo output
