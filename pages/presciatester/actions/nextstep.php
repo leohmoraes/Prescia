@@ -1,4 +1,7 @@
 <?php
+
+/** @var CPrescia $this Runtime page-action context injected by the framework. */
+
 	$ok = false;
 	if (isset($_REQUEST['haveinfo'])) {
 		$step = $this->dimconfig['presciastage'];
@@ -141,8 +144,8 @@
 				'oneofakind' => 3,
 				'mylanguage' => $_SESSION[CONS_SESSION_LANG]);
 
-				unset($_FILES['somefile']);
-				unset($_FILES['someimage']);
+				if (isset($_FILES['somefile'])) unset($_FILES['somefile']);
+				if (isset($_FILES['someimage'])) unset($_FILES['someimage']);
 				$_FILES['conditionedimage'] = array( 'error'=>0, 'tmp_name' => CONS_PATH_PAGES.$_SESSION['CODE']."/files/prescia.png", 'virtual'=>true, 'name'=> "prescia3.png"	);
 
 				$ok = $this->runAction('presciator',CONS_ACTION_INCLUDE,$data);
@@ -169,8 +172,8 @@
 				'oneofakind' => 4,
 				'mylanguage' => $_SESSION[CONS_SESSION_LANG]);
 
-				unset($_FILES['somefile']);
-				unset($_FILES['someimage']);
+				if (isset($_FILES['somefile'])) unset($_FILES['somefile']);
+				if (isset($_FILES['someimage'])) unset($_FILES['someimage']);
 				$_FILES['conditionedimage'] = array( 'error'=>0, 'tmp_name' => CONS_PATH_PAGES.$_SESSION['CODE']."/files/prescia.png", 'virtual'=>true, 'name'=> "prescia4.png"	);
 				$ok = $this->runAction('presciator',CONS_ACTION_INCLUDE,$data);
 				if (!$ok) break;
@@ -218,8 +221,8 @@
 				'oneofakind' => 23,
 				'mylanguage' => $_SESSION[CONS_SESSION_LANG]);
 
-				unset($_FILES['somefile']);
-				unset($_FILES['someimage']);
+				if (isset($_FILES['somefile'])) unset($_FILES['somefile']);
+				if (isset($_FILES['someimage'])) unset($_FILES['someimage']);
 				$_FILES['conditionedimage'] = array( 'error'=>0, 'tmp_name' => CONS_PATH_PAGES.$_SESSION['CODE']."/files/prescia.png", 'virtual'=>true, 'name'=> "prescia5.png"	);
 
 				$ok = $this->runAction('presciator',CONS_ACTION_INCLUDE,$data);
@@ -243,7 +246,7 @@
 					'changesintor' => 0);
 				$ok = $this->runAction('presciamkey',CONS_ACTION_INCLUDE,$data);
 				if (!$ok) break;
-				unset($_FILES['someimage']);
+				if (isset($_FILES['someimage'])) unset($_FILES['someimage']);
 				$this->log[] = "Multiple linker MKEY 3";
 				$data = array(
 					'id_tor' => 'chave',
@@ -406,7 +409,7 @@
 				$data = array('alpha' => $a2,
 							  'beta' => $b2);
 				$ok = $this->runAction('presciator',CONS_ACTION_UPDATE,$data); // will update what it can (aka nothing)
-				unset($_FILES['somefile']);
+				if (isset($_FILES['somefile'])) unset($_FILES['somefile']);
 				if (!$ok) break;
 				$this->errorState = false;
 				
