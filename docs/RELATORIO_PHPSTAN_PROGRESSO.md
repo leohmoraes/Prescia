@@ -4,7 +4,7 @@
 **Escopo:** compatibilidade com PHP 8.3 e redução incremental da dívida técnica identificada pelo PHPStan  
 **Versão analisada:** PHPStan 2.2.13, nível 1  
 **Branch:** `master`  
-**Commit atual:** `d21cfb8`  
+**Commit atual:** `5f61356`
 **Data de consolidação:** 5 de setembro de 2026  
 **Issue principal:** [#43 — Atualizar o PHPStan e elevar gradualmente o nível de análise][1]
 
@@ -129,11 +129,23 @@ Também permanecem categorias estruturais que não devem ser misturadas ao lote 
 
 ## Metas e critérios de aceite para a próxima etapa
 
-A próxima etapa deve começar com um relatório novo do CI associado ao commit `d21cfb8` ou ao commit subsequente que concluir a validação atual. O relatório deve separar os diagnósticos por identificador, arquivo e linha, e não deve tratar o limite de 1.000 registros como contagem total.
+A próxima etapa deve começar com um relatório novo do CI associado ao commit `5f61356` ou ao commit subsequente que concluir a validação atual. O relatório deve separar os diagnósticos por identificador, arquivo e linha, e não deve tratar o limite de 1.000 registros como contagem total.
 
 O próximo ciclo deve priorizar os payloads de `bi_bb` e os carregadores procedurais que ainda possuem contratos ausentes. Cada alteração deverá ser validada localmente com PHPStan focalizado, `php -l` e `git diff --check`. Após cada grupo coerente, deverão ser executados os workflows de análise estática e compatibilidade PHP 8.3.
 
 A elevação para o nível 2 do PHPStan não deve ocorrer enquanto a análise de nível 1 continuar falhando por diagnósticos estruturais. O nível deve ser elevado somente depois de a baseline permanecer vazia, os fluxos dinâmicos principais possuírem contratos e os erros remanescentes estarem classificados em lotes independentes.
+
+## Atualização da Fase F3
+
+O primeiro ciclo da Fase F3 tratou três diagnósticos `method.notFound` no payload `prescia/plugins/bi_stats/payload/content/module.php`. O payload tentava chamar `loadAllModules()` e `loaded()` no objeto `mod_bi_stats`, embora esses métodos pertençam ao núcleo `CPrescia`.
+
+| Diagnóstico | Correção aplicada | Validação |
+|---|---|---|
+| `mod_bi_stats::loadAllModules()` | Substituído por `$core->loadAllmodules()` | PHPStan focalizado sem erros |
+| `mod_bi_stats::loaded('STATSDAILY')` | Substituído por `$core->loaded('STATSDAILY')` | PHPStan focalizado sem erros |
+| `mod_bi_stats::loaded($selmod)` | Substituído por `$core->loaded($selmod)` | PHPStan focalizado sem erros |
+
+O contrato explícito de `$core` foi adicionado ao payload. A validação com PHP 8.3 não encontrou erros de sintaxe. O commit `5f61356` foi publicado na branch `master` e vinculado à Issue #43. O próximo alvo da Fase F3 é o inventário de métodos ausentes em `bi_adm/module.php` e nos payloads restantes, mantendo funções globais ausentes e classes dinâmicas em lotes separados.
 
 ## Conclusão
 
