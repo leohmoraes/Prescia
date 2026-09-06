@@ -246,3 +246,19 @@ O próximo inventário F3 deve tratar métodos ausentes em `bi_adm/module.php` e
 O inventário do relatório associado ao commit `5f61356` não apresentou novos `method.notFound` em `bi_adm/module.php`, mas a revisão do call site identificou a chamada `loadAllModules()` com capitalização divergente da declaração real `CPrescia::loadAllmodules()`. Embora PHP trate nomes de métodos sem diferenciação de maiúsculas e minúsculas em runtime, a forma divergente prejudicava a análise estática e o contrato documentado.
 
 A chamada foi normalizada para `$this->parent->loadAllmodules()`. A análise focalizada do arquivo ainda reporta diagnósticos independentes de `variable.undefined` e `function.inner`, mas não reporta `method.notFound`, `method.private`, `method.protected` ou `method.callable`. Esses diagnósticos restantes não serão misturados à Fase F3.
+
+
+### Fase F4 — primeiro ciclo: classe dinâmica CDBO_0
+
+O relatório da execução `34040207476` apresentou cinco ocorrências de `class.notFound`, incluindo quatro instanciações de `CDBO_0`. A origem foi confirmada em `index.php` e `prescia/index.php`: o nome da classe é montado dinamicamente a partir de `CONS_AFF_DATABASECONNECTOR`, e o driver legado correspondente não existe no checkout como `prescia/lib/dbo/0.php`. A classe-base real `CDBO` está em `prescia/lib/dbo/cdbo.php`, mas não deve ser executada pelo bootstrap do PHPStan.
+
+A correção criou `tools/phpstan-dynamic-classes.php`, carregado por `scanFiles`, com um contrato explícito para `CDBO` e `CDBO_0`, incluindo o construtor de cinco parâmetros usado pelo runtime. O stub geral não contém mais essas classes, evitando conflito entre declarações. Após limpar o cache do PHPStan, a análise focalizada de `index.php` deixou de emitir `class.notFound` e `new.noConstructor` para `CDBO_0`; permanecem apenas caminhos de configuração ausentes e variáveis indefinidas já pertencentes a outros lotes.
+
+| Métrica F4 | Antes | Após o patch |
+|---|---:|---:|
+| Diagnósticos `class.notFound` para `CDBO_0` | 4 | 0 |
+| Diagnósticos `new.noConstructor` para `CDBO_0` | 4 | 0 |
+| Arquivos de produção carregados no bootstrap | 0 | 0 |
+| Novas entradas na baseline | 0 | 0 |
+
+O próximo símbolo F4 deve ser selecionado pela origem: funções com implementação real devem ser adicionadas ao `scanFiles` ou bootstrap seguro; funções internas de payload não devem receber stubs genéricos sem antes avaliar sua refatoração para closure; classes opcionais devem receber contratos específicos.

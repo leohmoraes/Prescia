@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Started the current Fase F2 property-visibility cycle by replacing direct payload access to `mod_bi_adm::$hasStats` and `$hasUndo` with explicit public read methods, preserving the module's private/protected state. The two affected administrative payloads pass focused PHPStan analysis.
 - Started Fase F3 by correcting the `bi_stats` content payload to call `loadAllmodules()` and `loaded()` on the injected `CPrescia` core instead of the `mod_bi_stats` module. The payload now passes focused PHPStan analysis and PHP 8.3 syntax validation.
 - Continued Fase F3 in `bi_adm/module.php` by correcting the case of the core call from `loadAllModules()` to the declared `loadAllmodules()` method. No method diagnostics remain in the focused output; unrelated undefined-variable and inner-function diagnostics remain assigned to separate batches.
+- Started Fase F4 by isolating the dynamically selected database driver contract in `tools/phpstan-dynamic-classes.php`. The explicit `CDBO`/`CDBO_0` constructor hierarchy is loaded through `scanFiles`, removing the `class.notFound` diagnostics for `CDBO_0` without loading a production connector or expanding the baseline.
 
 ### Compatibility checks
 - The compatibility suite checks runtime version, required extensions, PHP syntax, removed/deprecated APIs, short tags and Docker base image.

@@ -36,4 +36,5 @@ parameters:
         - prescia/coreFull.php
         - prescia/tcexternal.php
         - prescia/console.php
+        - tools/phpstan-dynamic-classes.php
     reportUnmatchedIgnoredErrors: true

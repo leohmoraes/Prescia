@@ -60,7 +60,6 @@ class CPrescia
 }
 
 class CPresciaFull extends CPrescia {}
-class CDBO_0 extends CDBO {}
 class CKTCexternal {}
 class TTree {}
 class xmlHandler {}
