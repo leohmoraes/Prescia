@@ -269,3 +269,16 @@ Foram adicionados os contratos PHPDoc `CPrescia $this`, `array<int, array<string
 | `prescia/lazyload/udm.php` | **Concluído** | PHPStan focalizado sem erros; sintaxe PHP 8.3 aprovada; 19 diagnósticos removidos |
 
 O próximo alvo deverá ser recalculado a partir do relatório global atual. Os workflows de CI serão acompanhados após o push.
+
+
+## Atualização adicional — aplicação da skill em `stats_ref.php`
+
+A skill `phpstan-legacy-remediation` foi aplicada a `prescia/plugins/bi_stats/payload/content/stats_ref.php`. A investigação confirmou que `mod_bi_stats::onShow()` inclui o payload correspondente à ação atual e disponibiliza `$core` como instância de `CPrescia`.
+
+Foi adicionado o contrato PHPDoc `CPrescia $core`. O PHPStan focalizado terminou com **0 erros**, o `php -l` passou e `git diff --check` foi aprovado. A análise global atual caiu de **428 para 409 diagnósticos**, uma redução de **19 ocorrências**. A baseline permaneceu inalterada.
+
+| Arquivo | Situação | Validação |
+|---|---|---|
+| `prescia/plugins/bi_stats/payload/content/stats_ref.php` | **Concluído** | PHPStan focalizado sem erros; sintaxe PHP 8.3 aprovada; 19 diagnósticos removidos |
+
+O próximo alvo deve ser recalculado a partir do relatório global atual. Os workflows serão acompanhados após a publicação.

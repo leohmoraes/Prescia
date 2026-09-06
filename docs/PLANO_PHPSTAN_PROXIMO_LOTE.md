@@ -380,3 +380,10 @@ Foi adicionado o contrato PHPDoc de `CPrescia $this` para o código executado du
 A skill `phpstan-legacy-remediation` foi aplicada a `prescia/lazyload/udm.php`. O carregador `CPrescia::udm($param, $ignorePreVF)` foi confirmado em `prescia/core.php`, estabelecendo `$this` como `CPrescia`, `$param` como a lista de definições de despacho e `$ignorePreVF` como booleano.
 
 Foram adicionados os contratos PHPDoc correspondentes. A validação focalizada terminou com `[OK] No errors`, o `php -l` passou e `git diff --check` foi aprovado. A análise global atual caiu de 447 para 428 diagnósticos, redução de 19 ocorrências, sem alteração da baseline.
+
+
+### Lote B — payload bi_stats: stats_ref.php
+
+A skill `phpstan-legacy-remediation` foi aplicada a `prescia/plugins/bi_stats/payload/content/stats_ref.php`. O carregador `mod_bi_stats::onShow()` foi confirmado como origem do include, com `$core` disponibilizado como contexto `CPrescia`.
+
+Foi adicionado o contrato PHPDoc de `CPrescia $core`. A validação focalizada terminou com `[OK] No errors`, o `php -l` passou e `git diff --check` foi aprovado. A análise global atual caiu de 428 para 409 diagnósticos, redução de 19 ocorrências, sem alteração da baseline.
