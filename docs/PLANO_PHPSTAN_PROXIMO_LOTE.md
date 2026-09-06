@@ -352,3 +352,10 @@ A análise PHPStan focalizada terminou com `[OK] No errors`; o arquivo também p
 O segundo arquivo priorizado em `prescia/plugins/bi_bb` foi `payload/content/forum.php`, com 23 diagnósticos `variable.undefined`. O carregador confirma que o arquivo é avaliado no contexto de `mod_bi_bb::onRender()`, recebendo `$core` como `CPrescia` e `$this` como `mod_bi_bb`. Foram adicionados contratos PHPDoc explícitos para ambos. Também foi inicializado `$sql` antes do `switch` de `operationmode`, preservando os três modos válidos e eliminando o diagnóstico de fluxo possivelmente não atribuído.
 
 A análise PHPStan focalizada terminou com `[OK] No errors`; o arquivo também passou no PHP 8.3 syntax check. A baseline permanece inalterada.
+
+
+### Lote B — terceiro payload bi_bb: profile.php
+
+A skill `phpstan-legacy-remediation` foi aplicada a `prescia/plugins/bi_bb/payload/content/profile.php`. O carregador `mod_bi_bb::onShow()` foi confirmado como origem do include, portanto `$core` recebeu o contrato PHPDoc `CPrescia`. A função `locateFile()` recebe `$ext` por referência; a variável foi inicializada no ramo autenticado imediatamente antes da chamada, preservando o contrato executável da função.
+
+O PHPStan focalizado terminou com `[OK] No errors` e o arquivo passou no `php -l` do PHP 8.3. A baseline permaneceu inalterada. Com isso, `profile.php` deixa de ser pendência do lote bi_bb; o próximo alvo deve ser recalculado a partir de uma análise global atualizada.

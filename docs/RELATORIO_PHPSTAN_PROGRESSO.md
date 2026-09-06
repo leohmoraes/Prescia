@@ -217,3 +217,16 @@ A execução de compatibilidade PHP 8.3 do commit `a1564d7` passou em [340477689
 [9]: https://github.com/leohmoraes/Prescia/issues/44 "Issue #44 — Reduzir diagnósticos restantes do PHPStan"
 [10]: https://github.com/leohmoraes/Prescia/actions/runs/34047768938 "PHP 8.3 compatibility — execução 34047768938"
 [11]: https://github.com/leohmoraes/Prescia/actions/runs/34047768949 "PHP static analysis — execução 34047768949"
+
+
+## Atualização adicional — aplicação da skill em `profile.php`
+
+A skill `phpstan-legacy-remediation` foi aplicada ao próximo payload priorizado de `bi_bb`, `prescia/plugins/bi_bb/payload/content/profile.php`. A investigação confirmou que o arquivo é incluído dinamicamente por `mod_bi_bb::onShow()` quando a ação é `profile`, com `$core` disponível como `CPrescia`.
+
+A correção adicionou o contrato PHPDoc de `CPrescia $core` e inicializou `$ext` no ramo autenticado antes da chamada por referência `locateFile($image, $ext)`. O PHPStan focalizado terminou com **0 erros** e o `php -l` do PHP 8.3 também foi aprovado. A baseline não recebeu entradas.
+
+| Arquivo | Situação | Validação |
+|---|---|---|
+| `bi_bb/payload/content/profile.php` | **Concluído** | PHPStan focalizado sem erros; sintaxe PHP 8.3 aprovada |
+
+O arquivo deixa de ser pendência do ranking histórico. O próximo alvo deverá ser escolhido após uma nova análise global, pois os contratos recentes de `preview.php`, `forum.php` e `profile.php` podem alterar a distribuição dos diagnósticos restantes.

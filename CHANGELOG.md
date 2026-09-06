@@ -154,3 +154,4 @@ This is the first formal changelog entry. Previous versions (2004-2025) were mai
 - **500+ Sites**: Served over 500 production sites worldwide before open source release
 - **2025**: PHP 8+ migration and modernization effort initiated
 - Continued the grouped undefined-variable remediation in `bi_bb/payload/content/forum.php` by documenting the injected `CPrescia`/`mod_bi_bb` context and initializing the query string before the operation-mode switch. Focused PHPStan and PHP 8.3 syntax validation now pass with no errors.
+- Completed the grouped undefined-variable remediation in `bi_bb/payload/content/profile.php` by documenting the injected `CPrescia $core` context and initializing the by-reference `$ext` value before `locateFile()`. Focused PHPStan and PHP 8.3 syntax validation pass with no errors.
