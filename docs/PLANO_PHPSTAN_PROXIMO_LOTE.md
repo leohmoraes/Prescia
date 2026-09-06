@@ -306,3 +306,10 @@ A verificação completa do commit `0237763` contabilizou 595 diagnósticos `var
 Foram adicionados contratos PHPDoc explícitos para `CPrescia $core` e `mod_bi_bb $this`, refletindo o contexto confirmado em `mod_bi_bb::onRender()`. A revisão também encontrou um acesso funcionalmente incorreto a `$this->templateParams['ipp']`: `templateParams` pertence ao núcleo e é preparado pelo motor de módulos. A referência foi corrigida para `$core->templateParams['ipp']`.
 
 O PHPStan focalizado agora retorna `[OK] No errors` para o payload. Não foram adicionadas entradas à baseline e nenhuma variável global fictícia foi criada.
+
+
+### Lote B — segundo ciclo: contrato do lazyload friendlyurl
+
+Após o payload `bi_bb/index.php`, o ranking atualizado apontou `prescia/lazyload/friendlyurl.php` com 32 ocorrências. A investigação confirmou que o arquivo é incluído pelo método `CPrescia::friendlyurl($param)`, portanto `$this` representa o núcleo e `$param` é o array de opções fornecido pelo chamador.
+
+Foram adicionados contratos PHPDoc para `CPrescia $this` e `array<string, mixed> $param`. A análise focalizada retornou `[OK] No errors`, eliminando todas as ocorrências `variable.undefined` do arquivo sem inicializar artificialmente opções obrigatórias ou alterar a lógica de consulta.

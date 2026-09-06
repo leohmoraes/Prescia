@@ -18,6 +18,9 @@
   | Returns true|false if a hit for friendlyurl was found
 -*/
 
+/** @var CPrescia $this Runtime context of CPrescia::friendlyurl(). */
+/** @var array<string, mixed> $param Friendly URL matching and rendering options. */
+
 if (!isset($param['module']))
 	$this->errorControl->raise(185,'friendlyurl',"","Module not defined");
 if (!isset($param['keys']))
