@@ -7,9 +7,11 @@
 -*/
 
 $freepass = (isset($_SESSION[CONS_SESSION_ACCESS_LEVEL]) && $_SESSION[CONS_SESSION_ACCESS_LEVEL] >= 90); // high-level admins get free pass
-$ua = isset($_SERVER['HTTP_USER_AGENT'])?$_SERVER['HTTP_USER_AGENT']:""; 
-if (CONS_CRAWLER_BLACKLIST_ENABLE && !$freepass) { // blacklisted - we don't want you here, ever
-	if ($ua != '' && preg_match(CONS_CRAWLER_BLACKLIST,$ua) === 1) {
+	$ua = isset($_SERVER['HTTP_USER_AGENT'])?$_SERVER['HTTP_USER_AGENT']:"";
+	if (CONS_CRAWLER_BLACKLIST_ENABLE && !$freepass) { // blacklisted - we don't want you here, ever
+		$blacklistPattern = (string) CONS_CRAWLER_BLACKLIST;
+		$blacklistPattern = $blacklistPattern !== '' ? $blacklistPattern : '/(?!)/';
+		if ($ua != '' && CONS_CRAWLER_BLACKLIST != '' && preg_match($blacklistPattern,$ua) === 1) {
 		$throttle = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>
 		<error>
 			<status>403</status>
@@ -30,9 +32,11 @@ if (CONS_CRAWLER_BLACKLIST_ENABLE && !$freepass) { // blacklisted - we don't wan
 		echo str_replace("{TS}",$now,$throttle);
 		die();
 	}
-}
-if (CONS_CRAWLER_WHITELIST_ENABLE) { // whitelisted user agents get freepass (good bots, like google ... kind of)
-	if ($ua != '' && preg_match(CONS_CRAWLER_WHITELIST,$ua) === 1) $freepass = true;
+	}
+	if (CONS_CRAWLER_WHITELIST_ENABLE) { // whitelisted user agents get freepass (good bots, like google ... kind of)
+		$whitelistPattern = (string) CONS_CRAWLER_WHITELIST;
+		$whitelistPattern = $whitelistPattern !== '' ? $whitelistPattern : '/(?!)/';
+		if ($ua != '' && CONS_CRAWLER_WHITELIST != '' && preg_match($whitelistPattern,$ua) === 1) $freepass = true;
 }
 if (!$freepass) {
 

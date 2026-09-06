@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Started Fase F3 by correcting the `bi_stats` content payload to call `loadAllmodules()` and `loaded()` on the injected `CPrescia` core instead of the `mod_bi_stats` module. The payload now passes focused PHPStan analysis and PHP 8.3 syntax validation.
 - Continued Fase F3 in `bi_adm/module.php` by correcting the case of the core call from `loadAllModules()` to the declared `loadAllmodules()` method. No method diagnostics remain in the focused output; unrelated undefined-variable and inner-function diagnostics remain assigned to separate batches.
 - Started Fase F4 by isolating the dynamically selected database driver contract in `tools/phpstan-dynamic-classes.php`. The explicit `CDBO`/`CDBO_0` constructor hierarchy is loaded through `scanFiles`, removing the `class.notFound` diagnostics for `CDBO_0` without loading a production connector or expanding the baseline.
+- Started Fase F5 by hardening `prescia/lazyload/botprotect.php` against empty crawler regex configuration. Empty blacklist/whitelist patterns now become a non-matching safe pattern before `preg_match()`, eliminating both `regexp.pattern` diagnostics without changing configured pattern behavior.
 
 ### Compatibility checks
 - The compatibility suite checks runtime version, required extensions, PHP syntax, removed/deprecated APIs, short tags and Docker base image.

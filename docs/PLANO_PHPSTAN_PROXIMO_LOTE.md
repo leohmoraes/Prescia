@@ -262,3 +262,20 @@ A correção criou `tools/phpstan-dynamic-classes.php`, carregado por `scanFiles
 | Novas entradas na baseline | 0 | 0 |
 
 O próximo símbolo F4 deve ser selecionado pela origem: funções com implementação real devem ser adicionadas ao `scanFiles` ou bootstrap seguro; funções internas de payload não devem receber stubs genéricos sem antes avaliar sua refatoração para closure; classes opcionais devem receber contratos específicos.
+
+
+### Fase F5 — primeiro ciclo: padrões regex configuráveis
+
+O relatório da execução `34040430960` apresentou dois diagnósticos `regexp.pattern` em `prescia/lazyload/botprotect.php`. As constantes de blacklist e whitelist podem permanecer vazias na configuração, mas eram enviadas diretamente a `preg_match()`, criando padrões vazios inválidos para o PHP 8.3/PHPStan.
+
+A correção normaliza cada configuração para um padrão local. Quando a lista está vazia, usa-se `/(?!)/`, uma expressão válida que nunca corresponde; quando existe configuração, o padrão original é preservado. A análise focalizada eliminou ambos os diagnósticos `regexp.pattern`. Permanece apenas o diagnóstico independente de contexto `$this` no mesmo arquivo, pertencente aos lotes de contratos/variáveis e não à Fase F5.
+
+| Diagnóstico | Resultado |
+|---|---:|
+| `regexp.pattern` em blacklist | 0 após a correção |
+| `regexp.pattern` em whitelist | 0 após a correção |
+| Comportamento com padrão configurado | preservado |
+| Comportamento com configuração vazia | padrão seguro sem correspondência |
+| Novas entradas na baseline | 0 |
+
+O próximo ciclo F5 deve tratar caminhos ausentes de forma conservadora: arquivos de configuração e drivers opcionais não devem ser inventados no runtime; bibliotecas legadas sem uso devem ser excluídas da análise por caminho documentado, enquanto includes necessários devem receber caminhos existentes e verificáveis.
