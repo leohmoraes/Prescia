@@ -1,9 +1,10 @@
 <?php
 
+/** @var CPrescia $core Runtime payload context injected by the framework. */
 /** @var mod_bi_stats $this Runtime module context injected by the framework. */
 
-	$graphWidth = 200;
-	$this->loadAllModules();
+		$graphWidth = 200;
+		$core->loadAllmodules();
 
 	# Locate public pages related to a single module from the publicPages settings (ignore those with no parameters)
 	# This only works with simple-ID modules, always use the ID format for publicPages, do not use friendly url or it won't appear here
@@ -35,8 +36,8 @@
 	$max = 1;
 	if ($selmod != "") {
 		$stats = array();
-		$statsh = $this->loaded('STATSDAILY');
-		$statmod = $this->loaded($selmod);
+			$statsh = $core->loaded('STATSDAILY');
+			$statmod = $core->loaded($selmod);
 		$page = $moduleToPage[$selmod];
 		$sql = "SELECT sum(s.hits) as hits,s.hid as id,".$statmod->name.".".$statmod->title." as titulo
 				FROM ".$statsh->dbname." as s, ".$statmod->dbname." as ".$statmod->name."

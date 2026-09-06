@@ -224,3 +224,18 @@ Com o conjunto de violações de visibilidade estabilizado, a próxima etapa é 
 
 [9]: https://github.com/leohmoraes/Prescia/actions/runs/34006455888 "Prescia — PHP static analysis after F2 visibility correction"
 [10]: https://github.com/leohmoraes/Prescia/actions/runs/34006455901 "Prescia — PHP 8.3 compatibility after F2 visibility correction"
+
+
+### Fase F3 — primeiro ciclo: métodos do núcleo no payload bi_stats
+
+O relatório da execução `34006455888` apresentou três diagnósticos `method.notFound` no arquivo `prescia/plugins/bi_stats/payload/content/module.php`: `loadAllModules()`, `loaded('STATSDAILY')` e `loaded($selmod)`. O carregador de `mod_bi_stats::onShow()` inclui o payload no contexto do módulo, mas o núcleo é disponibilizado como `$this->parent` e como `$core`.
+
+A investigação confirmou que os métodos reais pertencem a `CPrescia`: `loadAllmodules()` e `loaded(string $moduleName, bool $noRaise = false)`. O primeiro patch adicionou o contrato de `$core` e transferiu as três chamadas para o objeto correto. O payload passou no PHPStan focalizado, no `php -l` e no `git diff --check`.
+
+| Diagnóstico | Contexto incorreto | Correção |
+|---|---|---|
+| `mod_bi_stats::loadAllModules()` | Método chamado no módulo | `$core->loadAllmodules()` |
+| `mod_bi_stats::loaded('STATSDAILY')` | Método chamado no módulo | `$core->loaded('STATSDAILY')` |
+| `mod_bi_stats::loaded($selmod)` | Método chamado no módulo | `$core->loaded($selmod)` |
+
+O próximo inventário F3 deve tratar métodos ausentes em `bi_adm/module.php` e payloads restantes, separando chamadas ao núcleo, chamadas ao módulo concreto e símbolos globais não encontrados. Funções locais, classes ausentes e constantes continuarão em lotes separados quando não forem consequência direta do contexto do método.
