@@ -166,3 +166,26 @@ O objetivo imediato não é declarar o PHPStan global como verde, pois ainda exi
 
 *Autor: Manus AI* 
 *Documento consolidado a partir do histórico do repositório, do plano PHPStan e das execuções de CI disponíveis na data de consolidação.*
+
+
+## Verificação completa após o lote CDBO_mysqli
+
+Foi executada uma análise completa do repositório no commit `0237763`, com PHPStan 2.2.13 no nível 1, cache limpo e a configuração oficial de `phpstan.neon.dist`. A execução local encontrou **620 diagnósticos**, contra **716** na execução completa anterior `34040527721`, uma redução de **96 diagnósticos**.
+
+| Categoria | Diagnósticos atuais |
+|---|---:|
+| `variable.undefined` | 595 |
+| `require.fileNotFound` | 4 |
+| `class.nameCase` | 4 |
+| `function.notFound` | 3 |
+| `function.inner` | 3 |
+| `constant.notFound` | 3 |
+| `includeOnce.fileNotFound` | 2 |
+| `array.duplicateKey` | 2 |
+| `unset.offset` | 1 |
+| `missingType.iterableValue` | 1 |
+| `isset.variable` | 1 |
+| `constructor.unusedParameter` | 1 |
+| **Total** | **620** |
+
+A categoria `property.notFound` não aparece mais no relatório completo após a descoberta dos drivers `CDBO` e `CDBO_mysqli`. A análise completa ainda falha no nível 1, principalmente pelas 595 variáveis indefinidas e por símbolos/caminhos legados. A baseline não foi ampliada. O log integral está disponível localmente em `/tmp/phpstan-full-0237763.log`; o artefato temporário não é versionado.
