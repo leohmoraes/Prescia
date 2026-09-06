@@ -194,3 +194,21 @@ A contagem foi extraída do log da execução [PHP static analysis — execuçã
 [7]: https://github.com/leohmoraes/Prescia/actions/runs/33704528222 "Prescia — PHP static analysis workflow run after Fase F2 cycle two"
 
 > Este documento define o próximo lote de execução. Ele não substitui o relatório do CI nem autoriza elevar o PHPStan ao nível 2 antes dos critérios de aceite serem atingidos.
+
+
+### Fase F2 — ciclo atual: encapsulamento de propriedades administrativas
+
+A execução do ciclo atual começou pela execução `34006340306`, associada ao commit `c8ec096`. O relatório confirmou quatro violações de visibilidade em payloads de `bi_adm`: três acessos protegidos a `mod_bi_adm::$hasStats` e um acesso privado a `$hasUndo`. O carregador confirma que os payloads são incluídos pelo próprio módulo administrativo, mas o acesso direto a propriedades privadas ou protegidas continua incompatível com o contrato de encapsulamento.
+
+A correção aplicada substitui os acessos diretos por `hasStatsModule()` e `hasUndoModule()`, métodos públicos de leitura que preservam o estado interno das propriedades. A validação focalizada de `prescia/plugins/bi_adm/payload/content/default.php` e `prescia/plugins/bi_adm/payload/content/index.php` terminou sem erros no PHPStan, e os três arquivos modificados passaram no `php -l`.
+
+| Métrica do ciclo | Resultado inicial | Resultado após o primeiro patch |
+|---|---:|---:|
+| Acessos `property.protected` tratados | 3 | 0 nos payloads focalizados |
+| Acessos `property.private` tratados | 1 | 0 nos payloads focalizados |
+| Propriedades tornadas públicas | 0 | 0 |
+| Métodos públicos de leitura adicionados | 0 | 2 |
+| Entradas novas na baseline | 0 | 0 |
+| Regressões de sintaxe nos arquivos tratados | — | 0 |
+
+O restante do relatório inclui diagnósticos independentes no próprio `module.php`, como variáveis indefinidas e uma função interna, que serão tratados em lotes separados da Fase F1 ou F3. Não serão adicionadas propriedades genéricas nem supressões à baseline para silenciar esses diagnósticos.

@@ -41,7 +41,7 @@
 				$_SESSION['admstatisticsminute'] = date("i");
 
 				// main statistics - if we have stats plugin use it, otherwise some random mambo-jambo
-				if ($this->hasStats) { // stats installed, show today's hits
+				if ($this->hasStatsModule()) { // stats installed, show today's hits
 					$stp = $core->loadedPlugins['bi_stats']->getHits(1);
 					if (count($stp)>0) {
 						$stp = $stp[0][1];
@@ -109,7 +109,7 @@
 
 			// permissions and systems
 			$hasSomething = false;
-			if (!$this->hasStats)
+				if (!$this->hasStatsModule())
 				$core->template->assign("_has_stats");
 			else
 				$hasSomething = true;
@@ -119,7 +119,7 @@
 				$core->template->assign("_can_monitor");
 			else
 				$hasSomething = true;
-			if (!$this->hasUndo)
+				if (!$this->hasUndoModule())
 				$core->template->assign("_hasUndo");
 			else if (!$core->authControl->checkPermission('bi_adm','can_undo'))
 				$core->template->assign("_can_undo");

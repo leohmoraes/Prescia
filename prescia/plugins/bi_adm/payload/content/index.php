@@ -87,7 +87,7 @@
 		$core->template->assign("_devwarning");
 
 	// Statistics
-	if ($this->hasStats) {
+		if ($this->hasStatsModule()) {
 		// stats installed, show today's hits
 		$stp = $core->loadedPlugins['bi_stats']->getHits(7);
 		$biggest = 0;

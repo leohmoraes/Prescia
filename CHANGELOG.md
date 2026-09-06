@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Started Fase F2 by changing CDBO connection state to protected for legitimate driver inheritance and correcting invalid authorization references to module fields and ownerLink.
 - Started the second Fase F2 cycle by declaring CPresciaVar::$headerControl, specializing payload PHPDocs to concrete plugin modules and exposing the legitimately consumed bi_adm::$hasStats state as protected.
 - Executed the PHPStan analysis for Fase F2 cycle three; the CI formatter exposed 1,000 diagnostics, including 962 `variable.undefined` records and the remaining module-property contract targets documented in the PHPStan plan.
+- Started the current Fase F2 property-visibility cycle by replacing direct payload access to `mod_bi_adm::$hasStats` and `$hasUndo` with explicit public read methods, preserving the module's private/protected state. The two affected administrative payloads pass focused PHPStan analysis.
 
 ### Compatibility checks
 - The compatibility suite checks runtime version, required extensions, PHP syntax, removed/deprecated APIs, short tags and Docker base image.

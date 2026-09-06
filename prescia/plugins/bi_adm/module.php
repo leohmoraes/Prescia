@@ -63,6 +63,14 @@ class mod_bi_adm extends CscriptedModule  {
 	private $hasUndo = false; // cache for testing if have Undo module
 	protected bool $hasStats = false; // cache for testing if have stats module
 
+	public function hasStatsModule(): bool {
+		return $this->hasStats;
+	}
+
+	public function hasUndoModule(): bool {
+		return $this->hasUndo;
+	}
+
 	function loadSettings() {
 		$this->name = "bi_adm";
 		$this->parent->onMeta[] = $this->name;
