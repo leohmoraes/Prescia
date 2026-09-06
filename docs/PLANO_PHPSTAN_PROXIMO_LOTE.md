@@ -313,3 +313,10 @@ O PHPStan focalizado agora retorna `[OK] No errors` para o payload. Não foram a
 Após o payload `bi_bb/index.php`, o ranking atualizado apontou `prescia/lazyload/friendlyurl.php` com 32 ocorrências. A investigação confirmou que o arquivo é incluído pelo método `CPrescia::friendlyurl($param)`, portanto `$this` representa o núcleo e `$param` é o array de opções fornecido pelo chamador.
 
 Foram adicionados contratos PHPDoc para `CPrescia $this` e `array<string, mixed> $param`. A análise focalizada retornou `[OK] No errors`, eliminando todas as ocorrências `variable.undefined` do arquivo sem inicializar artificialmente opções obrigatórias ou alterar a lógica de consulta.
+
+
+### Lote B — terceiro ciclo: contrato do lazyload fastclose
+
+Após a correção de `friendlyurl.php`, o ranking do workflow `34041355257` apontou `prescia/lazyload/fastclose.php` com 31 referências indefinidas. O arquivo é incluído exclusivamente por `CPrescia::fastClose($action, $context)`, e as referências eram ao núcleo `$this` e ao parâmetro `$action` recebido pelo método.
+
+Foram adicionados contratos PHPDoc para `CPrescia $this` e `string $action`. A análise focalizada terminou com `[OK] No errors`, sem inicializar estados de erro artificialmente e sem alterar o fluxo de encerramento rápido.
