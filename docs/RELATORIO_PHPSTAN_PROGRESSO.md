@@ -4,8 +4,8 @@
 **Escopo:** compatibilidade com PHP 8.3 e redução incremental da dívida técnica identificada pelo PHPStan  
 **Versão analisada:** PHPStan 2.2.13, nível 1  
 **Branch:** `master`  
-**Commit atual:** `5f61356`
-**Data de consolidação:** 5 de setembro de 2026  
+**Commit atual:** `a1564d7`
+**Data de consolidação:** 6 de setembro de 2026
 **Issue principal:** [#43 — Atualizar o PHPStan e elevar gradualmente o nível de análise][1]
 
 ## Resumo executivo
@@ -20,12 +20,12 @@ A principal limitação atual é que o workflow completo analisa todo o reposit�
 
 | Área | Estado | Evidência |
 |---|---|---|
-| PHP 8.3 | **Aprovada nas execuções recentes** | Execuções `34006264562`, `34006130072`, `34005811994` e anteriores concluídas com sucesso |
+| PHP 8.3 | **Aprovada no commit atual** | Execução `34047768938` concluída com sucesso no commit `a1564d7` |
 | PHPStan focalizado nos arquivos corrigidos | **Aprovado** | Todos os lotes recentes terminaram com `[OK] No errors` |
-| PHPStan completo do repositório | **Ainda falha** | Execução `34006264571` associada ao commit `d21cfb8` |
+| PHPStan completo do repositório | **Ainda falha** | Execução `34047768949` associada ao commit `a1564d7` |
 | PHPUnit | Configurado no Composer; execução global não foi usada como critério deste relatório | `phpunit/phpunit ^10.5` |
 | Baseline | **Sem novos ocultamentos** | `phpstan-baseline.neon` permanece sem entradas de `ignoreErrors` adicionadas durante os ciclos recentes |
-| Branch e working tree | **Limpos** | `master` em `d21cfb8`, sem alterações pendentes na consolidação |
+| Branch e working tree | **Limpos** | `master` em `a1564d7`, sem alterações pendentes na consolidação |
 
 ## Linha do tempo das correções
 
@@ -189,3 +189,31 @@ Foi executada uma análise completa do repositório no commit `0237763`, com PHP
 | **Total** | **620** |
 
 A categoria `property.notFound` não aparece mais no relatório completo após a descoberta dos drivers `CDBO` e `CDBO_mysqli`. A análise completa ainda falha no nível 1, principalmente pelas 595 variáveis indefinidas e por símbolos/caminhos legados. A baseline não foi ampliada. O log integral está disponível localmente em `/tmp/phpstan-full-0237763.log`; o artefato temporário não é versionado.
+
+
+## Atualização de 6 de setembro de 2026 — lote bi_bb
+
+O commit `a1564d7` continuou a remediação de `variable.undefined` no plugin `bi_bb` e foi publicado na branch `master`, com referência à Issue [#44 — Reduzir diagnósticos restantes do PHPStan][9].
+
+### `prescia/plugins/bi_bb/payload/content/forum.php`
+
+O arquivo foi confirmado como payload incluído por `mod_bi_bb::onRender()`. Foram documentados os contratos de contexto `CPrescia $core` e `mod_bi_bb $this` com PHPDoc. Também foi inicializado `$sql` antes do `switch` de `operationmode`, mantendo os três modos válidos (`bb`, `blog` e `articles`) e eliminando o fluxo possivelmente não atribuído.
+
+A validação focalizada terminou com **0 erros no PHPStan 2.2.13** e o arquivo passou no `php -l` do PHP 8.3. O resultado foi publicado no commit `a1564d7`.
+
+### `prescia/plugins/bi_bb/payload/content/profile.php`
+
+O arquivo foi analisado como o próximo alvo de maior impacto no diretório `bi_bb`. A investigação confirmou que ele é incluído dinamicamente por `mod_bi_bb::onShow()` quando a ação é `profile`, recebendo `$core` como contexto `CPrescia`. A recomendação técnica registrada é adicionar o PHPDoc de `$core` no início do payload e inicializar `$ext` antes da chamada por referência `locateFile($image, $ext)`.
+
+Neste fechamento, `profile.php` **ainda não foi alterado nem commitado**. Portanto, o relatório registra a análise e o plano de correção, mas não declara o arquivo como concluído. A validação e a publicação de `profile.php` permanecem como o próximo passo do Lote B.
+
+| Arquivo | Situação | Evidência |
+|---|---|---|
+| `bi_bb/payload/content/forum.php` | **Concluído** | PHPStan focalizado sem erros; `php -l` aprovado; commit `a1564d7` |
+| `bi_bb/payload/content/profile.php` | **Analisado, pendente de implementação** | Contexto de inclusão confirmado; PHPDoc e `$ext` definidos como próxima correção |
+
+A execução de compatibilidade PHP 8.3 do commit `a1564d7` passou em [34047768938][10]. A análise completa do PHPStan ainda falhou em [34047768949][11], como esperado enquanto os arquivos remanescentes do Lote B não forem corrigidos. A baseline continua sem novas entradas.
+
+[9]: https://github.com/leohmoraes/Prescia/issues/44 "Issue #44 — Reduzir diagnósticos restantes do PHPStan"
+[10]: https://github.com/leohmoraes/Prescia/actions/runs/34047768938 "PHP 8.3 compatibility — execução 34047768938"
+[11]: https://github.com/leohmoraes/Prescia/actions/runs/34047768949 "PHP static analysis — execução 34047768949"
