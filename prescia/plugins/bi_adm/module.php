@@ -1,5 +1,7 @@
 <?php	# -------------------------------- Advanced Admin (Codde's Nekoi), requires prototype/scriptaculous
 
+/** @var CPrescia $this Core context while this plugin module is loaded. */
+
 # NOTE: admFolder in this can be a list of comma delimited folders
 # ADMIN MENU: will create normal new/list for modules that are not flagged as systemModule="true"
 #             for these (or any normal module) add items to this (or any) administrative pane using the plugin's $admOptions array
@@ -122,17 +124,21 @@ class mod_bi_adm extends CscriptedModule  {
 		}
 
 		# DEFAULT WARNING ON IMPROPER MERGE
-		if (count($this->parent->modules[$mname]->options[CONS_MODULE_MERGE])>0) {
-			foreach ($this->parent->modules[$mname]->options[CONS_MODULE_MERGE] as $m) {
-				if (!isset($this->parent->modules[$m])) {
-					$this->parent->log[] = "Merged module $m does not exist in $mname";
-					$this->parent->setLog(CONS_LOGGING_ERROR);
+		$mname = '';
+		if (count($this->parent->modules)>0) {
+			$mname = array_key_last($this->parent->modules);
+			if (count($this->parent->modules[$mname]->options[CONS_MODULE_MERGE])>0) {
+				foreach ($this->parent->modules[$mname]->options[CONS_MODULE_MERGE] as $m) {
+					if (!isset($this->parent->modules[$m])) {
+						$this->parent->log[] = "Merged module $m does not exist in $mname";
+						$this->parent->setLog(CONS_LOGGING_ERROR);
+					}
 				}
 			}
 		}
-	}
+		}
 
-	function onCheckActions() { // check if we should do something, and also check if we are properly on admin page
+		function onCheckActions() { // check if we should do something, and also check if we are properly on admin page
 
 		if (!$this->parent->virtualFolder) return; // other module processed the folder. The adm pane is a mandatory virtual folder
 	
@@ -209,13 +215,13 @@ class mod_bi_adm extends CscriptedModule  {
 		return false;
 	}
 
-	function onRender(){ // if there is no index.php to run the admin, use default
-		if ($this->isAdminPage) { // on admin
-			// build administrative frame
-			$core = &$this->parent;
-			if ($this->parent->layout != 2) { // cannot use core::frame because we want the full path to avoid loading default files
+		function onRender(){ // if there is no index.php to run the admin, use default
+			if ($this->isAdminPage) { // on admin
+				// build administrative frame
+				$core = &$this->parent;
 				$sname = $this->name;
-				if (is_file(CONS_PATH_SYSTEM."plugins/$sname/payload/template/basefile.html")) {
+				if ($this->parent->layout != 2) { // cannot use core::frame because we want the full path to avoid loading default files
+					if (is_file(CONS_PATH_SYSTEM."plugins/$sname/payload/template/basefile.html")) {
 					$frame = CONS_PATH_SYSTEM."plugins/$sname/payload/template/basefile.html";
 				} else {
 					$frame = CONS_PATH_SETTINGS."defaults/basefile.html";
@@ -408,8 +414,9 @@ class mod_bi_adm extends CscriptedModule  {
 		}
 	}
 
-	function addMenuItens(&$xml,&$menu,$idp,&$core,$inModule="") {
-		if ($xml->data[0] != 'xhtml') { // not the BASE node
+		function addMenuItens(&$xml,&$menu,$idp,&$core,$inModule="") {
+			$id = $idp;
+			if ($xml->data[0] != 'xhtml') { // not the BASE node
 			$tm = $core->loaded(strtolower($xml->data[0]),true); // check if this is a module
 			if (!is_object($tm) && $inModule != '') $tm = $core->loaded($inModule,true); // if not a module, but we are INSIDE a module, inherit it
 			if (is_object($tm)) $inModule = $tm->name; // works both ways

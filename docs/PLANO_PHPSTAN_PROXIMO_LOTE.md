@@ -366,3 +366,10 @@ O PHPStan focalizado terminou com `[OK] No errors` e o arquivo passou no `php -l
 A skill `phpstan-legacy-remediation` foi aplicada a `prescia/lazyload/script.php`. O carregador `CPrescia::addScript(string $scriptname, array $parameters = [])` foi confirmado em `prescia/core.php`, estabelecendo `$this` como `CPrescia`, `$scriptname` como `string` e `$parameters` como `array<string, mixed>` no include.
 
 Foram adicionados os três contratos PHPDoc correspondentes. A validação focalizada terminou com `[OK] No errors`, o `php -l` passou e `git diff --check` não encontrou problemas. A análise global caiu de 446 para 422 diagnósticos, redução de 24 ocorrências, sem alteração da baseline.
+
+
+### Lote B — bi_adm/module.php: variáveis indefinidas
+
+A skill `phpstan-legacy-remediation` foi aplicada a `prescia/plugins/bi_adm/module.php` com foco exclusivo nas 20 ocorrências `variable.undefined`. O carregador `CPrescia::addPlugin()` foi confirmado como o contexto do include de nível superior, enquanto os métodos da classe permanecem no contexto de `mod_bi_adm`.
+
+Foi adicionado o contrato PHPDoc de `CPrescia $this` para o código executado durante o carregamento. Os fluxos de `$mname`, `$sname` e `$id` receberam inicializações explícitas e seguras, preservando a lógica legada. A validação focalizada eliminou as 20 ocorrências `variable.undefined`; permanecem somente `function.inner` e `class.nameCase`, que serão tratados em lote estrutural separado. O arquivo passou no `php -l` e a baseline não foi alterada.

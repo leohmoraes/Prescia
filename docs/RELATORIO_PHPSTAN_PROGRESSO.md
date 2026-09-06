@@ -243,3 +243,16 @@ Foram adicionados os contratos PHPDoc `CPrescia $this`, `string $scriptname` e `
 | `prescia/lazyload/script.php` | **Concluído** | PHPStan focalizado sem erros; PHP 8.3 syntax check aprovado; 24 diagnósticos removidos da análise global |
 
 O próximo alvo deve ser recalculado a partir do relatório global de 422 diagnósticos. Os workflows de CI serão acompanhados após o push do commit desta atualização.
+
+
+## Atualização adicional — `bi_adm/module.php`
+
+A skill `phpstan-legacy-remediation` foi aplicada a `prescia/plugins/bi_adm/module.php` com escopo limitado às 20 ocorrências `variable.undefined`. O contexto do include foi confirmado em `CPrescia::addPlugin()`, que avalia o código de configuração do módulo antes de instanciar `mod_bi_adm`.
+
+A correção documentou `CPrescia $this` no escopo de carregamento e inicializou `$mname`, `$sname` e `$id` nos fluxos em que o PHPStan não podia provar uma atribuição. A análise focalizada passou a reportar somente os dois diagnósticos estruturais previamente separados: `function.inner` na função `mysort()` e `class.nameCase` na referência a `TTree`. O `php -l` e `git diff --check` foram aprovados; a baseline permaneceu inalterada.
+
+| Arquivo | Situação | Validação |
+|---|---|---|
+| `prescia/plugins/bi_adm/module.php` | **Variáveis indefinidas concluídas** | 20 `variable.undefined` removidas; 2 diagnósticos estruturais restantes; sintaxe PHP 8.3 aprovada |
+
+A análise global atual continua falhando e reporta 447 diagnósticos no total; essa contagem é registrada como métrica da execução atual e não como redução comparável ao relatório global anterior, que foi gerado em outro estado de dependências/artefato. Nenhuma entrada foi adicionada à baseline.
