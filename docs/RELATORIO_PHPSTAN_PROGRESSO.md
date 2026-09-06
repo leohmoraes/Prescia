@@ -256,3 +256,16 @@ A correção documentou `CPrescia $this` no escopo de carregamento e inicializou
 | `prescia/plugins/bi_adm/module.php` | **Variáveis indefinidas concluídas** | 20 `variable.undefined` removidas; 2 diagnósticos estruturais restantes; sintaxe PHP 8.3 aprovada |
 
 A análise global atual continua falhando e reporta 447 diagnósticos no total; essa contagem é registrada como métrica da execução atual e não como redução comparável ao relatório global anterior, que foi gerado em outro estado de dependências/artefato. Nenhuma entrada foi adicionada à baseline.
+
+
+## Atualização adicional — aplicação da skill em `udm.php`
+
+A skill `phpstan-legacy-remediation` foi aplicada a `prescia/lazyload/udm.php`. A investigação confirmou que `CPrescia::udm($param, $ignorePreVF)` inclui o arquivo dinamicamente, com `$this` como `CPrescia`, `$param` como as definições de despacho de URL e `$ignorePreVF` como sinalizador booleano.
+
+Foram adicionados os contratos PHPDoc `CPrescia $this`, `array<int, array<string, mixed>> $param` e `bool $ignorePreVF`. O PHPStan focalizado terminou com **0 erros**, o `php -l` passou e `git diff --check` foi aprovado. A análise global atual caiu de **447 para 428 diagnósticos**, uma redução de **19 ocorrências**. A baseline permaneceu inalterada.
+
+| Arquivo | Situação | Validação |
+|---|---|---|
+| `prescia/lazyload/udm.php` | **Concluído** | PHPStan focalizado sem erros; sintaxe PHP 8.3 aprovada; 19 diagnósticos removidos |
+
+O próximo alvo deverá ser recalculado a partir do relatório global atual. Os workflows de CI serão acompanhados após o push.

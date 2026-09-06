@@ -1,4 +1,9 @@
 <?php
+
+/** @var CPrescia $this Core context that includes this lazy-load. */
+/** @var array<int, array<string, mixed>> $param URL dispatch definitions from CPrescia::udm(). */
+/** @var bool $ignorePreVF Whether remaining virtual folders should be ignored. */
+
 /* -------------------------------- Prescia URL Dispatch Manager (UDM)
   | Copyleft (ɔ) 2011+, Caio Vianna de Lima Netto (www.prescia.net)
   | LICENSE TYPE: BSD-new/ɔ
@@ -116,4 +121,3 @@
 		return $matched;
 	}
 	return $matched;
-

@@ -373,3 +373,10 @@ Foram adicionados os três contratos PHPDoc correspondentes. A validação focal
 A skill `phpstan-legacy-remediation` foi aplicada a `prescia/plugins/bi_adm/module.php` com foco exclusivo nas 20 ocorrências `variable.undefined`. O carregador `CPrescia::addPlugin()` foi confirmado como o contexto do include de nível superior, enquanto os métodos da classe permanecem no contexto de `mod_bi_adm`.
 
 Foi adicionado o contrato PHPDoc de `CPrescia $this` para o código executado durante o carregamento. Os fluxos de `$mname`, `$sname` e `$id` receberam inicializações explícitas e seguras, preservando a lógica legada. A validação focalizada eliminou as 20 ocorrências `variable.undefined`; permanecem somente `function.inner` e `class.nameCase`, que serão tratados em lote estrutural separado. O arquivo passou no `php -l` e a baseline não foi alterada.
+
+
+### Lote B — lazy-load de URL: udm.php
+
+A skill `phpstan-legacy-remediation` foi aplicada a `prescia/lazyload/udm.php`. O carregador `CPrescia::udm($param, $ignorePreVF)` foi confirmado em `prescia/core.php`, estabelecendo `$this` como `CPrescia`, `$param` como a lista de definições de despacho e `$ignorePreVF` como booleano.
+
+Foram adicionados os contratos PHPDoc correspondentes. A validação focalizada terminou com `[OK] No errors`, o `php -l` passou e `git diff --check` foi aprovado. A análise global atual caiu de 447 para 428 diagnósticos, redução de 19 ocorrências, sem alteração da baseline.
