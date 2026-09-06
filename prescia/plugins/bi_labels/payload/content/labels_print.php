@@ -1,9 +1,12 @@
 <?php
 
-	if (!isset($_REQUEST['module'])) $this->fastClose(404);
+/** @var CPrescia $core Runtime payload context injected by the framework. */
+/** @var mod_bi_labels $this Runtime module context injected by the framework. */
+
+		if (!isset($_REQUEST['module'])) $core->fastClose(404);
 	$module = $core->loaded($_REQUEST['module']);
 	
-	if (!$module || !isset($_REQUEST['label_template']) || !isset($_REQUEST['label_skip'])) $this->fastClose(404);
+		if (!$module || !isset($_REQUEST['label_template']) || !isset($_REQUEST['label_skip'])) $core->fastClose(404);
 	
 	$label = $_REQUEST['label_template'];
 	$offset = $_REQUEST['label_skip'];
@@ -12,10 +15,11 @@
 	$currentLabels = isset($core->dimconfig['_labels'])?$core->dimconfig['_labels']:array();
 	if (isset($currentLabels[$label]))
 		$lData = $currentLabels[$label];
-	else {
-		$core->log[] = "Label not found";
-		$this->fastClose(404);
-	}
+		else {
+			$core->log[] = "Label not found";
+			$core->fastClose(404);
+			return;
+		}
 	
 	$keys = array();
 	$ereg_pattern = "^";
