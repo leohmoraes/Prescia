@@ -303,7 +303,7 @@ class mod_bi_adm extends CscriptedModule  {
 	function createAdminSuggestion() {
 		// create a xml suggestion for the admin (not a good suggestion, but good for copy&paste)
 		$output = "";
-		$this->parent->loadAllModules();
+		$this->parent->loadAllmodules();
 		foreach ($this->parent->modules as $name => $module) {
 			if (!$module->linker) {
 				$pluginOptions = 0;

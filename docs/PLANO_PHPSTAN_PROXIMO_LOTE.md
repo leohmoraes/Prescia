@@ -239,3 +239,10 @@ A investigação confirmou que os métodos reais pertencem a `CPrescia`: `loadAl
 | `mod_bi_stats::loaded($selmod)` | Método chamado no módulo | `$core->loaded($selmod)` |
 
 O próximo inventário F3 deve tratar métodos ausentes em `bi_adm/module.php` e payloads restantes, separando chamadas ao núcleo, chamadas ao módulo concreto e símbolos globais não encontrados. Funções locais, classes ausentes e constantes continuarão em lotes separados quando não forem consequência direta do contexto do método.
+
+
+### Fase F3 — segundo ciclo: capitalização de método em bi_adm
+
+O inventário do relatório associado ao commit `5f61356` não apresentou novos `method.notFound` em `bi_adm/module.php`, mas a revisão do call site identificou a chamada `loadAllModules()` com capitalização divergente da declaração real `CPrescia::loadAllmodules()`. Embora PHP trate nomes de métodos sem diferenciação de maiúsculas e minúsculas em runtime, a forma divergente prejudicava a análise estática e o contrato documentado.
+
+A chamada foi normalizada para `$this->parent->loadAllmodules()`. A análise focalizada do arquivo ainda reporta diagnósticos independentes de `variable.undefined` e `function.inner`, mas não reporta `method.notFound`, `method.private`, `method.protected` ou `method.callable`. Esses diagnósticos restantes não serão misturados à Fase F3.
