@@ -48,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Continued the undefined-variable remediation in `prescia/lazyload/friendlyurl.php` by documenting its real `CPrescia::friendlyurl(array $param)` include contract. The focused analysis now passes with no errors, without inventing defaults for matching parameters.
 - Continued the undefined-variable remediation in `prescia/lazyload/fastclose.php` by documenting the `CPrescia::fastClose($action, $context)` include contract. The focused analysis now passes with no errors.
 - Reworked missing-path handling in both entrypoints and the legacy CKEditor loader. Configuration, database connector and CKEditor implementation paths are now calculated, checked with `is_file()` and reported through explicit `RuntimeException`s before inclusion. This removes the PHPStan `require.fileNotFound` and `includeOnce.fileNotFound` diagnostics without adding production placeholder files.
+- Initialized the `index.php` output buffer before the `servingFile` branch so `$PAGE` is defined on every path before plugin hooks, error output, honeypot injection, compression and final echo. The focused PHPStan analysis now reports no errors for the entrypoint.
 
 ### Compatibility checks
 - The compatibility suite checks runtime version, required extensions, PHP syntax, removed/deprecated APIs, short tags and Docker base image.

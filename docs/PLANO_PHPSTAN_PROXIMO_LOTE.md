@@ -329,3 +329,10 @@ A execução `34041574378` apresentava quatro diagnósticos `require.fileNotFoun
 A correção não criou arquivos de produção fictícios. Nos dois entrypoints, os caminhos de configuração e driver agora são calculados em variáveis, verificados com `is_file()` e interrompem o bootstrap com `RuntimeException` descritiva quando a instalação não fornece uma dependência obrigatória. No CKEditor, a implementação é resolvida relativa a `__DIR__`, validada antes do include e também gera uma exceção explícita quando a integração não está instalada.
 
 A análise focalizada dos três arquivos eliminou todos os diagnósticos de caminho ausente. Restaram somente sete referências a `$PAGE` em `index.php`, que pertencem ao próximo lote de variáveis de contexto. A baseline não foi alterada.
+
+
+### Lote B — correção do buffer de saída PAGE
+
+Após a remoção dos caminhos ausentes, o entrypoint ainda apresentava sete ocorrências `variable.undefined` para `$PAGE`. O valor é produzido por `renderCache()` ou `showTemplate()` quando a requisição não é de arquivo; porém, os hooks `onEcho`, o tratamento de saída inesperada, o honeypot, a compressão e o echo final ficam fora desse ramo.
+
+A correção inicializa `$PAGE` como string vazia imediatamente antes do teste `servingFile`, no menor escopo comum a todos os consumidores. Os ramos de cache e template continuam substituindo esse valor pelo conteúdo real, enquanto o caminho de arquivo mantém um buffer definido antes do fechamento. O PHPStan focalizado de `index.php` agora retorna `[OK] No errors`, sem alteração da baseline.

@@ -126,8 +126,9 @@ if ($core->debugmode) $core->applyMetaData(); // only in debug. Executes onMeta'
 # ab -n50 total mean: 363ms 	28ms	28ms	28ms
 
 
-# -- start parsing the request
-if (!$core->servingFile) {
+	# -- start parsing the request
+	$PAGE = '';
+	if (!$core->servingFile) {
 	// if serving file, we just want to enable the database and run onEcho plugins
 	$core->parseRequest();	
 	
