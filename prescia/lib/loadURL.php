@@ -45,6 +45,28 @@ function presciaLoadUrlResolvePublicIps(string $host): array {
 }
 
 /**
+ * Open a connection using only the already validated IP list.
+ *
+ * @param list<string> $ips
+ * @return resource|false
+ */
+function presciaLoadUrlOpenValidatedConnection(array $ips, string $scheme, int $port, $context, ?callable $connector = null) {
+    if ($connector === null) {
+        $connector = static function (string $target, int $targetPort, $targetContext) {
+            return @stream_socket_client($target . ':' . $targetPort, $errno, $errstr, 10, STREAM_CLIENT_CONNECT, $targetContext);
+        };
+    }
+    foreach ($ips as $ip) {
+        if (!presciaLoadUrlIsPublicIp($ip)) continue;
+        $connectHost = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) ? '[' . $ip . ']' : $ip;
+        $target = ($scheme === 'https' ? 'ssl://' : '') . $connectHost;
+        $connection = $connector($target, $port, $context);
+        if (is_resource($connection)) return $connection;
+    }
+    return false;
+}
+
+/**
  * Load a remote HTTP(S) URL without following redirects.
  * Every destination is validated independently to prevent SSRF and rebinding.
  *
@@ -75,13 +97,7 @@ function loadURL($url, $agent = 'PHP', $method = 'get') {
     $context = stream_context_create(array('ssl' => array(
         'verify_peer' => true, 'verify_peer_name' => true, 'peer_name' => $host, 'SNI_enabled' => true,
     )));
-    $fp = false;
-    foreach ($ips as $ip) {
-        $connectHost = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) ? '[' . $ip . ']' : $ip;
-        $target = ($scheme === 'https' ? 'ssl://' : '') . $connectHost;
-        $fp = @stream_socket_client($target . ':' . $port, $errno, $errstr, 10, STREAM_CLIENT_CONNECT, $context);
-        if (is_resource($fp)) break;
-    }
+    $fp = presciaLoadUrlOpenValidatedConnection($ips, $scheme, $port, $context);
     if (!is_resource($fp)) return false;
     stream_set_timeout($fp, 10);
 

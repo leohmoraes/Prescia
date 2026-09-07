@@ -146,6 +146,34 @@ PHP, $route);
         self::assertStringNotContainsString('Location:', $loader);
     }
 
+    public function testValidatedConnectionDoesNotReResolveHostnameDuringDnsRebinding(): void
+    {
+        require_once __DIR__ . '/../prescia/lib/loadURL.php';
+        $targets = array();
+        $socket = fopen('php://temp', 'r+');
+        self::assertIsResource($socket);
+
+        $connector = static function (string $target, int $port, $context) use (&$targets, $socket) {
+            $targets[] = $target . ':' . $port;
+            // A later DNS lookup would return 127.0.0.1; the connector must
+            // still receive the IP approved by the first validation step.
+            return $socket;
+        };
+
+        $connection = presciaLoadUrlOpenValidatedConnection(
+            array('93.184.216.34'),
+            'http',
+            80,
+            stream_context_create(),
+            $connector
+        );
+
+        self::assertSame($socket, $connection);
+        self::assertSame(array('93.184.216.34:80'), $targets);
+        self::assertNotContains('127.0.0.1:80', $targets);
+        fclose($socket);
+    }
+
     public function testFrontControllerEmitsBaselineSecurityHeaders(): void
     {
         $frontController = (string) file_get_contents(__DIR__ . '/../index.php');
