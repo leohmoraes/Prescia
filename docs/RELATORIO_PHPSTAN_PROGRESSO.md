@@ -4,13 +4,13 @@
 **Escopo:** compatibilidade com PHP 8.3 e redução incremental da dívida técnica identificada pelo PHPStan  
 **Versão analisada:** PHPStan 2.2.13, nível 1  
 **Branch:** `master`  
-**Commit atual:** `a1564d7`
+**Commit atual:** `eb1cc26`
 **Data de consolidação:** 6 de setembro de 2026
 **Issue principal:** [#43 — Atualizar o PHPStan e elevar gradualmente o nível de análise][1]
 
 ## Resumo executivo
 
-O projeto avançou de uma configuração inicial sem contratos suficientes para uma análise estática incremental com **PHPStan 2.x no nível 1**, baseline sem supressões e contratos explícitos para os principais contextos dinâmicos do framework. A suíte de compatibilidade com PHP 8.3 permanece aprovada nas execuções recentes, enquanto o workflow completo do PHPStan ainda falha por diagnósticos remanescentes em arquivos que ainda não foram tratados.
+O projeto avançou de uma configuração inicial sem contratos suficientes para uma análise estática incremental com **PHPStan 2.x no nível 1**, baseline sem supressões e contratos explícitos para os principais contextos dinâmicos do framework. A análise global mais recente reduziu o relatório para **287 diagnósticos**, enquanto os arquivos tratados continuam passando na validação focalizada. A suíte de compatibilidade com PHP 8.3 permanece aprovada nas execuções recentes, mas o workflow completo do PHPStan ainda falha por diagnósticos remanescentes em arquivos que ainda não foram tratados.
 
 O progresso mais significativo ocorreu na separação entre o núcleo `CPrescia`, módulos concretos e payloads incluídos dinamicamente. Essa separação eliminou os diagnósticos de contexto em vários fluxos de administração, autenticação, fórum, cron e labels. Também foram corrigidos fluxos de variáveis indefinidas em listagens, ações de teste, cron e callbacks de módulos.
 
@@ -22,10 +22,10 @@ A principal limitação atual é que o workflow completo analisa todo o reposit�
 |---|---|---|
 | PHP 8.3 | **Aprovada no commit atual** | Execução `34047768938` concluída com sucesso no commit `a1564d7` |
 | PHPStan focalizado nos arquivos corrigidos | **Aprovado** | Todos os lotes recentes terminaram com `[OK] No errors` |
-| PHPStan completo do repositório | **Ainda falha** | Execução `34047768949` associada ao commit `a1564d7` |
+| PHPStan completo do repositório | **Ainda falha** | Análise global do commit `eb1cc26`: **287 diagnósticos**; workflow permanece pendente até zerar os erros |
 | PHPUnit | Configurado no Composer; execução global não foi usada como critério deste relatório | `phpunit/phpunit ^10.5` |
 | Baseline | **Sem novos ocultamentos** | `phpstan-baseline.neon` permanece sem entradas de `ignoreErrors` adicionadas durante os ciclos recentes |
-| Branch e working tree | **Limpos** | `master` em `a1564d7`, sem alterações pendentes na consolidação |
+| Branch e working tree | **Limpos** | `master` em `eb1cc26`, sem alterações pendentes na consolidação |
 
 ## Linha do tempo das correções
 
@@ -408,3 +408,18 @@ Foi adicionado o contrato PHPDoc `CPrescia $this`. O PHPStan focalizado terminou
 | `prescia/lazyload/ajaxQuery.php` | **Concluído** | PHPStan focalizado sem erros; sintaxe PHP 8.3 aprovada; 12 diagnósticos removidos |
 
 O próximo alvo deverá ser recalculado a partir do relatório global atual. Os workflows serão acompanhados após a publicação.
+
+
+## Marco global — 287 diagnósticos restantes
+
+A análise global executada após o commit `eb1cc26` reportou **287 diagnósticos** no total, contra 299 na execução anterior. A redução de **12 diagnósticos** corresponde à correção de todas as ocorrências `variable.undefined` identificadas em `prescia/lazyload/ajaxQuery.php`.
+
+O arquivo corrigido passou no PHPStan focalizado, no `php -l` do PHP 8.3 e no `git diff --check`. A análise global ainda não está verde porque permanecem diagnósticos em outros arquivos, incluindo o agrupamento estrutural de `tools/phpstan-framework-stubs.php` com 46 ocorrências `return.missing`. A baseline continua sem novas entradas.
+
+| Métrica | Estado atual |
+|---|---:|
+| Diagnósticos globais | **287** |
+| Redução desde a execução anterior | **12** |
+| Arquivos corrigidos no lote recente | `pages/prescia/_config/config.php`, `prescia/lazyload/ajaxQuery.php` |
+| PHPStan focalizado dos arquivos recentes | **0 erros** |
+| Baseline expandida | **Não** |

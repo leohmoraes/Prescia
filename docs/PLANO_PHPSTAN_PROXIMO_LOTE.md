@@ -75,7 +75,7 @@ O registro do ciclo deverá informar o commit analisado, a URL da execução do 
 
 ## Conclusão executiva
 
-A última execução do PHPStan terminou com falha, mas as correções recentes reduziram os erros diretamente relacionados a cabeçalhos PHP inválidos, constantes de configuração e resultados de consultas não inicializados. O próximo lote não deve elevar o nível de análise. A prioridade é eliminar as causas estruturais que ainda geram a maior parte do relatório: contexto global ausente, chamadas de módulos/plugins sem contratos, variáveis indefinidas remanescentes e símbolos legados que ainda não possuem bootstrap ou stub confiável.
+A última execução global do PHPStan terminou com falha, mas as correções recentes reduziram o relatório para **287 diagnósticos**. O próximo lote não deve elevar o nível de análise. A prioridade é eliminar as causas estruturais que ainda geram a maior parte do relatório: contexto global ausente, chamadas de módulos/plugins sem contratos, variáveis indefinidas remanescentes e símbolos legados que ainda não possuem bootstrap ou stub confiável.
 
 O relatório histórico do CI associado ao commit `22c3615` continha **2.126 diagnósticos**. O relatório atual do Lote F excedeu o limite de 1000 registros e, por isso, não deve ser usado para estimar o total real. A leitura dos registros exibidos confirma que `variable.undefined` é a categoria dominante, seguida por acessos a propriedades privadas ou ausentes, métodos e símbolos não encontrados. A estratégia deve tratar as causas por fluxo e contrato, não adicionar supressões globais.
 
@@ -443,3 +443,10 @@ Foi adicionado o contrato PHPDoc de `CPrescia $this`. A validação focalizada t
 A skill `phpstan-legacy-remediation` foi aplicada a `prescia/lazyload/ajaxQuery.php`. O carregador foi confirmado em `CPrescia::checkActions()`, que inclui o arquivo para a ação `ajaxquery` no contexto do objeto `CPrescia`.
 
 Foi adicionado o contrato PHPDoc de `CPrescia $this`. A validação focalizada terminou com `[OK] No errors`, o `php -l` passou e `git diff --check` foi aprovado. A análise global atual caiu de 299 para 287 diagnósticos, redução de 12 ocorrências, sem alteração da baseline.
+
+
+### Marco de acompanhamento — commit `eb1cc26`
+
+A análise global mais recente reportou **287 diagnósticos**, uma redução de 12 em relação aos 299 anteriores. A redução veio da correção de `prescia/lazyload/ajaxQuery.php`, que agora passa no PHPStan focalizado sem erros. Os arquivos recentes `pages/prescia/_config/config.php` e `prescia/lazyload/ajaxQuery.php` também passaram na sintaxe PHP 8.3 e no `git diff --check`.
+
+A análise completa ainda falha por pendências fora dos arquivos corrigidos. O agrupamento estrutural de `tools/phpstan-framework-stubs.php`, com 46 `return.missing`, permanece separado do lote de variáveis indefinidas. Nenhuma entrada foi adicionada à baseline.
