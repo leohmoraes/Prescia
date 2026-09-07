@@ -589,3 +589,7 @@ O sétimo lote confirmou dois contratos de contexto: `$core` como `CPrescia` no 
 ### Resultado do oitavo lote
 
 Os quatro manifests BI foram tratados com o contrato `string $sname`, comprovado pelo loop de `CPrescia::applyMetaData()` que inclui cada manifest. O lote removeu sete ocorrências, reduziu o inventário global de 65 para 58 diagnósticos e manteve a baseline sem alterações. O único manifest ainda pendente é `bi_adm/payloadmanifest.php`, que deve ser tratado com os demais arquivos de contexto administrativo.
+
+### Resultado do nono lote
+
+O nono lote removeu os quatro diagnósticos de `$core` em `stats_rtajax.php` e o diagnóstico de `$sname` no manifest de `bi_adm`. Os carregadores foram confirmados antes da alteração, o PHPStan focalizado e o lint PHP 8.3 passaram, e o PHPUnit permaneceu aprovado. O inventário global caiu de 58 para 53 ocorrências, sem alteração da baseline. O próximo foco deve ser `coreFull.php`, que reúne os diagnósticos estruturais de funções internas e símbolo ausente.

@@ -2,7 +2,9 @@
    | PART OF stats MODULE
 --*/
 
-	$ip = cleanString($_REQUEST['ip']);
+/** @var CPrescia $core Core context injected by the BI Stats action loader. */
+
+		$ip = cleanString($_REQUEST['ip']);
 
 	$rt = $core->loaded('statsrt');
 	$r = false;
@@ -17,4 +19,3 @@
 		echo "IP not found";
 
 	$core->close();
-
