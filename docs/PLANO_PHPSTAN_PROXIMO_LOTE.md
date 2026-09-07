@@ -520,3 +520,14 @@ O primeiro lote tratou `datetime.php`, `bi_labels/payload/actions/config_labels.
 Os três arquivos passaram no PHPStan focalizado e no lint PHP 8.3. PHPUnit permaneceu aprovado com 23 testes e 2745 asserções. A análise global caiu de 207 para 172 diagnósticos, em 50 arquivos, sem ampliar a baseline.
 
 O próximo lote deve priorizar `prescia/lazyload/rss.php` e `prescia/plugins/bi_adm/payload/actions/import.php`, ambos com 10 diagnósticos, confirmando separadamente os contextos dinâmicos, os símbolos estruturais e os fluxos de variáveis locais antes de modificar o código.
+
+
+## Resultado do segundo lote da Issue #47
+
+O segundo lote tratou `prescia/lazyload/rss.php` e `prescia/plugins/bi_adm/payload/actions/import.php`. Os contratos foram confirmados pelos carregadores reais: `rss.php` é incluído por `CPrescia::rss()`, enquanto `import.php` é um payload de `mod_bi_adm` com `$core` injetado e carrega a classe global `CImporter` de `payload/importer.php`.
+
+Além dos contratos PHPDoc, foram corrigidos três problemas concretos de fluxo: a validação de listas do RSS usava `&&` e uma variável inexistente; o importador instanciava `Cimporter` com capitalização diferente da classe real; e estados consumidos após ramos condicionais não tinham fallback. Também foi corrigido o índice de enumeração e o operador de atribuição do valor `n`.
+
+Os dois arquivos passaram no PHPStan focalizado e no lint PHP 8.3. PHPUnit permaneceu aprovado com 23 testes e 2745 asserções. A análise global caiu de 172 para 152 diagnósticos, em 48 arquivos, sem ampliar a baseline.
+
+O próximo ciclo deve começar por `prescia/plugins/bi_labels/payload/content/config_labels.php` (9 diagnósticos) e `prescia/plugins/bi_fm/payload/actions/affbi_fmset.php` (8), mantendo a separação entre contratos de payload e correções de lógica comprovadas.

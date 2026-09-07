@@ -502,3 +502,25 @@ Em `datetime.php`, foram inicializados no escopo de `_adodb_getdate()` os estado
 | Baseline | **Sem alteração** |
 
 As categorias restantes são 161 `variable.undefined`, 3 `class.nameCase`, 3 `constant.notFound`, 2 `function.inner`, 2 `function.notFound` e 1 `isset.variable`. Os próximos maiores grupos são `prescia/lazyload/rss.php` e `prescia/plugins/bi_adm/payload/actions/import.php`, com 10 diagnósticos cada, seguidos de `prescia/plugins/bi_labels/payload/content/config_labels.php`, com 9.
+
+
+## Atualização de 7 de setembro de 2026 — segundo lote da Issue #47
+
+O segundo lote tratou `prescia/lazyload/rss.php` e `prescia/plugins/bi_adm/payload/actions/import.php`.
+
+Em `rss.php`, foi documentado o contrato de include de `CPrescia::rss()`, incluindo `$this`, `$data`, `$echoHeader` e `$imgtitle`. Também foi corrigida a validação de cardinalidade para usar `$modules`, `$ilt`, `$it` e `$idesc`, rejeitando qualquer inconsistência e eliminando a referência incorreta a `$module`.
+
+Em `import.php`, a classe foi alinhada à declaração real `CImporter`; os índices de enumeração passaram a usar `$regs[$c]`; o estado `$oldKey` foi inicializado antes do caminho que o consome; `$tempOk` recebeu valor padrão quando não há dados para executar; e o conteúdo original foi preservado no modo raw antes de qualquer transformação.
+
+| Verificação | Resultado |
+|---|---|
+| PHPStan focalizado dos dois arquivos | **0 erros** |
+| PHP 8.3 lint | **Aprovado nos dois arquivos** |
+| `git diff --check` | **Aprovado** |
+| PHPUnit | **23 testes, 2745 asserções, aprovado** |
+| PHPStan global antes | **172 diagnósticos em 50 arquivos** |
+| PHPStan global depois | **152 diagnósticos em 48 arquivos** |
+| Redução | **20 diagnósticos** |
+| Baseline | **Sem alteração** |
+
+As categorias restantes são 145 `variable.undefined`, 2 `class.nameCase`, 2 `function.inner`, 2 `function.notFound` e 1 `isset.variable`. O próximo alvo prioritário é `prescia/plugins/bi_labels/payload/content/config_labels.php`, com 9 diagnósticos, seguido de `prescia/plugins/bi_fm/payload/actions/affbi_fmset.php`, com 8.
