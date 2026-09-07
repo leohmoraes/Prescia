@@ -118,4 +118,14 @@ PHP, $route);
         self::assertStringContainsString('$id = filter_var($id, FILTER_VALIDATE_INT);', $multipleUndo);
         self::assertStringContainsString('if ($id === false || $id < 1) continue;', $multipleUndo);
     }
+
+    public function testThumbnailRedirectUsesContextualQueryEncoding(): void
+    {
+        $route = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/actions/edit_thumbnails.php');
+
+        self::assertStringContainsString("http_build_query(\$query, '', '&', PHP_QUERY_RFC3986)", $route);
+        self::assertStringContainsString("'field' => \$field", $route);
+        self::assertStringNotContainsString('implode("&",$qs)', $route);
+        self::assertStringNotContainsString('$_REQUEST[\'field\']."&"', $route);
+    }
 }

@@ -85,10 +85,12 @@
 			}
 		}
 		$core->action = "edit_thumbnails"; // if internalFoward disabled, go to edit pane
-		$qs = array();
+		$query = array(
+			'module' => $module->name,
+			'field' => $field,
+		);
 		foreach ($module->keys as $key) {
-			$qs[] = $key . "=" . $_REQUEST[$key];
+			$query[$key] = $_REQUEST[$key];
 		}
-		$qs = "module=".$module->name."&field=".$_REQUEST['field']."&".implode("&",$qs);
-		$core->headerControl->internalFoward("edit_thumbnails.html?".$qs);
+		$core->headerControl->internalFoward("edit_thumbnails.html?".http_build_query($query, '', '&', PHP_QUERY_RFC3986));
 	}
