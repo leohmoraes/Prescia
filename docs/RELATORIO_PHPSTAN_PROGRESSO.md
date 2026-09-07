@@ -347,3 +347,25 @@ Foram adicionados os contratos PHPDoc correspondentes e inicializado `$template`
 | `prescia/lazyload/prepareMail.php` | **Concluído** | PHPStan focalizado sem erros; sintaxe PHP 8.3 aprovada; 15 diagnósticos removidos |
 
 O próximo alvo deverá ser recalculado a partir do relatório global atual. Os workflows serão acompanhados após a publicação.
+
+
+## Consolidação dos arquivos corrigidos — lote de variáveis indefinidas
+
+Até o commit `c278b77`, a aplicação da skill `phpstan-legacy-remediation` corrigiu e validou os seguintes arquivos. A tabela consolida os arquivos tratados desde o início do lote agrupado, incluindo os commits publicados anteriormente.
+
+| Arquivo | Diagnósticos `variable.undefined` tratados | Contexto confirmado | Validação focalizada |
+|---|---:|---|---|
+| `prescia/plugins/bi_bb/payload/content/preview.php` | 26 | `CPrescia $core`, `mod_bi_bb $this` | PHPStan sem erros; PHP 8.3 aprovado |
+| `prescia/plugins/bi_bb/payload/content/forum.php` | 23 | `CPrescia $core`, `mod_bi_bb $this`; `$sql` inicializado por fluxo | PHPStan sem erros; PHP 8.3 aprovado |
+| `prescia/plugins/bi_bb/payload/content/profile.php` | 18 | `CPrescia $core`; `$ext` inicializado antes de `locateFile()` | PHPStan sem erros; PHP 8.3 aprovado |
+| `prescia/lazyload/script.php` | 24 | `CPrescia $this`, `$scriptname`, `$parameters` | PHPStan sem erros; PHP 8.3 aprovado |
+| `prescia/plugins/bi_adm/module.php` | 20 | `CPrescia $this` no carregamento; `$mname`, `$sname`, `$id` | 20 variáveis resolvidas; 2 diagnósticos estruturais restantes |
+| `prescia/lazyload/udm.php` | 19 | `CPrescia $this`, `$param`, `$ignorePreVF` | PHPStan sem erros; PHP 8.3 aprovado |
+| `prescia/plugins/bi_stats/payload/content/stats_ref.php` | 19 | `CPrescia $core` | PHPStan sem erros; PHP 8.3 aprovado |
+| `prescia/plugins/bi_stats/payload/content/stats_pathajax.php` | 18 | `CPrescia $core` | PHPStan sem erros; PHP 8.3 aprovado |
+| `pages/presciatester/actions/reset.php` | 17 | `CPrescia $this` no dispatcher de actions | PHPStan sem erros; PHP 8.3 aprovado |
+| `prescia/plugins/bi_bb/payload/actions/default.php` | 17 | `mod_bi_bb $this` | PHPStan sem erros; PHP 8.3 aprovado |
+| `prescia/plugins/bi_bb/payload/content/default.php` | 17 | `CPrescia $core`, `mod_bi_bb $this` | PHPStan sem erros; PHP 8.3 aprovado |
+| `prescia/lazyload/prepareMail.php` | 15 | `CPrescia $this`, `$name`, `$fillArray`; `$template` inicializado | PHPStan sem erros; PHP 8.3 aprovado |
+
+O conjunto representa **233 diagnósticos `variable.undefined` tratados** sem expansão da baseline. A análise global mais recente do commit `c278b77` ainda reporta **325 diagnósticos**, pois há pendências em outros arquivos e categorias, incluindo os 46 `return.missing` de `tools/phpstan-framework-stubs.php`. A análise focalizada de cada arquivo acima permanece aprovada; a falha global do workflow não invalida essas validações locais.
