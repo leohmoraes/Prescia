@@ -581,3 +581,7 @@ As seis ocorrências de `$this` nos módulos BI devem ser resolvidas em conjunto
 ### Resultado do sub lote dos módulos BI
 
 A correção dos cinco módulos BI foi concluída sem alterar o fluxo de carregamento. O PHPStan focalizado passou sem erros, o PHPUnit permaneceu com 23 testes e 2745 asserções aprovadas e o inventário global caiu de 82 para 75 diagnósticos. A baseline não foi alterada. O diagnóstico residual de `$frame` em `bi_bb/module.php` também foi resolvido por inicialização no menor escopo comum.
+
+### Resultado do sétimo lote
+
+O sétimo lote confirmou dois contratos de contexto: `$core` como `CPrescia` no payload `bi_labels/label_test.php` e `$this` como `CPrescia` no lazyload `ajaxqueryunique.php`. A correção eliminou 10 diagnósticos, reduziu o inventário global de 75 para 65 ocorrências e manteve a baseline sem novas entradas. O próximo agrupamento deve priorizar `coreFull.php`, `stats_rtajax.php` e os manifests que ainda usam `$sname`.

@@ -650,3 +650,17 @@ O lote dos módulos BI corrigiu os contratos das seis ocorrências de `$this` em
 | PHPStan global depois | **75 diagnósticos em 34 arquivos** |
 | Redução | **7 diagnósticos** |
 | Baseline | **Sem alteração** |
+
+## Atualização de 7 de setembro de 2026 — sétimo lote
+
+O sétimo lote documentou o contexto `CPrescia` em `prescia/plugins/bi_labels/payload/content/label_test.php` e `prescia/lazyload/ajaxqueryunique.php`. O primeiro é incluído por `mod_bi_labels::onShow()` com `$core` apontando para o núcleo; o segundo é incluído diretamente por `CPrescia::checkActions()` com `$this` representando o núcleo.
+
+| Verificação | Resultado |
+|---|---|
+| PHPStan focalizado dos dois arquivos | **0 erros** |
+| PHP 8.3 lint | **Aprovado nos dois arquivos** |
+| PHPUnit | **23 testes, 2745 asserções, aprovado** |
+| PHPStan global antes | **75 diagnósticos em 34 arquivos** |
+| PHPStan global depois | **65 diagnósticos em 32 arquivos** |
+| Redução | **10 diagnósticos** |
+| Baseline | **Sem alteração** |

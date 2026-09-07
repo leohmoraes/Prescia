@@ -1,5 +1,6 @@
 <?php
 
+/** @var CPrescia $core Core context injected by mod_bi_labels::onShow(). */
 	$cols = $_REQUEST['cols'];
 	$rows = $_REQUEST['rows'];
 	$pfl = $_REQUEST['pfl'];
