@@ -7,7 +7,9 @@
   | On check stage, returns TRUE if validated
 -*/
 
-	//function tCaptcha($key,$checkStage=false) {
+/** @var CPrescia $this Runtime context of CPrescia::tCaptcha(). */
+/** @var string $key Name of the captcha request field. */
+/** @var bool $checkStage Whether the request is being validated. */
 
 	if ($checkStage) {
 		if ($this->layout == 2) return; // do not reset on ajax windows

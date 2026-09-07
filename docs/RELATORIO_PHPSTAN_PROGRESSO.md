@@ -462,3 +462,23 @@ Também foram corrigidos fluxos legados que produziam warnings no PHP 8.3: `cont
 | Baseline | **Sem novas entradas** |
 
 Os diagnósticos globais remanescentes estão fora do escopo dos arquivos tratados e continuam classificados como dívida legada para o próximo lote. O lote atual não eleva o nível do PHPStan nem adiciona supressões.
+
+
+## Atualização de 7 de setembro de 2026 — `tcaptcha.php`
+
+O inventário global do commit `5c14031` encontrou 12 diagnósticos `variable.undefined` em `prescia/lazyload/tcaptcha.php`: `$checkStage`, `$key` e `$this` eram fornecidos pelo método `CPrescia::tCaptcha(string $key, bool $checkStage)`, mas o include procedural não documentava seu contexto.
+
+A correção adicionou contratos PHPDoc concretos para `CPrescia $this`, `string $key` e `bool $checkStage`. Nenhum valor artificial foi introduzido e o comportamento de geração, validação e consumo único do CAPTCHA permaneceu inalterado.
+
+| Verificação | Resultado |
+|---|---|
+| PHPStan focalizado | **0 erros** |
+| `php -l prescia/lazyload/tcaptcha.php` | **Aprovado** |
+| `git diff --check` | **Aprovado** |
+| PHPUnit | **23 testes, 2745 asserções, aprovado** |
+| PHPStan global antes | **219 diagnósticos em 54 arquivos** |
+| PHPStan global depois | **207 diagnósticos em 53 arquivos** |
+| Redução | **12 diagnósticos** |
+| Baseline | **Sem alteração** |
+
+O próximo inventário deve priorizar `prescia/lib/datetime.php`, `prescia/plugins/bi_labels/payload/actions/config_labels.php` e `pages/presciatester/_config/config.php`, que permanecem com 12, 12 e 11 diagnósticos, respectivamente.

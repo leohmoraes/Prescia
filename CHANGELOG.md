@@ -54,6 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replaced predictable activation codes and unsafe serialized-object handling, validated uploads by structure, extension and content, and added regression coverage for CSRF, password hashes, serialization and uploads.
 - Parameterized the affected statistics and administrative SQL statements, restricted administrative mutations to POST, fixed ownership analysis scope in `bi_auth`, and removed PHP 8.3 `continue`-in-`switch` warnings from administrative payloads.
 - Reworked the Docker and CI defaults to keep application code root-owned, isolate development bind mounts, use the committed Composer lockfile and run blocking PHPStan/lint checks. The current working-tree validation reports 219 global PHPStan diagnostics, while the treated files pass focused analysis.
+- Completed the `prescia/lazyload/tcaptcha.php` context batch by documenting the `CPrescia::tCaptcha(string $key, bool $checkStage)` include contract. All 12 `variable.undefined` diagnostics were removed; focused PHPStan and PHP 8.3 syntax validation pass.
 
 ### Compatibility checks
 - The compatibility suite checks runtime version, required extensions, PHP syntax, removed/deprecated APIs, short tags and Docker base image.
