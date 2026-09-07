@@ -796,16 +796,23 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 			if (count($_SESSION[CONS_SESSION_ACCESS_USER]['history'])>=10) { # FILO
 				array_shift($_SESSION[CONS_SESSION_ACCESS_USER]['history']);
 			}
-			$_SESSION[CONS_SESSION_ACCESS_USER]['history'][] = array("browser" => CONS_BROWSER,
-								   "browserVersion" => CONS_BROWSER_VERSION,
-								   "browserTag" => isset($_SERVER['HTTP_USER_AGENT'])?$_SERVER['HTTP_USER_AGENT']:"",
-								   "time" => date("Y-m-d H:i:s"),
-								   "resolution" => isset($_SESSION[CONS_USER_RESOLUTION])?$_SESSION[CONS_USER_RESOLUTION]:"",
-								   "ip" => CONS_IP
-								   );
-			unset($_SESSION[CONS_SESSION_ACCESS_USER]['password']);
-			$this->parent->dbo->simpleQuery("UPDATE ".$loginModule->dbname." SET history=\"".cleanString(serialize($_SESSION[CONS_SESSION_ACCESS_USER]['history']),true)."\"".($saveUP?",userprefs=\"".cleanString(serialize($_SESSION[CONS_SESSION_ACCESS_USER]['userprefs']),true)."\"":"")." WHERE id=".$_SESSION[CONS_SESSION_ACCESS_USER]['id']);
-			return $sucessCode;
+				$_SESSION[CONS_SESSION_ACCESS_USER]['history'][] = array("browser" => CONS_BROWSER,
+									   "browserVersion" => CONS_BROWSER_VERSION,
+									   "browserTag" => isset($_SERVER['HTTP_USER_AGENT'])?$_SERVER['HTTP_USER_AGENT'] :"",
+									   "time" => date("Y-m-d H:i:s"),
+									   "resolution" => isset($_SESSION[CONS_USER_RESOLUTION])?$_SESSION[CONS_USER_RESOLUTION]:"",
+									   "ip" => CONS_IP
+									   );
+				unset($_SESSION[CONS_SESSION_ACCESS_USER]['password']);
+				$history = serialize($_SESSION[CONS_SESSION_ACCESS_USER]['history']);
+				if ($saveUP) {
+					$sql = "UPDATE ".$loginModule->dbname." SET history=?,userprefs=? WHERE id=?";
+					$this->parent->dbo->queryPrepared($sql, 'ssi', array($history, serialize($_SESSION[CONS_SESSION_ACCESS_USER]['userprefs']), (int)$_SESSION[CONS_SESSION_ACCESS_USER]['id']), $r, $n);
+				} else {
+					$sql = "UPDATE ".$loginModule->dbname." SET history=? WHERE id=?";
+					$this->parent->dbo->queryPrepared($sql, 'si', array($history, (int)$_SESSION[CONS_SESSION_ACCESS_USER]['id']), $r, $n);
+				}
+				return $sucessCode;
 		} else {
 			$this->parent->errorControl->raise(505,$loginId);
 			$this->parent->errorState = true;

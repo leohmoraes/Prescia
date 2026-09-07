@@ -21,4 +21,13 @@ SQL, $payload);
 WHERE f.id=".$_POST['id_forum']
 SQL, $payload);
     }
+
+    public function testAuthenticatedUserHistoryUsesParameterizedUpdate(): void
+    {
+        $authControl = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_auth/authControl.php');
+
+        self::assertStringContainsString('SET history=?,userprefs=? WHERE id=?', $authControl);
+        self::assertStringContainsString("array(\$history, serialize(\$_SESSION[CONS_SESSION_ACCESS_USER]['userprefs']), (int)\$_SESSION[CONS_SESSION_ACCESS_USER]['id'])", $authControl);
+        self::assertStringNotContainsString('simpleQuery("UPDATE ".$loginModule->dbname." SET history=', $authControl);
+    }
 }

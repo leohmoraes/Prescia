@@ -789,3 +789,9 @@ A auditoria do fluxo `prescia/plugins/bi_bb/payload/content/preview.php` confirm
 As duas consultas foram migradas para `queryPrepared()`, usando parâmetros inteiros (`ii` e `i`) derivados dos IDs recebidos. O fluxo de retorno e a regra de `fastClose(503)` foram preservados. Também foi inicializado `$ext` antes da chamada por referência a `locateFile()`. A baseline do PHPStan não foi alterada. `tests/SecurityRegressionTest.php` protege o contrato contra o retorno da concatenação direta.
 
 A validação focalizada deve incluir `php -l prescia/plugins/bi_bb/payload/content/preview.php`, `git diff --check`, o teste de regressão e a análise PHPStan do payload. O próximo alvo de segurança é continuar o inventário de consultas que recebem entrada de requisição, priorizando fluxos mutáveis de autenticação, CSRF e sessão conforme `docs/PLANO_ACAO_SEGURANCA.md`.
+
+## Frente de segurança — atualização de sessão autenticada
+
+A auditoria de `prescia/plugins/bi_auth/authControl.php` encontrou em `logUser()` uma atualização de histórico e preferências que ainda concatenava dados serializados da sessão e o ID do usuário em `simpleQuery()`. O fluxo foi migrado para `queryPrepared()`, com parâmetros `si` quando apenas o histórico é atualizado e `ssi` quando as preferências também precisam ser persistidas. O nome da tabela continua vindo do módulo carregado, enquanto todos os valores permanecem vinculados.
+
+A regressão foi adicionada a `tests/SecurityRegressionTest.php`. Os fluxos centrais de login já usavam `queryPrepared()` para credenciais, sessões persistentes, grupos e migração de senha; este lote elimina a última atualização identificada no caminho de login autenticado. A proteção CSRF global já valida todos os métodos mutáveis em `prescia/lib/main.php`, injeta tokens nos formulários e gira o token no logout.
