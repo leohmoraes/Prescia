@@ -1266,7 +1266,13 @@ class CPrescia extends CPresciaVar {
 			$this->template->assign("printver",$this->action.".html?".$printVersion);
 		}
 
-		return $this->template->techo();
+		$output = $this->template->techo();
+		$cspNonce = isset($this->template->constants['CSP_NONCE']) ? $this->template->constants['CSP_NONCE'] : '';
+		if ($cspNonce !== '') {
+			$nonceAttribute = ' nonce="'.htmlspecialchars($cspNonce, ENT_QUOTES, 'UTF-8').'"';
+			$output = preg_replace('/<script\b(?![^>]*\bnonce=)/i', '<script'.$nonceAttribute, $output) ?? $output;
+		}
+		return $output;
 		
 	} # showTemplate
 #-
