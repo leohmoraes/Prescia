@@ -584,3 +584,22 @@ Em `sendMail.php`, os delimitadores MIME `$bound` e `$bnext` passaram a ser inic
 | Baseline | **Sem alteração** |
 
 As categorias restantes são 93 `variable.undefined`, 2 `class.nameCase`, 2 `function.inner`, 2 `function.notFound` e 1 `isset.variable`. Os próximos maiores alvos são `prescia/lazyload/feedReader.php`, `prescia/lazyload/fullSearch.php` e `prescia/plugins/bi_labels/payload/actions/config_labels_m.php`, com 6 diagnósticos cada.
+
+## Atualização de 7 de setembro de 2026 — sexto lote da Issue #47
+
+O sexto lote tratou `prescia/lazyload/feedReader.php`, `prescia/lazyload/fullSearch.php` e `prescia/plugins/bi_labels/payload/actions/config_labels_m.php`, com seis diagnósticos de variáveis indefinidas em cada arquivo.
+
+A investigação confirmou que `feedReader.php` e `fullSearch.php` são includes avaliados dentro de `CPrescia::feedReader()` e `CPrescia::fullSearch()`, respectivamente. O payload `config_labels_m.php` é incluído pelo módulo de labels com `$core` apontando para o núcleo `CPrescia`. Os três arquivos receberam contratos PHPDoc explícitos, sem alterar o fluxo funcional nem expandir a baseline.
+
+| Verificação | Resultado |
+|---|---|
+| PHPStan focalizado dos três arquivos | **0 erros** |
+| PHP 8.3 lint | **Aprovado nos três arquivos** |
+| `git diff --check` | **Aprovado** |
+| PHPUnit | **23 testes, 2745 asserções, aprovado** |
+| PHPStan global antes | **100 diagnósticos em 41 arquivos** |
+| PHPStan global depois | **82 diagnósticos em 39 arquivos** |
+| Redução | **18 diagnósticos** |
+| Baseline | **Sem alteração** |
+
+As categorias restantes são 75 `variable.undefined`, 2 `class.nameCase`, 2 `function.inner`, 2 `function.notFound` e 1 `isset.variable`. O próximo passo é separar os diagnósticos restantes por causa, priorizando os arquivos com maior concentração de variáveis indefinidas e mantendo os diagnósticos de símbolos legados em lotes próprios.

@@ -8,7 +8,11 @@
   | $cancache= true|false if this can be cached
 -*/
 
-	if ($cancache) {
+/** @var CPrescia $this Core context of CPrescia::feedReader(). */
+/** @var string $url URL of the external feed. */
+/** @var bool $cancache Whether the feed may use the cache. */
+
+		if ($cancache) {
 		$cached = $this->cacheControl->getCachedContent("feedReader_".$url);
 		if ($cached !== false) return $cached;
 	}
@@ -47,4 +51,3 @@
 		}
 	}
 	return false; // ops
-

@@ -558,3 +558,9 @@ O quinto lote tratou `prescia/lib/sendMail.php` e `prescia/plugins/bi_undo/modul
 As correções eliminaram 14 diagnósticos sem supressões, casts artificiais ou crescimento da baseline. PHPStan focalizado, lint PHP 8.3, `git diff --check` e PHPUnit passaram. A análise global caiu de 114 para 100 diagnósticos, em 41 arquivos.
 
 O próximo lote deve tratar `prescia/lazyload/feedReader.php`, `prescia/lazyload/fullSearch.php` e `prescia/plugins/bi_labels/payload/actions/config_labels_m.php`, com 6 diagnósticos cada. Esses arquivos devem ser classificados por contrato de include antes de aplicar PHPDoc ou inicializações de fluxo.
+
+### Sexto lote executado — includes de lazyload e labels
+
+O sexto lote da Issue #47 confirmou e documentou os contratos de entrada de `feedReader.php`, `fullSearch.php` e `config_labels_m.php`. Os dois primeiros recebem o contexto `$this` de `CPrescia` por meio dos métodos homônimos do núcleo; o terceiro recebe `$core` como `CPrescia` durante a execução da ação do plugin de labels. A correção foi restrita a PHPDoc, pois os parâmetros já são fornecidos pelas assinaturas dos métodos e pelo carregador do módulo.
+
+O PHPStan focalizado e o lint PHP 8.3 passaram nos três arquivos. A análise global caiu de 100 para 82 diagnósticos, sem qualquer alteração em `phpstan-baseline.neon`. A distribuição atual é 75 `variable.undefined`, 2 `class.nameCase`, 2 `function.inner`, 2 `function.notFound` e 1 `isset.variable`. O próximo lote deve continuar a correção de `variable.undefined` por fluxo, sem misturar símbolos ausentes ou adicionar contratos artificiais.
