@@ -6,6 +6,7 @@
 	This function will just look if there is a FIELD with the VALUE specified in MODULE and return "true" or "false" if it is UNIQUE
  */
  
+/** @var CPrescia $this Core context injected by CPrescia::checkActions(). */
 	$this->layout = 2; // enforce ajax mode
 	$this->ignore404 = true; // enforce 404 should not be auto-generated (though this script will auto close)
  	

@@ -184,3 +184,4 @@ Applied the `phpstan-legacy-remediation` skill to `prescia/lazyload/ajaxQuery.ph
 - Added the detailed inventory of the 82 remaining PHPStan diagnostics, separating dynamic `$this`/`$core` contracts, manifest `$sname` flows, local variables and structural symbol diagnostics without expanding the baseline.
 - Documented and remediated the six remaining BI module `$this` context diagnostics in `bi_bb`, `bi_cms`, `bi_groups`, `bi_seo` and `bi_stats`, based on the confirmed `CPrescia::addPlugin()` loader contract.
 - Completed the BI module context sub-batch and initialized the `bi_bb` template frame, reducing the global PHPStan report from 82 to 75 diagnostics while keeping the baseline unchanged.
+- Documented the `CPrescia` context in the `bi_labels` label-test payload and the unique-query AJAX lazyloader, reducing the global PHPStan report from 75 to 65 diagnostics.
