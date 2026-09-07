@@ -212,6 +212,10 @@ class mod_bi_stats extends CscriptedModule  {
 			}
 			$pageToBelogged .= $act;
 			$pageToBelogged = str_replace('"',"",$pageToBelogged); # there are exploits everywhere!
+			$sqlEscape = static function ($value) use ($core): string {
+				return addslashes_EX((string)$value, true, $core->dbo);
+			};
+			$pageToBelogged = $sqlEscape($pageToBelogged);
 		
 			
 			
@@ -325,8 +329,9 @@ class mod_bi_stats extends CscriptedModule  {
 							$domain = "busca.uol.*";
 						} else if (strpos($domain,".mail.") !== false || substr($domain,0,5) == "mail." || strpos($domain,".webmail.") !== false || substr($domain,0,8) == "webmail.") {
 							$domain = "MAIL";
-						} else if (strlen($domain)>50) $domain = substr($domain,0,47)."...";
-						$r = false;
+							} else if (strlen($domain)>50) $domain = substr($domain,0,47)."...";
+							$domain = $sqlEscape($domain);
+							$r = false;
 						$n = 0;
 						$core->dbo->query("SELECT hits, pages FROM ".$core->modules['statsref']->dbname." WHERE data='".date("Y-m-d")."' AND referer=\"$domain\" AND entrypage=\"".$pageToBelogged."\"",$r,$n);
 						if ($n>0)
@@ -337,6 +342,7 @@ class mod_bi_stats extends CscriptedModule  {
 						}
 						$hits++;
 						if (strpos($pages,$referer.",") === false) $pages .= cleanString($referer).",";
+						$pages = $sqlEscape($pages);
 						if ($n == 0) {
 							$ok = $core->dbo->simpleQuery("INSERT INTO ".$core->modules['statsref']->dbname." SET data='".date("Y-m-d")."', referer=\"$domain\", entrypage=\"".$pageToBelogged."\", hits=$hits, pages=\"".$pages."\"");
 							if (!$ok) {
@@ -365,7 +371,9 @@ class mod_bi_stats extends CscriptedModule  {
 					$referer = str_replace("http://","",isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:"");
 					$referer = str_replace("https://","",$referer);
 				}
+				$referer = $sqlEscape($referer);
 				$whatToSave = CONS_BROWSER_ISMOB?"MO":CONS_BROWSER;
+				$browser = $sqlEscape($browser);
 				$ok = $core->dbo->simpleQuery("INSERT INTO ".$core->modules['statsrt']->dbname." SET ip='".CONS_IP."', page=\"".$pageToBelogged."\", pagelast=\"".$pageToBelogged."\", agent=\"".$browser."\", agentcode=\"".$whatToSave."\", fullpath=\"".$pageToBelogged.",\", data=NOW(), data_ini=NOW(), referer=\"$referer\"",true);
 				if (!$ok) {
 					$lastError = $this->parent->dbo->log[count($this->parent->dbo->log)-1];

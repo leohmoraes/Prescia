@@ -819,3 +819,9 @@ O upload do file manager recebeu a mesma validação de diretório. A função `
 A varredura de rotas de entrada encontrou interpolação de valores em filtros remotos, filtros AJAX, seleção de referência administrativa, ações de fórum e verificações de grupo. Os filtros centrais agora escapam strings com o driver ativo ou convertem IDs para inteiros; os fluxos de fórum e grupos usam `fetchPrepared()`/`queryPrepared()`.
 
 Também foi revisada a superfície de execução de comandos. Não foram encontrados usos de `shell_exec`, `system`, `passthru`, `proc_open` ou `popen` alimentados por entrada externa. O único `eval()` identificado pertence ao legado de conversão de data em `zipfile.php` e não recebe dados de requisição neste fluxo. A telemetria de `bi_stats` ainda contém SQL legado com dados de referer e caminho de página; esse componente foi registrado como próximo sublote separado para refatoração parametrizada, sem mascarar o achado nesta auditoria.
+
+## Sublote bi_stats — sanitização de telemetria
+
+As entradas de telemetria usadas pelo módulo `bi_stats` foram revisadas: ação/página, referer HTTP, domínio derivado, páginas acumuladas e identificador do navegador. Foi introduzido um helper local que delega o escape ao driver de banco (`addslashes_EX(..., $core->dbo)`), aplicado antes das queries SQL legadas, preservando a lógica existente de contagem e concorrência. IDs de página continuam normalizados como inteiros onde aplicável.
+
+A alteração é deliberadamente limitada ao `bi_stats` e à regressão estática correspondente. O módulo não usa execução de comandos externos alimentada por requisição. PHPUnit, PHPStan, lint PHP 8.3 e verificação de whitespace passaram.

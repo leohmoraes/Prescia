@@ -83,4 +83,16 @@ PHP, $route);
         self::assertStringContainsString("addslashes_EX((string)\$_REQUEST['affrefererkeys']", $adminList);
         self::assertStringNotContainsString('"=\\\"".$_GET[$fname]."\\\""', $ajaxQuery);
     }
+
+    public function testBiStatsEscapesExternalTelemetryBeforeLegacySql(): void
+    {
+        $stats = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/module.php');
+
+        self::assertStringContainsString('$sqlEscape = static function ($value) use ($core): string', $stats);
+        self::assertStringContainsString('$pageToBelogged = $sqlEscape($pageToBelogged);', $stats);
+        self::assertStringContainsString('$domain = $sqlEscape($domain);', $stats);
+        self::assertStringContainsString('$pages = $sqlEscape($pages);', $stats);
+        self::assertStringContainsString('$referer = $sqlEscape($referer);', $stats);
+        self::assertStringContainsString('$browser = $sqlEscape($browser);', $stats);
+    }
 }
