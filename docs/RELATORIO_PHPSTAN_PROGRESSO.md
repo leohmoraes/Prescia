@@ -678,3 +678,17 @@ O oitavo lote documentou `$sname` nos quatro manifests de plugins BI que ainda a
 | PHPStan global depois | **58 diagnósticos em 28 arquivos** |
 | Redução | **7 diagnósticos** |
 | Baseline | **Sem alteração** |
+
+## Atualização de 7 de setembro de 2026 — nono lote
+
+O nono lote tratou `prescia/plugins/bi_stats/payload/actions/stats_rtajax.php` e `prescia/plugins/bi_adm/payloadmanifest.php`. O payload de Stats recebeu o contrato `CPrescia $core` para o núcleo usado na ação AJAX. O manifest administrativo recebeu o contrato `string $sname`, fornecido pelo loop de `CPrescia::applyMetaData()` que inclui os manifests dos plugins carregados.
+
+| Verificação | Resultado |
+|---|---|
+| PHPStan focalizado dos dois arquivos | **0 erros** |
+| PHP 8.3 lint | **Aprovado nos dois arquivos** |
+| PHPUnit | **23 testes, 2745 asserções, aprovado** |
+| PHPStan global antes | **58 diagnósticos em 28 arquivos** |
+| PHPStan global depois | **53 diagnósticos em 26 arquivos** |
+| Redução | **5 diagnósticos** |
+| Baseline | **Sem alteração** |
