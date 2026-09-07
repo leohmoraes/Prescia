@@ -706,3 +706,17 @@ O décimo lote tratou `prescia/coreFull.php`. A referência incorreta que dividi
 | PHPStan global depois | **48 diagnósticos em 25 arquivos** |
 | Redução | **5 diagnósticos** |
 | Baseline | **Sem alteração** |
+
+## Atualização de 7 de setembro de 2026 — décimo primeiro lote
+
+O décimo primeiro lote documentou o contexto `CPrescia $this` em `pages/presciatester/actions/default.php` e `pages/prescia/content/default.php`. O primeiro arquivo é incluído pelo fluxo `CPrescia::checkActions()`; o segundo pelo fluxo `CPrescia::renderPage()`. Os contratos correspondem ao contexto real do carregador e não alteram a execução das páginas.
+
+| Verificação | Resultado |
+|---|---|
+| PHPStan focalizado dos dois arquivos | **0 erros** |
+| PHP 8.3 lint | **Aprovado nos dois arquivos** |
+| PHPUnit | **23 testes, 2745 asserções, aprovado** |
+| PHPStan global antes | **48 diagnósticos em 25 arquivos** |
+| PHPStan global depois | **38 diagnósticos em 23 arquivos** |
+| Redução | **10 diagnósticos** |
+| Baseline | **Sem alteração** |

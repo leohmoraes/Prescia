@@ -597,3 +597,7 @@ O nono lote removeu os quatro diagnósticos de `$core` em `stats_rtajax.php` e o
 ### Resultado do décimo lote
 
 `coreFull.php` foi corrigido sem ampliar a baseline. O lote separou uma referência incorreta de variável, inicializou o acumulador de permissões e substituiu a função interna recursiva por closure. A validação focalizada, o lint PHP 8.3 e o PHPUnit passaram; o inventário global caiu de 53 para 48 diagnósticos. O próximo lote deve continuar pelos arquivos com maior concentração de variáveis indefinidas, mantendo funções internas e símbolos ausentes separados quando não forem consequência direta do mesmo fluxo.
+
+### Resultado do décimo primeiro lote
+
+Os payloads default da ação do `presciatester` e do conteúdo da página `prescia` receberam contratos `CPrescia $this` após confirmação dos métodos `checkActions()` e `renderPage()`. O lote eliminou 10 diagnósticos, reduziu o inventário global de 48 para 38 ocorrências e manteve a baseline sem alterações. O próximo foco deve ser `pages/prescia/content/resources/reference.php`, `prescia/lazyload/cls.php` e `prescia/lib/ttree.php`, agrupando arquivos somente quando seus carregadores forem compatíveis.
