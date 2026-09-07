@@ -110,7 +110,7 @@
 						$item = $core->dbo->fetch_assoc($r);
 						$itemlist[] = $item['title']." (".$item['id'].")";
 					}
-					$core->log[] = $core->langOut("me_sucess_items").": ".implode(", ",$itemList);
+						$core->log[] = $core->langOut("me_sucess_items").": ".implode(", ",$itemlist);
 
 					// items that were NOT sucessful:
 					$sql = "SELECT ".$module->title." as title, ".$module->keys[0]." as id FROM ".$module->dbname." WHERE ".$module->keys[0]." IN (".implode(",",$errorKeys).")";
@@ -123,7 +123,7 @@
 						$item = $core->dbo->fetch_assoc($r);
 						$itemlist[] = $item['title']." (".$item['id'].")";
 					}
-					$core->log[] = $core->langOut("me_error_items").": ".implode(", ",$itemList);
+						$core->log[] = $core->langOut("me_error_items").": ".implode(", ",$itemlist);
 					$core->action = "list";
 				}
 				$ok = true; // so it behaves as if it were ok

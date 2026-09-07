@@ -10,7 +10,7 @@
 		if ($module === false) echo "ERRO";
 		else {
 			include_once(CONS_PATH_SYSTEM."plugins/".$this->name."/payload/importer.php");
-			$importerObj = new Cimporter($core);
+				$importerObj = new CImporter($core);
 			$iFields = $importerObj->fields($module);
 			if (isset($_REQUEST['sep']))
 				$sep = $_REQUEST['sep'];
@@ -57,6 +57,5 @@
 		}
 	}
 	$core->close();
-
 
 

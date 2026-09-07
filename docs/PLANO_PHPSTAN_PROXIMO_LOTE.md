@@ -605,3 +605,7 @@ Os payloads default da ação do `presciatester` e do conteúdo da página `pres
 ### Resultado do décimo segundo lote
 
 Os contratos de `reference.php` e `cls.php` foram confirmados pelos carregadores de página e seleção de domínio. O diagnóstico local de `$tag` em `ttree::echoHTML()` foi resolvido por inicialização no escopo comum. Como o seletor CLS usa o lazyload `builddomains()` dentro do include, a visibilidade do método foi ajustada de privada para pública, preservando a API efetivamente usada pelo framework. O lote reduziu o inventário de 38 para 28 diagnósticos, com PHPStan focalizado, lint e PHPUnit aprovados e baseline inalterada.
+
+### Resultado do décimo terceiro lote
+
+O lote administrativo eliminou 13 diagnósticos sem baseline: fluxos condicionais agora têm valores iniciais, nomes de variáveis e classes foram corrigidos, e o retorno do caso inválido em `laedit.php` ficou explícito. Os nove payloads passaram no PHPStan focalizado e no lint PHP 8.3, e o PHPUnit permaneceu aprovado. O inventário global caiu de 28 para 15 diagnósticos, concentrados agora em dez arquivos menores.
