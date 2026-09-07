@@ -524,3 +524,23 @@ Em `import.php`, a classe foi alinhada à declaração real `CImporter`; os índ
 | Baseline | **Sem alteração** |
 
 As categorias restantes são 145 `variable.undefined`, 2 `class.nameCase`, 2 `function.inner`, 2 `function.notFound` e 1 `isset.variable`. O próximo alvo prioritário é `prescia/plugins/bi_labels/payload/content/config_labels.php`, com 9 diagnósticos, seguido de `prescia/plugins/bi_fm/payload/actions/affbi_fmset.php`, com 8.
+
+
+## Atualização de 7 de setembro de 2026 — terceiro lote da Issue #47
+
+O terceiro lote tratou os dois próximos arquivos prioritários de payload: `prescia/plugins/bi_labels/payload/content/config_labels.php` e `prescia/plugins/bi_fm/payload/actions/affbi_fmset.php`.
+
+A investigação confirmou que ambos são incluídos dentro de métodos dos módulos concretos: `mod_bi_labels::onShow()` e `mod_bi_fm::onCheckActions()`. Nos dois casos, `$core` é uma referência ao `CPrescia` pai (`$this->parent`), portanto a correção foi documentar esse contrato real com PHPDoc, sem criar variáveis globais, casts ou defaults artificiais.
+
+| Verificação | Resultado |
+|---|---|
+| PHPStan focalizado dos dois arquivos | **0 erros** |
+| PHP 8.3 lint | **Aprovado nos dois arquivos** |
+| `git diff --check` | **Aprovado** |
+| PHPUnit | **23 testes, 2745 asserções, aprovado** |
+| PHPStan global antes | **152 diagnósticos em 48 arquivos** |
+| PHPStan global depois | **135 diagnósticos em 46 arquivos** |
+| Redução | **17 diagnósticos** |
+| Baseline | **Sem alteração** |
+
+As categorias restantes são 128 `variable.undefined`, 2 `class.nameCase`, 2 `function.inner`, 2 `function.notFound` e 1 `isset.variable`. Os próximos alvos de maior concentração têm 7 diagnósticos cada: `pages/_newProjectTemplate/_config/config.php`, `pages/prescia/actions/contatogo.php`, `pages/presciatester/content/default.php`, `prescia/lib/sendMail.php` e `prescia/plugins/bi_undo/module.php`.

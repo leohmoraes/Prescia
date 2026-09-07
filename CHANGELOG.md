@@ -57,6 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Completed the `prescia/lazyload/tcaptcha.php` context batch by documenting the `CPrescia::tCaptcha(string $key, bool $checkStage)` include contract. All 12 `variable.undefined` diagnostics were removed; focused PHPStan and PHP 8.3 syntax validation pass.
 - Completed the first Issue #47 priority batch: initialized guarded date-conversion state in `datetime.php`, documented the injected `CPrescia` context in `bi_labels/config_labels.php` and `presciatester/_config/config.php`, and removed 35 PHPStan diagnostics without changing the baseline.
 - Completed the second Issue #47 priority batch: documented the `CPrescia::rss()` include contract, corrected RSS array-count validation, fixed the `CImporter` class case, corrected enum field indexing, and initialized import fallback state. The batch removed 20 PHPStan diagnostics without changing the baseline.
+- Completed the third Issue #47 priority batch by documenting the injected `CPrescia` context in the `bi_labels` content payload and the `bi_fm` permission action. The batch removed 17 context diagnostics without changing the baseline.
 
 ### Compatibility checks
 - The compatibility suite checks runtime version, required extensions, PHP syntax, removed/deprecated APIs, short tags and Docker base image.

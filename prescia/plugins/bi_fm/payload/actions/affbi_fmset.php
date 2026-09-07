@@ -1,6 +1,8 @@
 <?php
 
-	if (!$core->authControl->checkPermission('bi_fm','change_fmp')) return; // cannot change permissions
+/** @var CPrescia $core Core context injected by mod_bi_fm::onCheckActions(). */
+
+		if (!$core->authControl->checkPermission('bi_fm','change_fmp')) return; // cannot change permissions
 
 	$data = array(
 		'filenm' => $_GET['file'],
@@ -35,4 +37,3 @@
 	$core->safety = true;
 
   	$core->close();
-

@@ -531,3 +531,12 @@ Além dos contratos PHPDoc, foram corrigidos três problemas concretos de fluxo:
 Os dois arquivos passaram no PHPStan focalizado e no lint PHP 8.3. PHPUnit permaneceu aprovado com 23 testes e 2745 asserções. A análise global caiu de 172 para 152 diagnósticos, em 48 arquivos, sem ampliar a baseline.
 
 O próximo ciclo deve começar por `prescia/plugins/bi_labels/payload/content/config_labels.php` (9 diagnósticos) e `prescia/plugins/bi_fm/payload/actions/affbi_fmset.php` (8), mantendo a separação entre contratos de payload e correções de lógica comprovadas.
+
+
+## Resultado do terceiro lote da Issue #47
+
+O terceiro lote tratou `prescia/plugins/bi_labels/payload/content/config_labels.php` e `prescia/plugins/bi_fm/payload/actions/affbi_fmset.php`. A origem de `$core` foi comprovada nos carregadores: `mod_bi_labels::onShow()` e `mod_bi_fm::onCheckActions()` atribuem `$core` por referência a `$this->parent` antes do include.
+
+As duas correções adicionaram somente PHPDoc com o tipo concreto `CPrescia`, eliminando os 17 diagnósticos de contexto sem alterar o comportamento dos payloads. PHPStan focalizado, lint PHP 8.3, `git diff --check` e PHPUnit passaram. A análise global caiu de 152 para 135 diagnósticos, em 46 arquivos, sem ampliar a baseline.
+
+O próximo lote deve selecionar entre os grupos de 7 diagnósticos: `pages/_newProjectTemplate/_config/config.php`, `pages/prescia/actions/contatogo.php`, `pages/presciatester/content/default.php`, `prescia/lib/sendMail.php` e `prescia/plugins/bi_undo/module.php`. A prioridade deve continuar sendo confirmar o carregador real antes de documentar contratos ou inicializar variáveis.
