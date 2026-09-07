@@ -1,5 +1,7 @@
 <?php	# -------------------------------- Statistics Plugin
 
+/** @var CPrescia $this Core context injected by CPrescia::addPlugin(). */
+
 if (!defined("CONS_USER_RESOLUTION")) define ("CONS_USER_RESOLUTION","aff_userres"); # it might be already defined by other modules
 if (CONS_DB_HOST=='') $this->errorControl->raise(4,'bi_stats','STATS module requires database');
 

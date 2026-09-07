@@ -549,3 +549,35 @@ O quarto lote tratou `pages/_newProjectTemplate/_config/config.php`, `pages/pres
 A correção adicionou somente contratos PHPDoc concretos para `$this`, eliminando os 21 diagnósticos de contexto sem alterar a lógica de configuração, CAPTCHA, contato, template ou renderização. PHPStan focalizado, lint PHP 8.3, `git diff --check` e PHPUnit passaram. A análise global caiu de 135 para 114 diagnósticos, em 43 arquivos, sem ampliar a baseline.
 
 O próximo lote deve priorizar `prescia/lib/sendMail.php` e `prescia/plugins/bi_undo/module.php`, ambos com 7 diagnósticos, confirmando se os contextos são funções procedurais, métodos de classe ou includes dinâmicos antes da correção.
+
+
+## Resultado do quinto lote da Issue #47
+
+O quinto lote tratou `prescia/lib/sendMail.php` e `prescia/plugins/bi_undo/module.php`. Em `sendMail.php`, os delimitadores MIME foram inicializados no escopo comum antes dos ramos que os consomem. Em `bi_undo`, o carregamento do plugin foi documentado com o contexto `CPrescia`, a contagem `$n` recebeu fallback antes da consulta e as chaves `$keys` foram inicializadas antes dos loops de composição.
+
+As correções eliminaram 14 diagnósticos sem supressões, casts artificiais ou crescimento da baseline. PHPStan focalizado, lint PHP 8.3, `git diff --check` e PHPUnit passaram. A análise global caiu de 114 para 100 diagnósticos, em 41 arquivos.
+
+O próximo lote deve tratar `prescia/lazyload/feedReader.php`, `prescia/lazyload/fullSearch.php` e `prescia/plugins/bi_labels/payload/actions/config_labels_m.php`, com 6 diagnósticos cada. Esses arquivos devem ser classificados por contrato de include antes de aplicar PHPDoc ou inicializações de fluxo.
+
+### Sexto lote executado — includes de lazyload e labels
+
+O sexto lote da Issue #47 confirmou e documentou os contratos de entrada de `feedReader.php`, `fullSearch.php` e `config_labels_m.php`. Os dois primeiros recebem o contexto `$this` de `CPrescia` por meio dos métodos homônimos do núcleo; o terceiro recebe `$core` como `CPrescia` durante a execução da ação do plugin de labels. A correção foi restrita a PHPDoc, pois os parâmetros já são fornecidos pelas assinaturas dos métodos e pelo carregador do módulo.
+
+O PHPStan focalizado e o lint PHP 8.3 passaram nos três arquivos. A análise global caiu de 100 para 82 diagnósticos, sem qualquer alteração em `phpstan-baseline.neon`. A distribuição atual é 75 `variable.undefined`, 2 `class.nameCase`, 2 `function.inner`, 2 `function.notFound` e 1 `isset.variable`. O próximo lote deve continuar a correção de `variable.undefined` por fluxo, sem misturar símbolos ausentes ou adicionar contratos artificiais.
+
+
+### Inventário operacional dos 82 diagnósticos remanescentes
+
+O inventário global mais recente registra 82 ocorrências em 39 arquivos: 75 `variable.undefined`, 2 `class.nameCase`, 2 `function.inner`, 2 `function.notFound` e 1 `isset.variable`. Entre as variáveis indefinidas, `$this` responde por 37 ocorrências, `$core` por 13 e `$sname` por 8. Esses três grupos devem ser investigados separadamente porque os dois primeiros representam contratos de includes dinâmicos, enquanto `$sname` aparece nos manifests e pode ser parâmetro ou estado local do carregador.
+
+A ordem prática recomendada é: (1) contratos de `$this` e `$core`; (2) investigação dos quatro `payloadmanifest.php` que usam `$sname`; (3) arquivos com cinco ocorrências — `label_test.php`, `ajaxqueryunique.php`, `coreFull.php`, `pages/presciatester/actions/default.php` e `pages/prescia/content/default.php`; (4) correção de `Cimporter` para `CImporter`; (5) conversão das funções internas em `coreFull.php` e `bi_dev/module.php` para closures; (6) confirmação da origem de `dieFreakingThumbs()`; e (7) revisão do `isset($_POST)` em `cacheControl.php`.
+
+Cada sublote deve registrar o arquivo, a variável ou símbolo, a origem real no carregador, a correção aplicada e a validação focalizada. Não devem ser usados defaults artificiais, stubs genéricos ou novas entradas na baseline sem comprovação do contrato de runtime.
+
+### Sub lote prioritário — módulos BI com `$this`
+
+As seis ocorrências de `$this` nos módulos BI devem ser resolvidas em conjunto: duas em `bi_bb/module.php` e uma em cada módulo `bi_cms`, `bi_groups`, `bi_seo` e `bi_stats`. O carregador `CPrescia::addPlugin()` inclui o arquivo antes de instanciar a classe `mod_*`, de modo que o contrato deve declarar `CPrescia $this` no nível superior. Não se deve declarar o `$this` como o módulo concreto nessa região nem mover o include para dentro da classe.
+
+### Resultado do sub lote dos módulos BI
+
+A correção dos cinco módulos BI foi concluída sem alterar o fluxo de carregamento. O PHPStan focalizado passou sem erros, o PHPUnit permaneceu com 23 testes e 2745 asserções aprovadas e o inventário global caiu de 82 para 75 diagnósticos. A baseline não foi alterada. O diagnóstico residual de `$frame` em `bi_bb/module.php` também foi resolvido por inicialização no menor escopo comum.

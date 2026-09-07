@@ -29,6 +29,10 @@ $parameters[] = array('module' => '',
 */
 
 
+/** @var CPrescia $this Core context of CPrescia::fullSearch(). */
+/** @var array<int, array<string, mixed>> $parameters Search definitions. */
+/** @var bool $groupPerModule Whether to preserve module grouping. */
+
 $mylist = array();
 
 $c = 0;
@@ -82,4 +86,3 @@ if (!$groupPerModule) {
 }
 
 return $mylist; // returns: module, title, description, date, link, id
-

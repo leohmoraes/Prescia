@@ -564,3 +564,89 @@ A investigação confirmou que os três arquivos são avaliados no contexto de `
 | Baseline | **Sem alteração** |
 
 As categorias restantes são 107 `variable.undefined`, 2 `class.nameCase`, 2 `function.inner`, 2 `function.notFound` e 1 `isset.variable`. Os próximos maiores alvos são `prescia/lib/sendMail.php` e `prescia/plugins/bi_undo/module.php`, com 7 diagnósticos cada, seguidos de `prescia/lazyload/feedReader.php`, `prescia/lazyload/fullSearch.php` e `prescia/plugins/bi_labels/payload/actions/config_labels_m.php`, com 6 cada.
+
+
+## Atualização de 7 de setembro de 2026 — quinto lote da Issue #47
+
+O quinto lote tratou `prescia/lib/sendMail.php` e `prescia/plugins/bi_undo/module.php`, os dois maiores alvos seguintes com sete diagnósticos cada.
+
+Em `sendMail.php`, os delimitadores MIME `$bound` e `$bnext` passaram a ser inicializados antes do ramo que os atribui. Isso preserva o comportamento quando HTML ou anexos são usados e fornece valores neutros para a análise dos ramos alternativos. Em `bi_undo/module.php`, o contexto global de carregamento foi documentado como `CPrescia`, `$n` foi inicializado antes da consulta de undo e `$keys` passou a começar como string vazia antes dos loops que montam chaves de arquivos.
+
+| Verificação | Resultado |
+|---|---|
+| PHPStan focalizado dos dois arquivos | **0 erros** |
+| PHP 8.3 lint | **Aprovado nos dois arquivos** |
+| `git diff --check` | **Aprovado** |
+| PHPUnit | **23 testes, 2745 asserções, aprovado** |
+| PHPStan global antes | **114 diagnósticos em 43 arquivos** |
+| PHPStan global depois | **100 diagnósticos em 41 arquivos** |
+| Redução | **14 diagnósticos** |
+| Baseline | **Sem alteração** |
+
+As categorias restantes são 93 `variable.undefined`, 2 `class.nameCase`, 2 `function.inner`, 2 `function.notFound` e 1 `isset.variable`. Os próximos maiores alvos são `prescia/lazyload/feedReader.php`, `prescia/lazyload/fullSearch.php` e `prescia/plugins/bi_labels/payload/actions/config_labels_m.php`, com 6 diagnósticos cada.
+
+## Atualização de 7 de setembro de 2026 — sexto lote da Issue #47
+
+O sexto lote tratou `prescia/lazyload/feedReader.php`, `prescia/lazyload/fullSearch.php` e `prescia/plugins/bi_labels/payload/actions/config_labels_m.php`, com seis diagnósticos de variáveis indefinidas em cada arquivo.
+
+A investigação confirmou que `feedReader.php` e `fullSearch.php` são includes avaliados dentro de `CPrescia::feedReader()` e `CPrescia::fullSearch()`, respectivamente. O payload `config_labels_m.php` é incluído pelo módulo de labels com `$core` apontando para o núcleo `CPrescia`. Os três arquivos receberam contratos PHPDoc explícitos, sem alterar o fluxo funcional nem expandir a baseline.
+
+| Verificação | Resultado |
+|---|---|
+| PHPStan focalizado dos três arquivos | **0 erros** |
+| PHP 8.3 lint | **Aprovado nos três arquivos** |
+| `git diff --check` | **Aprovado** |
+| PHPUnit | **23 testes, 2745 asserções, aprovado** |
+| PHPStan global antes | **100 diagnósticos em 41 arquivos** |
+| PHPStan global depois | **82 diagnósticos em 39 arquivos** |
+| Redução | **18 diagnósticos** |
+| Baseline | **Sem alteração** |
+
+As categorias restantes são 75 `variable.undefined`, 2 `class.nameCase`, 2 `function.inner`, 2 `function.notFound` e 1 `isset.variable`. O próximo passo é separar os diagnósticos restantes por causa, priorizando os arquivos com maior concentração de variáveis indefinidas e mantendo os diagnósticos de símbolos legados em lotes próprios.
+
+
+## Inventário detalhado dos 82 diagnósticos remanescentes
+
+A análise global do PHPStan 2.2.13, no nível 1, apresenta 82 ocorrências em 39 arquivos. A maior concentração está em `variable.undefined`, com 75 ocorrências. Dentro dessa categoria, 37 referências são ao contexto dinâmico `$this` e 13 ao contexto `$core`, totalizando 50 diagnósticos ligados aos includes procedurais do framework.
+
+| Grupo | Quantidade | Interpretação | Tratamento previsto |
+|---|---:|---|---|
+| `$this` possivelmente indefinido | 37 | Contexto de módulo ou `CPrescia` não inferido pelo PHPStan | Confirmar o carregador e documentar o tipo real com PHPDoc |
+| `$core` possivelmente indefinido | 13 | Núcleo injetado em ações e payloads | Confirmar a ação/módulo e documentar `CPrescia` |
+| `$sname` possivelmente indefinido | 8 | Variável usada nos `payloadmanifest.php` | Confirmar se é parâmetro do carregador ou inicialização necessária |
+| `$tag` | 3 | Variável local usada antes de atribuição garantida | Corrigir o fluxo mantendo o valor semântico |
+| `$module` | 2 | Resultado ou referência de módulo | Inicializar ou validar o retorno do carregador |
+| `$itemList` | 2 | Acumulador/lista de itens | Inicializar no menor escopo comum |
+| Outras variáveis locais | 7 | `$using`, `$p`, `$monitorTxt`, `$hasSOME`, `$frame`, `$fm`, `$field`, `$content`, `$cacheMTFile` e `$cacheFile` | Revisar individualmente por fluxo |
+
+Os arquivos com maior concentração de ocorrências são `prescia/plugins/bi_labels/payload/content/label_test.php`, `prescia/lazyload/ajaxqueryunique.php`, `prescia/coreFull.php`, `pages/presciatester/actions/default.php` e `pages/prescia/content/default.php`, com cinco diagnósticos cada. Em seguida aparecem `prescia/plugins/bi_stats/payload/actions/stats_rtajax.php` e `pages/prescia/content/resources/reference.php`, com quatro cada.
+
+Os 7 diagnósticos restantes pertencem a categorias estruturais distintas de `variable.undefined`:
+
+| Categoria | Quantidade | Arquivo(s) | Problema |
+|---|---:|---|---|
+| `class.nameCase` | 2 | `prescia/plugins/bi_adm/payload/actions/import_sample.php`; `prescia/plugins/bi_adm/payload/content/import_fields.php` | Referência a `Cimporter` com capitalização incorreta; a classe correta é `CImporter` |
+| `function.inner` | 2 | `prescia/coreFull.php`; `prescia/plugins/bi_dev/module.php` | Funções nomeadas declaradas dentro de outro escopo; preferir closures locais |
+| `function.notFound` | 2 | `prescia/coreFull.php` | `dieFreakingThumbs()` não foi localizada pelo PHPStan; confirmar origem antes de criar stub ou ajustar `scanFiles` |
+| `isset.variable` | 1 | `prescia/components/cacheControl.php` | Uso redundante de `isset($_POST)` em um contexto onde `$_POST` já é conhecido pelo analisador |
+
+Esse inventário separa contratos de contexto, variáveis locais e símbolos legados para evitar que uma correção de tipagem mascare um problema funcional. Nenhuma dessas ocorrências foi adicionada à baseline. O próximo lote deve priorizar os contratos `$this`/`$core` e os `payloadmanifest.php`, seguido pelos arquivos com maior concentração de variáveis locais.
+
+### Detalhamento das ocorrências `$this` nos plugins BI
+
+Das 37 ocorrências de `$this` classificadas no inventário, seis estão diretamente nos módulos de plugins BI: duas em `prescia/plugins/bi_bb/module.php` (linhas 3 e 4) e uma em cada arquivo `prescia/plugins/bi_cms/module.php`, `prescia/plugins/bi_groups/module.php`, `prescia/plugins/bi_seo/module.php` e `prescia/plugins/bi_stats/module.php` (linha 4). Esses arquivos são incluídos por `CPrescia::addPlugin()`, portanto o contrato correto do escopo de carregamento é `CPrescia $this`. Os módulos concretos (`mod_bi_bb`, `mod_bi_cms`, `mod_bi_groups`, `mod_bi_seo` e `mod_bi_stats`) somente são instanciados depois do include.
+
+## Atualização de 7 de setembro de 2026 — lote dos módulos BI
+
+O lote dos módulos BI corrigiu os contratos das seis ocorrências de `$this` em `bi_bb/module.php`, `bi_cms/module.php`, `bi_groups/module.php`, `bi_seo/module.php` e `bi_stats/module.php`. O carregador `CPrescia::addPlugin()` foi confirmado como origem do include, portanto cada arquivo recebeu o contrato `CPrescia $this`. No mesmo lote, `$frame` foi inicializado em `bi_bb/module.php`, removendo o diagnóstico de fluxo associado.
+
+| Verificação | Resultado |
+|---|---|
+| PHPStan focalizado dos cinco módulos | **0 erros** |
+| PHP 8.3 lint | **Aprovado nos cinco módulos** |
+| `git diff --check` | **Aprovado** |
+| PHPUnit | **23 testes, 2745 asserções, aprovado** |
+| PHPStan global antes | **82 diagnósticos em 39 arquivos** |
+| PHPStan global depois | **75 diagnósticos em 34 arquivos** |
+| Redução | **7 diagnósticos** |
+| Baseline | **Sem alteração** |

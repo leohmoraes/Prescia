@@ -32,6 +32,8 @@
 	  	$header .= "Reply-To: $mailfrom\n";
 	  if (strpos(strtoupper($header),"FROM:") === false && isMail($mailfrom,true)) // no FROM, add if possible
 	  	$header .= "From: $mailfrom\n";
+	  $bound = '';
+	  $bnext = '';
 	  if ($isHTML || $attach != "") { // HTML mode with attachment
 	  		$isHTML = true;
 	  		$bound = "--=XYZ_" . md5(date("dmYis")) . "_ZYX";
@@ -109,4 +111,3 @@
 	}
 	return $ok;
 	}
-

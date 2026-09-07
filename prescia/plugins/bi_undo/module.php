@@ -1,5 +1,7 @@
 <?php	# -------------------------------- bi_undo plugin
 
+/** @var CPrescia $this Core context while loading the plugin module. */
+
 if (CONS_DB_HOST=='') $this->errorControl->raise(4,'bi_undo','UNDO module requires database');
 
 class mod_bi_undo extends CscriptedModule  {
@@ -80,6 +82,7 @@ class mod_bi_undo extends CscriptedModule  {
 		$undo = $core->loaded('bi_undo');
 		if (!$record) {
 			$sql = $undo->get_base_sql($undo->name.".id=".$id);
+			$n = 0;
 			$core->dbo->query($sql,$record,$n);
 			if ($n == 0) {
 				$core->fastClose(404);
@@ -219,6 +222,7 @@ class mod_bi_undo extends CscriptedModule  {
 					$files = array();
 					// saves files ... this will be saved even if a DELETE fails, but we can't wait as the data above since later it will be deleted
 					// move files (only mains, no thumbs)
+					$keys = '';
 					foreach ($ka as $value)
 						$keys = $value."_"; // keys (searchable)
 					$keys = substr($keys,0,strlen($keys)-1); // remove last _
@@ -250,6 +254,7 @@ class mod_bi_undo extends CscriptedModule  {
 							// if we got here, the keys were compared sucessfuly. Save
 							$undoModule = $this->parent->loaded($this->moduleRelation);
 							$module->getKeys($ws,$ka,$data);
+							$keys = '';
 							foreach ($ka as $value)
 								$keys = $value."_"; // keys (searchable)
 							$keys = substr($keys,0,strlen($keys)-1); // remove last _
