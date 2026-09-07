@@ -71,4 +71,16 @@ PHP, $route);
         self::assertStringContainsString('str_starts_with($candidate, $base.DIRECTORY_SEPARATOR)', $fileManager);
         self::assertStringNotContainsString('substr($dir,0,strlen("/".CONS_FMANAGER.CONS_FMANAGER_SAFE', $fileManager);
     }
+
+    public function testInputDrivenSqlFiltersEscapeValuesBeforeBuildingLegacySql(): void
+    {
+        $remoteKeys = (string) file_get_contents(__DIR__ . '/../prescia/components/module.php');
+        $ajaxQuery = (string) file_get_contents(__DIR__ . '/../prescia/lazyload/ajaxQuery.php');
+        $adminList = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/content/list.php');
+
+        self::assertStringContainsString('addslashes_EX((string)$value, true, $rmodule->parent->dbo)', $remoteKeys);
+        self::assertStringContainsString('addslashes_EX((string)$_GET[$fname],true,$this->dbo)', $ajaxQuery);
+        self::assertStringContainsString("addslashes_EX((string)\$_REQUEST['affrefererkeys']", $adminList);
+        self::assertStringNotContainsString('"=\\\"".$_GET[$fname]."\\\""', $ajaxQuery);
+    }
 }

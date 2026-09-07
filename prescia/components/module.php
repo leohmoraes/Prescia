@@ -270,24 +270,27 @@ class CModule {
 	 * MODULE (me) is pointing to RMODULE. Convert MY KEYS $data (that point to RMODULE) to RMODULE keys so I can run a select from RMODULE to find itself
 	 */
 	function getRemoteKeys($rmodule,$data) {
-		$where = array();
-		foreach ($rmodule->fields as $key => $field) {
+			$where = array();
+			$escape = static function ($value) use ($rmodule): string {
+				return addslashes_EX((string)$value, true, $rmodule->parent->dbo);
+			};
+			foreach ($rmodule->fields as $key => $field) {
 			if ($rmodule->fields[$key][CONS_XML_TIPO] == CONS_TIPO_INT) {
 				if ($key == "id") {
 					$mykey = $this->get_key_from($rmodule->name,"id_".$rmodule->name);
 					if ($mykey != '' && isset($data[$mykey]) && $data[$mykey] != 0 && $data[$mykey] != NULL)
-						$where[] = $rmodule->name.".id='".$data[$mykey]."'" ;
+						$where[] = $rmodule->name.".id='".(int)$data[$mykey]."'" ;
 				} else if (isset($this->field[$key]) && isset($data[$key]) && $key != $this->options[CONS_MODULE_PARENT]) {
 					// note we don't return id_parent. MY parent and the OTHER parent are DIFFERENT 
-					$where[] = $rmodule->name.".".$key."='".$data[$key]."'";
-				} // else I can't decide how to link it
-			} else if ($rmodule->fields[$key][CONS_XML_TIPO] == CONS_TIPO_LINK) {
+						$where[] = $rmodule->name.".".$key."='".(int)$data[$key]."'";
+					} // else I can't decide how to link it
+				} else if ($rmodule->fields[$key][CONS_XML_TIPO] == CONS_TIPO_LINK) {
 				$mykey = $this->get_key_from($rmodule->fields[$key][CONS_XML_MODULE],"id_".$rmodule->fields[$key][CONS_XML_MODULE]);
 				if ($mykey!='' && isset($data[$mykey]) && $data[$mykey] != 0 && $data[$mykey] != NULL && $key != $this->options[CONS_MODULE_PARENT])
 					// again note we ignore id_parent
-					$where[] = $rmodule->name.".".$key."='".$data[$mykey]."'";
+					$where[] = $rmodule->name.".".$key."='".$escape($data[$mykey])."'";
 			} else if (isset($this->field[$key]) && isset($data[$key])) {
-				$where[] = $rmodule->name.".".$key."='".$data[$key]."'";
+					$where[] = $rmodule->name.".".$key."='".$escape($data[$key])."'";
 			} // else I can't decide how to link it
 		}
 		return $where;

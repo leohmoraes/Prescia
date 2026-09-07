@@ -813,3 +813,9 @@ Todas as atribuições de `$this->safety`, `$core->safety` e `$this->parent->saf
 A revisão rastreou `storeFile()`, `prepareUpload()`, o download protegido do `bi_fm` e as ações administrativas de upload/exclusão. O achado explorável estava em `bi_adm/payload/actions/files.php`: depois de sanitizar o nome, a rota usava o filename bruto enviado pela requisição como fallback, permitindo que segmentos de caminho fossem considerados no `unlink()`. O fallback foi removido e os diretórios recebidos agora passam por allowlist de segmentos alfanuméricos, `_` e `-`.
 
 O upload do file manager recebeu a mesma validação de diretório. A função `bi_fm::isInsideSafe()` deixou de confiar em prefixo textual e agora compara caminhos canônicos resolvidos por `realpath()`, impedindo escapes com `..` e symlinks. O `storeFile()` continua rejeitando NUL bytes, restringindo extensões e bloqueando scripts executáveis. Foram adicionadas regressões estáticas para o fallback inseguro e para a contenção canônica.
+
+## Auditoria de SQL Injection e injeção de comandos
+
+A varredura de rotas de entrada encontrou interpolação de valores em filtros remotos, filtros AJAX, seleção de referência administrativa, ações de fórum e verificações de grupo. Os filtros centrais agora escapam strings com o driver ativo ou convertem IDs para inteiros; os fluxos de fórum e grupos usam `fetchPrepared()`/`queryPrepared()`.
+
+Também foi revisada a superfície de execução de comandos. Não foram encontrados usos de `shell_exec`, `system`, `passthru`, `proc_open` ou `popen` alimentados por entrada externa. O único `eval()` identificado pertence ao legado de conversão de data em `zipfile.php` e não recebe dados de requisição neste fluxo. A telemetria de `bi_stats` ainda contém SQL legado com dados de referer e caminho de página; esse componente foi registrado como próximo sublote separado para refatoração parametrizada, sem mascarar o achado nesta auditoria.

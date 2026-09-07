@@ -983,7 +983,7 @@
 										$innersql = "";
 										if (isset($_REQUEST['affreferer']) && isset($_REQUEST['affrefererkeys']) && $_REQUEST['affreferer'] == $module->fields[$possibleField][CONS_XML_MODULE] && count($remoteModule->keys)==1) { // only one key, TODO: multikey
 											$innersql = $remoteModule->get_base_sql();
-											$innersql['SELECT'][] = "if (".$remoteModule->name.".".$remoteModule->keys[0]."='".$_REQUEST['affrefererkeys']."',1,0) as selected";
+								$innersql['SELECT'][] = "if (".$remoteModule->name.".".$remoteModule->keys[0]."='".addslashes_EX((string)$_REQUEST['affrefererkeys'],true,$core->dbo)."',1,0) as selected";
 										}
 										$core->runContent($remoteModule,$tp,$innersql,'_items',false);
 										$la = '<span id="la_'.$possibleField.'_ara" style="width:90%"><select onchange="selectChange(\'la_'.$possibleField.'\');" style="width:100%;margin:0px;border:1px;padding:1px;font-size:9px" name="la_'.$possibleField.'" id="la_'.$possibleField.'">'.$tp->techo().'</select></span>';
@@ -1087,7 +1087,7 @@
 							$innersql = "";
 							if (isset($_REQUEST['affreferer']) && isset($_REQUEST['affrefererkeys']) && $_REQUEST['affreferer'] == $module->fields[$field][CONS_XML_MODULE] && count($rmd->keys)==1) { // only one key, TODO: multikey
 								$innersql = $rmd->get_base_sql();
-								$innersql['SELECT'][] = "if (".$rmd->name.".".$rmd->keys[0]."='".$_REQUEST['affrefererkeys']."',1,0) as selected";
+								$innersql['SELECT'][] = "if (".$rmd->name.".".$rmd->keys[0]."='".addslashes_EX((string)$_REQUEST['affrefererkeys'],true,$core->dbo)."',1,0) as selected";
 							}
 							$core->runContent($rmd,$tp,$innersql,'_items',false);
 							$la = '<span id="la_'.$field.'_ara" style="width:90%"><select onchange="selectChange(\'la_'.$field.'\');" style="width:100%;margin:0px;border:1px;padding:1px;font-size:9px" name="la_'.$field.'" id="la_'.$field.'">'.$tp->techo().'</select><span>';

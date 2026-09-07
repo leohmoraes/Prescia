@@ -60,15 +60,15 @@
 	$sql['SELECT'][] = $module->name.".".$module->title." as title";
 	if (!isset($module->fields['id']))
 		$sql['SELECT'][] = $module->name.".".$module->keys[0]." as id";
-	if ($preSelected != '')
-		$sql['SELECT'][] = "if (".$module->name.".".$module->keys[0]."=='$preSelected',1,0) as selected";
+		if ($preSelected != '')
+			$sql['SELECT'][] = "if (".$module->name.".".$module->keys[0]."='".addslashes_EX((string)$preSelected,true,$this->dbo)."',1,0) as selected";
 
 	// locate filters and put into sql
 	if ($sm == '' || $sm === false) {
 		// no translation
 		foreach ($module->fields as $fname => $mfield)
-			if (isset($_GET[$fname]) && $_GET[$fname] != '')
-				$sql['WHERE'][] = $module->name.".".$fname."=\"".$_GET[$fname]."\"";
+				if (isset($_GET[$fname]) && is_scalar($_GET[$fname]) && $_GET[$fname] != '')
+					$sql['WHERE'][] = $module->name.".".$fname."=\"".addslashes_EX((string)$_GET[$fname],true,$this->dbo)."\"";
 	} else {
 		$where = $sm->getRemoteKeys($module,$_GET);
 		if (count($where) == 0) {

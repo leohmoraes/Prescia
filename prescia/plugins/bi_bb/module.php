@@ -171,12 +171,14 @@ class mod_bi_bb extends CscriptedModule  {
 			$objForum = $this->parent->loaded('forum');
 			$r = false;
 			$n = 0;
-			if ($this->parent->dbo->query("SELECT lang,operationmode FROM ".$objForum->dbname." WHERE id=".$data['id_parent'],$r,$n) && $n>0) {
+				if ($this->parent->dbo->queryPrepared("SELECT lang,operationmode FROM ".$objForum->dbname." WHERE id=?", 'i', array((int)$data['id_parent']), $r, $n) && $n>0) {
 				list($lang,$om) = $this->parent->dbo->fetch_row($r);
-				if ((isset($data['lang']) && $data['lang'] != $lang) ||
-				    (isset($data['operationmode']) && $data['operationmode'] != $om))
-					$this->parent->log[] = $this->parent->langOut("force_lang_and_om_to_parent");
-				$ok = $this->parent->dbo->simpleQuery("UPDATE ".$objForum->dbname." SET lang='$lang', operationmode='$om' WHERE id=".$data['id']);
+					if ((isset($data['lang']) && $data['lang'] != $lang) ||
+					    (isset($data['operationmode']) && $data['operationmode'] != $om))
+						$this->parent->log[] = $this->parent->langOut("force_lang_and_om_to_parent");
+					$updateResult = false;
+					$updateRows = 0;
+					$ok = $this->parent->dbo->queryPrepared("UPDATE ".$objForum->dbname." SET lang=?, operationmode=? WHERE id=?", 'ssi', array($lang, $om, (int)$data['id']), $updateResult, $updateRows);
 
 			}
 		}
