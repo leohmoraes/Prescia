@@ -369,3 +369,16 @@ Até o commit `c278b77`, a aplicação da skill `phpstan-legacy-remediation` cor
 | `prescia/lazyload/prepareMail.php` | 15 | `CPrescia $this`, `$name`, `$fillArray`; `$template` inicializado | PHPStan sem erros; PHP 8.3 aprovado |
 
 O conjunto representa **233 diagnósticos `variable.undefined` tratados** sem expansão da baseline. A análise global mais recente do commit `c278b77` ainda reporta **325 diagnósticos**, pois há pendências em outros arquivos e categorias, incluindo os 46 `return.missing` de `tools/phpstan-framework-stubs.php`. A análise focalizada de cada arquivo acima permanece aprovada; a falha global do workflow não invalida essas validações locais.
+
+
+## Atualização adicional — aplicação da skill em `readfile.php`
+
+A skill `phpstan-legacy-remediation` foi aplicada a `prescia/lazyload/readfile.php`. A investigação confirmou que `CPrescia::readfile($file, $ext, $exit, $filename, $forceAttach, $cachetime)` inclui o arquivo dinamicamente, disponibilizando `$this` como `CPrescia` e os seis parâmetros da assinatura no escopo do lazy-load.
+
+Foram adicionados os contratos PHPDoc correspondentes. O PHPStan focalizado terminou com **0 erros**, o `php -l` passou e `git diff --check` foi aprovado. A análise global atual caiu de **325 para 311 diagnósticos**, uma redução de **14 ocorrências**. A baseline permaneceu inalterada.
+
+| Arquivo | Situação | Validação |
+|---|---|---|
+| `prescia/lazyload/readfile.php` | **Concluído** | PHPStan focalizado sem erros; sintaxe PHP 8.3 aprovada; 14 diagnósticos removidos |
+
+O próximo alvo deverá ser recalculado a partir do relatório global atual. Os workflows serão acompanhados após a publicação.

@@ -422,3 +422,10 @@ Foram adicionados os contratos PHPDoc dos dois contextos. A validação focaliza
 A skill `phpstan-legacy-remediation` foi aplicada a `prescia/lazyload/prepareMail.php`. O carregador `CPrescia::prepareMail($name, $fillArray)` foi confirmado em `prescia/core.php`, estabelecendo `$this` como `CPrescia`, `$name` como string e `$fillArray` como array de preenchimento.
 
 Foram adicionados os contratos PHPDoc correspondentes e o buffer `$template` foi inicializado antes dos ramos de template de e-mail, preservando o comportamento quando `automail.html` não existe. A validação focalizada terminou com `[OK] No errors`, o `php -l` passou e `git diff --check` foi aprovado. A análise global atual caiu de 340 para 325 diagnósticos, redução de 15 ocorrências, sem alteração da baseline.
+
+
+### Lote B — lazy-load de arquivos: readfile.php
+
+A skill `phpstan-legacy-remediation` foi aplicada a `prescia/lazyload/readfile.php`. O carregador `CPrescia::readfile($file, $ext, $exit, $filename, $forceAttach, $cachetime)` foi confirmado em `prescia/core.php`, estabelecendo `$this` como `CPrescia` e os parâmetros com seus contratos concretos.
+
+Foram adicionados os contratos PHPDoc de `$this`, `$file`, `$ext`, `$exit`, `$filename`, `$forceAttach` e `$cachetime`. A validação focalizada terminou com `[OK] No errors`, o `php -l` passou e `git diff --check` foi aprovado. A análise global atual caiu de 325 para 311 diagnósticos, redução de 14 ocorrências, sem alteração da baseline.
