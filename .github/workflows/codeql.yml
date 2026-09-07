@@ -33,4 +33,14 @@ jobs:
         run: composer install --no-interaction --no-progress --prefer-dist
 
       - name: Run PHPStan
-        run: composer analyse
+        shell: bash
+        run: |
+          set -o pipefail
+          vendor/bin/phpstan analyse --configuration=phpstan.neon.dist --no-progress --error-format=table | tee phpstan-report.txt
+
+      - name: Upload PHPStan report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phpstan-report-${{ github.run_id }}
+          path: phpstan-report.txt

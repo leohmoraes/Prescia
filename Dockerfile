@@ -16,13 +16,15 @@ RUN a2enmod rewrite headers expires
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy application files
-COPY . /var/www/html/
+# Copy application files as immutable application code
+COPY --chown=root:root . /var/www/html/
 
 # Set up required directories with proper permissions
 RUN mkdir -p _temp/_logs _temp/_cache _temp/_backups \
-    && chmod -R 775 _temp \
-    && chown -R www-data:www-data _temp
+    && find /var/www/html -type d -exec chmod 0755 {} + \
+    && find /var/www/html -type f -exec chmod 0644 {} + \
+    && chown -R www-data:www-data _temp \
+    && chmod -R 0770 _temp
 
 # Copy configuration files if they don't exist
 RUN if [ ! -f config/domains ]; then cp config/domains.original config/domains; fi \
@@ -37,9 +39,6 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 COPY docker/php-production.ini /usr/local/etc/php/conf.d/production.ini
 RUN echo "date.timezone = America/Sao_Paulo" >> /usr/local/etc/php/conf.d/timezone.ini \
     && echo "memory_limit = 256M" >> /usr/local/etc/php/conf.d/memory.ini
-
-# Set proper permissions
-RUN chown -R www-data:www-data /var/www/html
 
 # Expose port 80
 EXPOSE 80

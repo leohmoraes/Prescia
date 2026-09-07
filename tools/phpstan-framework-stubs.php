@@ -9,17 +9,20 @@
  */
 
 function addslashes_EX(mixed $value, bool $isHtml = true, mixed $dbo = false): string {}
-/** @param array<int|string, scalar|array<int|string, scalar>>|false $array @param array<int, int|string> $exclude */
+/**
+ * @param array<int|string, scalar|array<int|string, scalar>>|false $array
+ * @param array<int, int|string> $exclude
+ */
 function arrayToString(mixed $array = false, array $exclude = [], bool $noArrays = false): string {}
 function cWriteFile(string $file, string $content, bool $append = false, bool $binary = false): bool {}
 function dieFreakingThumbs(string $folder): void {}
 function cleanString(mixed $data, bool $isHtml = false, bool $allowAdvanced = false, mixed $dbo = false): string {}
-function console(mixed $core, mixed $command): mixed {}
-function cropImage(mixed ...$arguments): mixed {}
-function datecalc(mixed ...$arguments): mixed {}
+function console(mixed $core, mixed $command): mixed { return null; }
+function cropImage(mixed ...$arguments): mixed { return false; }
+function datecalc(mixed ...$arguments): mixed { return false; }
 /** @param array<string, int|string> $date */
 function adodb_daylight_sv(array &$date, bool $isGmt = false): void {}
-function datecompare(mixed ...$arguments): mixed {}
+function datecompare(mixed ...$arguments): mixed { return false; }
 /** @return array{0: list<string>, 1: string, 2: string, 3: string} */
 function extractUri(string $installRoot = '', string $uri = ''): array {}
 function fd(mixed $date, string $mask = 'd/m/Y'): string {}
@@ -30,22 +33,22 @@ function humanSize(mixed $size): string {}
 function isMail(mixed $mail, bool $allowExtended = false): int {}
 /** @return list<string> */
 function listFiles(mixed ...$arguments): array {}
-function locateAnyFile(mixed ...$arguments): mixed {}
-function locateFile(mixed ...$arguments): mixed {}
+function locateAnyFile(mixed ...$arguments): mixed { return false; }
+function locateFile(mixed ...$arguments): mixed { return false; }
 function makeDirs(mixed ...$arguments): bool {}
 function parseHTML(mixed $html, bool $simplify = false): mixed {}
-function quota(mixed ...$arguments): mixed {}
+function quota(mixed ...$arguments): mixed { return false; }
 function recursive_del(mixed ...$arguments): bool {}
 function removeBOM(mixed &$data): void {}
 function removeSimbols(mixed ...$arguments): string {}
-function resizeImage(mixed ...$arguments): mixed {}
-function resizeImageCond(mixed ...$arguments): mixed {}
+function resizeImage(mixed ...$arguments): mixed { return false; }
+function resizeImageCond(mixed ...$arguments): mixed { return false; }
 function safe_mkdir(mixed ...$arguments): bool {}
 function scriptTime(): float {}
-function sendMail(mixed ...$arguments): mixed {}
-function storeFile(mixed ...$arguments): mixed {}
+function sendMail(mixed ...$arguments): mixed { return false; }
+function storeFile(mixed ...$arguments): mixed { return 0; }
 function stripHTML(mixed ...$arguments): string {}
-function time_diff(mixed ...$arguments): mixed {}
+function time_diff(mixed ...$arguments): mixed { return 0; }
 function tomktime(mixed ...$arguments): int {}
 function truncate(mixed $content, int $size = 50, string $final = '…', bool $stripHtml = false, bool $preserveEol = false): string {}
 /** @return array<string, string>|string */
@@ -55,13 +58,20 @@ class CPrescia
 {
     /** @var array<string, mixed> */
     public array $templateParams = [];
+    /** @var list<array<int, mixed>> */
+    public array $moduleOptions = [];
+    public mixed $errorControl = null;
 
-    public function saveConfig(bool $force = false): mixed {}
+    public function saveConfig(bool $force = false): void {}
 }
 
 class CPresciaFull extends CPrescia {}
 class CKTCexternal {}
-class TTree {}
+class ttree
+{
+    /** @param array<int, array<int|string, mixed>> $items */
+    public function arrayToTree(array $items, string $separator, string $parentKey, string $titleKey): void {}
+}
 class xmlHandler {}
 
 /** Constants discovered in the framework runtime and declared for analysis. */
@@ -116,12 +126,12 @@ const CONS_MASTERDOMAINS = 0;
 const CONS_MASTERMAIL = 0;
 const CONS_MAXRUNCONTENTSIZE = 0;
 const CONS_MAX_QUOTA = 0;
-const CONS_MODULE_AUTOCLEAN = 0;
-const CONS_MODULE_META = 0;
-const CONS_MODULE_NOUNDO = 0;
-const CONS_MODULE_PARENT = 0;
-const CONS_MODULE_SYSTEM = 0;
-const CONS_MODULE_VOLATILE = 0;
+const CONS_MODULE_AUTOCLEAN = 1201;
+const CONS_MODULE_META = 1202;
+const CONS_MODULE_NOUNDO = 1203;
+const CONS_MODULE_PARENT = 1204;
+const CONS_MODULE_SYSTEM = 1205;
+const CONS_MODULE_VOLATILE = 1206;
 const CONS_ONSERVER = 0;
 const CONS_PM_MINTIME = 0;
 const CONS_PM_TIME = 0;
@@ -191,14 +201,14 @@ const C_XML_LAX = 0;
 const SWF_OBJECT = 0;
 
 /** Legacy global functions discovered in the framework runtime. */
-function IPv6To4(mixed ...$arguments): mixed {}
-function checkHTML(mixed ...$arguments): mixed {}
-function cleanHTML(mixed ...$arguments): mixed {}
-function date_diff_ex(mixed ...$arguments): mixed {}
-function getBrowser(mixed ...$arguments): mixed {}
-function getVideoFrame(mixed ...$arguments): mixed {}
-function isData(mixed ...$arguments): mixed {}
-function multiexplode(mixed ...$arguments): mixed {}
-function outputBrowserName(mixed ...$arguments): mixed {}
-function removeNull(mixed ...$arguments): mixed {}
-function vardump(mixed ...$arguments): mixed {}
+function IPv6To4(mixed ...$arguments): mixed { return null; }
+function checkHTML(mixed ...$arguments): mixed { return null; }
+function cleanHTML(mixed ...$arguments): mixed { return null; }
+function date_diff_ex(mixed ...$arguments): mixed { return null; }
+function getBrowser(mixed ...$arguments): mixed { return null; }
+function getVideoFrame(mixed ...$arguments): mixed { return null; }
+function isData(mixed ...$arguments): mixed { return null; }
+function multiexplode(mixed ...$arguments): mixed { return null; }
+function outputBrowserName(mixed ...$arguments): mixed { return null; }
+function removeNull(mixed ...$arguments): mixed { return null; }
+function vardump(mixed ...$arguments): mixed { return null; }

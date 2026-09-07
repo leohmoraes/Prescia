@@ -36,10 +36,10 @@ class CPrescia extends CPresciaVar {
 			$_SESSION['CODE'] = CONS_SINGLEDOMAIN;
 		} else if (!CONS_ONSERVER && CONS_SITESELECTOR) { # multiple domain, if on production and we can select domain manually ...
 			if (isset($_REQUEST['nocache'])) $domainList = $this->builddomains();
-			if (isset($_REQUEST['changelocalsite']) && isset($_REQUEST['nosession']) && is_dir(CONS_PATH_PAGES.$_REQUEST['changelocalsite'])) { # new domain arrived! switch everything to this domain
+				if (isset($_REQUEST['changelocalsite']) && isset($_REQUEST['nosession']) && is_dir(CONS_PATH_PAGES.$_REQUEST['changelocalsite'])) { # new domain arrived! switch everything to this domain
 				$_COOKIE['prescia_cls'] = $_REQUEST['changelocalsite'];
 				setcookie('prescia_cls',$_REQUEST['changelocalsite'],time()+28800);
-			} else if (!isset($_COOKIE['prescia_cls']) || (isset($_REQUEST['prescia_cls']) && isset($_REQUEST['debugmode']) && isset($_REQUEST['nosession']))) { # no domain selected or requested domain change, chose domain selector
+				} else if (!isset($_COOKIE['prescia_cls']) || (isset($_REQUEST['prescia_cls']) && CONS_DEVELOPER && isset($_REQUEST['debugmode']) && isset($_REQUEST['nosession']))) { # no domain selected or requested domain change, chose domain selector
 				include_once CONS_PATH_SYSTEM."lazyload/cls.php";
 				die();
 			}
@@ -211,8 +211,9 @@ class CPrescia extends CPresciaVar {
 	 * will check if this is a request for a file inside the site file manager (pages/[code]/files) and serve the file
 	 * if the file is set for statistics, continue returning true (serving file), otherwise end script 
 	*/
-	function checkDirectLink() {
-		# Redirect root files to file manager
+		function checkDirectLink() {
+			$ext = '';
+			# Redirect root files to file manager
 		# files that go direct to the files folder (pages/[code]/files) are served by apache and never get here
 		# files using the internal redirect /files/ are what we aim here. These files can be grabbed for statistics or have permission check
 		$fm = false;
@@ -490,9 +491,10 @@ class CPrescia extends CPresciaVar {
 	 * IMPORTANT: For actions to work properly, send haveinfo=true ON POST or whatever (value doesn't matter) in the query.
 	 * 			  DO NOT send it always as it will degrade performance, send ONLY when an action is expected (DB include/edit, upload handling, etc)
 	 */
-	function checkActions() {
+		function checkActions() {
+			$ext = '';
 
-		// look for the first valid context if this is invalid (a.k.a. remove virtual folders)
+			// look for the first valid context if this is invalid (a.k.a. remove virtual folders)
 		$tempContext = $this->context;
 		$strContext = implode("/",$tempContext);
 		while (count($tempContext)>1 && !is_dir(CONS_PATH_PAGES.$_SESSION['CODE']."/template".$strContext) && !is_dir(CONS_PATH_PAGES.$_SESSION['CODE']."/content".$strContext) && !is_dir(CONS_PATH_PAGES.$_SESSION['CODE']."/actions".$strContext)){
@@ -1075,9 +1077,10 @@ class CPrescia extends CPresciaVar {
 	 * domainLoad -> parseRequest -> loadIntlControl -> checkActions -> renderPage* -> showHeaders -> showTemplate*
 	 * Basically echos the template (view), filling up constants and other framework optimizations into it
 	 */
-	function showTemplate() {
+		function showTemplate() {
+			$ext = '';
 
-		if (count($this->log)>0) {
+			if (count($this->log)>0) {
 			$output = "";
 			foreach ($this->log as $saida) {
 				$output .= $saida."\n<br/>";

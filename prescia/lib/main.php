@@ -7,6 +7,8 @@
 
 # Basic start
 require_once __DIR__ . "/serialization.php";
+require_once dirname(__DIR__) . "/services/Sanitizer.php";
+require_once dirname(__DIR__) . "/services/FileService.php";
 function getmicrotime() { list($usec, $sec) = explode(" ", microtime()); return ((float)$usec + (float)$sec); } # we want to time things ASAP
 $temp = getmicrotime();
 define ("CONS_STARTTIME",$temp);
@@ -31,11 +33,6 @@ if (!isset($_REQUEST[$SID]) || (isset($_REQUEST[$SID]) && preg_match('/^([a-zA-Z
 	session_start();
 } else {
 	unset($_REQUEST[$SID]);
-	session_start();
-}
-if (isset($_REQUEST['nosession'])) {
-	$_SESSION = array(); // redundant destruction
-	session_destroy();
 	session_start();
 }
 presciaValidateCsrf();

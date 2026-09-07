@@ -10,15 +10,32 @@ function presciaCsrfToken(): string
     return $_SESSION['prescia_csrf_token'];
 }
 
+function presciaRotateCsrfToken(): string
+{
+    unset($_SESSION['prescia_csrf_token']);
+    return presciaCsrfToken();
+}
+
+function presciaRequestIsMutating(): bool
+{
+    return in_array(strtoupper((string)($_SERVER['REQUEST_METHOD'] ?? 'GET')), ['POST', 'PUT', 'PATCH', 'DELETE'], true);
+}
+
+function presciaSubmittedCsrfToken(): string
+{
+    $submitted = $_POST['csrf_token'] ?? ($_SERVER['HTTP_X_CSRF_TOKEN'] ?? '');
+    return is_string($submitted) ? $submitted : '';
+}
+
 function presciaValidateCsrf(): void
 {
-    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
+    if (!presciaRequestIsMutating()) {
         return;
     }
 
-    $submitted = $_POST['csrf_token'] ?? ($_SERVER['HTTP_X_CSRF_TOKEN'] ?? '');
+    $submitted = presciaSubmittedCsrfToken();
     $expected = $_SESSION['prescia_csrf_token'] ?? '';
-    if (!is_string($submitted) || !is_string($expected) || $expected === '' || !hash_equals($expected, $submitted)) {
+    if (!is_string($expected) || $expected === '' || $submitted === '' || !hash_equals($expected, $submitted)) {
         http_response_code(403);
         exit('CSRF validation failed');
     }

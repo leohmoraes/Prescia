@@ -40,5 +40,11 @@ jobs:
       - name: Run compatibility tests
         run: composer test
 
+      - name: Lint tracked PHP files
+        run: git ls-files '*.php' -z | xargs -0 -n1 php -l
+
+      - name: Run PHPStan
+        run: composer analyse
+
       - name: Build Docker image
         run: docker build --tag prescia:php83 .

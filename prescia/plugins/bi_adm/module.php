@@ -387,17 +387,15 @@ class mod_bi_adm extends CscriptedModule  {
 			$this->parent->lockPermissions(); // guarantee permissions are loaded
 			$this->addMenuItens($menuXML->getbranch(0),$menu,0,$this->parent);
 
-			if (!function_exists("mysort")) {
-				function mysort($a,$b) {
+				$menuSorter = static function ($a,$b) {
 					if ($a['id_parent'] == $b['id_parent']) {
 						return ($a['id'] <= $b['id'])?-1:1; // itens on the same level sorted by id
-					} else
-						return ($a['id_parent'] <= $b['id_parent'])?-1:1; // menus sorted by ID
-				}
-			}
+					}
+					return ($a['id_parent'] <= $b['id_parent'])?-1:1; // menus sorted by ID
+				};
 
-			usort($menu,'mysort');
-			$this->menudata = new TTree();
+				usort($menu,$menuSorter);
+				$this->menudata = new ttree();
 			$this->menudata->arrayToTree($menu,'\\','id_parent','title');
 
 			// save caches

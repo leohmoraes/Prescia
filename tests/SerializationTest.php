@@ -21,4 +21,17 @@ final class SerializationTest extends TestCase
 
         self::assertInstanceOf(\__PHP_Incomplete_Class::class, $value);
     }
+
+    public function testMalformedPayloadReturnsFalseWithoutWarning(): void
+    {
+        self::assertFalse(\presciaSafeUnserialize('a:2:{s:3:"bad";'));
+        self::assertFalse(\presciaSafeUnserialize(''));
+    }
+
+    public function testAllowedClassesMustBeExplicit(): void
+    {
+        $value = \presciaSafeUnserialize(serialize(new \stdClass()), []);
+
+        self::assertInstanceOf(\__PHP_Incomplete_Class::class, $value);
+    }
 }

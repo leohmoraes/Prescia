@@ -432,7 +432,7 @@
 							$up['smartfields'][$module->name][$name] = 1;
 					}
 				}
-				if ($core->layout != 0) continue; // do not treat this interface
+				if ($core->layout != 0) continue 2; // do not treat this interface
 
 				// load select field as the template we will use
 				$field_sel = $core->template->get("_select_field");
@@ -512,9 +512,9 @@
 							if ($up['smartfields'][$module->name][$name]>=10) $mustReset = true;
 						} else
 							$up['smartfields'][$module->name][$name] = 1;
+						}
 					}
-				}
-				if ($core->layout != 0) continue; // no inteface for seach on pop/ajax
+					if ($core->layout != 0) continue 2; // no inteface for seach on pop/ajax
 				preg_match("@ENUM \(([^)]*)\).*@",$module->fields[$name][CONS_XML_SQL],$regs);
 				$xtp = "<option value=\"{enum}\" {checked}>{enum_translated}</option>";
 				$tp = new CKTemplate($core->template);
@@ -571,7 +571,7 @@
 					} else
 						$up['smartfields'][$module->name][$name] = 1;
 				}
-				if ($core->layout != 0) continue; // no inteface for seach on pop/ajax
+				if ($core->layout != 0) continue 2; // no inteface for seach on pop/ajax
 				$hasCalendar = true;
 				$field_txt = $core->template->get("_datetime_field");
 				$using = clone($field_txt);
@@ -602,7 +602,7 @@
 						}
 					}
 				}
-				if ($core->layout != 0) continue;
+				if ($core->layout != 0) continue 2;
 				$field_txt = $core->template->get("_normal_field");
 
 				$using = clone($field_txt);
@@ -855,9 +855,9 @@
 			case CONS_TIPO_UPLOAD:
 				$columnWidth[$field] = $maxwidth;
 				if (isset($linkField[CONS_XML_THUMBNAILS])) {
-					if ($imageDetected) {
-						$core->errorControl->raise(527,$field,$module->name);
-						continue;
+						if ($imageDetected) {
+							$core->errorControl->raise(527,$field,$module->name);
+							continue 2;
 					}
 					$imageDetected = true;
 					$numThumbs = count($linkField[CONS_XML_THUMBNAILS]);

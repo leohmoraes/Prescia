@@ -4,10 +4,7 @@ services:
   web:
     build: .
     ports:
-      - "8080:80"
-    volumes:
-      - .:/var/www/html
-      - ./config:/var/www/html/config
+      - "127.0.0.1:8080:80"
     environment:
       - APACHE_DOCUMENT_ROOT=/var/www/html
     depends_on:
@@ -23,7 +20,7 @@ services:
       MYSQL_USER: prescia_user
       MYSQL_PASSWORD: prescia_pass
     ports:
-      - "3306:3306"
+      - "127.0.0.1:3306:3306"
     volumes:
       - db_data:/var/lib/mysql
     networks:

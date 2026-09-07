@@ -7,13 +7,14 @@ declare(strict_types=1);
  * Invalid payloads return false, matching the legacy decoder's semantics.
  *
  * @param mixed $payload
+ * @param bool|array<int, class-string> $allowedClasses
  * @return mixed
  */
-function presciaSafeUnserialize($payload, array $allowedClasses = [])
+function presciaSafeUnserialize(mixed $payload, bool|array $allowedClasses = false): mixed
 {
-    if (!is_string($payload) || $payload === '') {
-        return false;
-    }
+	if (!is_string($payload) || $payload === '') {
+		return false;
+	}
 
-    return unserialize($payload, ['allowed_classes' => $allowedClasses]);
+	return @unserialize($payload, ['allowed_classes' => $allowedClasses]);
 }
