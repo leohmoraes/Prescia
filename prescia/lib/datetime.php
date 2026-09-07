@@ -291,6 +291,9 @@ if (!defined('ADODB_ALLOW_NEGATIVE_TS')) define('ADODB_NO_NEGATIVE_TS',1);
   //  and is much faster as it does not calculate dow, etc.
   function _adodb_getdate($origd=false,$fast=false,$is_gmt=false) {
     $d =  $origd - ($is_gmt ? 0 : adodb_get_gmt_diff());
+    $year = 1970;
+    $month = 1;
+    $ndays = 31;
 
     $_day_power = 86400;
     $_hour_power = 3600;
@@ -440,7 +443,7 @@ if (!defined('ADODB_ALLOW_NEGATIVE_TS')) define('ADODB_NO_NEGATIVE_TS',1);
 
     $arr = _adodb_getdate($d,true,$is_gmt);
     if (!isset($daylight)) $daylight = function_exists('adodb_daylight_sv');
-    if ($daylight) adodb_daylight_sv($arr, $is_gmt);
+    if ($daylight && function_exists('adodb_daylight_sv')) adodb_daylight_sv($arr, $is_gmt);
 
     $year = $arr['year'];
     $month = $arr['mon'];
@@ -604,6 +607,7 @@ if (!defined('ADODB_ALLOW_NEGATIVE_TS')) define('ADODB_NO_NEGATIVE_TS',1);
 
     $_month_table_normal = array("",31,28,31,30,31,30,31,31,30,31,30,31);
     $_month_table_leaf = array("",31,29,31,30,31,30,31,31,30,31,30,31);
+    $loop_table = $_month_table_normal;
 
     $_total_date = 0;
     if ($year >= 1970) {
@@ -655,5 +659,3 @@ if (!defined('ADODB_ALLOW_NEGATIVE_TS')) define('ADODB_NO_NEGATIVE_TS',1);
     //print " dmy=$day/$mon/$year $hr:$min:$sec => " .$ret;
     return $ret;
   }
-
-

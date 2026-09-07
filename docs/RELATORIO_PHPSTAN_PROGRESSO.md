@@ -482,3 +482,23 @@ A correção adicionou contratos PHPDoc concretos para `CPrescia $this`, `string
 | Baseline | **Sem alteração** |
 
 O próximo inventário deve priorizar `prescia/lib/datetime.php`, `prescia/plugins/bi_labels/payload/actions/config_labels.php` e `pages/presciatester/_config/config.php`, que permanecem com 12, 12 e 11 diagnósticos, respectivamente.
+
+
+## Atualização de 7 de setembro de 2026 — primeiro lote da Issue #47
+
+O primeiro lote do inventário global atual tratou os três maiores alvos inicialmente selecionados: `prescia/lib/datetime.php`, `prescia/plugins/bi_labels/payload/actions/config_labels.php` e `pages/presciatester/_config/config.php`.
+
+Em `datetime.php`, foram inicializados no escopo de `_adodb_getdate()` os estados de ano, mês e quantidade de dias, além da tabela padrão usada por `adodb_mktime()`. A chamada opcional de `adodb_daylight_sv()` passou a ser protegida pela mesma verificação de disponibilidade usada para definir o estado do recurso. Nos dois payloads/configurações, foram documentados os contextos reais de `CPrescia` fornecidos pelos carregadores (`mod_bi_labels::onCheckActions()` e `CPrescia::domainLoad()`).
+
+| Verificação | Resultado |
+|---|---|
+| PHPStan focalizado dos três arquivos | **0 erros** |
+| PHP 8.3 lint | **Aprovado nos três arquivos** |
+| `git diff --check` | **Aprovado** |
+| PHPUnit | **23 testes, 2745 asserções, aprovado** |
+| PHPStan global antes | **207 diagnósticos em 53 arquivos** |
+| PHPStan global depois | **172 diagnósticos em 50 arquivos** |
+| Redução | **35 diagnósticos** |
+| Baseline | **Sem alteração** |
+
+As categorias restantes são 161 `variable.undefined`, 3 `class.nameCase`, 3 `constant.notFound`, 2 `function.inner`, 2 `function.notFound` e 1 `isset.variable`. Os próximos maiores grupos são `prescia/lazyload/rss.php` e `prescia/plugins/bi_adm/payload/actions/import.php`, com 10 diagnósticos cada, seguidos de `prescia/plugins/bi_labels/payload/content/config_labels.php`, com 9.

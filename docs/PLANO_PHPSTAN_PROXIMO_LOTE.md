@@ -511,3 +511,12 @@ O primeiro alvo do inventário atual foi `prescia/lazyload/tcaptcha.php`. Os 12 
 A correção adicionou somente os contratos PHPDoc comprovados pelo call site. O PHPStan focalizado passou, a sintaxe PHP 8.3 passou, o PHPUnit permaneceu com 23 testes e 2745 asserções, e o inventário global caiu de 219 para 207 diagnósticos, em 53 arquivos. A baseline não foi expandida.
 
 O próximo ciclo deve seguir o mesmo padrão: confirmar o carregador real, separar contratos de contexto de variáveis locais, validar focalizadamente e só então trabalhar em `datetime.php`, `bi_labels/payload/actions/config_labels.php` e `pages/presciatester/_config/config.php`.
+
+
+## Resultado do primeiro lote da Issue #47
+
+O primeiro lote tratou `datetime.php`, `bi_labels/payload/actions/config_labels.php` e `pages/presciatester/_config/config.php`. A abordagem confirmou os call sites antes de aplicar PHPDoc e inicializações locais: o payload de labels recebe `$core` de `mod_bi_labels::onCheckActions()`, a configuração recebe `$this` de `CPrescia::domainLoad()`, e os estados de data pertencem aos fluxos internos de `_adodb_getdate()`/`adodb_mktime()`.
+
+Os três arquivos passaram no PHPStan focalizado e no lint PHP 8.3. PHPUnit permaneceu aprovado com 23 testes e 2745 asserções. A análise global caiu de 207 para 172 diagnósticos, em 50 arquivos, sem ampliar a baseline.
+
+O próximo lote deve priorizar `prescia/lazyload/rss.php` e `prescia/plugins/bi_adm/payload/actions/import.php`, ambos com 10 diagnósticos, confirmando separadamente os contextos dinâmicos, os símbolos estruturais e os fluxos de variáveis locais antes de modificar o código.
