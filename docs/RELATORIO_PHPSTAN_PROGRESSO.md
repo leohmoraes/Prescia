@@ -777,3 +777,7 @@ A alteração preserva os nomes de tabelas e colunas controlados pelo modelo, ma
 ## Segundo lote de segurança — autoPrune e ciclos parentais
 
 A continuação da issue #28 migrou as consultas de `CModule::autoPrune()` para `queryPrepared()`, incluindo a seleção dos registros antigos e a atualização do valor enum por chaves compostas. A verificação de ciclos parentais em `sqlParameter()` também passou a usar `fetchPrepared()`. PHPStan focalizado, lint PHP 8.3, PHPUnit e `git diff --check` foram aprovados, sem alteração da baseline.
+
+## Terceiro lote de segurança — deleteAllFrom()
+
+O terceiro lote da migração SQL parametrizou `CPrescia::deleteAllFrom()`. Tanto o caminho de zeragem (`UPDATE`) quanto o caminho de cascata (`SELECT`) agora usam `queryPrepared()`, mantendo as colunas e tabelas provenientes do modelo e transportando os valores de chave exclusivamente como parâmetros. PHPStan focalizado, lint PHP 8.3, PHPUnit e verificação de diff foram aprovados, sem alteração da baseline.

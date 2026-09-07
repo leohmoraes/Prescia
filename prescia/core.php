@@ -695,21 +695,27 @@ class CPrescia extends CPresciaVar {
 		$dbname = $module->dbname;
 
 		$keyString = array();
+		$keyTypes = "";
+		$keyParams = array();
 		$updateString = array();
 		foreach ($data as $name => $value) {
-			$keyString[] = "$name=\"".$value."\"";
+			$keyString[] = $name."=?";
+			$keyTypes .= "s";
+			$keyParams[] = (string)$value;
 			$updateString[] = $name."=0";
 		}
 		$keyString = implode(" AND ",$keyString);
 		$updateString = implode(", ",$updateString);
 
 		if ($zerothem) { // we are supposed to just ZERO these items
-			$this->dbo->simpleQuery("UPDATE $dbname SET $updateString WHERE $keyString"); // direct DB query to prevent notifies and overhead
+			$updateResult = false;
+			$updateRows = 0;
+			$this->dbo->queryPrepared("UPDATE ".$dbname." SET ".$updateString." WHERE ".$keyString,$keyTypes,$keyParams,$updateResult,$updateRows,$this->debugmode); // direct DB query to prevent notifies and overhead
 		} else { // we are supposed to self-destruct
 			$myKeys = implode(",",$module->keys);
 			$r = false;
 			$n = 0;
-			$this->dbo->query("SELECT $myKeys FROM ($dbname) WHERE $keyString",$r,$n);
+			$this->dbo->queryPrepared("SELECT ".$myKeys." FROM (".$dbname.") WHERE ".$keyString,$keyTypes,$keyParams,$r,$n,$this->debugmode);
 
 			if ($startedAt == '') $startedAt = $module->name;
 			for ($c=0;$c<$n;$c++) {
