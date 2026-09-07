@@ -65,7 +65,7 @@
 				$rmodule = $core->loaded($field[CONS_XML_MODULE]);
 				$where = $module->getRemoteKeys($rmodule,$data);
 			
-				if (count($where)==0) continue; // error on getRemoteKeys
+					if (count($where)==0) continue 2; // error on getRemoteKeys
 
 				$sql = "SELECT ".$rmodule->title." FROM ".$rmodule->dbname." as ".$rmodule->name." WHERE ".implode(" AND ",$where);
 								
@@ -88,5 +88,3 @@
 	$core->template->assign("_field",$temp);
 	if (!$missingField) $core->template->assign("_fault");
 	else $core->template->assign("_readytorestore");
-
-	

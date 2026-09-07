@@ -17,3 +17,9 @@ function presciaPasswordNeedsRehash(string $hash): bool
 {
     return password_needs_rehash($hash, PASSWORD_DEFAULT);
 }
+
+function presciaPasswordIsLegacy(string $storedValue): bool
+{
+    $info = password_get_info($storedValue);
+    return empty($info['algo']);
+}

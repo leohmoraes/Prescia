@@ -8,6 +8,24 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 		parent::__construct($parent);
 	}
 
+	private function setAuthCookie(string $name, string $value, int $expires): void {
+		$secure = defined('CONS_COOKIE_SECURE')
+			? (bool)CONS_COOKIE_SECURE
+			: (!empty($_SERVER['HTTPS']) && strtolower((string)$_SERVER['HTTPS']) !== 'off');
+		setcookie($name, $value, array(
+			'expires' => $expires,
+			'path' => '/',
+			'secure' => $secure,
+			'httponly' => true,
+			'samesite' => 'Lax',
+		));
+	}
+
+	private function clearAuthCookies(): void {
+		$this->setAuthCookie('scookie','',time()-3600);
+		$this->setAuthCookie('login','',time()-3600);
+	}
+
 	function canCreate(&$module,&$data) { # Multi-key OK!
 		$Owner = $this->checkOwner($module,$data,true);
 		$this->parent->lockPermissions(); # Load permissions to this, in case something changed
@@ -458,7 +476,7 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 				unset($p[$name]);
 		}
 
-		if (!is_array($p) || $restore || count($p) != count($this->parent->permissionTemplate) || isset($_REQUEST['debugmode'])) {
+			if (!is_array($p) || $restore || count($p) != count($this->parent->permissionTemplate) || (CONS_DEVELOPER && isset($_REQUEST['debugmode']))) {
 			# no permission set or incorrect (new modules added), which means it's the first access of a guest or an user
 			if ($_SESSION[CONS_SESSION_ACCESS_USER]["groups_permissions"] == "") {
 				$p = $this->parent->permissionTemplate;
@@ -485,15 +503,16 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 
 	} # lockpermissions
 #-
-	function logsGuest($nooverride = false) {
-		# Logs in the GUEST user (in fact it logs just the guest group)
-		# called from core::auth
-		if (!$nooverride) $_SESSION[CONS_SESSION_ACCESS_USER] = array();
-		if (!$this->parent->errorState) {
-			$groups = $this->parent->loaded(CONS_AUTH_GROUPMODULE);
-			if (!$groups) $this->parent->errorControl->raise(500);
-		}
-		if ($this->parent->errorState || $this->parent->offlineMode) {
+		function logsGuest($nooverride = false) {
+			# Logs in the GUEST user (in fact it logs just the guest group)
+			# called from core::auth
+			$groups = null;
+			if (!$nooverride) $_SESSION[CONS_SESSION_ACCESS_USER] = array();
+			if (!$this->parent->errorState) {
+				$groups = $this->parent->loaded(CONS_AUTH_GROUPMODULE);
+				if (!is_object($groups)) $this->parent->errorControl->raise(500);
+			}
+			if ($this->parent->errorState || $this->parent->offlineMode || !is_object($groups)) {
 			if (!is_array($this->parent->permissionTemplate)) {
 				$this->parent->loadPermissions();
 			}
@@ -537,8 +556,12 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 		$_SESSION[CONS_SESSION_ACCESS_USER] = array();
 		$_SESSION[CONS_SESSION_ACCESS_LEVEL] = CONS_SESSION_ACCESS_LEVEL_GUEST;
 		$_SESSION[CONS_SESSION_ACCESS_PERMISSIONS] = array();
-		setcookie("scookie","",time()+1,'/');
-		setcookie("login","",time()+1,'/');
+		$this->clearAuthCookies();
+		if (session_status() === PHP_SESSION_ACTIVE) {
+			$_SESSION = array();
+			session_regenerate_id(true);
+		}
+		presciaRotateCsrfToken();
 		$this->logsGuest();
 		$this->parent->currentAuth = CONS_AUTH_SESSION_LOGGEDOUT;
 	}
@@ -549,8 +572,8 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 		# called from core::checkActions
 
 		# logout catch
-		if ($this->parent->offlineMode || isset($_REQUEST['logout']) || isset($_REQUEST['nosession'])) {
-			if (!$this->parent->offlineMode && isset($_REQUEST['logout']) && isset($_SESSION[CONS_SESSION_ACCESS_USER]['login'])) // only someone logged can logout
+			if ($this->parent->offlineMode || isset($_POST['logout']) || isset($_POST['nosession'])) {
+				if (!$this->parent->offlineMode && isset($_POST['logout']) && isset($_SESSION[CONS_SESSION_ACCESS_USER]['login'])) // only someone logged can logout
 				$this->parent->errorControl->raise(302,'','',$_SESSION[CONS_SESSION_ACCESS_USER]['login']); # logout log
 			$this->logOut();
 			return CONS_AUTH_SESSION_GUEST;
@@ -607,8 +630,8 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 					$returnCode = $this->logUser($data['id_user'],CONS_AUTH_SESSION_KEEP);
 					if ($returnCode == CONS_AUTH_SESSION_NEW) {
 						# renews cookie
-						setcookie("scookie",$_COOKIE['scookie'],time()+CONS_COOKIE_TIME,'/');
-						setcookie("login",$data['id_user'],time()+CONS_COOKIE_TIME,'/');
+							$this->setAuthCookie('scookie',(string)$_COOKIE['scookie'],time()+CONS_COOKIE_TIME);
+							$this->setAuthCookie('login',(string)$data['id_user'],time()+CONS_COOKIE_TIME);
 						$this->parent->errorControl->raise(301,'','',$_SESSION[CONS_SESSION_ACCESS_USER]['login']);
 					}
 					return $returnCode;
@@ -618,43 +641,48 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 					return CONS_AUTH_SESSION_GUEST;
 				}
 			}
-			setcookie("scookie","",time()+1,'/');
-			setcookie("login","",time()+1,'/');
-		}
-
-			# POST?
-			if (isset($_POST['login']) && isset($_POST['password']) && $_POST['login'] != "" && $_POST['password'] != "") {
-				if (!preg_match('/^([A-Za-z0-9_\-@\.]){4,50}$/',$_POST['login']) || !preg_match('/^([A-Za-z0-9_\-@\.]){4,50}$/',$_POST['password'])) {
-				$this->logsGuest();
-				if (strpos($_POST['login'],"<") !== false || strpos($_POST['password'],"<") !== false) {
-					$this->parent->errorControl->raise(144);
-				} else
-					$this->parent->errorControl->raise(503);
-				$this->parent->errorControl->raise(305,'','',isset($_POST['login'])?isset($_POST['login']):'');
-				return CONS_AUTH_SESSION_FAIL_UNKNOWN;
+				$this->clearAuthCookies();
 			}
+
+				# POST?
+			if (isset($_POST['login']) && isset($_POST['password']) && $_POST['login'] != "" && $_POST['password'] != "") {
+				$login = is_string($_POST['login']) ? $_POST['login'] : '';
+				$password = is_string($_POST['password']) ? $_POST['password'] : '';
+				$invalidCredentials = $login === '' || $password === '' || strlen($login) > 50 || strlen($password) > 4096
+					|| preg_match('//u',$login) !== 1 || preg_match('//u',$password) !== 1
+					|| preg_match('/[\x00-\x1F\x7F]/',$login) === 1 || preg_match('/[\x00-\x1F\x7F]/',$password) === 1;
+				if ($invalidCredentials) {
+					$this->logsGuest();
+					if (strpos($login,"<") !== false || strpos($password,"<") !== false) {
+						$this->parent->errorControl->raise(144);
+					} else {
+						$this->parent->errorControl->raise(503);
+					}
+					$this->parent->errorControl->raise(305,'','',$login);
+					return CONS_AUTH_SESSION_FAIL_UNKNOWN;
+				}
 				// Passwords are verified after loading the account; this supports a safe
 				// one-time migration from legacy plaintext values to password_hash().
 				$sql = $userModule->get_base_sql($userModule->name.".login = ?");
 
 
-			if ($this->parent->dbo->queryPrepared($sql, 's', array((string)$_POST['login']), $r, $n)) {
+				if ($this->parent->dbo->queryPrepared($sql, 's', array($login), $r, $n)) {
 				if ($n>0) { # login/pass match
 					$data = $this->parent->dbo->fetch_assoc($r);
-					$passwordValid = presciaPasswordVerify($_POST['password'], (string)$data['password']);
-					if (!$passwordValid && hash_equals((string)$data['password'], (string)$_POST['password'])) {
-						$newHash = presciaPasswordHash($_POST['password']);
+					$passwordValid = presciaPasswordVerify($password, (string)$data['password']);
+					if (!$passwordValid && presciaPasswordIsLegacy((string)$data['password']) && hash_equals((string)$data['password'], $password)) {
+						$newHash = presciaPasswordHash($password);
 						$this->parent->dbo->queryPrepared("UPDATE ".$userModule->dbname." SET password=? WHERE id=?", 'si', array($newHash, (int)$data['id']), $r, $n);
 						$passwordValid = true;
 					}
 					if ($passwordValid && presciaPasswordNeedsRehash((string)$data['password'])) {
-						$newHash = presciaPasswordHash($_POST['password']);
+						$newHash = presciaPasswordHash($password);
 						$this->parent->dbo->queryPrepared("UPDATE ".$userModule->dbname." SET password=? WHERE id=?", 'si', array($newHash, (int)$data['id']), $r, $n);
 					}
-					if (!$passwordValid) {
-						$this->logsGuest();
-						$this->parent->errorControl->raise(305,'','',$_POST['login']);
-						return CONS_AUTH_SESSION_FAIL_UNKNOWN;
+						if (!$passwordValid) {
+							$this->logsGuest();
+							$this->parent->errorControl->raise(305,'','',$login);
+							return CONS_AUTH_SESSION_FAIL_UNKNOWN;
 					}
 					if ($data['active'] == 'y' &&
 						($data['expiration_date'] == null OR $data['expiration_date'] == "0000-00-00 00:00:00" OR datecompare($data['expiration_date'],date("Y-m-d H:i:s"))) &&
@@ -663,14 +691,14 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 							session_regenerate_id(true);
 							$sql = "DELETE FROM ".$authModule->dbname." WHERE id_user=?";
 						$this->parent->dbo->queryPrepared($sql, 'i', array((int)$data['id']), $r, $n);
-						$newkey = md5($data['login'].date("Hms"));
+						$newkey = bin2hex(random_bytes(16));
 						$sql = "INSERT INTO ".$authModule->dbname." SET ip=?,lastaction=NOW(),id_user=?,revalidatecode=?,startdate=NOW()";
 						$ok = $this->parent->dbo->queryPrepared($sql, 'sis', array((string)$ip, (int)$data['id'], (string)$newkey), $r, $n);
 						if ($ok) { # managed to create session
 							$returnCode = $this->logUser($data['id'],CONS_AUTH_SESSION_NEW); # logs user
 							if ($returnCode == CONS_AUTH_SESSION_NEW) {
-								setcookie("scookie",$newkey,time()+CONS_COOKIE_TIME,'/');
-								setcookie("login",$data['id'],time()+CONS_COOKIE_TIME,'/');
+								$this->setAuthCookie('scookie',$newkey,time()+CONS_COOKIE_TIME);
+								$this->setAuthCookie('login',(string)$data['id'],time()+CONS_COOKIE_TIME);
 								$this->parent->errorControl->raise(301,'','',$_SESSION[CONS_SESSION_ACCESS_USER]['login']);
 							}
 							return $returnCode;
@@ -679,21 +707,21 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 							$this->logsGuest(); # consider a guest
 							return CONS_AUTH_SESSION_GUEST;
 						}
-					} else { # innactive or expired
-						$this->logsGuest(); # consider a guest
-						$this->parent->errorControl->raise(($data['active'] == 'n' || $data['groups_active'] == 'n'?303:304),'','',isset($_POST['login'])?isset($_POST['login']):'GUEST');
+						} else { # innactive or expired
+							$this->logsGuest(); # consider a guest
+							$this->parent->errorControl->raise(($data['active'] == 'n' || $data['groups_active'] == 'n'?303:304),'','',$login);
 						return ($data['active'] == 'n' || $data['groups_active'] == 'n'?CONS_AUTH_SESSION_FAIL_INACTIVE:CONS_AUTH_SESSION_FAIL_EXPIRED);
 					}
 				} else { # no login/pass match
 					$this->logsGuest();
-					$this->parent->errorControl->raise(305,'','',isset($_POST['login'])?isset($_POST['login']):'');
+					$this->parent->errorControl->raise(305,'','',$login);
 					return CONS_AUTH_SESSION_FAIL_UNKNOWN;
 				}
-			} else { # error on query! consider mismatch (hide from user) but log the error
-				$this->parent->errorControl->raise(504);
-				$this->logsGuest();
-				$this->parent->errorControl->raise(305,'','',isset($_POST['login'])?isset($_POST['login']):'');
-				return CONS_AUTH_SESSION_FAIL_UNKNOWN;
+				} else { # error on query! consider mismatch (hide from user) but log the error
+					$this->parent->errorControl->raise(504);
+					$this->logsGuest();
+					$this->parent->errorControl->raise(305,'','',$login);
+					return CONS_AUTH_SESSION_FAIL_UNKNOWN;
 			}
 		}
 

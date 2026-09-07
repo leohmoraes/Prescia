@@ -10,7 +10,6 @@
 "framework_reference" => "Framework Reference",
 "documentation" => "Documentation",
 "toc" => "Table of Contents",
-"quick_reference" => "Quick Reference",
 "welcome_to_prescia" => "Welcome to Prescia",
 "learn_more" => "Learn more",
 "mvc" => "MVC",

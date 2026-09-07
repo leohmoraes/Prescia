@@ -91,9 +91,9 @@
 							$fileName .= $data[$key]."_";
 						$FirstfileName = $path.$fileName."1";
 						$hasFile = locateAnyFile($FirstfileName,$ext);
-						if (!$hasFile) {
-							$content = false;
-							continue;
+			if (!$hasFile) {
+				$content = false;
+				continue 2;
 						} else {
 							$fillDT['filesize'] = humanSize(filesize($FirstfileName));
 							$ext = strtolower($ext);
@@ -157,25 +157,25 @@
 						$fillDT['value'] = isset($data[$name])?$data[$name]:'';
 						if ($fillDT['value'] == '') {
 							$content = false;
-							continue;
+							continue 2;
 						}						
 						$content = $using->techo($fillDT);
 					break;
 					case CONS_TIPO_ENUM: // ############################################### LIST OF ITEMS IN ENUM FORM
 						$content = $core->langOut($data[$name]);
 					break;
-					case CONS_TIPO_DATE: // ############################################### DATE / DATETIME
-						$content = fd($data[$name],$core->intlControl->getDate());
-						if ($content == '') {
-							$content = false;
-							continue;
+				case CONS_TIPO_DATE: // ############################################### DATE / DATETIME
+					$content = fd($data[$name],$core->intlControl->getDate());
+					if ($content == '') {
+						$content = false;
+						continue 2;
 						}
 					break;
-					case CONS_TIPO_DATETIME:
-						$content = fd($data[$name],"H:i:s ".$core->intlControl->getDate());
-						if ($content == '') {
-							$content = false;
-							continue;
+				case CONS_TIPO_DATETIME:
+					$content = fd($data[$name],"H:i:s ".$core->intlControl->getDate());
+					if ($content == '') {
+						$content = false;
+						continue 2;
 						}
 					break;
 					case CONS_TIPO_VC: // ############################################### SIMPLE INPUT WITH HEAVY TYPESETTING
@@ -203,7 +203,7 @@
 						}
 						if ($fillDT['value'] == '') {
 							$content = false;
-							continue;
+							continue 2;
 						}
 						$content =  $using->techo($fillDT);
 					break;

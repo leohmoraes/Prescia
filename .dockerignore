@@ -8,7 +8,7 @@
 _temp/*
 !_temp/.gitkeep
 *.log
-composer.lock
+vendor/
 
 # Documentation
 *.md

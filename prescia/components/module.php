@@ -720,9 +720,10 @@ class CModule {
 		return $dels;
 	} #deleteUploads
 
-	function prepareUpload($name,$kA,&$data) {
-		# Returns the same errCode from storefile, plus 8 (unable to create thumbails), 9 (near time limit), 10 (quota exceeded)
-		# file format should be [field][ids_]#_thumbid (or 1 for no thumb)
+		function prepareUpload($name,$kA,&$data) {
+			# Returns the same errCode from storefile, plus 8 (unable to create thumbails), 9 (near time limit), 10 (quota exceeded)
+			# file format should be [field][ids_]#_thumbid (or 1 for no thumb)
+			$thumbsettings = array();
 
 		if (!isset($_FILES[$name]))
 			return 4;
@@ -790,8 +791,9 @@ class CModule {
 		} else
 			$ftypes = "";
 
-		# prepares watermark and/or crop (for images)
-		$WM_TODO = array();
+			# prepares watermark and/or crop (for images)
+			$WM_TODO = array();
+			$thisFilename = '';
 		if (isset($this->fields[$name][CONS_XML_TWEAKIMAGES])) {
 			foreach ($this->fields[$name][CONS_XML_TWEAKIMAGES] as $c => $WM) {
 				# stamp:over(filename@x,y)[r] # [r] not implemented yet
@@ -840,7 +842,7 @@ class CModule {
 			}
 
 			# perform upload
-			$thisFilename = $path.$filename."1";
+				$thisFilename = $path.$filename."1";
 			$errCode = storeFile($_FILES[$name],$thisFilename,$ftypes); # <----------------- upload happens here
 			//$errCode = storeFile($_FILES[$name],$thisFilename,$ftypes,true); # <----------------- use this (note the true) for full debug
 
@@ -1240,9 +1242,10 @@ class CModule {
 						$this->parent->errorControl->raise(200+$upOk,$upOk,$this->name,$name);
 					}
 					if ($upOk != 4) $output = $encapsulation.$upvalue.$encapsulation; // we CHANGED the file, set if it is ok
-					else { // no change, but take this oportunity and check if the file exists!
-						$upvalue = 'n';
-						$path = CONS_FMANAGER.$this->name."/";
+						else { // no change, but take this oportunity and check if the file exists!
+							$upvalue = 'n';
+							$ext = '';
+							$path = CONS_FMANAGER.$this->name."/";
 						if (is_dir($path)) {
 							if (isset($this->fields[$name][CONS_XML_FILEPATH])) {
 								$path .= $this->fields[$name][CONS_XML_FILEPATH];
@@ -1776,8 +1779,7 @@ class CModule {
 			$gt = $tp->get($tag);
 			$this->parent->cacheControl->addCachedContent($cacheTAG,array('payload'=>$gt,'count'=>$n,'lfs' => $this->parent->lastFirstset, 'lrc' => $this->parent->lastReturnCode),$this->freeModule); # note how freeModule defines shared or not cache
 		}
-			unset ($this->parent->templateParams['grouping']);
-		return $n;
+			return $n;
 	} # runContent
 
  	function notifyEvent(&$module,$action,$data,$startedAt="",$earlyNotify = false) {

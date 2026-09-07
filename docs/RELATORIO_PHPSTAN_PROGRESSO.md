@@ -4,13 +4,13 @@
 **Escopo:** compatibilidade com PHP 8.3 e redução incremental da dívida técnica identificada pelo PHPStan  
 **Versão analisada:** PHPStan 2.2.13, nível 1  
 **Branch:** `master`  
-**Commit atual:** `eb1cc26`
+**Commit de código do lote atual:** `1127c0e`
 **Data de consolidação:** 6 de setembro de 2026
 **Issue principal:** [#43 — Atualizar o PHPStan e elevar gradualmente o nível de análise][1]
 
 ## Resumo executivo
 
-O projeto avançou de uma configuração inicial sem contratos suficientes para uma análise estática incremental com **PHPStan 2.x no nível 1**, baseline sem supressões e contratos explícitos para os principais contextos dinâmicos do framework. A análise global mais recente reduziu o relatório para **287 diagnósticos**, enquanto os arquivos tratados continuam passando na validação focalizada. A suíte de compatibilidade com PHP 8.3 permanece aprovada nas execuções recentes, mas o workflow completo do PHPStan ainda falha por diagnósticos remanescentes em arquivos que ainda não foram tratados.
+O projeto avançou de uma configuração inicial sem contratos suficientes para uma análise estática incremental com **PHPStan 2.x no nível 1**, baseline sem supressões e contratos explícitos para os principais contextos dinâmicos do framework. A análise global do lote atual reduziu o relatório para **219 diagnósticos**, enquanto os arquivos tratados continuam passando na validação focalizada. A suíte de compatibilidade com PHP 8.3 e o PHPUnit permanecem aprovados, mas o workflow completo do PHPStan ainda falha por diagnósticos remanescentes em arquivos que ainda não foram tratados.
 
 O progresso mais significativo ocorreu na separação entre o núcleo `CPrescia`, módulos concretos e payloads incluídos dinamicamente. Essa separação eliminou os diagnósticos de contexto em vários fluxos de administração, autenticação, fórum, cron e labels. Também foram corrigidos fluxos de variáveis indefinidas em listagens, ações de teste, cron e callbacks de módulos.
 
@@ -20,12 +20,12 @@ A principal limitação atual é que o workflow completo analisa todo o reposit�
 
 | Área | Estado | Evidência |
 |---|---|---|
-| PHP 8.3 | **Aprovada no commit atual** | Execução `34047768938` concluída com sucesso no commit `a1564d7` |
+| PHP 8.3 | **Aprovada no lote atual** | `php -l` global sem warnings e `composer test` aprovado no commit `1127c0e` |
 | PHPStan focalizado nos arquivos corrigidos | **Aprovado** | Todos os lotes recentes terminaram com `[OK] No errors` |
-| PHPStan completo do repositório | **Ainda falha** | Análise global do commit `eb1cc26`: **287 diagnósticos**; workflow permanece pendente até zerar os erros |
-| PHPUnit | Configurado no Composer; execução global não foi usada como critério deste relatório | `phpunit/phpunit ^10.5` |
+| PHPStan completo do repositório | **Ainda falha** | Análise global do commit `1127c0e`: **219 diagnósticos**; workflow permanece pendente até zerar os erros |
+| PHPUnit | **Aprovado** | `23 testes`, `2745 asserções`, PHP 8.3.6 |
 | Baseline | **Sem novos ocultamentos** | `phpstan-baseline.neon` permanece sem entradas de `ignoreErrors` adicionadas durante os ciclos recentes |
-| Branch e working tree | **Limpos** | `master` em `eb1cc26`, sem alterações pendentes na consolidação |
+| Branch e working tree | **Em consolidação** | `fix/security-php83-issues`, código em `1127c0e`; documentação deste lote será registrada no commit seguinte |
 
 ## Linha do tempo das correções
 
@@ -443,3 +443,42 @@ A correção planejada será feita em ondas: primeiro retornos escalares e array
 | Marco de comparação | **287 diagnósticos globais**, commit `eb1cc26` |
 
 A execução da correção será considerada concluída somente após validação focalizada equivalente, análise global, sintaxe PHP 8.3, compatibilidade no CI e comparação antes/depois por identificador.
+
+
+## Atualização de 6 de setembro de 2026 — lote de segurança e compatibilidade
+
+O commit `1127c0e` consolidou a correção de issues de segurança, compatibilidade PHP 8.3 e contratos PHPStan. O lote endureceu CSRF, cookies de sessão e login persistente, logout e migração de senhas; removeu debug acionável por cliente; bloqueou objetos em desserialização e extensões executáveis em uploads; e parametrizou as consultas mutáveis identificadas em estatísticas e administração.
+
+Também foram corrigidos fluxos legados que produziam warnings no PHP 8.3: `continue` dentro de `switch` foi substituído por `continue 2` quando havia um `foreach` externo e por `break` quando o `switch` era o único escopo iterável. O cálculo de ownership do `bi_auth` foi recolocado dentro do módulo atualmente iterado, eliminando variáveis fora de escopo e corrigindo o uso do código de ativação.
+
+| Verificação | Resultado |
+|---|---|
+| PHPUnit | **23 testes, 2745 asserções, aprovado** |
+| Lint PHP global | **Aprovado sem warnings** |
+| PHPStan focalizado | **Aprovado nos arquivos tratados** |
+| PHPStan global, nível 1 | **219 diagnósticos remanescentes**, contra 287 no relatório anterior |
+| Composer validate | **Aprovado** |
+| Composer audit | **Nenhum advisory de segurança** |
+| Baseline | **Sem novas entradas** |
+
+Os diagnósticos globais remanescentes estão fora do escopo dos arquivos tratados e continuam classificados como dívida legada para o próximo lote. O lote atual não eleva o nível do PHPStan nem adiciona supressões.
+
+
+## Atualização de 7 de setembro de 2026 — `tcaptcha.php`
+
+O inventário global do commit `5c14031` encontrou 12 diagnósticos `variable.undefined` em `prescia/lazyload/tcaptcha.php`: `$checkStage`, `$key` e `$this` eram fornecidos pelo método `CPrescia::tCaptcha(string $key, bool $checkStage)`, mas o include procedural não documentava seu contexto.
+
+A correção adicionou contratos PHPDoc concretos para `CPrescia $this`, `string $key` e `bool $checkStage`. Nenhum valor artificial foi introduzido e o comportamento de geração, validação e consumo único do CAPTCHA permaneceu inalterado.
+
+| Verificação | Resultado |
+|---|---|
+| PHPStan focalizado | **0 erros** |
+| `php -l prescia/lazyload/tcaptcha.php` | **Aprovado** |
+| `git diff --check` | **Aprovado** |
+| PHPUnit | **23 testes, 2745 asserções, aprovado** |
+| PHPStan global antes | **219 diagnósticos em 54 arquivos** |
+| PHPStan global depois | **207 diagnósticos em 53 arquivos** |
+| Redução | **12 diagnósticos** |
+| Baseline | **Sem alteração** |
+
+O próximo inventário deve priorizar `prescia/lib/datetime.php`, `prescia/plugins/bi_labels/payload/actions/config_labels.php` e `pages/presciatester/_config/config.php`, que permanecem com 12, 12 e 11 diagnósticos, respectivamente.

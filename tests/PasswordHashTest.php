@@ -23,6 +23,7 @@ final class PasswordHashTest extends TestCase
     public function testLegacyPlaintextValueNeedsMigration(): void
     {
         self::assertFalse(\presciaPasswordVerify('legacy-password', 'legacy-password'));
+        self::assertTrue(\presciaPasswordIsLegacy('legacy-password'));
         self::assertTrue(\presciaPasswordNeedsRehash('legacy-password'));
     }
 
@@ -31,5 +32,6 @@ final class PasswordHashTest extends TestCase
         $hash = \presciaPasswordHash('a password');
 
         self::assertFalse(\presciaPasswordNeedsRehash($hash));
+        self::assertFalse(\presciaPasswordIsLegacy($hash));
     }
 }

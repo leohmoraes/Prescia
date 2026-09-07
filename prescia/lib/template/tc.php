@@ -47,7 +47,9 @@ class CKTemplate {
 
   private $iec = 0; // anti-loop device
 
-  function __construct($parent = null, $mypath = "", $debugmode = false, $legacyMode = false) { // parent must be a CKTemplate too; legacyMode is retained for compatibility
+  function __construct($parent = null, $mypath = "", $debugmode = false, $_legacyMode = false) { // parent must be a CKTemplate too; legacyMode is retained for compatibility
+	// The fourth argument is retained for old callers; it has no runtime effect.
+	unset($_legacyMode);
 	$this->clear();
 	$this->cache = null;
 	if ($parent == null) {
@@ -198,9 +200,10 @@ class CKTemplate {
   }
 
   // reads a file. The encoded file will be saved at the cache
-  public function fetch($arquivo) {
-	$this->contents = array(); // reset
-	$seed = $this->cacheSeed != "" ? $this->cacheSeed."/" : "";
+	  public function fetch($arquivo) {
+		$this->contents = array(); // reset
+		$cfile = '';
+		$seed = $this->cacheSeed != "" ? $this->cacheSeed."/" : "";
 	if (is_file($arquivo)) {
 
 	  if ($this->cachepath != "" && !isset($_REQUEST['nocache'])) {
@@ -236,7 +239,7 @@ class CKTemplate {
 	  else $this->cache = "";
 	  fclose($fd);
 	  $ok = $this->tbreak($this->cache);
-	  if ($ok && $this->cachepath != "") {
+		  if ($ok && $this->cachepath != "" && $cfile != "") {
 	  	$temp = $this->cache;
 	  	$this->cache = "";
 	  	if (count($this->lang_replacer)>0) {
@@ -435,8 +438,9 @@ class CKTemplate {
 			else return $content;
 		case "toplain":
 			return str_replace("<","&lt;",str_replace(">","&gt;",$content));
-		case "html": // create amps, and if param is set, remove '
-			return str_replace("&amp;","&",isset($params[0])?str_replace("'","",htmlspecialchars($content)):htmlspecialchars($content));
+			case "html": // create amps, and if param is set, remove '
+				$escapedContent = \Prescia\Services\Sanitizer::escapeHtml(str_replace("&amp;","&",$content));
+				return isset($params[0])?str_replace('&#039;','',$escapedContent):$escapedContent;
 		case "htmlentities":
   			return htmlentities_ex($content);
 		case "url":

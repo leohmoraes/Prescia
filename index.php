@@ -43,10 +43,18 @@ if (CONS_ONSERVER && is_file("heavymaint.html")) {
 }
 	# Server settings and libraries
 	$settingsFile = CONS_PATH_SETTINGS."settings.php";
-	if (!is_file($settingsFile))
-		throw new RuntimeException("Prescia settings file not found: ".$settingsFile);
-	require $settingsFile;
-	# Database
+		if (!is_file($settingsFile))
+			throw new RuntimeException("Prescia settings file not found: ".$settingsFile);
+		require $settingsFile;
+		if (!headers_sent()) {
+			header('X-Content-Type-Options: nosniff');
+			header('Referrer-Policy: strict-origin-when-cross-origin');
+			header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
+			header("Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' data: https:; frame-ancestors 'self'; base-uri 'self'; form-action 'self' https:");
+			if (!empty($_SERVER['HTTPS']) && strtolower((string)$_SERVER['HTTPS']) !== 'off')
+				header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+		}
+		# Database
 	require CONS_PATH_INCLUDE."dbo/cdbo.php";
 	$databaseConnectorFile = CONS_PATH_INCLUDE."dbo/".CONS_AFF_DATABASECONNECTOR.".php";
 	if (!is_file($databaseConnectorFile))
@@ -59,10 +67,10 @@ require CONS_PATH_SYSTEM."core.php";
 # ab -n50 total mean: 17ms	16ms
 
 
-if (CONS_DEVELOPER || isset($_GET['debugmode'])) {
-	require CONS_PATH_SYSTEM."coreFull.php";
-	$cdbo = "CDBO_".CONS_AFF_DATABASECONNECTOR;
-	$core = new CPresciaFull(new $cdbo('','','','',isset($_GET['debugmode'])),true);
+	if (CONS_DEVELOPER) {
+		require CONS_PATH_SYSTEM."coreFull.php";
+		$cdbo = "CDBO_".CONS_AFF_DATABASECONNECTOR;
+		$core = new CPresciaFull(new $cdbo('','','','',true),true);
 } else {
 	$cdbo = "CDBO_".CONS_AFF_DATABASECONNECTOR;
 	$core = new CPrescia(new $cdbo('','','','',false),false);
@@ -95,10 +103,13 @@ if (CONS_AFF_ERRORHANDLER) { // override PHP error messaging? (if true, will not
 	function PresciaExceptionHandler($exception) {
 		global $core;
 		if (error_reporting() === 0) return; // if the function had a "@" before it, then ignore it totally
-		if ($core && $core->debugmode)
-			$core->errorControl->raise(602,$exception->getMessage());
-		else
-			die($exception->getMessage());
+			if ($core && $core->debugmode && CONS_DEVELOPER)
+				$core->errorControl->raise(602,$exception->getMessage());
+			else {
+				error_log($exception->getMessage());
+				http_response_code(500);
+				die('Internal server error');
+			}
 	}
 
 	$crap = set_exception_handler('PresciaExceptionHandler');

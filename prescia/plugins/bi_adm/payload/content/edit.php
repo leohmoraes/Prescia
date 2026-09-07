@@ -367,7 +367,7 @@
 					case CONS_TIPO_UPLOAD: // ############################################### FILE(s)
 						if ($p['isMultiple'] || $p['isMup']) {
 							$content = false;
-							continue; // continue will leave only the switch, since switch is considered a loop (??? WHY PHP, WHY ???)
+							break; // skip the upload case when a multiple-upload field is handled elsewhere
 						}
 
 						$field_upload = $core->template->get("_upload_field");

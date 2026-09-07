@@ -2,6 +2,8 @@
 
 require_once __DIR__ . '/passwords.php';
 
+/** @var CPrescia $this Core context while this plugin module is loaded. */
+
 define ("CONS_AUTH_USERMODULE","users");
 define ("CONS_AUTH_SESSIONMANAGERMODULE","session_manager");
 define ("CONS_COOKIE_TIME",172800); // 172800 = 48h
@@ -67,33 +69,33 @@ class mod_bi_auth extends CscriptedModule  {
 											  'field' => $field
 											  );
 					if ($field[CONS_XML_MODULE] == CONS_AUTH_USERMODULE || $field[CONS_XML_MODULE] == CONS_AUTH_GROUPMODULE)
-						$this->parent->modules[$mname]->freeModule = false; # has an owner or owner group
-				}
-			}
-		}
-		for ($baseF=0;$baseF<count($linkableFields);$baseF++) {
-			# take this chance to find a direct parent module
-			if ($this->parent->modules[$mname]->freeModule) {
-				# This means the module DOES NOT have a link to user or group, but one of its links MIGHT have
-				# -> If only ONE link is a link to users, check it as isOwner
-				# -> usually, if there is ONE user link, it is the owner (isOwner ignored, considered true, thus we don't need to test it here)
-				# -> if more than one module is an eligible owner (or user link), you must set which is/are the owner(s) at the XML, or the FIRST will be used
-				# basic test using keys (this test is also present at module::forcePermissions
-				$ownerLink = "";
-				if (in_array($linkableFields[$baseF]['name'],$module->keys)) {
-					# does this remote module has a link to users or groups?
-					$remoteModule = $this->parent->modules[$linkableFields[$baseF]['field'][CONS_XML_MODULE]];
-					if ($remoteModule->get_key_from(CONS_AUTH_USERMODULE) != "") {
-						$this->parent->modules[$mname]->freeModule = false;
-						if ($ownerLink == "") $ownerLink = $linkableFields[$baseF]['name'];
-						else $ownerLink = "+";
+							$this->parent->modules[$mname]->freeModule = false; # has an owner or owner group
 					}
 				}
-				if ($ownerLink != "+" && $ownerLink != "") {
-					$module->fields[$ownerLink][CONS_XML_ISOWNER] = true;
+				for ($baseF=0;$baseF<count($linkableFields);$baseF++) {
+					# take this chance to find a direct parent module
+					if ($this->parent->modules[$mname]->freeModule) {
+						# This means the module DOES NOT have a link to user or group, but one of its links MIGHT have
+						# -> If only ONE link is a link to users, check it as isOwner
+						# -> usually, if there is ONE user link, it is the owner (isOwner ignored, considered true, thus we don't need to test it here)
+						# -> if more than one module is an eligible owner (or user link), you must set which is/are the owner(s) at the XML, or the FIRST will be used
+						# basic test using keys (this test is also present at module::forcePermissions
+						$ownerLink = "";
+						if (in_array($linkableFields[$baseF]['name'],$module->keys)) {
+							# does this remote module has a link to users or groups?
+							$remoteModule = $this->parent->modules[$linkableFields[$baseF]['field'][CONS_XML_MODULE]];
+							if ($remoteModule->get_key_from(CONS_AUTH_USERMODULE) != "") {
+								$this->parent->modules[$mname]->freeModule = false;
+								if ($ownerLink == "") $ownerLink = $linkableFields[$baseF]['name'];
+								else $ownerLink = "+";
+							}
+						}
+						if ($ownerLink != "+" && $ownerLink != "") {
+							$module->fields[$ownerLink][CONS_XML_ISOWNER] = true;
+						}
+					}
 				}
 			}
-		} # end filters check
 
 		foreach ($this->parent->modules as $mname => &$module) {
 			if ($this->parent->modules[$mname]->freeModule){ # free modules have a slight different permission setting
@@ -145,7 +147,7 @@ class mod_bi_auth extends CscriptedModule  {
 		if ($this->registrationMode == 2 && $this->parent->action == "authuser" && isset($_REQUEST['authcode']) && isset($_REQUEST['user']) && is_numeric($_REQUEST['user'])) {
 			$data = array("id" => $_REQUEST['user'],
 						  "active" => "y",
-						  "authcode" => addslashes_EX($ao,false,$this->parent->dbo));
+							  "authcode" => addslashes_EX($_REQUEST['authcode'],false,$this->parent->dbo));
 			$this->parent->safety = false;
 			$this->parent->runAction(CONS_AUTH_USERMODULE,CONS_ACTION_UPDATE,$data);
 			$this->parent->safety = false;
@@ -282,7 +284,7 @@ class mod_bi_auth extends CscriptedModule  {
 						$data['email'] = $data['login']; // some sites use the email as login
 					if (isset($data['email']) && ismail($data['email'])) {
 						if ($this->registrationMode == 2)
-							$data['authcode'] = md5($data['login'].date("His")).date("Ymd");
+								$data['authcode'] = bin2hex(random_bytes(16)).date("Ymd");
 						$html = $this->parent->prepareMail($this->registrationMode == 1 ? $this->welcomemail : $this->activatemail,$data); 
 						 sendMail($data['email'],$this->parent->dimconfig['pagetitle']." - ".$this->parent->langOut($this->registrationMode==1?'account_welcome':'account_activation_required'),$html);
 					} else {

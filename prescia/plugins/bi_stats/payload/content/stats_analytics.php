@@ -86,14 +86,17 @@
 	$yesterday = datecalc(date("Y-m-d"),0,0,-1);
 	
 	if (isset($_REQUEST['normalize']) && isset($_REQUEST['hour']) && isset($_REQUEST['changeto']) && is_numeric($_REQUEST['hour']) && is_numeric($_REQUEST['changeto'])) {
-		if ($_REQUEST['changeto'] < 2) $_REQUEST['changeto'] = 2;
-		$sql = "DELETE FROM ".$statsObj->dbname." WHERE uhits=0 AND data='".date("Y-m-d")."' AND hour=".$_REQUEST['hour'];
-		$core->dbo->simpleQuery($sql);
-		$sql = "UPDATE ".$statsObj->dbname." SET hits=".$_REQUEST['changeto'].", uhits=1 WHERE data='".date("Y-m-d")."' AND hour=".$_REQUEST['hour']." AND hits>".$_REQUEST['changeto']; 
-		if ($core->dbo->simpleQuery($sql))
-			$core->log[] = "Hour ".$_REQUEST['hour']." hits normalized to max ".$_REQUEST['changeto']." hits, non unique hit pages removed.";
+		$normalizeHour = max(0, min(23, (int)$_REQUEST['hour']));
+		$normalizeLimit = max(2, (int)$_REQUEST['changeto']);
+		$normalizeDate = date("Y-m-d");
+		$r = false;
+		$n = 0;
+		$core->dbo->queryPrepared("DELETE FROM ".$statsObj->dbname." WHERE uhits=0 AND data=? AND hour=?", 'si', array($normalizeDate, $normalizeHour), $r, $n);
+		$sql = "UPDATE ".$statsObj->dbname." SET hits=?, uhits=1 WHERE data=? AND hour=? AND hits>?";
+		if ($core->dbo->queryPrepared($sql, 'isii', array($normalizeLimit, $normalizeDate, $normalizeHour, $normalizeLimit), $r, $n))
+			$core->log[] = "Hour ".$normalizeHour." hits normalized to max ".$normalizeLimit.", non unique hit pages removed.";
 		else
-			$core->log[] = "Error trying to normalize ".$_REQUEST['hour']."h hits";
+			$core->log[] = "Error trying to normalize ".$normalizeHour."h hits";
 	}
 
 	$sql = "SELECT data,hour,sum(hits),sum(uhits) FROM ".$statsObj->dbname." WHERE data>='$yesterday' GROUP BY data,hour ORDER BY data DESC";
@@ -588,6 +591,4 @@
 		$langs[$c]['percent'] *= 100;
 		$temp .= $obj->techo($langs[$c]);
 	}
-	$core->template->assign("_lang",$temp);
-	
-	
+		$core->template->assign("_lang",$temp);
