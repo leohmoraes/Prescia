@@ -189,3 +189,4 @@ Applied the `phpstan-legacy-remediation` skill to `prescia/lazyload/ajaxQuery.ph
 - Documented the BI Stats AJAX core context and the administrative manifest `$sname` context, reducing the global PHPStan report from 58 to 53 diagnostics without baseline changes.
 - Corrected `coreFull.php` variable flows and replaced the nested recursive `dieFreakingThumbs()` function with a closure, reducing the global PHPStan report from 53 to 48 diagnostics without baseline changes.
 - Documented the `CPrescia` context in the default action/content payloads for `presciatester` and `prescia`, reducing the global PHPStan report from 48 to 38 diagnostics without baseline changes.
+- Remediated the page reference, CLS lazyloader and `ttree` diagnostics, exposing the legitimately used `builddomains()` API and reducing the global PHPStan report from 38 to 28 diagnostics without baseline changes.

@@ -601,3 +601,7 @@ O nono lote removeu os quatro diagnósticos de `$core` em `stats_rtajax.php` e o
 ### Resultado do décimo primeiro lote
 
 Os payloads default da ação do `presciatester` e do conteúdo da página `prescia` receberam contratos `CPrescia $this` após confirmação dos métodos `checkActions()` e `renderPage()`. O lote eliminou 10 diagnósticos, reduziu o inventário global de 48 para 38 ocorrências e manteve a baseline sem alterações. O próximo foco deve ser `pages/prescia/content/resources/reference.php`, `prescia/lazyload/cls.php` e `prescia/lib/ttree.php`, agrupando arquivos somente quando seus carregadores forem compatíveis.
+
+### Resultado do décimo segundo lote
+
+Os contratos de `reference.php` e `cls.php` foram confirmados pelos carregadores de página e seleção de domínio. O diagnóstico local de `$tag` em `ttree::echoHTML()` foi resolvido por inicialização no escopo comum. Como o seletor CLS usa o lazyload `builddomains()` dentro do include, a visibilidade do método foi ajustada de privada para pública, preservando a API efetivamente usada pelo framework. O lote reduziu o inventário de 38 para 28 diagnósticos, com PHPStan focalizado, lint e PHPUnit aprovados e baseline inalterada.

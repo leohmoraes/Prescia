@@ -720,3 +720,17 @@ O décimo primeiro lote documentou o contexto `CPrescia $this` em `pages/prescia
 | PHPStan global depois | **38 diagnósticos em 23 arquivos** |
 | Redução | **10 diagnósticos** |
 | Baseline | **Sem alteração** |
+
+## Atualização de 7 de setembro de 2026 — décimo segundo lote
+
+O décimo segundo lote tratou `pages/prescia/content/resources/reference.php`, `prescia/lazyload/cls.php` e `prescia/lib/ttree.php`. Os dois primeiros receberam contratos `CPrescia $this`, confirmados pelos fluxos `renderPage()` e `domainLoad()`. Em `ttree::echoHTML()`, `$tag` foi inicializado antes dos caminhos que podem ignorar a tag. A validação também confirmou que `cls.php` usa legitimamente `builddomains()` durante o include; por isso o método lazyload foi exposto como API pública do núcleo, eliminando os acessos privados detectados pelo PHPStan.
+
+| Verificação | Resultado |
+|---|---|
+| PHPStan focalizado dos arquivos e núcleo relacionado | **0 erros** |
+| PHP 8.3 lint | **Aprovado** |
+| PHPUnit | **23 testes, 2745 asserções, aprovado** |
+| PHPStan global antes | **38 diagnósticos em 23 arquivos** |
+| PHPStan global depois | **28 diagnósticos em 20 arquivos** |
+| Redução | **10 diagnósticos** |
+| Baseline | **Sem alteração** |

@@ -1320,7 +1320,7 @@ class CPrescia extends CPresciaVar {
 		return include(CONS_PATH_SYSTEM."lazyload/feedReader.php");
 	}
 #-
-	private function builddomains() {
+		public function builddomains() {
 		// interfaced function (lazy load)
 		return include(CONS_PATH_SYSTEM."lazyload/builddomains.php");
 	}
