@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the conservative migration helper in `tools/migrate_php83.php`, with dry-run, timestamped backups and a security blocker report.
 
 ### Changed
+- Parameterized the `bi_bb` forum preview lookups, removing direct `$_POST` interpolation from both thread and forum queries; added a regression test for the protected path.
 - Updated the Docker image from PHP 8.2 to PHP 8.3.
 - Added the `mbstring` extension to the Docker image.
 - Documented PHP 8.3 requirements and compatibility test commands in `README.md`.

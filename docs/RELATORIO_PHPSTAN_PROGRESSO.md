@@ -781,3 +781,11 @@ A continuação da issue #28 migrou as consultas de `CModule::autoPrune()` para 
 ## Terceiro lote de segurança — deleteAllFrom()
 
 O terceiro lote da migração SQL parametrizou `CPrescia::deleteAllFrom()`. Tanto o caminho de zeragem (`UPDATE`) quanto o caminho de cascata (`SELECT`) agora usam `queryPrepared()`, mantendo as colunas e tabelas provenientes do modelo e transportando os valores de chave exclusivamente como parâmetros. PHPStan focalizado, lint PHP 8.3, PHPUnit e verificação de diff foram aprovados, sem alteração da baseline.
+
+## Correção de segurança — preview do fórum `bi_bb`
+
+A auditoria do fluxo `prescia/plugins/bi_bb/payload/content/preview.php` confirmou que `id_forum` e `id_forumthread`, recebidos por `$_POST`, eram interpolados diretamente em duas consultas `SELECT`. O contexto de execução foi confirmado como payload incluído pelo módulo `mod_bi_bb`, com o banco disponível em `CPrescia::$dbo`.
+
+As duas consultas foram migradas para `queryPrepared()`, usando parâmetros inteiros (`ii` e `i`) derivados dos IDs recebidos. O fluxo de retorno e a regra de `fastClose(503)` foram preservados. Também foi inicializado `$ext` antes da chamada por referência a `locateFile()`. A baseline do PHPStan não foi alterada. `tests/SecurityRegressionTest.php` protege o contrato contra o retorno da concatenação direta.
+
+A validação focalizada deve incluir `php -l prescia/plugins/bi_bb/payload/content/preview.php`, `git diff --check`, o teste de regressão e a análise PHPStan do payload. O próximo alvo de segurança é continuar o inventário de consultas que recebem entrada de requisição, priorizando fluxos mutáveis de autenticação, CSRF e sessão conforme `docs/PLANO_ACAO_SEGURANCA.md`.

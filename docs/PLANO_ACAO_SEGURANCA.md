@@ -150,3 +150,7 @@ Uma vulnerabilidade estará corrigida quando houver implementação revisada, te
 [24]: https://github.com/leohmoraes/Prescia/issues/24 "Issue #24 — Substituir sanitização HTML por escaping contextual"
 [25]: https://github.com/leohmoraes/Prescia/issues/25 "Issue #25 — Atualizar container, remover short tags e criar CI de compatibilidade"
 [26]: https://github.com/leohmoraes/Prescia/issues/26 "Issue #26 — Implementar rate limiting específico para login"
+
+## Registro de execução — preview do fórum
+
+Em 2026-09-07, o fluxo de preview de `bi_bb` foi corrigido: os IDs de fórum e tópico passaram a ser vinculados por `queryPrepared()` e não são mais concatenados em SQL. Foi adicionado teste de regressão estático para impedir a reintrodução da concatenação direta. Permanecem pendentes os demais fluxos de entrada listados na Fase 2, especialmente autenticação, CSRF e sessão.
