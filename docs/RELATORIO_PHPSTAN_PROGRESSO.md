@@ -295,3 +295,16 @@ Foi adicionado o contrato PHPDoc `CPrescia $core`. O PHPStan focalizado terminou
 | `prescia/plugins/bi_stats/payload/content/stats_pathajax.php` | **Concluído** | PHPStan focalizado sem erros; sintaxe PHP 8.3 aprovada; 18 diagnósticos removidos |
 
 O próximo alvo deve ser recalculado a partir do relatório global atual. Os workflows serão acompanhados após a publicação.
+
+
+## Atualização adicional — aplicação da skill em `reset.php`
+
+A skill `phpstan-legacy-remediation` foi aplicada a `pages/presciatester/actions/reset.php`. A investigação confirmou que `CPrescia::checkActions()` inclui a action no contexto do núcleo, estabelecendo `$this` como `CPrescia`.
+
+Foi adicionado o contrato PHPDoc `CPrescia $this`. O PHPStan focalizado terminou com **0 erros**, o `php -l` passou e `git diff --check` foi aprovado. A análise global atual caiu de **391 para 374 diagnósticos**, uma redução de **17 ocorrências**. A baseline permaneceu inalterada.
+
+| Arquivo | Situação | Validação |
+|---|---|---|
+| `pages/presciatester/actions/reset.php` | **Concluído** | PHPStan focalizado sem erros; sintaxe PHP 8.3 aprovada; 17 diagnósticos removidos |
+
+O próximo alvo deverá ser recalculado a partir do relatório global atual. Os workflows serão acompanhados após a publicação.
