@@ -423,3 +423,23 @@ O arquivo corrigido passou no PHPStan focalizado, no `php -l` do PHP 8.3 e no `g
 | Arquivos corrigidos no lote recente | `pages/prescia/_config/config.php`, `prescia/lazyload/ajaxQuery.php` |
 | PHPStan focalizado dos arquivos recentes | **0 erros** |
 | Baseline expandida | **Não** |
+
+
+## Análise estrutural — 46 `return.missing` em `tools/phpstan-framework-stubs.php`
+
+O relatório global de 287 diagnósticos contém **46 ocorrências `return.missing`** concentradas em `tools/phpstan-framework-stubs.php`. A inspeção confirmou que o arquivo é um stub exclusivo do PHPStan, referenciado por `stubFiles` em `phpstan.neon.dist`, e não é carregado pela aplicação.
+
+Os diagnósticos estão distribuídos entre **34 funções da API principal**, **1 método `CPrescia::saveConfig()`** e **11 funções legadas adicionais**. As funções `void` `dieFreakingThumbs()`, `adodb_daylight_sv()` e `removeBOM()` não fazem parte da contagem e devem permanecer sem retornos artificiais.
+
+A correção planejada será feita em ondas: primeiro retornos escalares e arrays, depois uniões como `array|string`, em seguida funções e métodos `mixed` com `null` explícito, e finalmente uma análise global para confirmar a redução exata. Os retornos serão sintéticos e compatíveis com as assinaturas; não serão executadas operações de filesystem, banco, e-mail ou imagem, e a baseline não será ampliada.
+
+| Item | Estado |
+|---|---|
+| Diagnósticos analisados | **46 `return.missing`** |
+| Arquivo | `tools/phpstan-framework-stubs.php` |
+| Origem | Corpos vazios em declarações de stub com retorno não `void` |
+| Correção imediata | Planejada, ainda não aplicada |
+| Baseline | Sem alteração planejada |
+| Marco de comparação | **287 diagnósticos globais**, commit `eb1cc26` |
+
+A execução da correção será considerada concluída somente após validação focalizada equivalente, análise global, sintaxe PHP 8.3, compatibilidade no CI e comparação antes/depois por identificador.

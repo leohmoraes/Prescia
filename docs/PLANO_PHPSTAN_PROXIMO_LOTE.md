@@ -450,3 +450,46 @@ Foi adicionado o contrato PHPDoc de `CPrescia $this`. A validação focalizada t
 A análise global mais recente reportou **287 diagnósticos**, uma redução de 12 em relação aos 299 anteriores. A redução veio da correção de `prescia/lazyload/ajaxQuery.php`, que agora passa no PHPStan focalizado sem erros. Os arquivos recentes `pages/prescia/_config/config.php` e `prescia/lazyload/ajaxQuery.php` também passaram na sintaxe PHP 8.3 e no `git diff --check`.
 
 A análise completa ainda falha por pendências fora dos arquivos corrigidos. O agrupamento estrutural de `tools/phpstan-framework-stubs.php`, com 46 `return.missing`, permanece separado do lote de variáveis indefinidas. Nenhuma entrada foi adicionada à baseline.
+
+
+## Lote estrutural — análise dos 46 `return.missing` em `tools/phpstan-framework-stubs.php`
+
+A análise do relatório global do PHPStan identificou **46 diagnósticos `return.missing`** no arquivo de stubs. Esses diagnósticos não representam 46 caminhos de produção: todos vêm de declarações com tipo de retorno não `void` e corpo vazio (`{}`). O arquivo é referenciado exclusivamente por `stubFiles` em `phpstan.neon.dist` e não é carregado pela aplicação, portanto os corpos de retorno podem ser completados com valores sintéticos compatíveis sem introduzir efeitos colaterais em runtime.
+
+### Composição confirmada
+
+| Grupo | Quantidade | Linhas | Situação |
+|---|---:|---|---|
+| Funções da API principal | 34 | 11–52 | Retornos tipados, mas corpos vazios |
+| `CPrescia::saveConfig()` | 1 | 59 | Método `mixed` sem retorno |
+| Funções legadas adicionais | 11 | 194–204 | Retornos `mixed` sem retorno |
+| Funções `void` | 3 | 15, 21 e 39 | Não geram `return.missing` e devem permanecer sem retorno |
+| **Total** | **46** | — | Diagnósticos confirmados |
+
+As três funções `void` — `dieFreakingThumbs()`, `adodb_daylight_sv()` e `removeBOM()` — não devem receber retornos artificiais. O foco é corrigir somente os 46 contratos não `void`.
+
+### Plano de correção por ondas
+
+| Onda | Escopo | Correção prevista | Critério de aceite |
+|---:|---|---|---|
+| 1 | Funções com retorno escalar | Adicionar valores neutros compatíveis: `''` para `string`, `0` para `int`, `0.0` para `float`, `false` quando o contrato real permitir ou um valor escalar representativo | Nenhum `return.missing`; nenhum `return.type` novo |
+| 2 | Funções com retorno `array` ou união | Usar `[]` para arrays e escolher um valor compatível para `array|string`, preservando o tipo declarado e a inferência esperada pelos consumidores | Retorno aceito pelo PHPStan e sem alteração das assinaturas |
+| 3 | Funções e métodos `mixed` | Usar `null` como sentinel explícito, sem inventar objetos, conexões, arquivos ou dados de produção | Nenhum efeito colateral e nenhum diagnóstico de tipo novo |
+| 4 | Validação do stub no conjunto | Reexecutar PHPStan global e focalizar os arquivos que dependem de `arrayToString()`, `listFiles()`, `xmlParamsParser()`, `saveConfig()` e funções legadas | Redução exata de 46 diagnósticos; baseline sem novas entradas |
+
+### Mapeamento de retornos sintéticos
+
+Na primeira onda, as funções escalares deverão receber retornos compatíveis com suas assinaturas: `addslashes_EX()`, `arrayToString()`, `cWriteFile()`, `cleanString()`, `extractUri()`, `fd()`, `fv()`, `getmicrotime()`, `htmlentities_ex()`, `humanSize()`, `isMail()`, `listFiles()`, `makeDirs()`, `recursive_del()`, `removeSimbols()`, `stripHTML()`, `tomktime()` e `truncate()` devem retornar valores neutros do tipo declarado. `datecalc()`, `datecompare()`, `console()`, `cropImage()`, `locateAnyFile()`, `locateFile()`, `parseHTML()`, `quota()`, `resizeImage()`, `resizeImageCond()`, `scriptTime()`, `sendMail()`, `storeFile()` e `time_diff()` devem usar sentinelas compatíveis com `mixed` ou com o tipo escalar declarado. `xmlParamsParser()` deve retornar uma estrutura vazia compatível com `array|string`, preferencialmente `[]` para preservar a forma de parser. `CPrescia::saveConfig()` e as 11 funções legadas adicionais, todas com retorno `mixed`, devem retornar `null` explicitamente.
+
+### Restrições
+
+Não alterar `phpstan-baseline.neon`, não converter os stubs em implementações de produção, não executar filesystem, banco de dados, e-mail ou imagem, e não mudar assinaturas públicas apenas para silenciar o diagnóstico. Após a correção, comparar a análise global com o marco de **287 diagnósticos** do commit `eb1cc26`; a expectativa é reduzir esse número em 46, desde que nenhum diagnóstico dependente seja reclassificado.
+
+### Sequência operacional
+
+1. Criar um commit isolado apenas para completar os retornos dos stubs.
+2. Validar a sintaxe do stub e a análise focalizada por configuração equivalente, sem carregá-lo como código de aplicação.
+3. Executar o PHPStan global e registrar a contagem antes/depois por identificador.
+4. Executar a suíte de compatibilidade PHP 8.3, pois o stub participa da configuração do CI.
+5. Atualizar o relatório consolidado, o `CHANGELOG.md` e a Issue #44 com a redução comprovada.
+6. Publicar o commit e acompanhar separadamente os workflows de PHPStan e PHP 8.3.
