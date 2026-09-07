@@ -603,3 +603,31 @@ A investigação confirmou que `feedReader.php` e `fullSearch.php` são includes
 | Baseline | **Sem alteração** |
 
 As categorias restantes são 75 `variable.undefined`, 2 `class.nameCase`, 2 `function.inner`, 2 `function.notFound` e 1 `isset.variable`. O próximo passo é separar os diagnósticos restantes por causa, priorizando os arquivos com maior concentração de variáveis indefinidas e mantendo os diagnósticos de símbolos legados em lotes próprios.
+
+
+## Inventário detalhado dos 82 diagnósticos remanescentes
+
+A análise global do PHPStan 2.2.13, no nível 1, apresenta 82 ocorrências em 39 arquivos. A maior concentração está em `variable.undefined`, com 75 ocorrências. Dentro dessa categoria, 37 referências são ao contexto dinâmico `$this` e 13 ao contexto `$core`, totalizando 50 diagnósticos ligados aos includes procedurais do framework.
+
+| Grupo | Quantidade | Interpretação | Tratamento previsto |
+|---|---:|---|---|
+| `$this` possivelmente indefinido | 37 | Contexto de módulo ou `CPrescia` não inferido pelo PHPStan | Confirmar o carregador e documentar o tipo real com PHPDoc |
+| `$core` possivelmente indefinido | 13 | Núcleo injetado em ações e payloads | Confirmar a ação/módulo e documentar `CPrescia` |
+| `$sname` possivelmente indefinido | 8 | Variável usada nos `payloadmanifest.php` | Confirmar se é parâmetro do carregador ou inicialização necessária |
+| `$tag` | 3 | Variável local usada antes de atribuição garantida | Corrigir o fluxo mantendo o valor semântico |
+| `$module` | 2 | Resultado ou referência de módulo | Inicializar ou validar o retorno do carregador |
+| `$itemList` | 2 | Acumulador/lista de itens | Inicializar no menor escopo comum |
+| Outras variáveis locais | 7 | `$using`, `$p`, `$monitorTxt`, `$hasSOME`, `$frame`, `$fm`, `$field`, `$content`, `$cacheMTFile` e `$cacheFile` | Revisar individualmente por fluxo |
+
+Os arquivos com maior concentração de ocorrências são `prescia/plugins/bi_labels/payload/content/label_test.php`, `prescia/lazyload/ajaxqueryunique.php`, `prescia/coreFull.php`, `pages/presciatester/actions/default.php` e `pages/prescia/content/default.php`, com cinco diagnósticos cada. Em seguida aparecem `prescia/plugins/bi_stats/payload/actions/stats_rtajax.php` e `pages/prescia/content/resources/reference.php`, com quatro cada.
+
+Os 7 diagnósticos restantes pertencem a categorias estruturais distintas de `variable.undefined`:
+
+| Categoria | Quantidade | Arquivo(s) | Problema |
+|---|---:|---|---|
+| `class.nameCase` | 2 | `prescia/plugins/bi_adm/payload/actions/import_sample.php`; `prescia/plugins/bi_adm/payload/content/import_fields.php` | Referência a `Cimporter` com capitalização incorreta; a classe correta é `CImporter` |
+| `function.inner` | 2 | `prescia/coreFull.php`; `prescia/plugins/bi_dev/module.php` | Funções nomeadas declaradas dentro de outro escopo; preferir closures locais |
+| `function.notFound` | 2 | `prescia/coreFull.php` | `dieFreakingThumbs()` não foi localizada pelo PHPStan; confirmar origem antes de criar stub ou ajustar `scanFiles` |
+| `isset.variable` | 1 | `prescia/components/cacheControl.php` | Uso redundante de `isset($_POST)` em um contexto onde `$_POST` já é conhecido pelo analisador |
+
+Esse inventário separa contratos de contexto, variáveis locais e símbolos legados para evitar que uma correção de tipagem mascare um problema funcional. Nenhuma dessas ocorrências foi adicionada à baseline. O próximo lote deve priorizar os contratos `$this`/`$core` e os `payloadmanifest.php`, seguido pelos arquivos com maior concentração de variáveis locais.
