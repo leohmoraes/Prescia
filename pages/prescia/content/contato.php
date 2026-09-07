@@ -1,2 +1,4 @@
 <?php
-	$this->tCaptcha('safetycode');
+
+/** @var CPrescia $this Page content context injected by CPrescia::renderPage(). */
+		$this->tCaptcha('safetycode');

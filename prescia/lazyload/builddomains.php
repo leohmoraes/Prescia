@@ -5,6 +5,8 @@
   | reads from main domains file, create the cache and in the process fill in my $_SESSION['CODE']
 -*/
 
+/** @var CPrescia $this Core context injected by CPrescia::builddomains(). */
+
 $domains = cReadFile(CONS_PATH_SETTINGS."domains");
 if (!$domains) $this->errorControl->raise(100);
 $domains = explode("\n",str_replace("\r","",preg_replace("/(\t| ){1,}/"," ",$domains)));

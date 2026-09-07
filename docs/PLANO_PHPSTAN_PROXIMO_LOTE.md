@@ -609,3 +609,7 @@ Os contratos de `reference.php` e `cls.php` foram confirmados pelos carregadores
 ### Resultado do décimo terceiro lote
 
 O lote administrativo eliminou 13 diagnósticos sem baseline: fluxos condicionais agora têm valores iniciais, nomes de variáveis e classes foram corrigidos, e o retorno do caso inválido em `laedit.php` ficou explícito. Os nove payloads passaram no PHPStan focalizado e no lint PHP 8.3, e o PHPUnit permaneceu aprovado. O inventário global caiu de 28 para 15 diagnósticos, concentrados agora em dez arquivos menores.
+
+### Resultado do décimo quarto lote — inventário zerado
+
+O último lote eliminou os cinco diagnósticos finais do PHPStan: a verificação redundante de `$_POST`, dois caminhos de cache não inicializados, o acumulador de permissões e a função interna de `bi_dev`. Somados aos ajustes de `options.php` e dos payloads de página/lazyload, o inventário global passou de 15 para **0 diagnósticos**. O PHPStan global, o PHPStan focalizado, o lint PHP 8.3 e o PHPUnit estão aprovados, e a baseline permaneceu inalterada.

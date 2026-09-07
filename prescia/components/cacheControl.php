@@ -37,7 +37,7 @@ class CCacheControl {
 	} # setCache
 #-
 	function canUseCache($emergency=false) {
-		if ($this->parent->layout == 2 || (isset($_POST) && count($_POST)>0) || $this->noCache) return false; # these are exceptions where cache can never be applied
+			if ($this->parent->layout == 2 || count($_POST)>0 || $this->noCache) return false; # these are exceptions where cache can never be applied
 		$file = $this->cacheFile();
 		if (is_file($file)) {
 			if ($emergency) return true; // we have the file and we MUST serve the cache

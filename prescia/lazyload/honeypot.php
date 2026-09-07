@@ -1,6 +1,8 @@
 <?php // ------------------------ Honeypot list bootup (catching is done inside core::checkDirectLink)
    // do not call this if you already know the useragent is a bot (double check is pointless)
 
+/** @var CPrescia $core Core context injected by the direct-link checker. */
+
 if (!isset($_SESSION[CONS_SESSION_HONEYPOTLIST])) {
 	$_SESSION[CONS_SESSION_HONEYPOTLIST] = presciaSafeUnserialize(cReadFile(CONS_PATH_TEMP."honeypot.dat")); // this file is reset DAILY on cron
 	if (!is_array($_SESSION[CONS_SESSION_HONEYPOTLIST])) $_SESSION[CONS_SESSION_HONEYPOTLIST] = array();	
