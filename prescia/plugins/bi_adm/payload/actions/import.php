@@ -10,7 +10,8 @@
 
 
 
-	if (isset($_POST['haveinfo'])) {
+		$previousSafety = $core->safety;
+		if (isset($_POST['haveinfo'])) {
 		$core->storage['failed'] = array();
 		$core->loadAllmodules();
 		if (!CONS_ONSERVER)
@@ -340,9 +341,10 @@
 
 		} else
 			$core->log[] = "Module not found";
-	}
+		}
+		$core->safety = $previousSafety;
 
-	function fillDefaults($module,$dA) {
+		function fillDefaults($module,$dA) {
 		foreach ($module->fields as $fname => $field) {
 			if (!isset($dA[$fname]) && isset($_REQUEST[$fname]) && $_REQUEST[$fname] != '')
 				$dA[$fname] = $_REQUEST[$fname];

@@ -51,4 +51,12 @@ PHP, $route);
         self::assertStringContainsString('checkPermission($module,CONS_ACTION_SELECT)', $route);
         self::assertStringNotContainsString('$this->safety = false', $route);
     }
+
+    public function testAdministrativeImportRestoresSafetyAfterIgnoreErrors(): void
+    {
+        $route = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/actions/import.php');
+
+        self::assertStringContainsString('$previousSafety = $core->safety;', $route);
+        self::assertStringContainsString('$core->safety = $previousSafety;', $route);
+    }
 }
