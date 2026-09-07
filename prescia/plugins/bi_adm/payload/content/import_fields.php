@@ -10,7 +10,7 @@
 		if ($module === false) echo "ERRO";
 		else {
 			include_once(CONS_PATH_SYSTEM."plugins/".$this->name."/payload/importer.php");
-			$importerObj = new Cimporter($core);
+				$importerObj = new CImporter($core);
 			$iFields = $importerObj->fields($module,isset($_REQUEST['isexport']));
 			
 			$tp = $core->template->get("_field");
@@ -26,4 +26,3 @@
 				$core->template->assign("_hasLinks","");	
 		}
 	}
-

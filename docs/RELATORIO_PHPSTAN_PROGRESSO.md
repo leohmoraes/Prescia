@@ -734,3 +734,17 @@ O décimo segundo lote tratou `pages/prescia/content/resources/reference.php`, `
 | PHPStan global depois | **28 diagnósticos em 20 arquivos** |
 | Redução | **10 diagnósticos** |
 | Baseline | **Sem alteração** |
+
+## Atualização de 7 de setembro de 2026 — décimo terceiro lote
+
+O décimo terceiro lote concentrou payloads administrativos e de labels. Foram inicializados fluxos condicionais em `ajaxmonitor.php`, `dirs.php` e `options.php`; corrigidos os acumuladores com capitalização inconsistente em `edit.php`; explicitado o retorno após o encerramento de módulo inválido em `laedit.php`; corrigida a capitalização de `CImporter` em dois payloads; e documentado o `$core` de `config_labels_e.php` e `rule.php`.
+
+| Verificação | Resultado |
+|---|---|
+| PHPStan focalizado dos nove payloads | **0 erros** |
+| PHP 8.3 lint | **Aprovado nos nove payloads** |
+| PHPUnit | **23 testes, 2745 asserções, aprovado** |
+| PHPStan global antes | **28 diagnósticos em 20 arquivos** |
+| PHPStan global depois | **15 diagnósticos em 10 arquivos** |
+| Redução | **13 diagnósticos** |
+| Baseline | **Sem alteração** |

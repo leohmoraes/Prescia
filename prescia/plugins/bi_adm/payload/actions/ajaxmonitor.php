@@ -9,15 +9,15 @@
 	$template->fetch(CONS_PATH_SYSTEM."plugins/bi_adm/payload/template/skin/".$this->skin."/admframe.html");
 	$mObj = $template->get("_monitor");
 
-	// monitored items
-	if (is_file(CONS_PATH_PAGES.$_SESSION['CODE']."/_config/monitor.xml") && $core->authControl->checkPermission('bi_adm','can_monitor')) {
+		// monitored items
+		$monitorTxt = "";
+		if (is_file(CONS_PATH_PAGES.$_SESSION['CODE']."/_config/monitor.xml") && $core->authControl->checkPermission('bi_adm','can_monitor')) {
 		// we have monitored items AND can see them
 
 		$monitorXml = $this->getMonitorArray();
 		// now perform sql queries COUNTING items we are monitoring
 
-		$monitorTxt = "";
-		$c=0;
+			$c=0;
 		$totalItems =0;
 		foreach ($monitorXml as $monitoredItem) {
 			$monitoredModule = $core->loaded($monitoredItem['module'],true);
