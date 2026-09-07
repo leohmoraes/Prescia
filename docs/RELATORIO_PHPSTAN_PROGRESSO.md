@@ -767,3 +767,9 @@ Com este lote, a Issue #47 atinge o objetivo técnico de zerar os diagnósticos 
 ## Verificação pós-merge da PR #58 — 7 de setembro de 2026
 
 Após o merge da PR #58, foi executada uma verificação completa no commit `633d820` (`Merge PR #58: zero remaining PHPStan diagnostics`). O ambiente utilizou PHP 8.3.6. `composer validate --strict` foi aprovado; a suíte PHPUnit concluiu com 23 testes e 2.745 asserções; o PHPStan global reportou zero diagnósticos; e todos os 348 arquivos PHP fora de `vendor/` passaram pelo lint de PHP 8.3. A baseline permaneceu sem diferenças, o cache temporário do PHPUnit foi removido e o working tree ficou limpo.
+
+## Nova frente de segurança — prepared statements no CRUD genérico
+
+Após a conclusão do PHPStan, a próxima prioridade aberta foi a issue #28, relacionada à #9. O primeiro lote migrou os `WHERE` dos fluxos `UPDATE` e `DELETE` de `CModule::runAction()` para `queryPrepared()`, incluindo os valores de chaves compostas. Também foram migradas as exclusões de rollback pós-upload, a atualização de flags de upload e a atualização de URLs geradas. A geração de IDs para chaves compostas passou a usar `fetchPrepared()`.
+
+A alteração preserva os nomes de tabelas e colunas controlados pelo modelo, mas impede que valores de chaves, flags e URLs sejam interpolados no SQL. PHPStan focalizado, lint PHP 8.3, PHPUnit e `git diff --check` foram aprovados; a baseline permanece inalterada.

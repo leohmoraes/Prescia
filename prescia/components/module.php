@@ -645,7 +645,7 @@ class CModule {
 		return $all?$results:"";
 	} # get_key_from
 
-	function getKeys(&$whereStruct, &$keyArray, $data, $fromRemote = "", $addMe = false) {
+		function getKeys(&$whereStruct, &$keyArray, $data, $fromRemote = "", $addMe = false) {
 		# return the keys in all formats functions might need, returns sucess on aquiring keys (data have all keys) then:
 		# $whereStruct is a WHERE string which would result only this item in a SQL select
 		# $keyArray is an array with all keys (name => key)
@@ -678,8 +678,28 @@ class CModule {
 		}
 		if ($whereStruct != "")
 			$whereStruct = substr($whereStruct,0,strlen($whereStruct)-4);
-		return $haveAll;
-	} # getKeys
+			return $haveAll;
+		} # getKeys
+	#-
+		/**
+		 * Build a parameterized WHERE clause for the module keys.
+		 * The legacy getKeys() method remains available for read-only callers.
+		 */
+		function getPreparedKeys(&$whereStruct, &$whereTypes, &$whereParams, &$keyArray, $data, $fromRemote = "") {
+			$whereStruct = "";
+			$whereTypes = "";
+			$whereParams = array();
+			$keyArray = array();
+			$legacyWhere = "";
+			$haveAll = $this->getKeys($legacyWhere, $keyArray, $data, $fromRemote);
+			if (!$haveAll) return false;
+			foreach ($this->keys as $key) {
+				$whereStruct .= ($whereStruct === "" ? "" : " AND ").$key."=?";
+				$whereTypes .= "s";
+				$whereParams[] = (string)$keyArray[$key];
+			}
+			return true;
+		} # getPreparedKeys
 
 	function deleteUploads($kA, $field = "", $ids = "", $basefile = "") {
 		# delete file uploads for the specified item
@@ -1361,9 +1381,11 @@ class CModule {
 
 			case CONS_ACTION_UPDATE: ###################################################### UPDATE ############################################
 
-				$wS = ""; # whereStruct
-				$kA = array(); # keyArray
-				$haveAllKeys = $this->getKeys($wS,$kA,$data); // is it ok not to have all keys?
+					$wS = ""; # whereStruct
+					$wTypes = "";
+					$wParams = array();
+					$kA = array(); # keyArray
+					$haveAllKeys = $this->getPreparedKeys($wS,$wTypes,$wParams,$kA,$data); // is it ok not to have all keys?
 				# security
 				if ($this->parent->safety && $_SESSION[CONS_SESSION_ACCESS_LEVEL] < 100) {
 					$Owner = $this->parent->authControl->checkOwner($this,$kA); // array with isOwner and isSameGroup
@@ -1398,7 +1420,9 @@ class CModule {
 				if ($output != "") {
 					# removes end ,
 					$output = substr($output,0,strlen($output)-1);
-					$sql .= $output." WHERE ".$wS;
+						$sql .= $output." WHERE ".$wS;
+						$queryTypes .= $wTypes;
+						$queryParams = array_merge($queryParams,$wParams);
 					$r = false;
 					$n = 0;
 					if (!$this->parent->dbo->queryPrepared($sql,$queryTypes,$queryParams,$r,$n,$this->parent->debugmode)) {
@@ -1436,10 +1460,12 @@ class CModule {
 					}
 					# can create items
 				}
-				# if this module have multiple key fields, there is no auto_increment IF there is an id (id created automatically w/o AI)
-				if (count($this->keys)>1 && $this->keys[0] == "id") {
-					$wheres = array();
-					foreach ($this->keys as $field) {
+					# if this module have multiple key fields, there is no auto_increment IF there is an id (id created automatically w/o AI)
+					if (count($this->keys)>1 && $this->keys[0] == "id") {
+						$wheres = array();
+						$whereTypes = "";
+						$whereParams = array();
+						foreach ($this->keys as $field) {
 						if ($field != "") {
 							if (!isset($data[$field])) {
 								# we need this parent data to create the id, but it's missing!
@@ -1448,11 +1474,13 @@ class CModule {
 									$this->parent->errorControl->raise(139,$field,$this->name);
 								return false;
 							}
-							array_push($wheres,$field."=\"".$data[$field]."\"");
+							array_push($wheres,$field."=?");
+							$whereTypes .= "s";
+							$whereParams[] = (string)$data[$field];
 						}
 					} # foreach
 					$sql = "SELECT MAX(id) FROM ".$this->dbname.(count($wheres)!=0?" WHERE ".implode(" AND ",$wheres):"");
-					$id = $this->parent->dbo->fetch($sql,$this->parent->debugmode);
+						$id = $this->parent->dbo->fetchPrepared($sql,$whereTypes,$whereParams,false);
 					if (!$id) {
 						# suposes it was empty
 						$id = 1;
@@ -1527,8 +1555,11 @@ class CModule {
 							else $data['id'] = $id;
 						}
 						# check for uploads and urla
-						$wS = ""; $kA = array();
-						$this->getKeys($wS,$kA,$data);
+							$wS = "";
+							$wTypes = "";
+							$wParams = array();
+							$kA = array();
+							$this->getPreparedKeys($wS,$wTypes,$wParams,$kA,$data);
 						foreach ($this->fields as $name => $field) {
 							if ($field[CONS_XML_TIPO] == CONS_TIPO_SERIALIZED) {
 								foreach ($field[CONS_XML_SERIALIZEDMODEL] as $exname => $exfield) { #--- serialized uploads
@@ -1553,7 +1584,9 @@ class CModule {
 									$this->parent->errorState = true;
 									if (!$silent) $this->parent->errorControl->raise(200+$upOk,$upOk,$this->name,$name);
 									# must remove inserted data!
-									$this->parent->dbo->simpleQuery("DELETE FROM ".$this->dbname." WHERE ".$wS,$this->parent->debugmode);
+											$r = false;
+											$n = 0;
+											$this->parent->dbo->queryPrepared("DELETE FROM ".$this->dbname." WHERE ".$wS,$wTypes,$wParams,$r,$n,$this->parent->debugmode);
 									$this->deleteUploads($kA);
 									return false;
 								} else if ($upOk != 4 && $upOk != 0) { // 4 = nothing sent, 0 = sent and ok
@@ -1561,7 +1594,9 @@ class CModule {
 									if (!$silent) $this->parent->errorControl->raise(200+$upOk,$upOk,$this->name,$name);
 									$this->deleteUploads($kA,$name); // delete possible partial thumbnail process
 								} else if ($upOk == 0) {
-									$this->parent->dbo->simpleQuery("UPDATE ".$this->dbname." SET $name='y' WHERE $wS");
+									$r = false;
+									$n = 0;
+									$this->parent->dbo->queryPrepared("UPDATE ".$this->dbname." SET ".$name."=? WHERE ".$wS,"s".$wTypes,array_merge(array("y"),$wParams),$r,$n,$this->parent->debugmode);
 								}
 							} else if ($field[CONS_XML_TIPO] == CONS_TIPO_VC && isset($field[CONS_XML_SPECIAL]) && $field[CONS_XML_SPECIAL] == "urla" && (!isset($data[$name]) || $data[$name] == '')) {
 								# EMPTY special VC urla might require the data to be fully processed to create the proper result, so we do it after the include
@@ -1570,7 +1605,9 @@ class CModule {
 								$tp->tbreak($source);
 								$urla = removeSimbols($tp->techo($data),true,false);
 								if ($urla != '') {
-									$this->parent->dbo->simpleQuery("UPDATE ".$this->dbname." SET $name=\"$urla\" WHERE $wS");
+										$r = false;
+										$n = 0;
+										$this->parent->dbo->queryPrepared("UPDATE ".$this->dbname." SET ".$name."=? WHERE ".$wS,"s".$wTypes,array_merge(array($urla),$wParams),$r,$n,$this->parent->debugmode);
 									$data[$name] = $urla;
 								}
 								unset($tp);
@@ -1593,9 +1630,12 @@ class CModule {
 				break;
 
 			case CONS_ACTION_DELETE: ###################################################### DELETE ############################################
-				$wS = ""; $kA = array();
+					$wS = "";
+					$wTypes = "";
+					$wParams = array();
+					$kA = array();
 
-				$haveallKeys = $this->getKeys($wS,$kA,$data);
+					$haveallKeys = $this->getPreparedKeys($wS,$wTypes,$wParams,$kA,$data);
 				# security
 				$Owner = $this->parent->authControl->checkOwner($this,$kA); // array with isOwner and isSameGroup
 				if ($this->parent->safety && $_SESSION[CONS_SESSION_ACCESS_LEVEL] < 100) {
@@ -1606,7 +1646,9 @@ class CModule {
 					}
 				}
 				$this->parent->notifyEvent($this,CONS_ACTION_DELETE,$data,$startedAt,true); # early notify
-				if ($this->parent->dbo->simpleQuery("DELETE FROM ".$this->dbname." WHERE ".$wS,$this->parent->debugmode)) {
+					$r = false;
+					$n = 0;
+					if ($this->parent->dbo->queryPrepared("DELETE FROM ".$this->dbname." WHERE ".$wS,$wTypes,$wParams,$r,$n,$this->parent->debugmode)) {
 					$this->deleteUploads($kA);
 					$this->parent->notifyEvent($this,CONS_ACTION_DELETE,$data,$startedAt,false); # later notify
 					return true;

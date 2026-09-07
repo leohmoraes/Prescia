@@ -617,3 +617,7 @@ O último lote eliminou os cinco diagnósticos finais do PHPStan: a verificaçã
 ### Verificação pós-merge da PR #58
 
 A validação pós-merge confirmou dependências válidas, PHPUnit aprovado, PHPStan global zerado e lint PHP 8.3 aprovado em 348 arquivos. A baseline não foi alterada. Com a remediação PHPStan concluída, a próxima prioridade técnica deve retornar às issues de segurança abertas, começando pela conclusão dos prepared statements no CRUD genérico (`#28`, relacionada à #9).
+
+### Frente de segurança iniciada: issue #28
+
+Com o inventário PHPStan zerado, a execução autônoma retomou a issue de segurança de maior prioridade técnica: prepared statements no CRUD genérico. O primeiro lote cobre `UPDATE`, `DELETE`, rollback de uploads, flags de upload, URLs geradas e `MAX(id)` de chaves compostas. A continuação deve revisar todos os pontos de `simpleQuery()` em `CModule`, adicionar testes de regressão de SQL parametrizado e coordenar o fechamento das issues relacionadas #9, #28, #29 e #30.
