@@ -763,3 +763,7 @@ O décimo quarto lote concluiu a remediação dos diagnósticos restantes. Foram
 | Baseline | **Sem alteração** |
 
 Com este lote, a Issue #47 atinge o objetivo técnico de zerar os diagnósticos do PHPStan nível 1 sem expansão da baseline.
+
+## Verificação pós-merge da PR #58 — 7 de setembro de 2026
+
+Após o merge da PR #58, foi executada uma verificação completa no commit `633d820` (`Merge PR #58: zero remaining PHPStan diagnostics`). O ambiente utilizou PHP 8.3.6. `composer validate --strict` foi aprovado; a suíte PHPUnit concluiu com 23 testes e 2.745 asserções; o PHPStan global reportou zero diagnósticos; e todos os 348 arquivos PHP fora de `vendor/` passaram pelo lint de PHP 8.3. A baseline permaneceu sem diferenças, o cache temporário do PHPUnit foi removido e o working tree ficou limpo.
