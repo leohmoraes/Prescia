@@ -59,4 +59,16 @@ PHP, $route);
         self::assertStringContainsString('$previousSafety = $core->safety;', $route);
         self::assertStringContainsString('$core->safety = $previousSafety;', $route);
     }
+
+    public function testFileManagerDoesNotUseRawDeletePathOrPrefixOnlySafeCheck(): void
+    {
+        $deleteRoute = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/actions/files.php');
+        $fileManager = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_fm/module.php');
+
+        self::assertStringNotContainsString('$_REQUEST[\'delfile\']\n', $deleteRoute);
+        self::assertStringContainsString("preg_match('#^[A-Za-z0-9_-]+(?:/[A-Za-z0-9_-]+)*$#'", $deleteRoute);
+        self::assertStringContainsString('realpath(CONS_FMANAGER.CONS_FMANAGER_SAFE)', $fileManager);
+        self::assertStringContainsString('str_starts_with($candidate, $base.DIRECTORY_SEPARATOR)', $fileManager);
+        self::assertStringNotContainsString('substr($dir,0,strlen("/".CONS_FMANAGER.CONS_FMANAGER_SAFE', $fileManager);
+    }
 }

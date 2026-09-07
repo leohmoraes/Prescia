@@ -106,9 +106,11 @@ class mod_bi_fm extends CscriptedModule  {
 	}
 
 	function isInsideSafe($dir) { // should be full path
-		if ($dir[0] != '/') $dir = "/".$dir;
-		if ($dir[strlen($dir)-1] != '/') $dir .= "/";
-		return substr($dir,0,strlen("/".CONS_FMANAGER.CONS_FMANAGER_SAFE.'/')) == "/".CONS_FMANAGER.CONS_FMANAGER_SAFE."/";
+		$base = realpath(CONS_FMANAGER.CONS_FMANAGER_SAFE);
+		$candidate = realpath($dir);
+		if ($base === false || $candidate === false)
+			return false;
+		return $candidate === $base || str_starts_with($candidate, $base.DIRECTORY_SEPARATOR);
 	}
 
 	function notifyEvent(&$module,$action,$data,$startedAt="",$earlyNotify = false) {

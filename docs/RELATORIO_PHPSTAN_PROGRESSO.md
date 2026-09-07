@@ -807,3 +807,9 @@ O RBAC central continua baseado em permissões por módulo, ação e ownership (
 ## Varredura geral de `safety` em AJAX e payloads
 
 Todas as atribuições de `$this->safety`, `$core->safety` e `$this->parent->safety` foram localizadas e revisadas. As ocorrências em cadastro público, atualização de metadados do fórum, listagem/edição administrativa e manutenção de desenvolvimento possuem restauração explícita ou pertencem a fluxos privilegiados. O importador administrativo `bi_adm/payload/actions/import.php`, porém, desativava safety quando `ignoreErrors` era enviado e não restaurava o valor original ao terminar. A correção salva o estado anterior e o restaura após o processamento, evitando vazamento de estado para conteúdo posterior da mesma requisição. A regressão correspondente foi adicionada à suíte de segurança.
+
+## Auditoria de uploads e path traversal
+
+A revisão rastreou `storeFile()`, `prepareUpload()`, o download protegido do `bi_fm` e as ações administrativas de upload/exclusão. O achado explorável estava em `bi_adm/payload/actions/files.php`: depois de sanitizar o nome, a rota usava o filename bruto enviado pela requisição como fallback, permitindo que segmentos de caminho fossem considerados no `unlink()`. O fallback foi removido e os diretórios recebidos agora passam por allowlist de segmentos alfanuméricos, `_` e `-`.
+
+O upload do file manager recebeu a mesma validação de diretório. A função `bi_fm::isInsideSafe()` deixou de confiar em prefixo textual e agora compara caminhos canônicos resolvidos por `realpath()`, impedindo escapes com `..` e symlinks. O `storeFile()` continua rejeitando NUL bytes, restringindo extensões e bloqueando scripts executáveis. Foram adicionadas regressões estáticas para o fallback inseguro e para a contenção canônica.
