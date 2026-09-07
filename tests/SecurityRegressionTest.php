@@ -196,7 +196,7 @@ PHP, $route);
         self::assertStringContainsString("script-src 'self' 'nonce-", $frontController);
         self::assertStringContainsString("object-src 'none'", $frontController);
         self::assertStringContainsString("'CSP_NONCE' =>", $frontController);
-        self::assertStringContainsString("htmlspecialchars($cspNonce, ENT_QUOTES, 'UTF-8')", $core);
+        self::assertStringContainsString('htmlspecialchars($cspNonce, ENT_QUOTES, \'UTF-8\')', $core);
         self::assertStringContainsString("preg_replace('/<script\\b(?![^>]*\\bnonce=)/i'", $core);
         self::assertStringNotContainsString('Content-Security-Policy-Report-Only:', $frontController);
     }

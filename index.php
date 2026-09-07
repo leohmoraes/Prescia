@@ -167,7 +167,7 @@ if ($core->debugmode) $core->applyMetaData(); // only in debug. Executes onMeta'
 	'HEADJSTAGS' => '', // JS tags
 	'HEADUSERTAGS' => '', // other tags that will come last in the HEADER
 	'METATAGS' => '', // actual meta tags (build with the contents above, at core::showTemplate)
-	'CSP_NONCE' => isset($cspNonce) ? $cspNonce : ''
+	'CSP_NONCE' => $cspNonce
 );
 	$core->template->lang_selectors = explode(",",CONS_POSSIBLE_LANGS);
 	$core->template->current_language = $_SESSION[CONS_SESSION_LANG];
