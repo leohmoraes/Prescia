@@ -544,3 +544,23 @@ A investigação confirmou que ambos são incluídos dentro de métodos dos mód
 | Baseline | **Sem alteração** |
 
 As categorias restantes são 128 `variable.undefined`, 2 `class.nameCase`, 2 `function.inner`, 2 `function.notFound` e 1 `isset.variable`. Os próximos alvos de maior concentração têm 7 diagnósticos cada: `pages/_newProjectTemplate/_config/config.php`, `pages/prescia/actions/contatogo.php`, `pages/presciatester/content/default.php`, `prescia/lib/sendMail.php` e `prescia/plugins/bi_undo/module.php`.
+
+
+## Atualização de 7 de setembro de 2026 — quarto lote da Issue #47
+
+O quarto lote tratou os três próximos arquivos prioritários com sete diagnósticos cada: `pages/_newProjectTemplate/_config/config.php`, `pages/prescia/actions/contatogo.php` e `pages/presciatester/content/default.php`.
+
+A investigação confirmou que os três arquivos são avaliados no contexto de `CPrescia`: a configuração é carregada por `CPrescia::domainLoad()`, a ação de contato é incluída pelo fluxo de ações da página e o conteúdo default é incluído por `CPrescia::renderPage()`. Cada arquivo recebeu apenas o contrato PHPDoc concreto para `$this`, sem introduzir defaults ou alterar o fluxo de página.
+
+| Verificação | Resultado |
+|---|---|
+| PHPStan focalizado dos três arquivos | **0 erros** |
+| PHP 8.3 lint | **Aprovado nos três arquivos** |
+| `git diff --check` | **Aprovado** |
+| PHPUnit | **23 testes, 2745 asserções, aprovado** |
+| PHPStan global antes | **135 diagnósticos em 46 arquivos** |
+| PHPStan global depois | **114 diagnósticos em 43 arquivos** |
+| Redução | **21 diagnósticos** |
+| Baseline | **Sem alteração** |
+
+As categorias restantes são 107 `variable.undefined`, 2 `class.nameCase`, 2 `function.inner`, 2 `function.notFound` e 1 `isset.variable`. Os próximos maiores alvos são `prescia/lib/sendMail.php` e `prescia/plugins/bi_undo/module.php`, com 7 diagnósticos cada, seguidos de `prescia/lazyload/feedReader.php`, `prescia/lazyload/fullSearch.php` e `prescia/plugins/bi_labels/payload/actions/config_labels_m.php`, com 6 cada.

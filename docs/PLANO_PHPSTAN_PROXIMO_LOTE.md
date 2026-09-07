@@ -540,3 +540,12 @@ O terceiro lote tratou `prescia/plugins/bi_labels/payload/content/config_labels.
 As duas correções adicionaram somente PHPDoc com o tipo concreto `CPrescia`, eliminando os 17 diagnósticos de contexto sem alterar o comportamento dos payloads. PHPStan focalizado, lint PHP 8.3, `git diff --check` e PHPUnit passaram. A análise global caiu de 152 para 135 diagnósticos, em 46 arquivos, sem ampliar a baseline.
 
 O próximo lote deve selecionar entre os grupos de 7 diagnósticos: `pages/_newProjectTemplate/_config/config.php`, `pages/prescia/actions/contatogo.php`, `pages/presciatester/content/default.php`, `prescia/lib/sendMail.php` e `prescia/plugins/bi_undo/module.php`. A prioridade deve continuar sendo confirmar o carregador real antes de documentar contratos ou inicializar variáveis.
+
+
+## Resultado do quarto lote da Issue #47
+
+O quarto lote tratou `pages/_newProjectTemplate/_config/config.php`, `pages/prescia/actions/contatogo.php` e `pages/presciatester/content/default.php`. Os carregadores confirmaram `$this` como `CPrescia` em todos os três fluxos: configuração de domínio, ação de página e conteúdo default renderizado.
+
+A correção adicionou somente contratos PHPDoc concretos para `$this`, eliminando os 21 diagnósticos de contexto sem alterar a lógica de configuração, CAPTCHA, contato, template ou renderização. PHPStan focalizado, lint PHP 8.3, `git diff --check` e PHPUnit passaram. A análise global caiu de 135 para 114 diagnósticos, em 43 arquivos, sem ampliar a baseline.
+
+O próximo lote deve priorizar `prescia/lib/sendMail.php` e `prescia/plugins/bi_undo/module.php`, ambos com 7 diagnósticos, confirmando se os contextos são funções procedurais, métodos de classe ou includes dinâmicos antes da correção.
