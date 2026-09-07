@@ -128,4 +128,76 @@ PHP, $route);
         self::assertStringNotContainsString('implode("&",$qs)', $route);
         self::assertStringNotContainsString('$_REQUEST[\'field\']."&"', $route);
     }
+
+    public function testLoadUrlRestrictsProtocolsPortsAndPrivateNetworks(): void
+    {
+        $loader = (string) file_get_contents(__DIR__ . '/../prescia/lib/loadURL.php');
+
+        self::assertStringContainsString("in_array(\$scheme, array('http', 'https'), true)", $loader);
+        self::assertStringContainsString("FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE", $loader);
+        self::assertStringContainsString('function presciaLoadUrlIsValidHost', $loader);
+        self::assertStringContainsString('strpbrk($host, "\\r\\n\\0")', $loader);
+        self::assertStringContainsString('$port < 1 || $port > 65535', $loader);
+        self::assertStringContainsString('foreach ($ips as $ip)', $loader);
+        self::assertStringContainsString("stream_socket_client", $loader);
+        self::assertStringContainsString("'verify_peer' => true", $loader);
+        self::assertStringContainsString("PRESCIA_LOADURL_MAX_BYTES", $loader);
+        self::assertStringNotContainsString('fsockopen(', $loader);
+        self::assertStringNotContainsString('Location:', $loader);
+    }
+
+    public function testValidatedConnectionDoesNotReResolveHostnameDuringDnsRebinding(): void
+    {
+        require_once __DIR__ . '/../prescia/lib/loadURL.php';
+        $targets = array();
+        $socket = fopen('php://temp', 'r+');
+        self::assertIsResource($socket);
+
+        $connector = static function (string $target, int $port, $context) use (&$targets, $socket) {
+            $targets[] = $target . ':' . $port;
+            // A later DNS lookup would return 127.0.0.1; the connector must
+            // still receive the IP approved by the first validation step.
+            return $socket;
+        };
+
+        $connection = presciaLoadUrlOpenValidatedConnection(
+            array('93.184.216.34'),
+            'http',
+            80,
+            stream_context_create(),
+            $connector
+        );
+
+        self::assertSame($socket, $connection);
+        self::assertSame(array('93.184.216.34:80'), $targets);
+        self::assertNotContains('127.0.0.1:80', $targets);
+        fclose($socket);
+    }
+
+    public function testFrontControllerEmitsBaselineSecurityHeaders(): void
+    {
+        $frontController = (string) file_get_contents(__DIR__ . '/../index.php');
+
+        self::assertStringContainsString('X-Content-Type-Options: nosniff', $frontController);
+        self::assertStringContainsString('X-Frame-Options: SAMEORIGIN', $frontController);
+        self::assertStringContainsString('Referrer-Policy: strict-origin-when-cross-origin', $frontController);
+        self::assertStringContainsString('Permissions-Policy:', $frontController);
+        self::assertStringContainsString('Cross-Origin-Opener-Policy: same-origin', $frontController);
+        self::assertStringContainsString('Strict-Transport-Security:', $frontController);
+    }
+
+    public function testFrontControllerUsesPerRequestNonceInEnforcedCsp(): void
+    {
+        $frontController = (string) file_get_contents(__DIR__ . '/../index.php');
+        $core = (string) file_get_contents(__DIR__ . '/../prescia/core.php');
+
+        self::assertStringContainsString('$cspNonce = base64_encode(random_bytes(16));', $frontController);
+        self::assertStringContainsString("Content-Security-Policy: default-src 'self';", $frontController);
+        self::assertStringContainsString("script-src 'self' 'nonce-", $frontController);
+        self::assertStringContainsString("object-src 'none'", $frontController);
+        self::assertStringContainsString("'CSP_NONCE' =>", $frontController);
+        self::assertStringContainsString('htmlspecialchars($cspNonce, ENT_QUOTES, \'UTF-8\')', $core);
+        self::assertStringContainsString("preg_replace('/<script\\b(?![^>]*\\bnonce=)/i'", $core);
+        self::assertStringNotContainsString('Content-Security-Policy-Report-Only:', $frontController);
+    }
 }

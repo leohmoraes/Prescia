@@ -43,14 +43,18 @@ if (CONS_ONSERVER && is_file("heavymaint.html")) {
 }
 	# Server settings and libraries
 	$settingsFile = CONS_PATH_SETTINGS."settings.php";
-		if (!is_file($settingsFile))
-			throw new RuntimeException("Prescia settings file not found: ".$settingsFile);
-		require $settingsFile;
-		if (!headers_sent()) {
-			header('X-Content-Type-Options: nosniff');
-			header('Referrer-Policy: strict-origin-when-cross-origin');
-			header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
-			header("Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' data: https:; frame-ancestors 'self'; base-uri 'self'; form-action 'self' https:");
+			if (!is_file($settingsFile))
+				throw new RuntimeException("Prescia settings file not found: ".$settingsFile);
+			require $settingsFile;
+			$cspNonce = base64_encode(random_bytes(16));
+			if (!headers_sent()) {
+				header('X-Content-Type-Options: nosniff');
+				header('X-Frame-Options: SAMEORIGIN');
+				header('Referrer-Policy: strict-origin-when-cross-origin');
+				header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
+				header('X-Permitted-Cross-Domain-Policies: none');
+				header('Cross-Origin-Opener-Policy: same-origin');
+				header("Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self'; script-src 'self' 'nonce-".$cspNonce."'; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self';");
 			if (!empty($_SERVER['HTTPS']) && strtolower((string)$_SERVER['HTTPS']) !== 'off')
 				header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
 		}
@@ -159,11 +163,12 @@ if ($core->debugmode) $core->applyMetaData(); // only in debug. Executes onMeta'
 		'METAKEYS' => '', // meta keys contents (not the tag)
 		'METADESC' => '', // meta description contents ( not the tag)
 		'CANONICAL' => '', // canonical contents (the URL, not the tag)
-		'HEADCSSTAGS' => '', // CSS tags (should be echoed before js)
-		'HEADJSTAGS' => '', // JS tags
-		'HEADUSERTAGS' => '', // other tags that will come last in the HEADER
-		'METATAGS' => '' // actual meta tags (build with the contents above, at core::showTemplate)
-	);
+	'HEADCSSTAGS' => '', // CSS tags (should be echoed before js)
+	'HEADJSTAGS' => '', // JS tags
+	'HEADUSERTAGS' => '', // other tags that will come last in the HEADER
+	'METATAGS' => '', // actual meta tags (build with the contents above, at core::showTemplate)
+	'CSP_NONCE' => $cspNonce
+);
 	$core->template->lang_selectors = explode(",",CONS_POSSIBLE_LANGS);
 	$core->template->current_language = $_SESSION[CONS_SESSION_LANG];
 	require CONS_PATH_SYSTEM."tcexternal.php"; // template classes not built-in into the core (plugins)
