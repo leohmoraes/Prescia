@@ -30,4 +30,25 @@ SQL, $payload);
         self::assertStringContainsString("array(\$history, serialize(\$_SESSION[CONS_SESSION_ACCESS_USER]['userprefs']), (int)\$_SESSION[CONS_SESSION_ACCESS_USER]['id'])", $authControl);
         self::assertStringNotContainsString('simpleQuery("UPDATE ".$loginModule->dbname." SET history=', $authControl);
     }
+
+    public function testUniqueAjaxRouteUsesFieldAllowlistRbacAndPreparedValues(): void
+    {
+        $route = (string) file_get_contents(__DIR__ . '/../prescia/lazyload/ajaxqueryunique.php');
+
+        self::assertStringContainsString('in_array($_REQUEST[\'field\'],$obj->keys,true)', $route);
+        self::assertStringContainsString('checkPermission($obj,CONS_ACTION_SELECT)', $route);
+        self::assertStringContainsString(<<<'PHP'
+fetchPrepared($sql,'s',array($_REQUEST['value']))
+PHP, $route);
+        self::assertStringNotContainsString('addslashes($_REQUEST[\'value\'])', $route);
+        self::assertStringNotContainsString('error on SQL: ".$sql', $route);
+    }
+
+    public function testAjaxSelectRouteDoesNotDisableSafetyChecks(): void
+    {
+        $route = (string) file_get_contents(__DIR__ . '/../prescia/lazyload/ajaxQuery.php');
+
+        self::assertStringContainsString('checkPermission($module,CONS_ACTION_SELECT)', $route);
+        self::assertStringNotContainsString('$this->safety = false', $route);
+    }
 }

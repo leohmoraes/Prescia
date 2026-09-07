@@ -795,3 +795,11 @@ A validação focalizada deve incluir `php -l prescia/plugins/bi_bb/payload/cont
 A auditoria de `prescia/plugins/bi_auth/authControl.php` encontrou em `logUser()` uma atualização de histórico e preferências que ainda concatenava dados serializados da sessão e o ID do usuário em `simpleQuery()`. O fluxo foi migrado para `queryPrepared()`, com parâmetros `si` quando apenas o histórico é atualizado e `ssi` quando as preferências também precisam ser persistidas. O nome da tabela continua vindo do módulo carregado, enquanto todos os valores permanecem vinculados.
 
 A regressão foi adicionada a `tests/SecurityRegressionTest.php`. Os fluxos centrais de login já usavam `queryPrepared()` para credenciais, sessões persistentes, grupos e migração de senha; este lote elimina a última atualização identificada no caminho de login autenticado. A proteção CSRF global já valida todos os métodos mutáveis em `prescia/lib/main.php`, injeta tokens nos formulários e gira o token no logout.
+
+## Auditoria de API e RBAC — rotas AJAX
+
+A revisão identificou duas rotas AJAX capturadas pelo núcleo: `ajaxqueryunique.php` e `ajaxQuery.php`. A primeira aceitava módulo, campo e valor da requisição; concatenava campo e valor em SQL, usava `addslashes()` como proteção insuficiente e devolvia a consulta em caso de erro. Ela agora valida tipos, limita o campo a metadados do módulo, exige `CONS_ACTION_SELECT`, usa `fetchPrepared()` e devolve somente erro genérico.
+
+A segunda rota de preenchimento de selects chamava `runContent()` após definir `$this->safety = false`, o que podia bypassar a proteção de autorização durante a renderização. Ela agora exige `checkPermission($module, CONS_ACTION_SELECT)` e mantém o safety mode vigente, permitindo que `forcePermissions()` restrinja os registros retornados. Foram adicionados testes de regressão estáticos para ambos os contratos.
+
+O RBAC central continua baseado em permissões por módulo, ação e ownership (`checkPermission()`/`forcePermissions()`). A auditoria também confirmou que mutações administrativas passam por `runAction()`, que verifica a permissão de update/include/delete. Permanecem como recomendação futura testes de integração com banco para cada combinação guest, usuário, grupo e owner, pois os testes atuais não inicializam um ambiente MySQL real.

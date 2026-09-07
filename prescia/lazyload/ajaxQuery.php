@@ -42,11 +42,14 @@
 	$sm = isset($_GET['sourcemodule'])?$_GET['sourcemodule']:'';
 	if ($sm != '') $sm = $this->loaded($sm);
 	$aoc = isset($_GET['aoc'])?$_GET['aoc']=='true':false;
-	if ($container == '' || $module == '' || $module === false || $sm === false) {
-		$this->log[] = "ajaxQuery with incomplete fields came, query was: ".arrayToString($_GET);
-		echo "<select id=\"$container\" name=\"$container\"><option>".$this->langOut("select_other_field")."</option></select> (error)";
-		$this->close(true);
-	}
+		if ($container == '' || $module == '' || $module === false || $sm === false) {
+			$this->log[] = "ajaxQuery with incomplete fields came, query was: ".arrayToString($_GET);
+			echo "<select id=\"$container\" name=\"$container\"><option>".$this->langOut("select_other_field")."</option></select> (error)";
+			$this->close(true);
+		}
+		if (!$this->authControl->checkPermission($module,CONS_ACTION_SELECT)) {
+			$this->close(true);
+		}
 	$preSelected = isset($_GET['preSelected'])?$_GET['preSelected']:'';
 	$className = isset($_GET['className'])?$_GET['className']:'';
 	$widthValue = isset($_GET['widthValue'])?$_GET['widthValue']:'';
@@ -92,9 +95,7 @@
 	if ($widthValue != "") $extras .= "style=\"width:$widthValue\" ";
 	$tp->assign("extras",$extras);
 	// fill select
-	$this->safety = false; // <-- show all fields we can list
-	$total = $module->runContent($tp,$sql,"_options",false,false,false);
-	$this->safety = true; // <-- back to normal
+		$total = $module->runContent($tp,$sql,"_options",false,false,false);
 
 	if($total == 0)
 		echo "<select id=\"$container\" name=\"$container\" $extras><option>".$this->langOut("select_other_field")."</option></select>";
