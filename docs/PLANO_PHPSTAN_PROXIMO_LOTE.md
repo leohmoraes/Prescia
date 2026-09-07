@@ -549,3 +549,12 @@ O quarto lote tratou `pages/_newProjectTemplate/_config/config.php`, `pages/pres
 A correção adicionou somente contratos PHPDoc concretos para `$this`, eliminando os 21 diagnósticos de contexto sem alterar a lógica de configuração, CAPTCHA, contato, template ou renderização. PHPStan focalizado, lint PHP 8.3, `git diff --check` e PHPUnit passaram. A análise global caiu de 135 para 114 diagnósticos, em 43 arquivos, sem ampliar a baseline.
 
 O próximo lote deve priorizar `prescia/lib/sendMail.php` e `prescia/plugins/bi_undo/module.php`, ambos com 7 diagnósticos, confirmando se os contextos são funções procedurais, métodos de classe ou includes dinâmicos antes da correção.
+
+
+## Resultado do quinto lote da Issue #47
+
+O quinto lote tratou `prescia/lib/sendMail.php` e `prescia/plugins/bi_undo/module.php`. Em `sendMail.php`, os delimitadores MIME foram inicializados no escopo comum antes dos ramos que os consomem. Em `bi_undo`, o carregamento do plugin foi documentado com o contexto `CPrescia`, a contagem `$n` recebeu fallback antes da consulta e as chaves `$keys` foram inicializadas antes dos loops de composição.
+
+As correções eliminaram 14 diagnósticos sem supressões, casts artificiais ou crescimento da baseline. PHPStan focalizado, lint PHP 8.3, `git diff --check` e PHPUnit passaram. A análise global caiu de 114 para 100 diagnósticos, em 41 arquivos.
+
+O próximo lote deve tratar `prescia/lazyload/feedReader.php`, `prescia/lazyload/fullSearch.php` e `prescia/plugins/bi_labels/payload/actions/config_labels_m.php`, com 6 diagnósticos cada. Esses arquivos devem ser classificados por contrato de include antes de aplicar PHPDoc ou inicializações de fluxo.

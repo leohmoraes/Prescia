@@ -59,6 +59,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Completed the second Issue #47 priority batch: documented the `CPrescia::rss()` include contract, corrected RSS array-count validation, fixed the `CImporter` class case, corrected enum field indexing, and initialized import fallback state. The batch removed 20 PHPStan diagnostics without changing the baseline.
 - Completed the third Issue #47 priority batch by documenting the injected `CPrescia` context in the `bi_labels` content payload and the `bi_fm` permission action. The batch removed 17 context diagnostics without changing the baseline.
 - Completed the fourth Issue #47 priority batch by documenting the injected `CPrescia` context in the project-template configuration, the Prescia contact action and the presciatester default content. The batch removed 21 context diagnostics without changing the baseline.
+- Completed the fifth Issue #47 priority batch: initialized MIME boundaries in `sendMail.php`, documented the plugin-loading context in `bi_undo`, and initialized query/key fallback state. The batch removed 14 diagnostics without changing the baseline.
 
 ### Compatibility checks
 - The compatibility suite checks runtime version, required extensions, PHP syntax, removed/deprecated APIs, short tags and Docker base image.

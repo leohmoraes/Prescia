@@ -564,3 +564,23 @@ A investigação confirmou que os três arquivos são avaliados no contexto de `
 | Baseline | **Sem alteração** |
 
 As categorias restantes são 107 `variable.undefined`, 2 `class.nameCase`, 2 `function.inner`, 2 `function.notFound` e 1 `isset.variable`. Os próximos maiores alvos são `prescia/lib/sendMail.php` e `prescia/plugins/bi_undo/module.php`, com 7 diagnósticos cada, seguidos de `prescia/lazyload/feedReader.php`, `prescia/lazyload/fullSearch.php` e `prescia/plugins/bi_labels/payload/actions/config_labels_m.php`, com 6 cada.
+
+
+## Atualização de 7 de setembro de 2026 — quinto lote da Issue #47
+
+O quinto lote tratou `prescia/lib/sendMail.php` e `prescia/plugins/bi_undo/module.php`, os dois maiores alvos seguintes com sete diagnósticos cada.
+
+Em `sendMail.php`, os delimitadores MIME `$bound` e `$bnext` passaram a ser inicializados antes do ramo que os atribui. Isso preserva o comportamento quando HTML ou anexos são usados e fornece valores neutros para a análise dos ramos alternativos. Em `bi_undo/module.php`, o contexto global de carregamento foi documentado como `CPrescia`, `$n` foi inicializado antes da consulta de undo e `$keys` passou a começar como string vazia antes dos loops que montam chaves de arquivos.
+
+| Verificação | Resultado |
+|---|---|
+| PHPStan focalizado dos dois arquivos | **0 erros** |
+| PHP 8.3 lint | **Aprovado nos dois arquivos** |
+| `git diff --check` | **Aprovado** |
+| PHPUnit | **23 testes, 2745 asserções, aprovado** |
+| PHPStan global antes | **114 diagnósticos em 43 arquivos** |
+| PHPStan global depois | **100 diagnósticos em 41 arquivos** |
+| Redução | **14 diagnósticos** |
+| Baseline | **Sem alteração** |
+
+As categorias restantes são 93 `variable.undefined`, 2 `class.nameCase`, 2 `function.inner`, 2 `function.notFound` e 1 `isset.variable`. Os próximos maiores alvos são `prescia/lazyload/feedReader.php`, `prescia/lazyload/fullSearch.php` e `prescia/plugins/bi_labels/payload/actions/config_labels_m.php`, com 6 diagnósticos cada.
