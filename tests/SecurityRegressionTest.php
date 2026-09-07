@@ -95,4 +95,15 @@ PHP, $route);
         self::assertStringContainsString('$referer = $sqlEscape($referer);', $stats);
         self::assertStringContainsString('$browser = $sqlEscape($browser);', $stats);
     }
+
+    public function testUndoUsesPreparedQueriesForRecordKeysAndHistoryDeletion(): void
+    {
+        $undo = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_undo/module.php');
+
+        self::assertStringContainsString('$module->getPreparedKeys($ws,$wTypes,$wParams,$ka,$data);', $undo);
+        self::assertStringContainsString('$this->parent->dbo->queryPrepared($sql,$wTypes,$wParams,$r,$n)', $undo);
+        self::assertStringContainsString('queryPrepared("DELETE FROM ".$undo->dbname." WHERE id=?", \'i\'', $undo);
+        self::assertStringContainsString("queryPrepared(\$sql, 'sssssi'", $undo);
+        self::assertStringNotContainsString('$core->dbo->simpleQuery($sql);', $undo);
+    }
 }

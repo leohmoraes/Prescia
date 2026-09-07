@@ -825,3 +825,9 @@ Também foi revisada a superfície de execução de comandos. Não foram encontr
 As entradas de telemetria usadas pelo módulo `bi_stats` foram revisadas: ação/página, referer HTTP, domínio derivado, páginas acumuladas e identificador do navegador. Foi introduzido um helper local que delega o escape ao driver de banco (`addslashes_EX(..., $core->dbo)`), aplicado antes das queries SQL legadas, preservando a lógica existente de contagem e concorrência. IDs de página continuam normalizados como inteiros onde aplicável.
 
 A alteração é deliberadamente limitada ao `bi_stats` e à regressão estática correspondente. O módulo não usa execução de comandos externos alimentada por requisição. PHPUnit, PHPStan, lint PHP 8.3 e verificação de whitespace passaram.
+
+## Sublote bi_undo — issue #32
+
+O plugin `bi_undo` foi migrado nos sinks de SQL dinâmico ligados à restauração e ao histórico. A leitura do registro de undo agora normaliza o identificador como inteiro; verificações de chaves remotas usam escape pelo driver; a exclusão do histórico, a recuperação de chaves e a seleção do registro anterior usam `queryPrepared()`; e a gravação do histórico usa placeholders para módulo, evento, chaves, histórico serializado, arquivos e autor. O fluxo de captura passou a usar `getPreparedKeys()` e `queryPrepared()` para evitar interpolação de valores de registros.
+
+A regressão específica foi adicionada à suíte de segurança. PHPUnit, PHPStan, lint PHP 8.3 e `git diff --check` passaram.

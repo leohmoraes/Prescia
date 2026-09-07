@@ -76,12 +76,16 @@ class mod_bi_undo extends CscriptedModule  {
 
 	}
 
-	function undo($id,$record=false) {
+		function undo($id,$record=false) {
 
-		$core = &$this->parent;
-		$undo = $core->loaded('bi_undo');
-		if (!$record) {
-			$sql = $undo->get_base_sql($undo->name.".id=".$id);
+			$core = &$this->parent;
+			$id = (int)$id;
+			$sqlEscape = static function ($value) use ($core): string {
+				return addslashes_EX((string)$value, true, $core->dbo);
+			};
+			$undo = $core->loaded('bi_undo');
+			if (!$record) {
+				$sql = $undo->get_base_sql($undo->name.".id=".$id);
 			$n = 0;
 			$core->dbo->query($sql,$record,$n);
 			if ($n == 0) {
@@ -110,9 +114,9 @@ class mod_bi_undo extends CscriptedModule  {
 					$sql['SELECT'] = array("count(*)"); # just want to check if it exists
 					foreach ($remoteModule->keys as $key) {
 						if ($key == $remoteModule->keys[0])
-							$sql['WHERE'][] = $key."=\"".$history[$fname]."\"";
-						else if (isset($undodados[$key]))
-							$sql['WHERE'][] = $key."=\"".$history[$key]."\"";
+								$sql['WHERE'][] = $key."=\"".$sqlEscape($history[$fname])."\"";
+							else if (isset($undodados[$key]))
+								$sql['WHERE'][] = $key."=\"".$sqlEscape($history[$key])."\"";
 						else {
 							$remoteOk =false;
 							break;
@@ -171,14 +175,16 @@ class mod_bi_undo extends CscriptedModule  {
 			if ($ok) {
 				$core->log[] = $core->langOut("undo_sucessfull");
 				$this->parent->setLog(CONS_LOGGING_SUCCESS);
-				$sql = "DELETE FROM ".$undo->dbname." WHERE id=".$id; # undoed ... so we don't need this log
-				$core->dbo->simpleQuery($sql);
+					$deleteResult = false;
+					$deleteRows = 0;
+					$core->dbo->queryPrepared("DELETE FROM ".$undo->dbname." WHERE id=?", 'i', array($id), $deleteResult, $deleteRows); # undoed ... so we don't need this log
 				if ($undodados['event'] == 'delete') {
 					$newKey = $core->lastReturnCode;
 					if ($newKey != $realdados[$module->keys[0]]) {
 						# try recover main key to original state
-						$sql = "UPDATE ".$module->dbname." SET ".$module->keys[0]."=".$realdados[$module->keys[0]]." WHERE ".$module->keys[0]."=$newKey";
-						$ok = $core->dbo->simpleQuery($sql);
+						$restoreResult = false;
+						$restoreRows = 0;
+						$ok = $core->dbo->queryPrepared("UPDATE ".$module->dbname." SET ".$module->keys[0]."=? WHERE ".$module->keys[0]."=?", 'ii', array((int)$realdados[$module->keys[0]], (int)$newKey), $restoreResult, $restoreRows);
 						if (!$ok) {
 							$core->log[] = $core->langOut('undo_unable_to_keep_key');
 							$this->parent->setLog(CONS_LOGGING_WARNING);
@@ -207,16 +213,18 @@ class mod_bi_undo extends CscriptedModule  {
 		# notify followup for this field (happens before standard notify)
 
 		if ($module === false || $module->options[CONS_MODULE_SYSTEM] || isset($module->options[CONS_MODULE_NOUNDO])) return;
-		$ws = "";$ka = array();
-		if ($action != CONS_ACTION_INCLUDE) {
+			$ws = "";$ka = array();
+			if ($action != CONS_ACTION_INCLUDE) {
 			if ($earlyNotify) {
 				// saves INTENTION of performing an action. If it FAILS, we don't need to store UNDO data.
 				if (isset($this->internalMemory[$module->name])) $this->internalMemory[$module->name] = array();
-				$module->getKeys($ws,$ka,$data);
-				$sql = "SELECT * FROM ".$module->dbname." WHERE $ws";
+					$wTypes = "";
+					$wParams = array();
+					$module->getPreparedKeys($ws,$wTypes,$wParams,$ka,$data);
+					$sql = "SELECT * FROM ".$module->dbname." WHERE $ws";
 				$r = false;
 				$n = 0;
-				$ok =$this->parent->dbo->query($sql,$r,$n);
+					$ok =$this->parent->dbo->queryPrepared($sql,$wTypes,$wParams,$r,$n);
 				if ($ok && $n>0) {
 					$data = $this->parent->dbo->fetch_assoc($r);
 					$files = array();
@@ -259,16 +267,18 @@ class mod_bi_undo extends CscriptedModule  {
 								$keys = $value."_"; // keys (searchable)
 							$keys = substr($keys,0,strlen($keys)-1); // remove last _
 							$files = $iMi[1]['___FILES___'];
-							$sql = "INSERT INTO ".$undoModule->dbname." SET
-									modulo='".$module->name."',
-									event='".($action==CONS_ACTION_DELETE?'delete':'update')."',
-									ids='$keys',
-									history=\"".addslashes_EX(serialize($iMi[1]))."\",
-									files=\"".addslashes_EX(serialize($files))."\",
-									data=NOW(),
-									id_author = '".($this->parent->logged()?$_SESSION[CONS_SESSION_ACCESS_USER]['id']:0)."'";
-
-							$ok = $this->parent->dbo->simpleQuery($sql);
+						$sql = "INSERT INTO ".$undoModule->dbname." SET
+								modulo=?, event=?, ids=?, history=?, files=?, data=NOW(), id_author=?";
+						$insertResult = false;
+						$insertRows = 0;
+						$ok = $this->parent->dbo->queryPrepared($sql, 'sssssi', array(
+							$module->name,
+							$action==CONS_ACTION_DELETE?'delete':'update',
+							$keys,
+							serialize($iMi[1]),
+							serialize($files),
+							(int)($this->parent->logged()?$_SESSION[CONS_SESSION_ACCESS_USER]['id']:0)
+						), $insertResult, $insertRows);
 							break;
 						}
 					}
