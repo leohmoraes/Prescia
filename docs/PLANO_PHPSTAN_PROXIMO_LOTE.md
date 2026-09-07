@@ -408,3 +408,10 @@ Foi adicionado o contrato PHPDoc de `CPrescia $this`. A validação focalizada t
 A skill `phpstan-legacy-remediation` foi aplicada a `prescia/plugins/bi_bb/payload/actions/default.php`. O carregador `mod_bi_bb::onCheckActions()` foi confirmado como origem do include, estabelecendo `$this` como `mod_bi_bb`.
 
 Foi adicionado o contrato PHPDoc de `mod_bi_bb $this`. A validação focalizada terminou com `[OK] No errors`, o `php -l` passou e `git diff --check` foi aprovado. A análise global atual caiu de 374 para 357 diagnósticos, redução de 17 ocorrências, sem alteração da baseline.
+
+
+### Lote B — payload bi_bb content: default.php
+
+A skill `phpstan-legacy-remediation` foi aplicada a `prescia/plugins/bi_bb/payload/content/default.php`. O carregador `mod_bi_bb::onRender()` foi confirmado como origem do include, estabelecendo `$core` como `CPrescia` e `$this` como `mod_bi_bb`.
+
+Foram adicionados os contratos PHPDoc dos dois contextos. A validação focalizada terminou com `[OK] No errors`, o `php -l` passou e `git diff --check` foi aprovado. A análise global atual caiu de 357 para 340 diagnósticos, redução de 17 ocorrências, sem alteração da baseline.

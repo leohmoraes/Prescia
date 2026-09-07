@@ -321,3 +321,16 @@ Foi adicionado o contrato PHPDoc `mod_bi_bb $this`. O PHPStan focalizado termino
 | `prescia/plugins/bi_bb/payload/actions/default.php` | **Concluído** | PHPStan focalizado sem erros; sintaxe PHP 8.3 aprovada; 17 diagnósticos removidos |
 
 O próximo alvo deverá ser recalculado a partir do relatório global atual. Os workflows serão acompanhados após a publicação.
+
+
+## Atualização adicional — aplicação da skill em `bi_bb/content/default.php`
+
+A skill `phpstan-legacy-remediation` foi aplicada a `prescia/plugins/bi_bb/payload/content/default.php`. A investigação confirmou que `mod_bi_bb::onRender()` inclui o payload no contexto do módulo, disponibilizando `$core` como `CPrescia` e `$this` como `mod_bi_bb`.
+
+Foram adicionados os contratos PHPDoc `CPrescia $core` e `mod_bi_bb $this`. O PHPStan focalizado terminou com **0 erros**, o `php -l` passou e `git diff --check` foi aprovado. A análise global atual caiu de **357 para 340 diagnósticos**, uma redução de **17 ocorrências**. A baseline permaneceu inalterada.
+
+| Arquivo | Situação | Validação |
+|---|---|---|
+| `prescia/plugins/bi_bb/payload/content/default.php` | **Concluído** | PHPStan focalizado sem erros; sintaxe PHP 8.3 aprovada; 17 diagnósticos removidos |
+
+O próximo alvo deverá ser recalculado a partir do relatório global atual. Os workflows serão acompanhados após a publicação.
