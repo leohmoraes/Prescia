@@ -11,6 +11,11 @@ title, link, description, language
 module, category, itemlinktemplate, itemtitle, itemdescription
 */
 
+/** @var CPrescia $this Runtime context of CPrescia::rss(). */
+/** @var array<string, mixed> $data RSS configuration and item data. */
+/** @var bool $echoHeader Whether to emit the RSS content-type header. */
+/** @var string $imgtitle Optional image title. */
+
 if (!isset($data['title']) ||
 	!isset($data['link']) ||
 	!isset($data['description']) ||
@@ -40,9 +45,9 @@ $ilt = explode(",",$data['itemlinktemplate']);
 $it = explode(",",$data['itemtitle']);
 $idesc = explode(",",$data['itemdescription']);
 
-if (count($modules) != count($ilt) &&
-	count($modules) != count($it) &&
-	count($module) != count($idesc)) {
+if (count($modules) != count($ilt) ||
+		count($modules) != count($it) ||
+		count($modules) != count($idesc)) {
 	return false;
 }
 

@@ -29,7 +29,7 @@
 			$c = 0;
 			$fT = array(0=>-1);
 			include_once(CONS_PATH_SYSTEM."plugins/".$this->name."/payload/importer.php");
-			$importerObj = new Cimporter($core);
+			$importerObj = new CImporter($core);
 			$iFields = $importerObj->fields($module); // database fields
 			foreach ($iFields as $idx => $field) {
 				$fT[$field['#']] = $idx; // converts a field number to the place in iFields
@@ -184,8 +184,8 @@
 											} else if ($iFields[$idx]['type'] == CONS_TIPO_ENUM) {
 												/**/#echo "Item is an enum<br/>";
 												if ($iFields[$idx]['enum'] == "'y','n'") { // translate 1/0 boolean to y/n
-													if ($regs[c] == 1) $regs[c] = 'y';
-													else $regs[c] == 'n';
+									if ($regs[$c] == 1) $regs[$c] = 'y';
+									else $regs[$c] = 'n';
 												}
 											} else {
 												$dataArray[$iFields[$idx]['name']] = $regs[$c];
@@ -202,8 +202,9 @@
 							}
 							/**/#echo "Array: ".print_r($dataArray,true)."<br/>";
 
-							if ($ok) {
-								$core->setLog(CONS_LOGGING_SUCCESS);
+								$oldKey = 0;
+								if ($ok) {
+									$core->setLog(CONS_LOGGING_SUCCESS);
 								$dataArray = fillDefaults($module,$dataArray);
 
 								if ($isSimulation) {
@@ -216,6 +217,7 @@
 									}
 									$core->lastReturnCode++;
 								} else {
+									$tempOk = true;
 									if (count($dataArray)>0) {
 										$tempOk = $core->runAction($module,CONS_ACTION_INCLUDE,$dataArray);
 										if (!$tempOk){
@@ -279,6 +281,7 @@
 					for ($c=0;$c<count($replacer);$c++)
 						$replacer[$c] = explode("=",$replacer[$c]);
 					foreach ($importContent as $Content) {
+						$originalContent = $Content;
 						if (isset($_REQUEST['utf8enforce'])) $Content = utf8_decode($Content);
 						if ($Content != "" && preg_match($pattern,$Content,$regs)!=0) {
 							$dataArray = array();

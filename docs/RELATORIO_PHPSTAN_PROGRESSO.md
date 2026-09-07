@@ -482,3 +482,85 @@ A correção adicionou contratos PHPDoc concretos para `CPrescia $this`, `string
 | Baseline | **Sem alteração** |
 
 O próximo inventário deve priorizar `prescia/lib/datetime.php`, `prescia/plugins/bi_labels/payload/actions/config_labels.php` e `pages/presciatester/_config/config.php`, que permanecem com 12, 12 e 11 diagnósticos, respectivamente.
+
+
+## Atualização de 7 de setembro de 2026 — primeiro lote da Issue #47
+
+O primeiro lote do inventário global atual tratou os três maiores alvos inicialmente selecionados: `prescia/lib/datetime.php`, `prescia/plugins/bi_labels/payload/actions/config_labels.php` e `pages/presciatester/_config/config.php`.
+
+Em `datetime.php`, foram inicializados no escopo de `_adodb_getdate()` os estados de ano, mês e quantidade de dias, além da tabela padrão usada por `adodb_mktime()`. A chamada opcional de `adodb_daylight_sv()` passou a ser protegida pela mesma verificação de disponibilidade usada para definir o estado do recurso. Nos dois payloads/configurações, foram documentados os contextos reais de `CPrescia` fornecidos pelos carregadores (`mod_bi_labels::onCheckActions()` e `CPrescia::domainLoad()`).
+
+| Verificação | Resultado |
+|---|---|
+| PHPStan focalizado dos três arquivos | **0 erros** |
+| PHP 8.3 lint | **Aprovado nos três arquivos** |
+| `git diff --check` | **Aprovado** |
+| PHPUnit | **23 testes, 2745 asserções, aprovado** |
+| PHPStan global antes | **207 diagnósticos em 53 arquivos** |
+| PHPStan global depois | **172 diagnósticos em 50 arquivos** |
+| Redução | **35 diagnósticos** |
+| Baseline | **Sem alteração** |
+
+As categorias restantes são 161 `variable.undefined`, 3 `class.nameCase`, 3 `constant.notFound`, 2 `function.inner`, 2 `function.notFound` e 1 `isset.variable`. Os próximos maiores grupos são `prescia/lazyload/rss.php` e `prescia/plugins/bi_adm/payload/actions/import.php`, com 10 diagnósticos cada, seguidos de `prescia/plugins/bi_labels/payload/content/config_labels.php`, com 9.
+
+
+## Atualização de 7 de setembro de 2026 — segundo lote da Issue #47
+
+O segundo lote tratou `prescia/lazyload/rss.php` e `prescia/plugins/bi_adm/payload/actions/import.php`.
+
+Em `rss.php`, foi documentado o contrato de include de `CPrescia::rss()`, incluindo `$this`, `$data`, `$echoHeader` e `$imgtitle`. Também foi corrigida a validação de cardinalidade para usar `$modules`, `$ilt`, `$it` e `$idesc`, rejeitando qualquer inconsistência e eliminando a referência incorreta a `$module`.
+
+Em `import.php`, a classe foi alinhada à declaração real `CImporter`; os índices de enumeração passaram a usar `$regs[$c]`; o estado `$oldKey` foi inicializado antes do caminho que o consome; `$tempOk` recebeu valor padrão quando não há dados para executar; e o conteúdo original foi preservado no modo raw antes de qualquer transformação.
+
+| Verificação | Resultado |
+|---|---|
+| PHPStan focalizado dos dois arquivos | **0 erros** |
+| PHP 8.3 lint | **Aprovado nos dois arquivos** |
+| `git diff --check` | **Aprovado** |
+| PHPUnit | **23 testes, 2745 asserções, aprovado** |
+| PHPStan global antes | **172 diagnósticos em 50 arquivos** |
+| PHPStan global depois | **152 diagnósticos em 48 arquivos** |
+| Redução | **20 diagnósticos** |
+| Baseline | **Sem alteração** |
+
+As categorias restantes são 145 `variable.undefined`, 2 `class.nameCase`, 2 `function.inner`, 2 `function.notFound` e 1 `isset.variable`. O próximo alvo prioritário é `prescia/plugins/bi_labels/payload/content/config_labels.php`, com 9 diagnósticos, seguido de `prescia/plugins/bi_fm/payload/actions/affbi_fmset.php`, com 8.
+
+
+## Atualização de 7 de setembro de 2026 — terceiro lote da Issue #47
+
+O terceiro lote tratou os dois próximos arquivos prioritários de payload: `prescia/plugins/bi_labels/payload/content/config_labels.php` e `prescia/plugins/bi_fm/payload/actions/affbi_fmset.php`.
+
+A investigação confirmou que ambos são incluídos dentro de métodos dos módulos concretos: `mod_bi_labels::onShow()` e `mod_bi_fm::onCheckActions()`. Nos dois casos, `$core` é uma referência ao `CPrescia` pai (`$this->parent`), portanto a correção foi documentar esse contrato real com PHPDoc, sem criar variáveis globais, casts ou defaults artificiais.
+
+| Verificação | Resultado |
+|---|---|
+| PHPStan focalizado dos dois arquivos | **0 erros** |
+| PHP 8.3 lint | **Aprovado nos dois arquivos** |
+| `git diff --check` | **Aprovado** |
+| PHPUnit | **23 testes, 2745 asserções, aprovado** |
+| PHPStan global antes | **152 diagnósticos em 48 arquivos** |
+| PHPStan global depois | **135 diagnósticos em 46 arquivos** |
+| Redução | **17 diagnósticos** |
+| Baseline | **Sem alteração** |
+
+As categorias restantes são 128 `variable.undefined`, 2 `class.nameCase`, 2 `function.inner`, 2 `function.notFound` e 1 `isset.variable`. Os próximos alvos de maior concentração têm 7 diagnósticos cada: `pages/_newProjectTemplate/_config/config.php`, `pages/prescia/actions/contatogo.php`, `pages/presciatester/content/default.php`, `prescia/lib/sendMail.php` e `prescia/plugins/bi_undo/module.php`.
+
+
+## Atualização de 7 de setembro de 2026 — quarto lote da Issue #47
+
+O quarto lote tratou os três próximos arquivos prioritários com sete diagnósticos cada: `pages/_newProjectTemplate/_config/config.php`, `pages/prescia/actions/contatogo.php` e `pages/presciatester/content/default.php`.
+
+A investigação confirmou que os três arquivos são avaliados no contexto de `CPrescia`: a configuração é carregada por `CPrescia::domainLoad()`, a ação de contato é incluída pelo fluxo de ações da página e o conteúdo default é incluído por `CPrescia::renderPage()`. Cada arquivo recebeu apenas o contrato PHPDoc concreto para `$this`, sem introduzir defaults ou alterar o fluxo de página.
+
+| Verificação | Resultado |
+|---|---|
+| PHPStan focalizado dos três arquivos | **0 erros** |
+| PHP 8.3 lint | **Aprovado nos três arquivos** |
+| `git diff --check` | **Aprovado** |
+| PHPUnit | **23 testes, 2745 asserções, aprovado** |
+| PHPStan global antes | **135 diagnósticos em 46 arquivos** |
+| PHPStan global depois | **114 diagnósticos em 43 arquivos** |
+| Redução | **21 diagnósticos** |
+| Baseline | **Sem alteração** |
+
+As categorias restantes são 107 `variable.undefined`, 2 `class.nameCase`, 2 `function.inner`, 2 `function.notFound` e 1 `isset.variable`. Os próximos maiores alvos são `prescia/lib/sendMail.php` e `prescia/plugins/bi_undo/module.php`, com 7 diagnósticos cada, seguidos de `prescia/lazyload/feedReader.php`, `prescia/lazyload/fullSearch.php` e `prescia/plugins/bi_labels/payload/actions/config_labels_m.php`, com 6 cada.
