@@ -20,6 +20,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: false
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
@@ -27,18 +30,16 @@ jobs:
           php-version: '8.3'
           extensions: mysqli, pdo_mysql, mbstring
           coverage: none
+          cache: composer
           tools: composer:v2
 
       - name: Validate Composer configuration
         run: composer validate --strict
 
-      - name: Install locked dependencies
-        run: composer install --no-interaction --no-progress --prefer-dist --no-dev
-
       - name: Audit Composer dependencies
         run: composer audit --locked --no-interaction
 
-      - name: Restore development dependencies
+      - name: Install locked development dependencies
         run: composer install --no-interaction --no-progress --prefer-dist
 
       - name: Run regression tests
