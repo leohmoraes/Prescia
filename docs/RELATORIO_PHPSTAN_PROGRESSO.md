@@ -334,3 +334,16 @@ Foram adicionados os contratos PHPDoc `CPrescia $core` e `mod_bi_bb $this`. O PH
 | `prescia/plugins/bi_bb/payload/content/default.php` | **Concluído** | PHPStan focalizado sem erros; sintaxe PHP 8.3 aprovada; 17 diagnósticos removidos |
 
 O próximo alvo deverá ser recalculado a partir do relatório global atual. Os workflows serão acompanhados após a publicação.
+
+
+## Atualização adicional — aplicação da skill em `prepareMail.php`
+
+A skill `phpstan-legacy-remediation` foi aplicada a `prescia/lazyload/prepareMail.php`. A investigação confirmou que `CPrescia::prepareMail($name, $fillArray)` inclui o arquivo dinamicamente, disponibilizando `$this` como `CPrescia`, `$name` como string e `$fillArray` como array de preenchimento.
+
+Foram adicionados os contratos PHPDoc correspondentes e inicializado `$template` antes do ramo que processa os campos POST, eliminando o fluxo possivelmente não atribuído. O PHPStan focalizado terminou com **0 erros**, o `php -l` passou e `git diff --check` foi aprovado. A análise global atual caiu de **340 para 325 diagnósticos**, uma redução de **15 ocorrências**. A baseline permaneceu inalterada.
+
+| Arquivo | Situação | Validação |
+|---|---|---|
+| `prescia/lazyload/prepareMail.php` | **Concluído** | PHPStan focalizado sem erros; sintaxe PHP 8.3 aprovada; 15 diagnósticos removidos |
+
+O próximo alvo deverá ser recalculado a partir do relatório global atual. Os workflows serão acompanhados após a publicação.
