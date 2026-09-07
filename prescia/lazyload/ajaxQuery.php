@@ -1,4 +1,8 @@
-<?php /* this file is captured by Prescia to fill a Select Query, as per the functions on common.js:
+<?php
+
+/** @var CPrescia $this Core context that includes this lazy-load from checkActions(). */
+
+/* this file is captured by Prescia to fill a Select Query, as per the functions on common.js:
 
 	HTML triggers the request to fill a SELECT -> startAjaxSelectFill -> THIS FILE
 	THIS FILE -> executeajaxSelectFill -> select is filled as requested

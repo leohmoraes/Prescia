@@ -395,3 +395,16 @@ Foi adicionado o contrato PHPDoc `CPrescia $this`. O PHPStan focalizado terminou
 | `pages/prescia/_config/config.php` | **Concluído** | PHPStan focalizado sem erros; sintaxe PHP 8.3 aprovada; 12 diagnósticos removidos |
 
 O próximo alvo deverá ser recalculado a partir do relatório global atual. Os workflows serão acompanhados após a publicação.
+
+
+## Atualização adicional — aplicação da skill em `ajaxQuery.php`
+
+A skill `phpstan-legacy-remediation` foi aplicada a `prescia/lazyload/ajaxQuery.php`. A investigação confirmou que `CPrescia::checkActions()` inclui o arquivo para a ação `ajaxquery`, disponibilizando `$this` como instância de `CPrescia`.
+
+Foi adicionado o contrato PHPDoc `CPrescia $this`. O PHPStan focalizado terminou com **0 erros**, o `php -l` passou e `git diff --check` foi aprovado. A análise global atual caiu de **299 para 287 diagnósticos**, uma redução de **12 ocorrências**. A baseline permaneceu inalterada.
+
+| Arquivo | Situação | Validação |
+|---|---|---|
+| `prescia/lazyload/ajaxQuery.php` | **Concluído** | PHPStan focalizado sem erros; sintaxe PHP 8.3 aprovada; 12 diagnósticos removidos |
+
+O próximo alvo deverá ser recalculado a partir do relatório global atual. Os workflows serão acompanhados após a publicação.

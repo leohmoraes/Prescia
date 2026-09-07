@@ -436,3 +436,10 @@ Foram adicionados os contratos PHPDoc de `$this`, `$file`, `$ext`, `$exit`, `$fi
 A skill `phpstan-legacy-remediation` foi aplicada a `pages/prescia/_config/config.php`. O carregamento foi confirmado em `CPrescia::loadDomain()`, que requer o arquivo de configuração do site no contexto do objeto `CPrescia`.
 
 Foi adicionado o contrato PHPDoc de `CPrescia $this`. A validação focalizada terminou com `[OK] No errors`, o `php -l` passou e `git diff --check` foi aprovado. A análise global atual caiu de 311 para 299 diagnósticos, redução de 12 ocorrências, sem alteração da baseline.
+
+
+### Lote B — lazy-load de consulta AJAX: ajaxQuery.php
+
+A skill `phpstan-legacy-remediation` foi aplicada a `prescia/lazyload/ajaxQuery.php`. O carregador foi confirmado em `CPrescia::checkActions()`, que inclui o arquivo para a ação `ajaxquery` no contexto do objeto `CPrescia`.
+
+Foi adicionado o contrato PHPDoc de `CPrescia $this`. A validação focalizada terminou com `[OK] No errors`, o `php -l` passou e `git diff --check` foi aprovado. A análise global atual caiu de 299 para 287 diagnósticos, redução de 12 ocorrências, sem alteração da baseline.
