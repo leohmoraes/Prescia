@@ -1,4 +1,8 @@
-<?php  # -------------------------------- Custom config
+<?php
+
+/** @var CPrescia $this Core context that requires the site configuration. */
+
+# -------------------------------- Custom config
 
 	date_default_timezone_set("America/Sao_Paulo");
 	ini_set("allow_url_fopen", 0); // for safety, leave 0 unless you need it

@@ -429,3 +429,10 @@ Foram adicionados os contratos PHPDoc correspondentes e o buffer `$template` foi
 A skill `phpstan-legacy-remediation` foi aplicada a `prescia/lazyload/readfile.php`. O carregador `CPrescia::readfile($file, $ext, $exit, $filename, $forceAttach, $cachetime)` foi confirmado em `prescia/core.php`, estabelecendo `$this` como `CPrescia` e os parâmetros com seus contratos concretos.
 
 Foram adicionados os contratos PHPDoc de `$this`, `$file`, `$ext`, `$exit`, `$filename`, `$forceAttach` e `$cachetime`. A validação focalizada terminou com `[OK] No errors`, o `php -l` passou e `git diff --check` foi aprovado. A análise global atual caiu de 325 para 311 diagnósticos, redução de 14 ocorrências, sem alteração da baseline.
+
+
+### Lote B — configuração da página prescia: config.php
+
+A skill `phpstan-legacy-remediation` foi aplicada a `pages/prescia/_config/config.php`. O carregamento foi confirmado em `CPrescia::loadDomain()`, que requer o arquivo de configuração do site no contexto do objeto `CPrescia`.
+
+Foi adicionado o contrato PHPDoc de `CPrescia $this`. A validação focalizada terminou com `[OK] No errors`, o `php -l` passou e `git diff --check` foi aprovado. A análise global atual caiu de 311 para 299 diagnósticos, redução de 12 ocorrências, sem alteração da baseline.

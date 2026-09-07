@@ -382,3 +382,16 @@ Foram adicionados os contratos PHPDoc correspondentes. O PHPStan focalizado term
 | `prescia/lazyload/readfile.php` | **Concluído** | PHPStan focalizado sem erros; sintaxe PHP 8.3 aprovada; 14 diagnósticos removidos |
 
 O próximo alvo deverá ser recalculado a partir do relatório global atual. Os workflows serão acompanhados após a publicação.
+
+
+## Atualização adicional — aplicação da skill em `pages/prescia/_config/config.php`
+
+A skill `phpstan-legacy-remediation` foi aplicada a `pages/prescia/_config/config.php`. A investigação confirmou que `CPrescia::loadDomain()` requer a configuração selecionada no contexto do objeto `CPrescia`, disponibilizando `$this` durante a avaliação do arquivo.
+
+Foi adicionado o contrato PHPDoc `CPrescia $this`. O PHPStan focalizado terminou com **0 erros**, o `php -l` passou e `git diff --check` foi aprovado. A análise global atual caiu de **311 para 299 diagnósticos**, uma redução de **12 ocorrências**. A baseline permaneceu inalterada.
+
+| Arquivo | Situação | Validação |
+|---|---|---|
+| `pages/prescia/_config/config.php` | **Concluído** | PHPStan focalizado sem erros; sintaxe PHP 8.3 aprovada; 12 diagnósticos removidos |
+
+O próximo alvo deverá ser recalculado a partir do relatório global atual. Os workflows serão acompanhados após a publicação.
