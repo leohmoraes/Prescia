@@ -664,3 +664,17 @@ O sétimo lote documentou o contexto `CPrescia` em `prescia/plugins/bi_labels/pa
 | PHPStan global depois | **65 diagnósticos em 32 arquivos** |
 | Redução | **10 diagnósticos** |
 | Baseline | **Sem alteração** |
+
+## Atualização de 7 de setembro de 2026 — oitavo lote
+
+O oitavo lote documentou `$sname` nos quatro manifests de plugins BI que ainda apresentavam esse diagnóstico: `bi_auth/payloadmanifest.php` (três ocorrências), `bi_labels/payloadmanifest.php` (uma), `bi_permissions/payloadmanifest.php` (uma) e `bi_stats/payloadmanifest.php` (duas). A investigação confirmou que os manifests são incluídos dentro de `CPrescia::applyMetaData()`, no loop `foreach ($this->loadedPlugins as $sname => $plugin)`, portanto `$sname` é uma string fornecida pelo núcleo.
+
+| Verificação | Resultado |
+|---|---|
+| PHPStan focalizado dos quatro manifests | **0 erros** |
+| PHP 8.3 lint | **Aprovado nos quatro manifests** |
+| PHPUnit | **23 testes, 2745 asserções, aprovado** |
+| PHPStan global antes | **65 diagnósticos em 32 arquivos** |
+| PHPStan global depois | **58 diagnósticos em 28 arquivos** |
+| Redução | **7 diagnósticos** |
+| Baseline | **Sem alteração** |

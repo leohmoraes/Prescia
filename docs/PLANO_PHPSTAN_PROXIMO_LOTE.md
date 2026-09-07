@@ -585,3 +585,7 @@ A correção dos cinco módulos BI foi concluída sem alterar o fluxo de carrega
 ### Resultado do sétimo lote
 
 O sétimo lote confirmou dois contratos de contexto: `$core` como `CPrescia` no payload `bi_labels/label_test.php` e `$this` como `CPrescia` no lazyload `ajaxqueryunique.php`. A correção eliminou 10 diagnósticos, reduziu o inventário global de 75 para 65 ocorrências e manteve a baseline sem novas entradas. O próximo agrupamento deve priorizar `coreFull.php`, `stats_rtajax.php` e os manifests que ainda usam `$sname`.
+
+### Resultado do oitavo lote
+
+Os quatro manifests BI foram tratados com o contrato `string $sname`, comprovado pelo loop de `CPrescia::applyMetaData()` que inclui cada manifest. O lote removeu sete ocorrências, reduziu o inventário global de 65 para 58 diagnósticos e manteve a baseline sem alterações. O único manifest ainda pendente é `bi_adm/payloadmanifest.php`, que deve ser tratado com os demais arquivos de contexto administrativo.
