@@ -625,3 +625,7 @@ Com o inventário PHPStan zerado, a execução autônoma retomou a issue de segu
 ### Segundo lote de segurança concluído
 
 `autoPrune()` e a verificação de ciclos parentais agora não interpolam valores fornecidos por dados de módulo nas consultas. O próximo lote deve revisar `deleteAllFrom()` no núcleo e os consumidores de SQL dinâmico em plugins, adicionando testes de regressão específicos para valores contendo aspas e caracteres de controle.
+
+### Terceiro lote de segurança concluído
+
+`deleteAllFrom()` deixou de interpolar valores de chaves em operações de atualização e seleção. A sequência de cascata continua delegando a exclusão final a `runAction()`, preservando notificações e regras existentes. O próximo foco deve ser a cobertura de regressão para os valores parametrizados e a revisão dos SQLs dinâmicos restantes nos plugins.
