@@ -773,3 +773,7 @@ Após o merge da PR #58, foi executada uma verificação completa no commit `633
 Após a conclusão do PHPStan, a próxima prioridade aberta foi a issue #28, relacionada à #9. O primeiro lote migrou os `WHERE` dos fluxos `UPDATE` e `DELETE` de `CModule::runAction()` para `queryPrepared()`, incluindo os valores de chaves compostas. Também foram migradas as exclusões de rollback pós-upload, a atualização de flags de upload e a atualização de URLs geradas. A geração de IDs para chaves compostas passou a usar `fetchPrepared()`.
 
 A alteração preserva os nomes de tabelas e colunas controlados pelo modelo, mas impede que valores de chaves, flags e URLs sejam interpolados no SQL. PHPStan focalizado, lint PHP 8.3, PHPUnit e `git diff --check` foram aprovados; a baseline permanece inalterada.
+
+## Segundo lote de segurança — autoPrune e ciclos parentais
+
+A continuação da issue #28 migrou as consultas de `CModule::autoPrune()` para `queryPrepared()`, incluindo a seleção dos registros antigos e a atualização do valor enum por chaves compostas. A verificação de ciclos parentais em `sqlParameter()` também passou a usar `fetchPrepared()`. PHPStan focalizado, lint PHP 8.3, PHPUnit e `git diff --check` foram aprovados, sem alteração da baseline.
