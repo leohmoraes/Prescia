@@ -1,5 +1,7 @@
 <?php	# -------------------------------- CMS plugin
-	# Contentman tags start as {CONTENTMAN} for code 1, then {CONTENTMAN#} where # > 1
+
+/** @var CPrescia $this Core context injected by CPrescia::addPlugin(). */
+		# Contentman tags start as {CONTENTMAN} for code 1, then {CONTENTMAN#} where # > 1
 
 if (CONS_DB_HOST=='') $this->errorControl->raise(4,'bi_cms','CMS module requires database');
 
@@ -319,4 +321,3 @@ class mod_bi_cms extends CscriptedModule  {
 	}
 
 }
-

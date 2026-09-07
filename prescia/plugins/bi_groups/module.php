@@ -1,5 +1,7 @@
 <?php	# -------------------------------- Plugin GROUPS (automatically added by plugin AUTH)
 
+/** @var CPrescia $this Core context injected by CPrescia::addPlugin(). */
+
 define ("CONS_AUTH_GROUPMODULE","groups");
 if (CONS_DB_HOST=='') $this->errorControl->raise(4,'bi_groups','GROUPS module requires database');
 
@@ -84,4 +86,3 @@ class mod_bi_groups extends CscriptedModule  {
 
 
 }
-

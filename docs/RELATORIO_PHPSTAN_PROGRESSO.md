@@ -631,3 +631,22 @@ Os 7 diagnósticos restantes pertencem a categorias estruturais distintas de `va
 | `isset.variable` | 1 | `prescia/components/cacheControl.php` | Uso redundante de `isset($_POST)` em um contexto onde `$_POST` já é conhecido pelo analisador |
 
 Esse inventário separa contratos de contexto, variáveis locais e símbolos legados para evitar que uma correção de tipagem mascare um problema funcional. Nenhuma dessas ocorrências foi adicionada à baseline. O próximo lote deve priorizar os contratos `$this`/`$core` e os `payloadmanifest.php`, seguido pelos arquivos com maior concentração de variáveis locais.
+
+### Detalhamento das ocorrências `$this` nos plugins BI
+
+Das 37 ocorrências de `$this` classificadas no inventário, seis estão diretamente nos módulos de plugins BI: duas em `prescia/plugins/bi_bb/module.php` (linhas 3 e 4) e uma em cada arquivo `prescia/plugins/bi_cms/module.php`, `prescia/plugins/bi_groups/module.php`, `prescia/plugins/bi_seo/module.php` e `prescia/plugins/bi_stats/module.php` (linha 4). Esses arquivos são incluídos por `CPrescia::addPlugin()`, portanto o contrato correto do escopo de carregamento é `CPrescia $this`. Os módulos concretos (`mod_bi_bb`, `mod_bi_cms`, `mod_bi_groups`, `mod_bi_seo` e `mod_bi_stats`) somente são instanciados depois do include.
+
+## Atualização de 7 de setembro de 2026 — lote dos módulos BI
+
+O lote dos módulos BI corrigiu os contratos das seis ocorrências de `$this` em `bi_bb/module.php`, `bi_cms/module.php`, `bi_groups/module.php`, `bi_seo/module.php` e `bi_stats/module.php`. O carregador `CPrescia::addPlugin()` foi confirmado como origem do include, portanto cada arquivo recebeu o contrato `CPrescia $this`. No mesmo lote, `$frame` foi inicializado em `bi_bb/module.php`, removendo o diagnóstico de fluxo associado.
+
+| Verificação | Resultado |
+|---|---|
+| PHPStan focalizado dos cinco módulos | **0 erros** |
+| PHP 8.3 lint | **Aprovado nos cinco módulos** |
+| `git diff --check` | **Aprovado** |
+| PHPUnit | **23 testes, 2745 asserções, aprovado** |
+| PHPStan global antes | **82 diagnósticos em 39 arquivos** |
+| PHPStan global depois | **75 diagnósticos em 34 arquivos** |
+| Redução | **7 diagnósticos** |
+| Baseline | **Sem alteração** |

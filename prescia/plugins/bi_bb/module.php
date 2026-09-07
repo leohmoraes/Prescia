@@ -1,5 +1,7 @@
 <?php	# -------------------------------- BB Plugin
 
+/** @var CPrescia $this Core context injected by CPrescia::addPlugin(). */
+
 if (CONS_DB_HOST=='') $this->errorControl->raise(4,'bi_bb','Bulleting Board/Blogger module requires database');
 if (!isset($this->loadedPlugins['bi_adm'])) $this->errorControl->raise(4,'bi_bb','Bulleting Board/Blogger module requires the ADMIN module');
 
@@ -125,6 +127,7 @@ class mod_bi_bb extends CscriptedModule  {
 			}
 
 
+			$frame = "";
 			if (($this->parent->layout == 0 || $this->parent->layout == 3) && $this->parent->nextContainer != '') {
 
 				if (is_file(CONS_PATH_PAGES.$_SESSION['CODE']."/template/".$this->bbfolder."frame.html")) {

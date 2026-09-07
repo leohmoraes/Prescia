@@ -573,3 +573,11 @@ O inventário global mais recente registra 82 ocorrências em 39 arquivos: 75 `v
 A ordem prática recomendada é: (1) contratos de `$this` e `$core`; (2) investigação dos quatro `payloadmanifest.php` que usam `$sname`; (3) arquivos com cinco ocorrências — `label_test.php`, `ajaxqueryunique.php`, `coreFull.php`, `pages/presciatester/actions/default.php` e `pages/prescia/content/default.php`; (4) correção de `Cimporter` para `CImporter`; (5) conversão das funções internas em `coreFull.php` e `bi_dev/module.php` para closures; (6) confirmação da origem de `dieFreakingThumbs()`; e (7) revisão do `isset($_POST)` em `cacheControl.php`.
 
 Cada sublote deve registrar o arquivo, a variável ou símbolo, a origem real no carregador, a correção aplicada e a validação focalizada. Não devem ser usados defaults artificiais, stubs genéricos ou novas entradas na baseline sem comprovação do contrato de runtime.
+
+### Sub lote prioritário — módulos BI com `$this`
+
+As seis ocorrências de `$this` nos módulos BI devem ser resolvidas em conjunto: duas em `bi_bb/module.php` e uma em cada módulo `bi_cms`, `bi_groups`, `bi_seo` e `bi_stats`. O carregador `CPrescia::addPlugin()` inclui o arquivo antes de instanciar a classe `mod_*`, de modo que o contrato deve declarar `CPrescia $this` no nível superior. Não se deve declarar o `$this` como o módulo concreto nessa região nem mover o include para dentro da classe.
+
+### Resultado do sub lote dos módulos BI
+
+A correção dos cinco módulos BI foi concluída sem alterar o fluxo de carregamento. O PHPStan focalizado passou sem erros, o PHPUnit permaneceu com 23 testes e 2745 asserções aprovadas e o inventário global caiu de 82 para 75 diagnósticos. A baseline não foi alterada. O diagnóstico residual de `$frame` em `bi_bb/module.php` também foi resolvido por inicialização no menor escopo comum.
