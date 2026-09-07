@@ -4,7 +4,9 @@
   | LICENSE TYPE: BSD-new/ɔ
 -*/
 
-	$error = ob_get_contents();
+/** @var CPrescia $this Core context injected by CPrescia::domainLoad(). */
+
+		$error = ob_get_contents();
 	ob_end_clean();
 
 	echo "<html><body>Choose site:<br/><br/><select onchange=\"document.location='/index.php?changelocalsite='+this.value+'&amp;nosession=true&amp;nocache=true&amp;debugmode=true';\"><option></option>";
