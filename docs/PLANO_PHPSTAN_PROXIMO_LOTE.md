@@ -629,3 +629,7 @@ Com o inventário PHPStan zerado, a execução autônoma retomou a issue de segu
 ### Terceiro lote de segurança concluído
 
 `deleteAllFrom()` deixou de interpolar valores de chaves em operações de atualização e seleção. A sequência de cascata continua delegando a exclusão final a `runAction()`, preservando notificações e regras existentes. O próximo foco deve ser a cobertura de regressão para os valores parametrizados e a revisão dos SQLs dinâmicos restantes nos plugins.
+
+### Quarto lote de segurança concluído
+
+O plugin `bi_groups` não concatena mais IDs recebidos nas verificações de autorização de atualização e exclusão. O inventário de SQL dinâmico continua sendo revisado por consumidor, com prioridade para autenticação, administração e estatísticas.

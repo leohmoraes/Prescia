@@ -213,3 +213,4 @@ Applied the `phpstan-legacy-remediation` skill to `prescia/lazyload/ajaxQuery.ph
 - Started the next security remediation after PR #58: migrated CRUD key predicates, upload rollback/flags, generated URLs and composite-key ID lookup to prepared statements, with the baseline unchanged.
 - Parameterized `autoPrune()` selection/update queries and parental-cycle lookups, preserving composite-key behavior and PHP 8.3 compatibility.
 - Parameterized `CPrescia::deleteAllFrom()` UPDATE and cascade SELECT queries, removing key-value interpolation from cascading relationship cleanup.
+- Parameterized group-level authorization lookups in the `bi_groups` plugin for update and delete actions.
