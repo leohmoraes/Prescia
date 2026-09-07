@@ -6,6 +6,8 @@
   | Called from core::domainLoad
 -*/
 
+/** @var CPrescia $this Core context injected by CPrescia::domainLoad(). */
+
 $freepass = (isset($_SESSION[CONS_SESSION_ACCESS_LEVEL]) && $_SESSION[CONS_SESSION_ACCESS_LEVEL] >= 90); // high-level admins get free pass
 	$ua = isset($_SERVER['HTTP_USER_AGENT'])?$_SERVER['HTTP_USER_AGENT']:"";
 	if (CONS_CRAWLER_BLACKLIST_ENABLE && !$freepass) { // blacklisted - we don't want you here, ever
@@ -89,7 +91,7 @@ if (!$freepass) {
 		array_shift($thd['hits']);
 	// add new hit
 	$thd['hits'][] = $now;
-	if (isset($_POST['login'])) $thd['hits'][] = $now; // ya, we count twice the fault if you are trying to login
+		if (isset($_POST['login'])) $thd['hits'][] = $now; // ya, we count twice the fault if you are trying to login
 	if (count($thd['hits'])>=CONS_BOTPROTECT_MAXHITS) {
 		// sorry guy, you are banned
 		$_SESSION['BOTPROTECT_BANNED'] = $now;

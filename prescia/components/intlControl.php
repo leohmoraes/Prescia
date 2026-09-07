@@ -134,9 +134,11 @@ class CintlControl {
 				$file = CONS_PATH_SYSTEM."plugins/$plugin/locale/$file";
 		} else {
 			$file = CONS_PATH_PAGES.$_SESSION['CODE']."/_config/locale/$file";
-		}
-		if (!is_file($file)) return false;
-		if (!isset($_REQUEST['nocache'])) { # if nocache is specified, ignore caches ... not the case
+			}
+			if (!is_file($file)) return false;
+			$cacheFile = '';
+			$cacheMTFile = '';
+			if (!isset($_REQUEST['nocache'])) { # if nocache is specified, ignore caches ... not the case
 			if ($standard) {
 				if ($plugin!='') $plugin .= '/';
 				if (!is_dir(CONS_PATH_CACHE."locale/$plugin")) safe_mkdir(CONS_PATH_CACHE."locale/$plugin");

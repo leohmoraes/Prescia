@@ -103,12 +103,12 @@ class mod_bi_permissions extends CscriptedModule  {
 			$customPerm = $mytp->get("_custompermission");
 			$objPerm = $mytp->get("_permission");
 
-			foreach ($this->parent->modules as $name => $pmodule) {
-				if ($pmodule->options[CONS_MODULE_SYSTEM]) continue; // cannot edit system modules
-				$locker = "ccccccccc";
-				if ($pmodule->permissionOverride != "") {
-					$locker = $pmodule->permissionOverride;
+				foreach ($this->parent->modules as $name => $pmodule) {
+					if ($pmodule->options[CONS_MODULE_SYSTEM]) continue; // cannot edit system modules
+					$locker = "ccccccccc";
 					$hasSOME = false;
+					if ($pmodule->permissionOverride != "") {
+					$locker = $pmodule->permissionOverride;
 					for ($pos=0;$pos<9;$pos++) {
 						if ($pmodule->permissionOverride[$pos] == "c") {
 							$hasSOME = true;
@@ -171,4 +171,3 @@ class mod_bi_permissions extends CscriptedModule  {
 	}
 
 }
-

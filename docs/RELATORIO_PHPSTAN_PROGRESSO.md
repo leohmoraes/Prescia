@@ -748,3 +748,18 @@ O décimo terceiro lote concentrou payloads administrativos e de labels. Foram i
 | PHPStan global depois | **15 diagnósticos em 10 arquivos** |
 | Redução | **13 diagnósticos** |
 | Baseline | **Sem alteração** |
+
+## Atualização de 7 de setembro de 2026 — décimo quarto lote e fechamento do inventário
+
+O décimo quarto lote concluiu a remediação dos diagnósticos restantes. Foram documentados os contextos dos payloads de conteúdo e lazyloads; `options.php` recebeu inicializações explícitas de `$using` e `$content`; `cacheControl.php` deixou de testar `isset($_POST)`, pois `$_POST` é uma superglobal sempre definida; os caminhos de cache de `intlControl.php` foram inicializados; `$hasSOME` foi inicializado em `bi_permissions`; e a função interna `appendErrors()` de `bi_dev` foi convertida em closure.
+
+| Verificação | Resultado |
+|---|---|
+| PHPStan focalizado | **0 erros** |
+| PHP 8.3 lint | **Aprovado** |
+| PHPUnit | **23 testes, 2745 asserções, aprovado** |
+| PHPStan global antes | **15 diagnósticos em 10 arquivos** |
+| PHPStan global depois | **0 diagnósticos** |
+| Baseline | **Sem alteração** |
+
+Com este lote, a Issue #47 atinge o objetivo técnico de zerar os diagnósticos do PHPStan nível 1 sem expansão da baseline.

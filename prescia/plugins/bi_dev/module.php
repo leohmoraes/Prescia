@@ -601,8 +601,8 @@ class mod_bi_dev extends CscriptedModule  {
 		return $totalNotTranslated>0?$notTranslated:false;
 	}
 
-	function log($die = true) {
-		function appendErrors(&$core,&$output,&$template,$data) {
+		function log($die = true) {
+			$appendErrors = function (&$core,&$output,&$template,$data): void {
 			foreach ($data as $line) {
 				$line = explode("|",$line);
 				# date|id_client|uri|errCode|module|parameters|extended parameters|log[|...]
@@ -622,8 +622,8 @@ class mod_bi_dev extends CscriptedModule  {
 
 				}
 			}
-		}
-		$outputTemplate = "<div style='line-height:25px;border-bottom:1px solid #999999;margin-bottom:3px;'>{date} {id_client}: <span style='color:red'>{errCode} ({_t}e{errCode}{/t})</span> [{module}] {parameters} (<strong>{extended}</strong>) @ {uri}</div>";
+			};
+			$outputTemplate = "<div style='line-height:25px;border-bottom:1px solid #999999;margin-bottom:3px;'>{date} {id_client}: <span style='color:red'>{errCode} ({_t}e{errCode}{/t})</span> [{module}] {parameters} (<strong>{extended}</strong>) @ {uri}</div>";
 		$template = new CKTemplate($this->parent->template);
 		$template->tbreak($outputTemplate);
 		$this->parent->close(false);
@@ -631,14 +631,14 @@ class mod_bi_dev extends CscriptedModule  {
 		$temp = "";
 		// 1 day ago
 		$previousDay = datecalc(date("Y-m-d"),0,0,-1);
-		$previousDay = str_replace("-","",$previousDay);
-		if (is_file(CONS_PATH_LOGS.$_SESSION['CODE']."/err".$previousDay.".log"))
-			appendErrors($this->parent,$temp,$template,explode("\n",cReadFile(CONS_PATH_LOGS.$_SESSION['CODE']."/err".$previousDay.".log")));
+			$previousDay = str_replace("-","",$previousDay);
+			if (is_file(CONS_PATH_LOGS.$_SESSION['CODE']."/err".$previousDay.".log"))
+				$appendErrors($this->parent,$temp,$template,explode("\n",cReadFile(CONS_PATH_LOGS.$_SESSION['CODE']."/err".$previousDay.".log")));
 
-		# Today
-		$previousDay = date("Ymd");
-		if (is_file(CONS_PATH_LOGS.$_SESSION['CODE']."/err".$previousDay.".log"))
-			appendErrors($this->parent,$temp,$template,explode("\n",cReadFile(CONS_PATH_LOGS.$_SESSION['CODE']."/err".$previousDay.".log")));
+			# Today
+			$previousDay = date("Ymd");
+			if (is_file(CONS_PATH_LOGS.$_SESSION['CODE']."/err".$previousDay.".log"))
+				$appendErrors($this->parent,$temp,$template,explode("\n",cReadFile(CONS_PATH_LOGS.$_SESSION['CODE']."/err".$previousDay.".log")));
 		if (is_file(CONS_PATH_LOGS.$_SESSION['CODE']."/out".$previousDay.".log"))
 			$temp .= nl2br(cReadFile(CONS_PATH_LOGS.$_SESSION['CODE']."/out".$previousDay.".log"));
 		echo "Log files are located at ".CONS_PATH_LOGS.$_SESSION['CODE']."/<br/><br/>";

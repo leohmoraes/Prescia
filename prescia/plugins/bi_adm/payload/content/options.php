@@ -73,9 +73,11 @@
 			// arrays are never editable
 			// _pluginStarter neither
 					
-			$fillDT = array('field' => $data['name'],
-							'width' => '99%');
-			switch($fieldType) {
+				$fillDT = array('field' => $data['name'],
+								'width' => '99%');
+				$content = "";
+					$using = clone $objfield;
+				switch($fieldType) {
 
 				case CONS_TIPO_UPLOAD: // ############################################### FILE(s)
 
@@ -323,4 +325,3 @@
 	$core->template->assign("_textarea_field","");
 	$core->template->assign("_slider_field","");
 	$core->template->assign("_selecttree_field","");
-
