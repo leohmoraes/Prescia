@@ -11,6 +11,13 @@ function presciaLoadUrlIsPublicIp(string $ip): bool {
     return filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false;
 }
 
+function presciaLoadUrlIsValidHost(string $host): bool {
+    if ($host === '' || strlen($host) > 253 || strpbrk($host, "\r\n\0") !== false) return false;
+    if (filter_var($host, FILTER_VALIDATE_IP)) return true;
+    if (!preg_match('/^(?=.{1,253}\.?$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)*[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.?$/i', $host)) return false;
+    return strtolower(rtrim($host, '.')) !== 'localhost';
+}
+
 /** @return list<string> */
 function presciaLoadUrlResolvePublicIps(string $host): array {
     if (filter_var($host, FILTER_VALIDATE_IP)) {
@@ -46,27 +53,35 @@ function presciaLoadUrlResolvePublicIps(string $host): array {
 function loadURL($url, $agent = 'PHP', $method = 'get') {
     $url = is_string($url) ? trim($url) : '';
     if ($url === '' || strpbrk($url, "\r\n") !== false) return false;
-    $parts = $url !== '' ? parse_url($url) : false;
+    try {
+        $parts = $url !== '' ? parse_url($url) : false;
+    } catch (ValueError $exception) {
+        return false;
+    }
     $scheme = is_array($parts) && isset($parts['scheme']) ? strtolower($parts['scheme']) : '';
     $host = is_array($parts) && isset($parts['host']) ? strtolower($parts['host']) : '';
     $method = strtolower((string) $method);
-    if (!is_array($parts) || !in_array($scheme, array('http', 'https'), true) || $host === '' ||
+    if (!is_array($parts) || !in_array($scheme, array('http', 'https'), true) || !presciaLoadUrlIsValidHost($host) ||
         isset($parts['user']) || isset($parts['pass']) || !in_array($method, array('get', 'post'), true)) return false;
 
     $port = isset($parts['port']) ? (int) $parts['port'] : ($scheme === 'https' ? 443 : 80);
-    if (($scheme === 'https' && $port !== 443) || ($scheme === 'http' && $port !== 80)) return false;
+    if ($port < 1 || $port > 65535 || ($scheme === 'https' && $port !== 443) || ($scheme === 'http' && $port !== 80)) return false;
     $ips = presciaLoadUrlResolvePublicIps($host);
     if (!$ips) return false;
 
     $path = isset($parts['path']) && $parts['path'] !== '' ? $parts['path'] : '/';
     $query = isset($parts['query']) ? $parts['query'] : '';
     if ($method === 'get' && $query !== '') $path .= '?' . $query;
-    $connectHost = filter_var($ips[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) ? '[' . $ips[0] . ']' : $ips[0];
-    $target = ($scheme === 'https' ? 'ssl://' : '') . $connectHost;
     $context = stream_context_create(array('ssl' => array(
         'verify_peer' => true, 'verify_peer_name' => true, 'peer_name' => $host, 'SNI_enabled' => true,
     )));
-    $fp = @stream_socket_client($target . ':' . $port, $errno, $errstr, 10, STREAM_CLIENT_CONNECT, $context);
+    $fp = false;
+    foreach ($ips as $ip) {
+        $connectHost = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) ? '[' . $ip . ']' : $ip;
+        $target = ($scheme === 'https' ? 'ssl://' : '') . $connectHost;
+        $fp = @stream_socket_client($target . ':' . $port, $errno, $errstr, 10, STREAM_CLIENT_CONNECT, $context);
+        if (is_resource($fp)) break;
+    }
     if (!is_resource($fp)) return false;
     stream_set_timeout($fp, 10);
 

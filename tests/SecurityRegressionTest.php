@@ -135,6 +135,10 @@ PHP, $route);
 
         self::assertStringContainsString("in_array(\$scheme, array('http', 'https'), true)", $loader);
         self::assertStringContainsString("FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE", $loader);
+        self::assertStringContainsString('function presciaLoadUrlIsValidHost', $loader);
+        self::assertStringContainsString('strpbrk($host, "\\r\\n\\0")', $loader);
+        self::assertStringContainsString('$port < 1 || $port > 65535', $loader);
+        self::assertStringContainsString('foreach ($ips as $ip)', $loader);
         self::assertStringContainsString("stream_socket_client", $loader);
         self::assertStringContainsString("'verify_peer' => true", $loader);
         self::assertStringContainsString("PRESCIA_LOADURL_MAX_BYTES", $loader);
