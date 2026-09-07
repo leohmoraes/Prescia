@@ -493,3 +493,12 @@ Não alterar `phpstan-baseline.neon`, não converter os stubs em implementaçõe
 4. Executar a suíte de compatibilidade PHP 8.3, pois o stub participa da configuração do CI.
 5. Atualizar o relatório consolidado, o `CHANGELOG.md` e a Issue #44 com a redução comprovada.
 6. Publicar o commit e acompanhar separadamente os workflows de PHPStan e PHP 8.3.
+
+
+## Lote adicional — segurança, compatibilidade PHP 8.3 e SQL parametrizado
+
+O commit `1127c0e` entregou um lote transversal solicitado pelas issues abertas do repositório. A implementação foi aplicada sem ampliar a baseline: CSRF passou a cobrir métodos mutáveis e rotação de token; cookies de sessão, autenticação persistente e logout receberam flags e invalidação adequadas; a ativação de contas usa aleatoriedade criptográfica; uploads e desserialização foram restringidos; e as consultas concatenadas identificadas em estatísticas e administração foram convertidas para prepared statements.
+
+O lote também corrigiu variáveis indefinidas no núcleo e no módulo de autenticação, colocou o ownership dentro do escopo correto de `onMeta()`, e removeu warnings de `continue` ambíguo em `switch` nos payloads administrativos. A validação terminou com **23 testes e 2745 asserções aprovados**, lint PHP global sem warnings, PHPStan focalizado aprovado, `composer validate` aprovado e `composer audit` sem advisories. A análise global de nível 1 caiu para **219 diagnósticos**, ainda não sendo verde por pendências legadas fora do escopo tratado.
+
+O próximo lote deve partir de um novo inventário desses 219 registros, priorizando variáveis indefinidas restantes e payloads com contexto dinâmico. Nenhuma nova entrada de `ignoreErrors` deve ser adicionada à baseline para mascarar esses diagnósticos.
