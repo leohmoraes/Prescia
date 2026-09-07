@@ -194,3 +194,4 @@ Applied the `phpstan-legacy-remediation` skill to `prescia/lazyload/ajaxQuery.ph
 - Completed PHPStan Level 1 remediation: global analysis now reports 0 diagnostics, with PHP 8.3 lint and the full PHPUnit suite passing; the baseline remains unchanged.
 - Documented the post-merge verification of PR #58: Composer validation, 23 PHPUnit tests/2745 assertions, zero PHPStan diagnostics, PHP 8.3 lint across 348 files, clean baseline and clean working tree.
 - Started the next security remediation after PR #58: migrated CRUD key predicates, upload rollback/flags, generated URLs and composite-key ID lookup to prepared statements, with the baseline unchanged.
+- Parameterized `autoPrune()` selection/update queries and parental-cycle lookups, preserving composite-key behavior and PHP 8.3 compatibility.

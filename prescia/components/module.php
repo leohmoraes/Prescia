@@ -974,17 +974,23 @@ class CModule {
 			$maxItems = $fieldData[1];
 			$newvalue = str_replace("'","",str_replace('"','',$fieldData[2]));
 			if ($maxItems == 0 || $maxItems == '*') continue; // er, shouldn't even get here
-			$sql = "SELECT ".implode(",",$this->keys)." FROM ".$this->dbname." WHERE $field=\"".$data[$field]."\"$order";
-			$r = false;
-			$n = 0;
-			if ($this->parent->dbo->query($sql,$r,$n) && $n>$maxItems) {
-				$otherData = $this->parent->dbo->fetch_assoc($r);
-				// set otherData to new enum
-				$sql = "UPDATE ".$this->dbname." SET $field=\"".$newvalue."\" WHERE ";
-				foreach ($this->keys as $kname)
-					$sql .= $kname."=\"".$otherData[$kname]."\" AND ";
-				$sql = substr($sql,0,strlen($sql)-5); // remove lastAND
-				$this->parent->dbo->simpleQuery($sql);
+				$sql = "SELECT ".implode(",",$this->keys)." FROM ".$this->dbname." WHERE ".$field."=?".$order;
+				$r = false;
+				$n = 0;
+				if ($this->parent->dbo->queryPrepared($sql,"s",array((string)$data[$field]),$r,$n,$this->parent->debugmode) && $n>$maxItems) {
+					$otherData = $this->parent->dbo->fetch_assoc($r);
+					// set otherData to new enum
+					$where = array();
+					$whereTypes = "s";
+					$whereParams = array($newvalue);
+					foreach ($this->keys as $kname) {
+						$where[] = $kname."=?";
+						$whereTypes .= "s";
+						$whereParams[] = (string)$otherData[$kname];
+					}
+					$updateResult = false;
+					$updateRows = 0;
+					$this->parent->dbo->queryPrepared("UPDATE ".$this->dbname." SET ".$field."=? WHERE ".implode(" AND ",$where),$whereTypes,$whereParams,$updateResult,$updateRows,$this->parent->debugmode);
 			}
 
 		}
@@ -1026,7 +1032,7 @@ class CModule {
 							$idP = isset($data[$name])?$data[$name]:0;
 							if ($idP == null) $idP = 0;
 							while ($idP !== 0) {
-								$idP = $this->parent->dbo->fetch("SELECT $name FROM ".$this->dbname." WHERE ".$this->keys[0]."=$idP");
+									$idP = $this->parent->dbo->fetchPrepared("SELECT ".$name." FROM ".$this->dbname." WHERE ".$this->keys[0]."=?","s",array((string)$idP),false);
 								if ($idP == NULL) $idP = 0;
 								if (in_array($idP,$antiCicle)) break; // cicle!
 								$antiCicle[] = $idP;

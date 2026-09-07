@@ -621,3 +621,7 @@ A validação pós-merge confirmou dependências válidas, PHPUnit aprovado, PHP
 ### Frente de segurança iniciada: issue #28
 
 Com o inventário PHPStan zerado, a execução autônoma retomou a issue de segurança de maior prioridade técnica: prepared statements no CRUD genérico. O primeiro lote cobre `UPDATE`, `DELETE`, rollback de uploads, flags de upload, URLs geradas e `MAX(id)` de chaves compostas. A continuação deve revisar todos os pontos de `simpleQuery()` em `CModule`, adicionar testes de regressão de SQL parametrizado e coordenar o fechamento das issues relacionadas #9, #28, #29 e #30.
+
+### Segundo lote de segurança concluído
+
+`autoPrune()` e a verificação de ciclos parentais agora não interpolam valores fornecidos por dados de módulo nas consultas. O próximo lote deve revisar `deleteAllFrom()` no núcleo e os consumidores de SQL dinâmico em plugins, adicionando testes de regressão específicos para valores contendo aspas e caracteres de controle.
