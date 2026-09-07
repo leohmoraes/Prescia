@@ -593,3 +593,7 @@ Os quatro manifests BI foram tratados com o contrato `string $sname`, comprovado
 ### Resultado do nono lote
 
 O nono lote removeu os quatro diagnósticos de `$core` em `stats_rtajax.php` e o diagnóstico de `$sname` no manifest de `bi_adm`. Os carregadores foram confirmados antes da alteração, o PHPStan focalizado e o lint PHP 8.3 passaram, e o PHPUnit permaneceu aprovado. O inventário global caiu de 58 para 53 ocorrências, sem alteração da baseline. O próximo foco deve ser `coreFull.php`, que reúne os diagnósticos estruturais de funções internas e símbolo ausente.
+
+### Resultado do décimo lote
+
+`coreFull.php` foi corrigido sem ampliar a baseline. O lote separou uma referência incorreta de variável, inicializou o acumulador de permissões e substituiu a função interna recursiva por closure. A validação focalizada, o lint PHP 8.3 e o PHPUnit passaram; o inventário global caiu de 53 para 48 diagnósticos. O próximo lote deve continuar pelos arquivos com maior concentração de variáveis indefinidas, mantendo funções internas e símbolos ausentes separados quando não forem consequência direta do mesmo fluxo.

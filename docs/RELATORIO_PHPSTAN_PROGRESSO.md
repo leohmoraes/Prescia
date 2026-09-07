@@ -692,3 +692,17 @@ O nono lote tratou `prescia/plugins/bi_stats/payload/actions/stats_rtajax.php` e
 | PHPStan global depois | **53 diagnósticos em 26 arquivos** |
 | Redução | **5 diagnósticos** |
 | Baseline | **Sem alteração** |
+
+## Atualização de 7 de setembro de 2026 — décimo lote
+
+O décimo lote tratou `prescia/coreFull.php`. A referência incorreta que dividia `$field` foi corrigida para usar `$rel[1]`, `$p` foi inicializado no loop de permissões de plugins e a função interna recursiva `dieFreakingThumbs()` foi convertida em closure recursiva local. Essas alterações removeram cinco diagnósticos — uma variável `$field`, uma variável `$p`, dois `function.notFound` e um `function.inner` — sem adicionar stub ou função global.
+
+| Verificação | Resultado |
+|---|---|
+| PHPStan focalizado de `coreFull.php` | **0 erros** |
+| PHP 8.3 lint | **Aprovado** |
+| PHPUnit | **23 testes, 2745 asserções, aprovado** |
+| PHPStan global antes | **53 diagnósticos em 26 arquivos** |
+| PHPStan global depois | **48 diagnósticos em 25 arquivos** |
+| Redução | **5 diagnósticos** |
+| Baseline | **Sem alteração** |

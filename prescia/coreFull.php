@@ -359,10 +359,10 @@ class CPresciaFull extends CPrescia {
 			if (!isset($this->modules[$rel[0]]) || !isset($this->modules[$rel[2]])) {
 				array_push($this->log,"Error (pass 1) trying to build foreign keys from '".$rel[0]."' to '".$rel[2]."' at ".$rel[1].": one of the modules do not exist, ignoring relation");
 			} else {
-				$sfield = "";
-				if (strpos($rel[1],":") !== false) {
-					#serialized field
-					$field = explode(":",$field);
+					$sfield = "";
+					if (strpos($rel[1],":") !== false) {
+						#serialized field
+						$field = explode(":",$rel[1]);
 					$sfield = $field[0];
 					$field = $field[1];
 				} else
@@ -510,19 +510,19 @@ class CPresciaFull extends CPrescia {
 		}
 
 		# DIE FREAKING THUMBS.DB, DIE!
-		function dieFreakingThumbs($folder) {
+		$dieFreakingThumbs = function (string $folder) use (&$dieFreakingThumbs): void {
 			if ($folder[strlen($folder)-1] != '/') $folder .= "/";
 			foreach(glob($folder."*") as $file) {
 				if(is_dir($file))
-					dieFreakingThumbs($file);
+					$dieFreakingThumbs($file);
 				else {
 					$arf = explode(".",$file);
 					if (array_pop($arf) == 'db')
 						@unlink($file);
 				}
 			}
-		}
-		dieFreakingThumbs(CONS_PATH_PAGES.$_SESSION['CODE']."/");
+		};
+		$dieFreakingThumbs(CONS_PATH_PAGES.$_SESSION['CODE']."/");
 
 		$customxml = is_file(CONS_PATH_PAGES.$_SESSION["CODE"]."/_config/custom.xml")?cReadFile(CONS_PATH_PAGES.$_SESSION["CODE"]."/_config/custom.xml"):'';
 		# All plugins are loaded, check their manifest and customs
@@ -800,10 +800,10 @@ class CPresciaFull extends CPrescia {
 		}
 		// now add plugin templates
 
-		foreach ($this->loadedPlugins as $pname => $plugin) {
-			if ($plugin->moduleRelation == '') {
+			foreach ($this->loadedPlugins as $pname => $plugin) {
 				$p = "000000000"; // standard
-				$pos = 9;
+				if ($plugin->moduleRelation == '') {
+					$pos = 9;
 				foreach ($plugin->customPermissions as $ptag => $pi18n) {
 					$p .= "0";
 					$pos++;
