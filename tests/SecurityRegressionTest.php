@@ -106,4 +106,16 @@ PHP, $route);
         self::assertStringContainsString("queryPrepared(\$sql, 'sssssi'", $undo);
         self::assertStringNotContainsString('$core->dbo->simpleQuery($sql);', $undo);
     }
+
+    public function testAdministrativeUndoRoutesValidateRequestIdsBeforeBuildingSql(): void
+    {
+        $undo = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/actions/undo.php');
+        $multipleUndo = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/actions/multipleundo.php');
+
+        self::assertStringContainsString('filter_var($_REQUEST[\'id\'], FILTER_VALIDATE_INT)', $undo);
+        self::assertStringContainsString('$sql = $undo->get_base_sql($undo->name.".id=".$id);', $undo);
+        self::assertStringNotContainsString('$undo->name.".id=".$_REQUEST[\'id\']', $undo);
+        self::assertStringContainsString('$id = filter_var($id, FILTER_VALIDATE_INT);', $multipleUndo);
+        self::assertStringContainsString('if ($id === false || $id < 1) continue;', $multipleUndo);
+    }
 }

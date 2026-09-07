@@ -831,3 +831,9 @@ A alteração é deliberadamente limitada ao `bi_stats` e à regressão estátic
 O plugin `bi_undo` foi migrado nos sinks de SQL dinâmico ligados à restauração e ao histórico. A leitura do registro de undo agora normaliza o identificador como inteiro; verificações de chaves remotas usam escape pelo driver; a exclusão do histórico, a recuperação de chaves e a seleção do registro anterior usam `queryPrepared()`; e a gravação do histórico usa placeholders para módulo, evento, chaves, histórico serializado, arquivos e autor. O fluxo de captura passou a usar `getPreparedKeys()` e `queryPrepared()` para evitar interpolação de valores de registros.
 
 A regressão específica foi adicionada à suíte de segurança. PHPUnit, PHPStan, lint PHP 8.3 e `git diff --check` passaram.
+
+## Sublote de consumidores `getKeys` — issue #33
+
+As rotas administrativas `bi_adm/payload/actions/undo.php` e `multipleundo.php` foram endurecidas antes de construir seus filtros de histórico. O ID unitário agora passa por `FILTER_VALIDATE_INT` e exige valor positivo; a rota múltipla aplica a mesma validação a cada item recebido, ignorando entradas inválidas. Os valores usados em `get_base_sql()` e encaminhados ao plugin `bi_undo` são, portanto, inteiros normalizados, sem concatenação direta da requisição.
+
+Foi adicionada regressão estática para os dois consumidores. PHPUnit, PHPStan, lint PHP 8.3 e `git diff --check` passaram.

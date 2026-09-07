@@ -6,14 +6,19 @@
 		$core->fastClose(403);
 		return;
 	}
-	if (!isset($_REQUEST['id']) || !is_numeric($_REQUEST['id'])) {
-		$core->fastClose(404);
-		return;
-	}
-	
+		if (!isset($_REQUEST['id']) || !is_numeric($_REQUEST['id'])) {
+			$core->fastClose(404);
+			return;
+		}
+		$id = filter_var($_REQUEST['id'], FILTER_VALIDATE_INT);
+		if ($id === false || $id < 1) {
+			$core->fastClose(404);
+			return;
+		}
+
 	// load up what we want to undo
 	$undo = $core->loaded('bi_undo');
-	$sql = $undo->get_base_sql($undo->name.".id=".$_REQUEST['id']);
+		$sql = $undo->get_base_sql($undo->name.".id=".$id);
 	$r = false;
 	$n = 0;
 	$core->dbo->query($sql,$r,$n);
@@ -21,10 +26,10 @@
 		$core->fastClose(404);
 		return;
 	}
-	
+
 	$plugin = $core->loadedPlugins['bi_undo'];
-	$sucess = $plugin->undo($_REQUEST['id'],$r);
-	
+		$sucess = $plugin->undo($id,$r);
+
 	if ($sucess) $core->action = "edit";
 	else $core->action = "historymain";
-	
+
