@@ -48,7 +48,7 @@ class CKFinder_Connector_CommandHandler_FileUpload extends CKFinder_Connector_Co
         $oRegistry =& CKFinder_Connector_Core_Factory::getInstance("Core_Registry");
         $oRegistry->set("FileUpload_fileName", "unknown file");
 
-        if (!is_array($_FILES) || empty($_FILES)) {
+        if (!is_array($_FILES) || count($_FILES) !== 1) {
             $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_UPLOADED_INVALID);
         }
 
