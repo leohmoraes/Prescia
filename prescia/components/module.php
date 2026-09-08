@@ -1034,7 +1034,7 @@ class CModule {
 		}
 	}
 #-
-	private function sqlParameter($isADD,&$data,$name,&$field,&$EnumPrunecache,$isSerialized=false,$kA='',$wS='') {
+	private function sqlParameter($isADD,&$data,$name,&$field,&$EnumPrunecache,$isSerialized=false,$kA='',$wS='',$wTypes='',$wParams=array()) {
 		$output = false;
 		$encapsulation = $isSerialized?'':'"';
 		switch( $field[CONS_XML_TIPO] ) {
@@ -1452,7 +1452,7 @@ class CModule {
 						continue;
 					}
 					if ($name != $this->keys[0] && strpos($field[CONS_XML_SQL],"AUTO_INCREMENT") === false) { # cannot change main key or auto_increment ones
-						$outfield = $this->sqlParameter(false,$data,$name,$field,$EnumPrunecache,false,$kA,$wS);
+						$outfield = $this->sqlParameter(false,$data,$name,$field,$EnumPrunecache,false,$kA,$wS,$wTypes,$wParams);
 						if ($outfield !== false) {
 								$output .= $name."=".$outfield['sql'].",";
 								$queryTypes .= $outfield['types'];
