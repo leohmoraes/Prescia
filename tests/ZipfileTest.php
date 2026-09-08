@@ -22,6 +22,7 @@ final class ZipfileTest extends TestCase
         self::assertSame("PK\x03\x04", substr($zip, 0, 4));
         self::assertSame(pack('V', $archive->unix2DosTime($timestamp)), substr($zip, 10, 4));
         self::assertSame('payload.txt', substr($zip, 30, 11));
-        self::assertSame('payload', substr($zip, 41, 7));
+        $compressedLength = unpack('V', substr($zip, 18, 4))[1];
+        self::assertSame('payload', gzinflate(substr($zip, 41, $compressedLength)));
     }
 }
