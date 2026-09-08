@@ -202,16 +202,16 @@ $config['ResourceType'][] = Array(
 			'url' => $baseUrl/*. 'files'*/,
 			'directory' => $baseDir/* . 'files'*/,
 			'maxSize' => '8M',
-			'allowedExtensions' => '7z,aiff,asf,avi,bmp,csv,doc,docx,fla,gif,gz,gzip,jpeg,jpg,mid,mov,mp3,mp4,mpc,mpeg,mpg,ods,odt,pdf,png,ppt,pptx,pxd,qt,ram,rm,rmi,rmvb,rtf,sdc,sitd,sxc,sxw,tar,tgz,tif,tiff,txt,vsd,wav,wma,wmv,xls,xlsx,zip',
-			'deniedExtensions' => '');
+				'allowedExtensions' => '7z,aiff,asf,avi,bmp,csv,doc,docx,gif,gz,gzip,jpeg,jpg,mid,mov,mp3,mp4,mpc,mpeg,mpg,ods,odt,pdf,png,ppt,pptx,pxd,qt,ram,rm,rmi,rmvb,rtf,sdc,sitd,sxc,sxw,tar,tgz,tif,tiff,txt,vsd,wav,wma,wmv,xls,xlsx,zip',
+				'deniedExtensions' => 'php,php3,php4,php5,php7,phar,phtml,pl,py,sh,cgi,exe,bin,dll,js,html,htm,xml,svg,swf,flv');
 
 $config['ResourceType'][] = Array(
 		'name' => 'Images',
 			'url' => $baseUrl /*. 'images'*/,
 			'directory' => $baseDir /*. 'images'*/,
 			'maxSize' => '5M',
-			'allowedExtensions' => 'bmp,gif,jpeg,jpg,png',
-			'deniedExtensions' => '');
+				'allowedExtensions' => 'bmp,gif,jpeg,jpg,png',
+				'deniedExtensions' => 'php,php3,php4,php5,php7,phar,phtml,pl,py,sh,cgi,exe,bin,dll,js,html,htm,xml,svg,swf,flv');
 
 /*
  Due to security issues with Apache modules, it is recommended to leave the
@@ -269,7 +269,7 @@ $config['CheckSizeAfterScaling'] = true;
 /*
 Reject HTML content in uploaded files regardless of their extension.
 */
-$config['HtmlExtensions'] = array();
+$config['HtmlExtensions'] = array('html', 'htm', 'xml', 'js', 'svg');
 
 /*
 Folders to not display in CKFinder, no matter their location.
