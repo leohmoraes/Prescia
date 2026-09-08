@@ -120,6 +120,21 @@ SQL, $payload);
         self::assertStringNotContainsString('p.id_forum = $idf', $thread);
     }
 
+    public function testBiBbIndexUsesPreparedForumAndLanguageFilters(): void
+    {
+        $index = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_bb/payload/content/index.php');
+
+        self::assertStringContainsString('"_preparedTypes" => "s"', $index);
+        self::assertStringContainsString('$sql[\'_preparedTypes\'] = "is"', $index);
+        self::assertStringContainsString('queryPrepared($sql,\'i\',array((int)$data[\'id\']),$r,$n)', $index);
+        self::assertStringContainsString('"WHERE" => array("f.lang=?"', $index);
+        self::assertStringNotContainsString('forum.lang=\'".$lang."\'', $index);
+        self::assertStringNotContainsString('f.lang=\'$lang\'', $index);
+        self::assertStringNotContainsString('forum.id_parent=$idF', $index);
+        self::assertStringNotContainsString('p.id_forum=".$data[\'id\']', $index);
+        self::assertStringNotContainsString('t.id_forum=".$data[\'id\']', $index);
+    }
+
     public function testBiBbArchiveFiltersUsePreparedValuesAndMetadataFields(): void
     {
         $module = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_bb/module.php');
