@@ -1791,6 +1791,11 @@ class CModule {
 		$originalSQL = false;
 		$preparedTypes = '';
 		$preparedParams = array();
+		if (is_array($sql) && isset($sql['_preparedTypes'])) {
+			$preparedTypes = (string)$sql['_preparedTypes'];
+			$preparedParams = isset($sql['_preparedParams']) && is_array($sql['_preparedParams'])?$sql['_preparedParams']:array();
+			unset($sql['_preparedTypes'],$sql['_preparedParams']);
+		}
 		if (is_array($sql) && isset($sql['where'],$sql['types'],$sql['params']) && !isset($sql['SELECT'])) {
 			$preparedTypes = (string)$sql['types'];
 			$preparedParams = is_array($sql['params'])?$sql['params']:array();

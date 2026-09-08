@@ -196,6 +196,13 @@
 		if (!in_array($key,$toShow)) $sqltoShow[$key] = 1;
 	$sql = $module->get_advanced_sql($sqltoShow,"","","","adminlist_".$module->name);
 	unset($sqltoShow);
+	$preparedTypes = '';
+	$preparedParams = array();
+	$addPreparedWhere = function ($fragment,$value) use (&$sql,&$preparedTypes,&$preparedParams) {
+		$sql['WHERE'][] = $fragment.'?';
+		$preparedTypes .= 's';
+		$preparedParams[] = (string)$value;
+	};
 
 	// Order and query controls
 	$hasOrder = false; // this module has a "ordem" field
@@ -417,9 +424,9 @@
 
 				// prepare filters
 
-				if (isset($_REQUEST[$name]) && !is_array($_REQUEST[$name]) && $_REQUEST[$name] != '0' && $_REQUEST[$name] != "") {
-					// filter this on, so we will fill this select instead of showing "select other fields ..."
-					$sql['WHERE'][] = $module->name.".".$name."$compare\"".$_REQUEST[$name]."\"";
+					if (isset($_REQUEST[$name]) && !is_array($_REQUEST[$name]) && $_REQUEST[$name] != '0' && $_REQUEST[$name] != "") {
+						// filter this on, so we will fill this select instead of showing "select other fields ..."
+						$addPreparedWhere($module->name.".".$name."$compare",$_REQUEST[$name]);
 					$sqlin['SELECT'][] = "if (".$mod->name.".".$mod->keys[0].$compare."'".$_REQUEST[$name]."',1,0) as selected";
 					$filtering++;
 					$isFilteringThis = true;
@@ -502,7 +509,7 @@
 			break;
 			case CONS_TIPO_ENUM:  ################################################################ ENUM
 				if (isset($_REQUEST[$name]) && !is_array($_REQUEST[$name]) &&$_REQUEST[$name]!="") {
-					$sql['WHERE'][] = $module->name.".".$name."$compare\"".$_REQUEST[$name]."\"";
+					$addPreparedWhere($module->name.".".$name."$compare",$_REQUEST[$name]);
 					$filtering++;
 					$isFilteringThis = true;
 					if ($useSF) {
@@ -539,26 +546,26 @@
 				$fillDT['isbetween'] = 0;
 				if ($compare != "m" && $compare != "b" && isset($_REQUEST[$name]) && $_REQUEST[$name] != "0000-00-00" && $_REQUEST[$name] != "0000-00-00 00:00:00" && $_REQUEST[$name] != "") {
 					if (isData($_REQUEST[$name],$data)) {
-						$sql['WHERE'][] = $module->name.".".$name."$compare\"".$data."\"";
+							$addPreparedWhere($module->name.".".$name."$compare",$data);
 						$filtering++;
 						$isFilteringThis = true;
 					}
 				} else if ($compare == "m") {
 					if (is_numeric($_REQUEST[$name])) {
 						if ($_REQUEST[$name]<10) $_REQUEST[$name] = "0".$_REQUEST[$name];
-						$sql['WHERE'][] = $module->name.".".$name." LIKE \"____-".$_REQUEST[$name]."-%\"";
+							$addPreparedWhere($module->name.".".$name." LIKE ","____-".$_REQUEST[$name]."-%");
 						$filtering++;
 						$isFilteringThis = true;
 					} else if (preg_match("@([0-9]{1,2})[^0-9]([0-9]{1,2})[^0-9]([0-9]{1,4})@",$_REQUEST[$name],$regs)>0) {
 						$regs = (int)$regs[2];
 						if ($regs<10) $regs = "0".$regs;
-						$sql['WHERE'][] = $module->name.".".$name." LIKE \"____-".$regs."-%\"";
+							$addPreparedWhere($module->name.".".$name." LIKE ",$regs."-%");
 						$filtering++;
 						$isFilteringThis = true;
 					}
 				} else if ($compare == "b") {
-					$sql['WHERE'][] = $module->name.".".$name." >= \"".$_REQUEST[$name]."\"";
-					$sql['WHERE'][] = $module->name.".".$name." <= \"".$_REQUEST["between_".$name]."\"";
+					$addPreparedWhere($module->name.".".$name." >= ",$_REQUEST[$name]);
+					$addPreparedWhere($module->name.".".$name." <= ",$_REQUEST["between_".$name]);
 					$filtering++;
 					$fillDT['isbetween'] = 1;
 					$fillDT['between_value'] = $_REQUEST['between_'.$name];
@@ -582,14 +589,14 @@
 				$content = $using->techo($fillDT);
 
 			break;
-			case CONS_TIPO_TEXT:  ################################################################ NORMAL INPUT FIELDS (text, numbers)
-			case CONS_TIPO_VC:
+				case CONS_TIPO_TEXT:  ################################################################ NORMAL INPUT FIELDS (text, numbers)
+				case CONS_TIPO_VC:
 				if (isset($_REQUEST[$name]) && !is_array($_REQUEST[$name]) && $_REQUEST[$name] != "") 
 					$_REQUEST[$name] = cleanString($_REQUEST[$name],isset($field[CONS_XML_HTML]));
 			case CONS_TIPO_INT:
-			case CONS_TIPO_FLOAT:
-				if (isset($_REQUEST[$name]) && !is_array($_REQUEST[$name]) && $_REQUEST[$name] != "") {
-					$sql['WHERE'][] = $module->name.".".$name."$compare\"".($compare==" LIKE "?"%":"").$_REQUEST[$name].($compare==" LIKE "?"%":"")."\"";
+				case CONS_TIPO_FLOAT:
+					if (isset($_REQUEST[$name]) && !is_array($_REQUEST[$name]) && $_REQUEST[$name] != "") {
+						$addPreparedWhere($module->name.".".$name."$compare",($compare==" LIKE "?"%":"").$_REQUEST[$name].($compare==" LIKE "?"%":""));
 					$filtering++;
 					$isFilteringThis = true;
 					if ($useSF) {
@@ -733,7 +740,7 @@
 						if (isset($_REQUEST[$lmod."_".$lfname]) && !is_array($_REQUEST[$lmod."_".$lfname]) && $_REQUEST[$lmod."_".$lfname] != 0 && $_REQUEST[$lmod."_".$lfname] != "") {
 							# filter this out
 							$sql['LEFT'][] = $remoteModule->dbname." as ".$remoteModule->name." ON (".$remoteModule->name.".".$remoteModule->keys[0]." = $lmod.$linkerfname)";
-							$sql['WHERE'][] = $remoteModule->name.".".$remoteModule->keys[0]." = '".$_REQUEST[$lmod."_".$lfname]."'";
+							$addPreparedWhere($remoteModule->name.".".$remoteModule->keys[0]." = ",$_REQUEST[$lmod."_".$lfname]);
 							$filtering++;
 							$skeys .= "<input type=\"hidden\" name=\"match_".$lmod."_".$lfname."\" value=\"".$_REQUEST['match_'.$lmod."_".$lfname]."\"/>";
 					$skeys .= "<input type=\"hidden\" name=\"".$lmod."_".$lfname."\" value=\"".$_REQUEST[$lmod."_".$lfname]."\"/>";
@@ -1156,7 +1163,7 @@
 
 	// prepare default list size
 	if (isset($_REQUEST['p_size']) && is_numeric($_REQUEST['p_size']) && $_REQUEST['p_size']>=0)
-		$this->parent->templateParams['p_size'] = $_REQUEST['p_size'];
+		$this->parent->templateParams['p_size'] = (int)$_REQUEST['p_size'];
 	else {
 		$this->parent->templateParams['p_size'] = CONS_DEFAULT_IPP;
 		if (is_array($up) && isset($up['pfim']) && is_numeric($up['pfim']) && $up['pfim'] > 4) {
@@ -1178,10 +1185,15 @@
 
 	if (isset($_REQUEST['vaction']) && $_REQUEST['vaction'] == "mark" && isset($_REQUEST['markmode']) && $_REQUEST['markmode'] == "true") { // yes, mark all
 		// fetch ALL resulting keys
-		$_REQUEST['multiSelectedIds'] = array();
-		$r = false;
-		$n = 0;
-		$core->dbo->query($sql,$r,$n);
+			$_REQUEST['multiSelectedIds'] = array();
+			$r = false;
+			$n = 0;
+			if ($preparedTypes !== '') {
+				$sqlText = $core->dbo->sqlarray_echo($sql);
+				$core->dbo->queryPrepared($sqlText,$preparedTypes,$preparedParams,$r,$n);
+			} else {
+				$core->dbo->query($sql,$r,$n);
+			}
 		for ($c=0;$c<$n;$c++) {
 			$msidata = $core->dbo->fetch_assoc($r);
 			$checkkeys = "";
@@ -1208,6 +1220,10 @@
 	}
 
 	##############################################################################
+	if ($preparedTypes !== '') {
+		$sql['_preparedTypes'] = $preparedTypes;
+		$sql['_preparedParams'] = $preparedParams;
+	}
 	$total = $module->runContent($core->template,$sql,"_lineTemplate",true,false,$callback);
 	##############################################################################
 
