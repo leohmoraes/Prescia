@@ -266,4 +266,17 @@ PHP, $upload);
             self::assertStringNotContainsString("str_replace(\"'\", \"\\\\'\"", $source);
         }
     }
+
+    public function testCKFinderUploadValidatesTheCompleteHttpUploadContract(): void
+    {
+        $upload = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/FileUpload.php');
+
+        foreach (array('name', 'type', 'tmp_name', 'error', 'size') as $field) {
+            self::assertStringContainsString("'" . $field . "'", $upload);
+        }
+        self::assertStringContainsString('is_uploaded_file($uploadedFile[\'tmp_name\'])', $upload);
+        self::assertStringContainsString('$uploadedFile[\'size\'] < 0', $upload);
+        self::assertStringContainsString('default:', $upload);
+        self::assertStringNotContainsString('switch ($uploadedFile[\'error\'])', substr($upload, strpos($upload, '$sServerDir')));
+    }
 }
