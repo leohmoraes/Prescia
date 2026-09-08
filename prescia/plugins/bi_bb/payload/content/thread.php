@@ -109,11 +109,18 @@
 	$core->template->assign("p",$mode == 'bb'?$totalPost:$totalPost-1);
 
 	// posts
-	$sql = "SELECT p.*,u.login, u.image, u.name
-		    FROM (bb_post as p, auth_users as u)
-		    WHERE p.id_forumthread = $idt AND p.id_forum = $idf AND
-		    	  u.id = p.id_author
-		    ORDER BY p.date ASC";
+	$sql = array(
+		"SELECT" => array("p.*", "u.login", "u.image", "u.name"),
+		"FROM" => array("bb_post as p", "auth_users as u"),
+		"LEFT" => array(),
+		"WHERE" => array("p.id_forumthread = ?", "p.id_forum = ?", "u.id = p.id_author"),
+		"GROUP" => array(),
+		"ORDER" => array("p.date ASC"),
+		"LIMIT" => array(),
+		"HAVING" => array(),
+		"_preparedTypes" => "ii",
+		"_preparedParams" => array((int)$idt, (int)$idf)
+	);
 
 	// Callback that loads user avatars or the default image without declaring a global function.
 	$getUserAvatar = static function (&$template, &$params, $data, $processed = false) {

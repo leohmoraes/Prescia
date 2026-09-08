@@ -108,6 +108,18 @@ SQL, $payload);
         self::assertStringNotContainsString('WHERE id_forum=$idf AND id_forumthread=$idt', $thread);
     }
 
+    public function testBiBbThreadPostsUseStructuredSqlAndPreparedIds(): void
+    {
+        $thread = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_bb/payload/content/thread.php');
+
+        self::assertStringContainsString('"SELECT" => array("p.*", "u.login", "u.image", "u.name")', $thread);
+        self::assertStringContainsString('"WHERE" => array("p.id_forumthread = ?", "p.id_forum = ?", "u.id = p.id_author")', $thread);
+        self::assertStringContainsString('"_preparedTypes" => "ii"', $thread);
+        self::assertStringContainsString('"_preparedParams" => array((int)$idt, (int)$idf)', $thread);
+        self::assertStringNotContainsString('p.id_forumthread = $idt', $thread);
+        self::assertStringNotContainsString('p.id_forum = $idf', $thread);
+    }
+
     public function testBiBbArchiveFiltersUsePreparedValuesAndMetadataFields(): void
     {
         $module = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_bb/module.php');
