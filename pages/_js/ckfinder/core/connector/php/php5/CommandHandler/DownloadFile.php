@@ -66,7 +66,9 @@ class CKFinder_Connector_CommandHandler_DownloadFile extends CKFinder_Connector_
         }
 
         $filePath = CKFinder_Connector_Utils_FileSystem::combinePaths($this->_currentFolder->getServerPath(), $fileName);
-        if ($_resourceTypeInfo->checkIsHiddenFile($fileName) || !file_exists($filePath) || !is_file($filePath)) {
+        if ($_resourceTypeInfo->checkIsHiddenFile($fileName)
+            || !CKFinder_Connector_Utils_FileSystem::isPathInside($_resourceTypeInfo->getDirectory(), $filePath)
+            || !file_exists($filePath) || !is_file($filePath)) {
             $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_FILE_NOT_FOUND);
         }
 
@@ -80,11 +82,15 @@ class CKFinder_Connector_CommandHandler_DownloadFile extends CKFinder_Connector_
         }
         else {
             $user_agent = !empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : "";
-            $encodedName = str_replace("\"", "\\\"", $fileName);
+            if (strpbrk($fileName, "\r\n") !== false) {
+                $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_INVALID_REQUEST);
+            }
+            $encodedName = str_replace(array("\\", "\""), array("\\\\", "\\\""), $fileName);
             if (strpos($user_agent, "MSIE") !== false) {
                 $encodedName = str_replace(array("+", "%2E"), array(" ", "."), urlencode($encodedName));
             }
-            header("Content-type: application/octet-stream; name=\"" . $fileName . "\"");
+            header("X-Content-Type-Options: nosniff");
+            header("Content-type: application/octet-stream; name=\"" . $encodedName . "\"");
             header("Content-Disposition: attachment; filename=\"" . $encodedName. "\"");
         }
         header("Content-Length: " . filesize($filePath));

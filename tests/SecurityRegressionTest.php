@@ -251,4 +251,19 @@ PHP, $upload);
             self::assertStringContainsString('isPathInside(', $source, $handler . ' must validate canonical paths');
         }
     }
+
+    public function testCKFinderDownloadAndCallbacksRejectHeaderAndScriptInjection(): void
+    {
+        $download = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/DownloadFile.php');
+        self::assertStringContainsString('isPathInside($_resourceTypeInfo->getDirectory(), $filePath)', $download);
+        self::assertStringContainsString('strpbrk($fileName, "\\r\\n")', $download);
+        self::assertStringContainsString('X-Content-Type-Options: nosniff', $download);
+
+        foreach (array('FileUpload', 'QuickUpload') as $handler) {
+            $source = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/ErrorHandler/' . $handler . '.php');
+            self::assertStringContainsString('json_encode(', $source, $handler . ' must encode callback values as JSON');
+            self::assertStringContainsString('JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP', $source);
+            self::assertStringNotContainsString("str_replace(\"'\", \"\\\\'\"", $source);
+        }
+    }
 }
