@@ -188,21 +188,12 @@ class CKFinder_Connector_CommandHandler_MoveFiles extends CKFinder_Connector_Com
                 // check if file exists if we don't force overwriting
                 else if (file_exists($destinationFilePath)) {
                     if (strpos($options, "overwrite") !== false) {
-                        if (!@unlink($destinationFilePath)) {
+                        if (!@rename($sourceFilePath, $destinationFilePath)) {
                             $errorCode = CKFINDER_CONNECTOR_ERROR_ACCESS_DENIED;
                             $this->appendErrorNode($oErrorsNode, $errorCode, $name, $type, $path);
                             continue;
                         }
-                        else {
-                            if (!@rename($sourceFilePath, $destinationFilePath)) {
-                                $errorCode = CKFINDER_CONNECTOR_ERROR_ACCESS_DENIED;
-                                $this->appendErrorNode($oErrorsNode, $errorCode, $name, $type, $path);
-                                continue;
-                            }
-                            else {
-                                $moved++;
-                            }
-                        }
+                        $moved++;
                     }
                     else if (strpos($options, "autorename") !== false) {
                         $iCounter = 1;

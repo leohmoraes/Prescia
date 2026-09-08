@@ -279,4 +279,17 @@ PHP, $upload);
         self::assertStringContainsString('default:', $upload);
         self::assertStringNotContainsString('switch ($uploadedFile[\'error\'])', substr($upload, strpos($upload, '$sServerDir')));
     }
+
+    public function testCKFinderMutableCopiesPublishAtomically(): void
+    {
+        $fileSystem = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/Utils/FileSystem.php');
+        $copy = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/CopyFiles.php');
+        $move = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/MoveFiles.php');
+
+        self::assertStringContainsString('public static function copyFileAtomic($sourcePath, $destinationPath)', $fileSystem);
+        self::assertStringContainsString('tempnam(dirname($destinationPath), \'.ckfinder-\')', $fileSystem);
+        self::assertStringContainsString('copyFileAtomic($sourceFilePath, $destinationFilePath)', $copy);
+        self::assertStringNotContainsString('@unlink($destinationFilePath)', $move);
+        self::assertStringContainsString('@rename($sourceFilePath, $destinationFilePath)', $move);
+    }
 }

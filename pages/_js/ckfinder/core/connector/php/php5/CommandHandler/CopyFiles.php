@@ -203,7 +203,7 @@ class CKFinder_Connector_CommandHandler_CopyFiles extends CKFinder_Connector_Com
                                 $iCounter++;
                             }
                         }
-                        if (!@copy($sourceFilePath, $destinationFilePath)) {
+                        if (!CKFinder_Connector_Utils_FileSystem::copyFileAtomic($sourceFilePath, $destinationFilePath)) {
                             $errorCode = CKFINDER_CONNECTOR_ERROR_ACCESS_DENIED;
                             $this->appendErrorNode($oErrorsNode, $errorCode, $name, $type, $path);
                             continue;
@@ -220,7 +220,7 @@ class CKFinder_Connector_CommandHandler_CopyFiles extends CKFinder_Connector_Com
                 }
                 // copy() overwrites without warning
                 else {
-                    if (!@copy($sourceFilePath, $destinationFilePath)) {
+                    if (!CKFinder_Connector_Utils_FileSystem::copyFileAtomic($sourceFilePath, $destinationFilePath)) {
                         $errorCode = CKFINDER_CONNECTOR_ERROR_ACCESS_DENIED;
                         $this->appendErrorNode($oErrorsNode, $errorCode, $name, $type, $path);
                         continue;

@@ -99,6 +99,29 @@ class CKFinder_Connector_Utils_FileSystem
     }
 
     /**
+     * Copy a file through a same-directory temporary path and publish it with
+     * an atomic rename, avoiding partially written destination files.
+     *
+     * @param string $sourcePath
+     * @param string $destinationPath
+     * @return boolean
+     */
+    public static function copyFileAtomic($sourcePath, $destinationPath)
+    {
+        $temporaryPath = tempnam(dirname($destinationPath), '.ckfinder-');
+        if ($temporaryPath === false) {
+            return false;
+        }
+
+        if (!@copy($sourcePath, $temporaryPath) || !@rename($temporaryPath, $destinationPath)) {
+            @unlink($temporaryPath);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Check whether $fileName is a valid file name, return true on success
      *
      * @static
