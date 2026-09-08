@@ -158,7 +158,8 @@ class CKFinder_Connector_CommandHandler_FileUpload extends CKFinder_Connector_Co
         {
             $sFilePath = CKFinder_Connector_Utils_FileSystem::combinePaths($sServerDir, $sFileName);
 
-            if (file_exists($sFilePath)) {
+            $destinationHandle = @fopen($sFilePath, 'x');
+            if ($destinationHandle === false) {
                 $iCounter++;
                 $sFileName =
                 CKFinder_Connector_Utils_FileSystem::getFileNameWithoutExtension($sFileNameOrginal) .
@@ -168,7 +169,9 @@ class CKFinder_Connector_CommandHandler_FileUpload extends CKFinder_Connector_Co
 
                 $iErrorNumber = CKFINDER_CONNECTOR_ERROR_UPLOADED_FILE_RENAMED;
             } else {
+                fclose($destinationHandle);
                 if (false === move_uploaded_file($uploadedFile['tmp_name'], $sFilePath)) {
+                    @unlink($sFilePath);
                     $iErrorNumber = CKFINDER_CONNECTOR_ERROR_ACCESS_DENIED;
                 }
                 else {
