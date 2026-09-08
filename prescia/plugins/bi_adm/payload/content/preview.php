@@ -22,15 +22,22 @@
 	$hasImages = false; // if we have images, so we load shadowbox
 	
 	#################################### PREPARES KEYS & isADD ##############################
-	$sql = $module->get_base_sql(); // Prepare SQL to fetch data >>if<< this is an EDIT based on incomming keys (if keys fail, won't even use it, but load first to fill the WHERE field)
-	foreach ($module->keys as $key) {
+		$preparedWhere = '';
+		$preparedTypes = '';
+		$preparedParams = array();
+		$preparedKeys = array();
+		$keyData = array();
+		foreach ($module->keys as $key) {
 		// for each key for this module
 		if (isset($_REQUEST[$key]) && !is_array($_REQUEST[$key]) && $_REQUEST[$key] != "") {
 			// that came in the request
-			// prepare keys and SQL
-			$sql['WHERE'][] = $module->name.".$key = \"".$_REQUEST[$key]."\"";
+				$keyData[$key] = $_REQUEST[$key];
 		} else { // a key is missing, this is most certainly not an edit
 			$core->fastClose(404); // this pane does not support ADD
+		}
+		if (!$module->getPreparedKeys($preparedWhere,$preparedTypes,$preparedParams,$preparedKeys,$keyData)) {
+			$core->fastClose(404);
+			return;
 		}
 	}
 	
@@ -41,10 +48,12 @@
 	
 	#################################### GET DATA TO SHOW #################################
 	include CONS_PATH_INCLUDE."filetypeIcon.php";
-	$ntp = new CKTemplate(); // some random template just to call runContent
-	$data = $module->runContent($ntp,$sql); // Get all data using the SQL we built based on incomming keys
-	unset($ntp); // trash the template (free memory)
-	if ($core->errorState || $data===false) {
+		$sql = "SELECT * FROM ".$module->dbname." WHERE ".$preparedWhere;
+		$r = false;
+		$n = 0;
+		$core->dbo->queryPrepared($sql,$preparedTypes,$preparedParams,$r,$n);
+		$data = $n > 0 ? $core->dbo->fetch_assoc($r) : false;
+		if ($core->errorState || $data===false) {
 		// not found? how? keys probable are wrong .. so toggle to 404
 		$core->fastClose(404);
 	}

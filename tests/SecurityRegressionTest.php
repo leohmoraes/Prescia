@@ -75,6 +75,18 @@ SQL, $payload);
         self::assertStringNotContainsString('$core->dbo->simpleQuery($m)', $list);
     }
 
+    public function testAdministrativePreviewAndPreferencesUsePreparedValues(): void
+    {
+        $preview = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/content/preview.php');
+        $list = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/content/list.php');
+
+        self::assertStringContainsString('$module->getPreparedKeys($preparedWhere,$preparedTypes,$preparedParams,$preparedKeys,$keyData)', $preview);
+        self::assertStringContainsString('$core->dbo->queryPrepared($sql,$preparedTypes,$preparedParams,$r,$n)', $preview);
+        self::assertStringNotContainsString('$_REQUEST[$key]."\\\""', $preview);
+        self::assertStringContainsString('UPDATE ".$uMod->dbname." SET userprefs=? WHERE id=?', $list);
+        self::assertStringNotContainsString('$core->dbo->simpleQuery($usql)', $list);
+    }
+
     public function testUniqueAjaxRouteUsesFieldAllowlistRbacAndPreparedValues(): void
     {
         $route = (string) file_get_contents(__DIR__ . '/../prescia/lazyload/ajaxqueryunique.php');
