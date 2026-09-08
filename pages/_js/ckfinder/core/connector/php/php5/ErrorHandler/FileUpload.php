@@ -49,17 +49,17 @@ class CKFinder_Connector_ErrorHandler_FileUpload extends CKFinder_Connector_Erro
         $sFileUrl = $oRegistry->get("FileUpload_url");
         $sEncodedFileName = CKFinder_Connector_Utils_FileSystem::convertToConnectorEncoding($sFileName);
 
-        header('Content-Type: text/html; charset=utf-8');
-
         $errorMessage = CKFinder_Connector_Utils_Misc::getErrorMessage($number, $sEncodedFileName);
         if (!$uploaded) {
             $sFileName = "";
             $sEncodedFileName = "";
         }
         if (!empty($_GET['response_type']) && $_GET['response_type'] == 'txt') {
+            header('Content-Type: text/plain; charset=utf-8');
             echo $sFileName."|".$errorMessage;
         }
         else {
+            header('Content-Type: text/html; charset=utf-8');
             echo "<script type=\"text/javascript\">";
             if (!empty($_GET['CKFinderFuncNum'])) {
 
@@ -69,10 +69,14 @@ class CKFinder_Connector_ErrorHandler_FileUpload extends CKFinder_Connector_Erro
                 }
 
                 $funcNum = preg_replace("/[^0-9]/", "", $_GET['CKFinderFuncNum']);
-                echo "window.parent.CKFinder.tools.callFunction($funcNum, '" . str_replace("'", "\\'", $sFileUrl . $sFileName) . "', '" .str_replace("'", "\\'", $errorMessage). "');";
+                $callbackUrl = json_encode($sFileUrl . $sFileName, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+                $callbackError = json_encode($errorMessage, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+                echo "window.parent.CKFinder.tools.callFunction(" . (int) $funcNum . ", " . $callbackUrl . ", " . $callbackError . ");";
             }
             else {
-                echo "window.parent.OnUploadCompleted('" . str_replace("'", "\\'", $sEncodedFileName) . "', '" . str_replace("'", "\\'", $errorMessage) . "') ;";
+                $callbackFileName = json_encode($sEncodedFileName, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+                $callbackError = json_encode($errorMessage, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+                echo "window.parent.OnUploadCompleted(" . $callbackFileName . ", " . $callbackError . ") ;";
             }
             echo "</script>";
         }

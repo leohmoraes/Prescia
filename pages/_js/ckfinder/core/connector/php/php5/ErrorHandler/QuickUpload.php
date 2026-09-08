@@ -66,13 +66,17 @@ class CKFinder_Connector_ErrorHandler_QuickUpload extends CKFinder_Connector_Err
             }
 
             $funcNum = preg_replace("/[^0-9]/", "", $_GET['CKEditorFuncNum']);
-            echo "window.parent.CKEDITOR.tools.callFunction($funcNum, '" . str_replace("'", "\\'", $sFileUrl . CKFinder_Connector_Utils_Misc::encodeURIComponent($sEncodedFileName)) . "', '" .str_replace("'", "\\'", $errorMessage). "');";
+            $callbackUrl = json_encode($sFileUrl . CKFinder_Connector_Utils_Misc::encodeURIComponent($sEncodedFileName), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+            $callbackError = json_encode($errorMessage, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+            echo "window.parent.CKEDITOR.tools.callFunction(" . (int) $funcNum . ", " . $callbackUrl . ", " . $callbackError . ");";
         }
         else {
             if (!$uploaded) {
                 echo "window.parent.OnUploadCompleted(" . $number . ", '', '', '') ;";
             } else {
-                echo "window.parent.OnUploadCompleted(" . $number . ", '" . str_replace("'", "\\'", $sFileUrl . CKFinder_Connector_Utils_Misc::encodeURIComponent($sEncodedFileName)) . "', '" . str_replace("'", "\\'", $sEncodedFileName) . "', '') ;";
+                $callbackUrl = json_encode($sFileUrl . CKFinder_Connector_Utils_Misc::encodeURIComponent($sEncodedFileName), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+                $callbackFileName = json_encode($sEncodedFileName, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+                echo "window.parent.OnUploadCompleted(" . $number . ", " . $callbackUrl . ", " . $callbackFileName . ", '') ;";
             }
         }
         echo "</script>";
