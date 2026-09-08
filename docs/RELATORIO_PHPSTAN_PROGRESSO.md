@@ -782,58 +782,6 @@ A continuação da issue #28 migrou as consultas de `CModule::autoPrune()` para 
 
 O terceiro lote da migração SQL parametrizou `CPrescia::deleteAllFrom()`. Tanto o caminho de zeragem (`UPDATE`) quanto o caminho de cascata (`SELECT`) agora usam `queryPrepared()`, mantendo as colunas e tabelas provenientes do modelo e transportando os valores de chave exclusivamente como parâmetros. PHPStan focalizado, lint PHP 8.3, PHPUnit e verificação de diff foram aprovados, sem alteração da baseline.
 
-## Correção de segurança — preview do fórum `bi_bb`
+## Quarto lote de segurança — validações do plugin bi_groups
 
-A auditoria do fluxo `prescia/plugins/bi_bb/payload/content/preview.php` confirmou que `id_forum` e `id_forumthread`, recebidos por `$_POST`, eram interpolados diretamente em duas consultas `SELECT`. O contexto de execução foi confirmado como payload incluído pelo módulo `mod_bi_bb`, com o banco disponível em `CPrescia::$dbo`.
-
-As duas consultas foram migradas para `queryPrepared()`, usando parâmetros inteiros (`ii` e `i`) derivados dos IDs recebidos. O fluxo de retorno e a regra de `fastClose(503)` foram preservados. Também foi inicializado `$ext` antes da chamada por referência a `locateFile()`. A baseline do PHPStan não foi alterada. `tests/SecurityRegressionTest.php` protege o contrato contra o retorno da concatenação direta.
-
-A validação focalizada deve incluir `php -l prescia/plugins/bi_bb/payload/content/preview.php`, `git diff --check`, o teste de regressão e a análise PHPStan do payload. O próximo alvo de segurança é continuar o inventário de consultas que recebem entrada de requisição, priorizando fluxos mutáveis de autenticação, CSRF e sessão conforme `docs/PLANO_ACAO_SEGURANCA.md`.
-
-## Frente de segurança — atualização de sessão autenticada
-
-A auditoria de `prescia/plugins/bi_auth/authControl.php` encontrou em `logUser()` uma atualização de histórico e preferências que ainda concatenava dados serializados da sessão e o ID do usuário em `simpleQuery()`. O fluxo foi migrado para `queryPrepared()`, com parâmetros `si` quando apenas o histórico é atualizado e `ssi` quando as preferências também precisam ser persistidas. O nome da tabela continua vindo do módulo carregado, enquanto todos os valores permanecem vinculados.
-
-A regressão foi adicionada a `tests/SecurityRegressionTest.php`. Os fluxos centrais de login já usavam `queryPrepared()` para credenciais, sessões persistentes, grupos e migração de senha; este lote elimina a última atualização identificada no caminho de login autenticado. A proteção CSRF global já valida todos os métodos mutáveis em `prescia/lib/main.php`, injeta tokens nos formulários e gira o token no logout.
-
-## Auditoria de API e RBAC — rotas AJAX
-
-A revisão identificou duas rotas AJAX capturadas pelo núcleo: `ajaxqueryunique.php` e `ajaxQuery.php`. A primeira aceitava módulo, campo e valor da requisição; concatenava campo e valor em SQL, usava `addslashes()` como proteção insuficiente e devolvia a consulta em caso de erro. Ela agora valida tipos, limita o campo a metadados do módulo, exige `CONS_ACTION_SELECT`, usa `fetchPrepared()` e devolve somente erro genérico.
-
-A segunda rota de preenchimento de selects chamava `runContent()` após definir `$this->safety = false`, o que podia bypassar a proteção de autorização durante a renderização. Ela agora exige `checkPermission($module, CONS_ACTION_SELECT)` e mantém o safety mode vigente, permitindo que `forcePermissions()` restrinja os registros retornados. Foram adicionados testes de regressão estáticos para ambos os contratos.
-
-O RBAC central continua baseado em permissões por módulo, ação e ownership (`checkPermission()`/`forcePermissions()`). A auditoria também confirmou que mutações administrativas passam por `runAction()`, que verifica a permissão de update/include/delete. Permanecem como recomendação futura testes de integração com banco para cada combinação guest, usuário, grupo e owner, pois os testes atuais não inicializam um ambiente MySQL real.
-
-## Varredura geral de `safety` em AJAX e payloads
-
-Todas as atribuições de `$this->safety`, `$core->safety` e `$this->parent->safety` foram localizadas e revisadas. As ocorrências em cadastro público, atualização de metadados do fórum, listagem/edição administrativa e manutenção de desenvolvimento possuem restauração explícita ou pertencem a fluxos privilegiados. O importador administrativo `bi_adm/payload/actions/import.php`, porém, desativava safety quando `ignoreErrors` era enviado e não restaurava o valor original ao terminar. A correção salva o estado anterior e o restaura após o processamento, evitando vazamento de estado para conteúdo posterior da mesma requisição. A regressão correspondente foi adicionada à suíte de segurança.
-
-## Auditoria de uploads e path traversal
-
-A revisão rastreou `storeFile()`, `prepareUpload()`, o download protegido do `bi_fm` e as ações administrativas de upload/exclusão. O achado explorável estava em `bi_adm/payload/actions/files.php`: depois de sanitizar o nome, a rota usava o filename bruto enviado pela requisição como fallback, permitindo que segmentos de caminho fossem considerados no `unlink()`. O fallback foi removido e os diretórios recebidos agora passam por allowlist de segmentos alfanuméricos, `_` e `-`.
-
-O upload do file manager recebeu a mesma validação de diretório. A função `bi_fm::isInsideSafe()` deixou de confiar em prefixo textual e agora compara caminhos canônicos resolvidos por `realpath()`, impedindo escapes com `..` e symlinks. O `storeFile()` continua rejeitando NUL bytes, restringindo extensões e bloqueando scripts executáveis. Foram adicionadas regressões estáticas para o fallback inseguro e para a contenção canônica.
-
-## Auditoria de SQL Injection e injeção de comandos
-
-A varredura de rotas de entrada encontrou interpolação de valores em filtros remotos, filtros AJAX, seleção de referência administrativa, ações de fórum e verificações de grupo. Os filtros centrais agora escapam strings com o driver ativo ou convertem IDs para inteiros; os fluxos de fórum e grupos usam `fetchPrepared()`/`queryPrepared()`.
-
-Também foi revisada a superfície de execução de comandos. Não foram encontrados usos de `shell_exec`, `system`, `passthru`, `proc_open` ou `popen` alimentados por entrada externa. O único `eval()` identificado pertence ao legado de conversão de data em `zipfile.php` e não recebe dados de requisição neste fluxo. A telemetria de `bi_stats` ainda contém SQL legado com dados de referer e caminho de página; esse componente foi registrado como próximo sublote separado para refatoração parametrizada, sem mascarar o achado nesta auditoria.
-
-## Sublote bi_stats — sanitização de telemetria
-
-As entradas de telemetria usadas pelo módulo `bi_stats` foram revisadas: ação/página, referer HTTP, domínio derivado, páginas acumuladas e identificador do navegador. Foi introduzido um helper local que delega o escape ao driver de banco (`addslashes_EX(..., $core->dbo)`), aplicado antes das queries SQL legadas, preservando a lógica existente de contagem e concorrência. IDs de página continuam normalizados como inteiros onde aplicável.
-
-A alteração é deliberadamente limitada ao `bi_stats` e à regressão estática correspondente. O módulo não usa execução de comandos externos alimentada por requisição. PHPUnit, PHPStan, lint PHP 8.3 e verificação de whitespace passaram.
-
-## Sublote bi_undo — issue #32
-
-O plugin `bi_undo` foi migrado nos sinks de SQL dinâmico ligados à restauração e ao histórico. A leitura do registro de undo agora normaliza o identificador como inteiro; verificações de chaves remotas usam escape pelo driver; a exclusão do histórico, a recuperação de chaves e a seleção do registro anterior usam `queryPrepared()`; e a gravação do histórico usa placeholders para módulo, evento, chaves, histórico serializado, arquivos e autor. O fluxo de captura passou a usar `getPreparedKeys()` e `queryPrepared()` para evitar interpolação de valores de registros.
-
-A regressão específica foi adicionada à suíte de segurança. PHPUnit, PHPStan, lint PHP 8.3 e `git diff --check` passaram.
-
-## Sublote de consumidores `getKeys` — issue #33
-
-As rotas administrativas `bi_adm/payload/actions/undo.php` e `multipleundo.php` foram endurecidas antes de construir seus filtros de histórico. O ID unitário agora passa por `FILTER_VALIDATE_INT` e exige valor positivo; a rota múltipla aplica a mesma validação a cada item recebido, ignorando entradas inválidas. Os valores usados em `get_base_sql()` e encaminhados ao plugin `bi_undo` são, portanto, inteiros normalizados, sem concatenação direta da requisição.
-
-Foi adicionada regressão estática para os dois consumidores. PHPUnit, PHPStan, lint PHP 8.3 e `git diff --check` passaram.
+As consultas de nível em `mod_bi_groups::edit_parse()` passaram de `fetch()` com ID concatenado para `fetchPrepared()` nos fluxos de atualização e exclusão. PHPStan focalizado, lint PHP 8.3, PHPUnit e verificação de diff foram aprovados.
