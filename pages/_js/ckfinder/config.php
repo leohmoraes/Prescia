@@ -195,27 +195,19 @@ $config['DefaultResourceTypes'] = '';
 
 $config['ResourceType'][] = Array(
 		'name' => 'Files',				// Single quotes not allowed
-		'url' => $baseUrl/*. 'files'*/,
-		'directory' => $baseDir/* . 'files'*/,
-		'maxSize' => 0,
-		'allowedExtensions' => '7z,aiff,asf,avi,bmp,csv,doc,docx,fla,flv,gif,gz,gzip,jpeg,jpg,mid,mov,mp3,mp4,mpc,mpeg,mpg,ods,odt,pdf,png,ppt,pptx,pxd,qt,ram,rar,rm,rmi,rmvb,rtf,sdc,sitd,swf,sxc,sxw,tar,tgz,tif,tiff,txt,vsd,wav,wma,wmv,xls,xlsx,zip',
-		'deniedExtensions' => '');
+			'url' => $baseUrl/*. 'files'*/,
+			'directory' => $baseDir/* . 'files'*/,
+			'maxSize' => '8M',
+			'allowedExtensions' => '7z,aiff,asf,avi,bmp,csv,doc,docx,fla,gif,gz,gzip,jpeg,jpg,mid,mov,mp3,mp4,mpc,mpeg,mpg,ods,odt,pdf,png,ppt,pptx,pxd,qt,ram,rm,rmi,rmvb,rtf,sdc,sitd,sxc,sxw,tar,tgz,tif,tiff,txt,vsd,wav,wma,wmv,xls,xlsx,zip',
+			'deniedExtensions' => '');
 
 $config['ResourceType'][] = Array(
 		'name' => 'Images',
-		'url' => $baseUrl /*. 'images'*/,
-		'directory' => $baseDir /*. 'images'*/,
-		'maxSize' => 0,
-		'allowedExtensions' => 'bmp,gif,jpeg,jpg,png',
-		'deniedExtensions' => '');
-
-$config['ResourceType'][] = Array(
-		'name' => 'Flash',
-		'url' => $baseUrl /*. 'flash'*/,
-		'directory' => $baseDir /*. 'flash'*/,
-		'maxSize' => 0,
-		'allowedExtensions' => 'swf,flv',
-		'deniedExtensions' => '');
+			'url' => $baseUrl /*. 'images'*/,
+			'directory' => $baseDir /*. 'images'*/,
+			'maxSize' => '5M',
+			'allowedExtensions' => 'bmp,gif,jpeg,jpg,png',
+			'deniedExtensions' => '');
 
 /*
  Due to security issues with Apache modules, it is recommended to leave the
@@ -271,10 +263,9 @@ after scaling them. Otherwise, it is checked right after uploading.
 $config['CheckSizeAfterScaling'] = true;
 
 /*
-For security, HTML is allowed in the first Kb of data for files having the
-following extensions only.
+Reject HTML content in uploaded files regardless of their extension.
 */
-$config['HtmlExtensions'] = array('html', 'htm', 'xml', 'js');
+$config['HtmlExtensions'] = array();
 
 /*
 Folders to not display in CKFinder, no matter their location.
