@@ -63,6 +63,18 @@ SQL, $payload);
         self::assertStringNotContainsString('$core->dbo->simpleQuery("DELETE FROM ".$undoModule->dbname', $undo);
     }
 
+    public function testAdministrativeUndoAndLinkerUsePreparedValues(): void
+    {
+        $undo = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/actions/undo.php');
+        $multipleUndo = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/actions/multipleundo.php');
+        $list = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/actions/list.php');
+
+        self::assertStringContainsString('queryPrepared($sql,\'i\',array($id),$r,$n)', $undo);
+        self::assertStringContainsString('queryPrepared($sql,\'i\',array($id),$r,$n)', $multipleUndo);
+        self::assertStringContainsString('queryPrepared("INSERT INTO ".$lmod->dbname', $list);
+        self::assertStringNotContainsString('$core->dbo->simpleQuery($m)', $list);
+    }
+
     public function testUniqueAjaxRouteUsesFieldAllowlistRbacAndPreparedValues(): void
     {
         $route = (string) file_get_contents(__DIR__ . '/../prescia/lazyload/ajaxqueryunique.php');
