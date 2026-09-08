@@ -24,10 +24,10 @@ A Issue #67 permanece aberta. A correção de CSP e o hardening de SSRF foram tr
 | C-02 | `bi_stats` | XSS potencial por saída de dados persistidos sem tipo seguro em `stats_rtajax` | `prescia/plugins/bi_stats/payload/actions/stats_rtajax.php:12-17` | **Alta** | Não corrigida; depende também de contexto de navegador e ACL |
 | C-03 | `bi_stats` | Endpoint de tempo real sem autorização explícita comprovada | `stats_rtajax.php:7-21` | **Alta** | Pendente de confirmação de roteamento e correção |
 | C-04 | `bi_stats` | Alteração de estado via `$_REQUEST` sem método POST/CSRF explícitos | `module.php:43-53` | **Alta** | Não corrigida; Issue #70 |
-| C-05 | CKFinder | Exposição de erros detalhados em produção | `pages/_js/ckfinder/config.php:47-48` | **Alta** | Confirmada no código; runtime a confirmar |
-| C-06 | CKFinder | ACL padrão amplo para todas as operações | `pages/_js/ckfinder/config.php:141-154` | **Alta** | Confirmada no código; impacto depende da exposição |
+| C-05 | CKFinder | Exposição de erros detalhados em produção | `pages/_js/ckfinder/config.php:47-48` | **Alta** | Corrigida na PR #80 com `display_errors=0`; deploy/runtime ainda requer confirmação |
+| C-06 | CKFinder | ACL padrão amplo para todas as operações | `pages/_js/ckfinder/config.php:141-154` | **Alta** | Corrigida no lote da PR #81 com papel `admin` explícito; testes de integração de autorização permanecem recomendados |
 | C-07 | CKFinder | Upload e possível publicação de tipos ativos | configurações de recursos em `config.php` e handlers PHP5 | **Alta/Crítica** | Tipo e serving precisam ser confirmados |
-| C-08 | CKFinder | Permissões de arquivos e diretórios permissivas | `ChmodFiles=0775`, `ChmodFolders=0775` | **Alta** | Confirmada no código; risco depende do usuário/grupo do servidor |
+| C-08 | CKFinder | Permissões de arquivos e diretórios permissivas | `ChmodFiles=0775`, `ChmodFolders=0775` | **Alta** | Corrigida na PR #80 para `0640`/`0750`; ownership e deploy ainda requerem confirmação |
 | C-09 | CKFinder | Renderização sem escaping contextual em HTML/URL | `ckfinder_php4.php` e `ckfinder_php5.php` | **Alta** | Potencial; origem dos valores deve ser confirmada |
 | C-10 | CKFinder | Runtime PHP4 e código de connector legado disponível | `core/ckfinder_php4.php`, `core/connector/php/php4/*` | **Alta** | Descontinuação proposta no PR #69; ainda não mesclada |
 | C-11 | `bi_stats` | CSV sem proteção explícita contra formula injection | `payload/actions/stats_export.php:42-50` | **Média/Alta** | Não corrigida; Issue #70 |
