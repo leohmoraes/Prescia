@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the conservative migration helper in `tools/migrate_php83.php`, with dry-run, timestamped backups and a security blocker report.
 
 ### Changed
+- Parameterized administrative import link lookups and related-option filters, including selected values and prerequisite fields, while preserving metadata-derived identifiers.
 - Parameterized the `bi_bb` inbox message count and the administrative edit key filters, including single-key and multi-selection paths, with regression coverage for recipient, date and `IN` values.
 - Replaced the legacy `eval()` used to encode ZIP DOS timestamps with deterministic little-endian `pack()` serialization, and added regression coverage for the generated local file header.
 - Hardened `bi_stats` CSV export with structured `fputcsv()` rows, date validation, numeric field typing, `nosniff`, and no-store response headers.

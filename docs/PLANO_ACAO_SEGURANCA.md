@@ -159,6 +159,8 @@ Em 2026-09-07, o fluxo de preview de `bi_bb` foi corrigido: os IDs de fórum e t
 
 O primeiro lote parametrizou a contagem de mensagens do `bi_bb` e os filtros de chaves simples e múltiplas do editor administrativo, com regressões automatizadas e CI PHP 8.3 verde. Permanecem pendentes as APIs de filtro SQL livre sem call sites, os lookups de link da importação administrativa e os filtros de opções relacionadas; cada um deve receber um contrato preparado próprio antes da alteração.
 
+O segundo lote concluiu os lookups de links da importação e os filtros das opções relacionadas não-parentais no editor, incluindo o valor selecionado e os pré-requisitos. Permanecem pendentes as árvores parentais, cuja API `getContents()` ainda não transporta parâmetros preparados, e as APIs de filtro livre sem call sites.
+
 ## Atualização do ciclo 2026-09-08
 
 Foi removido o uso de `eval()` em `prescia/lib/zipfile.php`, substituído por `pack('V', ...)` para serialização determinística do timestamp DOS, com teste de regressão do cabeçalho ZIP. A alteração é um lote independente de hardening e não encerra a frente de SQL parametrizado. O próximo lote deve continuar a revisão dos filtros legados em plugins, preservando nomes de tabela/coluna derivados de metadados internos e transportando valores externos por parâmetros preparados.
