@@ -388,7 +388,7 @@ PHP, $route);
         self::assertStringContainsString('chown -R www-data:www-data _temp', $dockerfile);
 
         $workflow = (string) file_get_contents(__DIR__ . '/../.github/workflows/php83.yml');
-        self::assertStringContainsString('aquasecurity/trivy-action@0.28.0', $workflow);
+        self::assertStringContainsString('aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1', $workflow);
         self::assertStringContainsString('severity: CRITICAL,HIGH', $workflow);
     }
 
