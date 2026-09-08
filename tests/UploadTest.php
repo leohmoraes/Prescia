@@ -72,4 +72,32 @@ final class UploadTest extends TestCase
 
         self::assertSame(3, \storeFile($file, $destination, 'udef:txt'));
     }
+
+    public function testUploadFailureDoesNotPublishPartialDestination(): void
+    {
+        $root = sys_get_temp_dir() . '/prescia-upload-' . bin2hex(random_bytes(6));
+        mkdir($root, 0750, true);
+        $source = $root . '/source.txt';
+        $destination = $root . '/readonly/stored';
+        mkdir($root . '/readonly', 0500, true);
+        file_put_contents($source, 'cannot publish');
+
+        try {
+            $file = [
+                'error' => UPLOAD_ERR_OK,
+                'tmp_name' => $source,
+                'name' => 'document.txt',
+                'virtual' => true,
+            ];
+
+            self::assertSame(3, \storeFile($file, $destination, 'udef:txt'));
+            self::assertFileDoesNotExist($destination . '.txt');
+        } finally {
+            @chmod($root . '/readonly', 0700);
+            @unlink($destination . '.txt');
+            @unlink($source);
+            @rmdir($root . '/readonly');
+            @rmdir($root);
+        }
+    }
 }

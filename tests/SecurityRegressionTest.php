@@ -227,6 +227,48 @@ PHP, $route);
         self::assertStringNotContainsString('$sql[\'WHERE\'][] = $module->name.".".$name."$compare\\\"".$_REQUEST[$name]', $listing);
     }
 
+    public function testPhpStanFrameworkContractsCoverIssue41Symbols(): void
+    {
+        $core = (string) file_get_contents(__DIR__ . '/../prescia/core.php');
+        $scripted = (string) file_get_contents(__DIR__ . '/../prescia/components/scripted.php');
+        $stubs = (string) file_get_contents(__DIR__ . '/../tools/phpstan-framework-stubs.php');
+        $englishLocale = (string) file_get_contents(__DIR__ . '/../pages/prescia/_config/locale/en.php');
+        $portugueseLocale = (string) file_get_contents(__DIR__ . '/../pages/prescia/_config/locale/pt-br.php');
+
+        self::assertSame(1, substr_count($englishLocale, '"quick_reference"'));
+        self::assertSame(1, substr_count($portugueseLocale, '"quick_reference"'));
+        self::assertStringContainsString('function langOut(', $core);
+        self::assertStringContainsString('function langOut(', $scripted);
+        self::assertStringContainsString('function saveConfig(', $core);
+        self::assertStringContainsString('function saveConfig(bool $force = false): void', $stubs);
+    }
+
+    public function testPhpStanFrameworkSymbolInventoryIsExplicitlyConfigured(): void
+    {
+        $config = (string) file_get_contents(__DIR__ . '/../phpstan.neon.dist');
+        $stubs = (string) file_get_contents(__DIR__ . '/../tools/phpstan-framework-stubs.php');
+
+        foreach (['arrayToString.php', 'storeFile.php', 'quota.php', 'console.php'] as $file) {
+            self::assertStringContainsString($file, $config);
+        }
+        foreach (['function addslashes_EX', 'class CPrescia', 'class CPresciaFull', 'class CKTCexternal', 'class ttree', 'class xmlHandler'] as $symbol) {
+            self::assertStringContainsString($symbol, $stubs);
+        }
+        self::assertStringContainsString('reportUnmatchedIgnoredErrors: true', $config);
+    }
+
+    public function testCModuleDeclaresCorePropertiesAndDynamicContracts(): void
+    {
+        $module = (string) file_get_contents(__DIR__ . '/../prescia/components/module.php');
+        $stubs = (string) file_get_contents(__DIR__ . '/../tools/phpstan-framework-stubs.php');
+
+        foreach (['public ?CPrescia $parent', 'public string $name', 'public string $dbname', 'public array $keys', 'public array $fields'] as $property) {
+            self::assertStringContainsString($property, $module);
+        }
+        self::assertStringContainsString('public array $templateParams', $stubs);
+        self::assertStringContainsString('class CPresciaFull extends CPrescia', $stubs);
+    }
+
     public function testBiStatsEscapesExternalTelemetryBeforeLegacySql(): void
     {
         $stats = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/module.php');
