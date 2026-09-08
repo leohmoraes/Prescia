@@ -165,14 +165,18 @@ PHP, $route);
     public function testBiStatsResolutionUsesValidationAndPreparedQueries(): void
     {
         $stats = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/module.php');
+        $client = (string) file_get_contents(__DIR__ . '/../pages/_js/getmyres.js');
 
-        self::assertStringContainsString(<<<'PHP'
-preg_match('/^[1-9][0-9]{1,4}x[1-9][0-9]{1,4}$/', $resolution)
-PHP, $stats);
+        self::assertStringContainsString("is_string(\$_REQUEST['res'])", $stats);
+        self::assertStringContainsString("\$_SERVER['REQUEST_METHOD'] === 'POST'", $stats);
+        self::assertStringContainsString("preg_match('/^([1-9][0-9]{0,4})x([1-9][0-9]{0,4})$/", $stats);
+        self::assertStringContainsString('(int)$resolutionParts[1] <= 10000', $stats);
         self::assertStringContainsString('fetchPrepared("SELECT hits FROM ".$statsResolution." WHERE data=? AND resolution=?"', $stats);
         self::assertStringContainsString('queryPrepared("UPDATE ".$statsResolution." SET hits=hits+1 WHERE data=? AND resolution=?"', $stats);
         self::assertStringContainsString('fetchPrepared("SELECT hits FROM ".$statsResolution." WHERE data=? AND resolution=?", \'ss\'', $stats);
         self::assertStringNotContainsString('resolution=\\"".$_SESSION[CONS_USER_RESOLUTION]', $stats);
+        self::assertStringContainsString('xhReq.open("POST", "/setres.ajax?layout=2", false);', $client);
+        self::assertStringContainsString('encodeURIComponent(screen.width + "x" + screen.height)', $client);
     }
 
     public function testBiStatsRealtimeEndpointAuthorizesAndEscapesOutput(): void
@@ -182,7 +186,10 @@ PHP, $stats);
         self::assertStringContainsString('$_SESSION[CONS_SESSION_ACCESS_LEVEL] < 10', $route);
         self::assertStringContainsString("filter_var(\$_REQUEST['ip'] ?? '', FILTER_VALIDATE_IP)", $route);
         self::assertStringContainsString('queryPrepared("SELECT * from ".$rt->dbname." WHERE ip=?"', $route);
-        self::assertStringContainsString("htmlspecialchars((string)\$value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')", $route);
+        self::assertStringContainsString("htmlspecialchars(substr((string)\$value, 0, 4096), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')", $route);
+        self::assertStringContainsString("header('X-Content-Type-Options: nosniff')", $route);
+        self::assertStringContainsString("header('Cache-Control: no-store, no-cache, must-revalidate')", $route);
+        self::assertStringContainsString('substr((string)$value, 0, 4096)', $route);
         self::assertStringNotContainsString('WHERE ip=\'$ip\'', $route);
         self::assertStringNotContainsString("echo \"Navegador: \".\$dados['agent']", $route);
     }
