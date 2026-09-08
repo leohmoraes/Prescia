@@ -48,6 +48,9 @@ class CKFinder_Connector_ErrorHandler_QuickUpload extends CKFinder_Connector_Err
         $sFileUrl = $oRegistry->get("FileUpload_url");
         $sEncodedFileName = CKFinder_Connector_Utils_FileSystem::convertToConnectorEncoding($sFileName);
 
+        $editorFunctionNumber = isset($_GET['CKEditorFuncNum']) && is_scalar($_GET['CKEditorFuncNum']) ? (string)$_GET['CKEditorFuncNum'] : '';
+        header('X-Content-Type-Options: nosniff');
+        header('Cache-Control: no-store, no-cache, must-revalidate');
         header('Content-Type: text/html; charset=utf-8');
 
 		/**
@@ -65,7 +68,7 @@ class CKFinder_Connector_ErrorHandler_QuickUpload extends CKFinder_Connector_Err
                 $sEncodedFileName = "";
             }
 
-            $funcNum = preg_replace("/[^0-9]/", "", $_GET['CKEditorFuncNum']);
+            $funcNum = preg_replace("/[^0-9]/", "", $editorFunctionNumber);
             $callbackUrl = json_encode($sFileUrl . CKFinder_Connector_Utils_Misc::encodeURIComponent($sEncodedFileName), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
             $callbackError = json_encode($errorMessage, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
             echo "window.parent.CKEDITOR.tools.callFunction(" . (int) $funcNum . ", " . $callbackUrl . ", " . $callbackError . ");";

@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the conservative migration helper in `tools/migrate_php83.php`, with dry-run, timestamped backups and a security blocker report.
 
 ### Changed
+- Hardened CKFinder upload callbacks against ambiguous array parameters, added no-store and nosniff response headers, and rejected multi-file `$_FILES` payloads in the single-upload command.
 - Hardened `bi_stats`: validated browser resolution values and moved `setres` queries to prepared statements; restricted the realtime statistics endpoint to administrators, validated IP input, and escaped persisted output.
 - Hardened CKFinder copy and move operations by publishing copies through same-directory temporary files and replacing move targets atomically, avoiding destructive pre-unlink and partially written destinations.
 - Hardened CKFinder upload input handling by validating the complete `$_FILES` structure, upload error codes, non-negative size, and `is_uploaded_file()` before reading or processing the temporary file.

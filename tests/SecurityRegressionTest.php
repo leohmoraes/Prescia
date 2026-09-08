@@ -305,6 +305,23 @@ PHP, $upload);
         self::assertStringNotContainsString('switch ($uploadedFile[\'error\'])', substr($upload, strpos($upload, '$sServerDir')));
     }
 
+    public function testCKFinderUploadAndCallbacksRejectAmbiguousRequestShapes(): void
+    {
+        $upload = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/FileUpload.php');
+        $fileUploadError = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/ErrorHandler/FileUpload.php');
+        $quickUploadError = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/ErrorHandler/QuickUpload.php');
+
+        self::assertStringContainsString('count($_FILES) !== 1', $upload);
+        self::assertStringContainsString("is_scalar(\$_GET['CKFinderFuncNum'])", $fileUploadError);
+        self::assertStringContainsString("is_scalar(\$_GET['CKEditorFuncNum'])", $quickUploadError);
+        foreach (array($fileUploadError, $quickUploadError) as $handler) {
+            self::assertStringContainsString('X-Content-Type-Options: nosniff', $handler);
+            self::assertStringContainsString('Cache-Control: no-store, no-cache, must-revalidate', $handler);
+        }
+        self::assertStringNotContainsString('preg_replace("/[^0-9]/", "", $_GET[', $fileUploadError);
+        self::assertStringNotContainsString('preg_replace("/[^0-9]/", "", $_GET[', $quickUploadError);
+    }
+
     public function testCKFinderMutableCopiesPublishAtomically(): void
     {
         $fileSystem = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/Utils/FileSystem.php');

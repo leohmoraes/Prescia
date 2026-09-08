@@ -54,21 +54,25 @@ class CKFinder_Connector_ErrorHandler_FileUpload extends CKFinder_Connector_Erro
             $sFileName = "";
             $sEncodedFileName = "";
         }
-        if (!empty($_GET['response_type']) && $_GET['response_type'] == 'txt') {
+        $responseType = isset($_GET['response_type']) && is_string($_GET['response_type']) ? $_GET['response_type'] : '';
+        $functionNumber = isset($_GET['CKFinderFuncNum']) && is_scalar($_GET['CKFinderFuncNum']) ? (string)$_GET['CKFinderFuncNum'] : '';
+        header('X-Content-Type-Options: nosniff');
+        header('Cache-Control: no-store, no-cache, must-revalidate');
+        if ($responseType === 'txt') {
             header('Content-Type: text/plain; charset=utf-8');
             echo $sFileName."|".$errorMessage;
         }
         else {
             header('Content-Type: text/html; charset=utf-8');
             echo "<script type=\"text/javascript\">";
-            if (!empty($_GET['CKFinderFuncNum'])) {
+            if ($functionNumber !== '') {
 
                 if (!$uploaded) {
                     $sFileUrl = "";
                     $sFileName = "";
                 }
 
-                $funcNum = preg_replace("/[^0-9]/", "", $_GET['CKFinderFuncNum']);
+                $funcNum = preg_replace("/[^0-9]/", "", $functionNumber);
                 $callbackUrl = json_encode($sFileUrl . $sFileName, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
                 $callbackError = json_encode($errorMessage, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
                 echo "window.parent.CKFinder.tools.callFunction(" . (int) $funcNum . ", " . $callbackUrl . ", " . $callbackError . ");";
