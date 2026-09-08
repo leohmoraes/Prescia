@@ -53,6 +53,16 @@ SQL, $payload);
         self::assertStringContainsString('return CONS_AUTH_SESSION_FAIL_UNKNOWN;', $authControl);
     }
 
+    public function testUndoCleanupLookupAndRemoteChecksUsePreparedQueries(): void
+    {
+        $undo = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_undo/module.php');
+
+        self::assertStringContainsString('queryPrepared($sql,\'i\',array($id),$record,$n)', $undo);
+        self::assertStringContainsString('fetchPrepared($sql,$whereTypes,$whereParams,false)', $undo);
+        self::assertStringNotContainsString('$core->dbo->query($sql,$r,$n)', $undo);
+        self::assertStringNotContainsString('$core->dbo->simpleQuery("DELETE FROM ".$undoModule->dbname', $undo);
+    }
+
     public function testUniqueAjaxRouteUsesFieldAllowlistRbacAndPreparedValues(): void
     {
         $route = (string) file_get_contents(__DIR__ . '/../prescia/lazyload/ajaxqueryunique.php');
