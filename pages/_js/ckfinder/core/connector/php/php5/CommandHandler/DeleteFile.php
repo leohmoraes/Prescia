@@ -73,6 +73,10 @@ class CKFinder_Connector_CommandHandler_DeleteFile extends CKFinder_Connector_Co
 
         $filePath = CKFinder_Connector_Utils_FileSystem::combinePaths($this->_currentFolder->getServerPath(), $fileName);
 
+        if (!CKFinder_Connector_Utils_FileSystem::isPathInside($_resourceTypeInfo->getDirectory(), $filePath)) {
+            $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_INVALID_REQUEST);
+        }
+
         $bDeleted = false;
 
         if (!file_exists($filePath)) {
@@ -87,6 +91,11 @@ class CKFinder_Connector_CommandHandler_DeleteFile extends CKFinder_Connector_Co
 
         if ($bDeleted) {
             $thumbPath = CKFinder_Connector_Utils_FileSystem::combinePaths($this->_currentFolder->getThumbsServerPath(), $fileName);
+
+            $_config =& CKFinder_Connector_Core_Factory::getInstance("Core_Config");
+            if (!CKFinder_Connector_Utils_FileSystem::isPathInside($_config->getThumbnailsConfig()->getDirectory(), $thumbPath)) {
+                $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_INVALID_REQUEST);
+            }
 
             @unlink($thumbPath);
 

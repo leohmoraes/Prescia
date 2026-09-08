@@ -86,6 +86,16 @@ class CKFinder_Connector_CommandHandler_RenameFolder extends CKFinder_Connector_
         //let's calculate new folder name
         $newFolderPath = dirname($oldFolderPath).DIRECTORY_SEPARATOR.$newFolderName.DIRECTORY_SEPARATOR;
 
+        if (!CKFinder_Connector_Utils_FileSystem::isPathInside($resourceTypeInfo->getDirectory(), $oldFolderPath)
+            || !CKFinder_Connector_Utils_FileSystem::isPathInside($resourceTypeInfo->getDirectory(), $newFolderPath)) {
+            $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_INVALID_REQUEST);
+        }
+
+        $_thumbnailsConfig = $_config->getThumbnailsConfig();
+        if (!CKFinder_Connector_Utils_FileSystem::isPathInside($_thumbnailsConfig->getDirectory(), $this->_currentFolder->getThumbsServerPath())) {
+            $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_INVALID_REQUEST);
+        }
+
         if (file_exists(rtrim($newFolderPath, DIRECTORY_SEPARATOR))) {
             $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_ALREADY_EXIST);
         }
