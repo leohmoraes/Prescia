@@ -233,9 +233,15 @@ class mod_bi_bb extends CscriptedModule  {
 	function countMessages($filterOnlyNew=false) { # get number of messages on inbox
 		if (!$this->parent->logged()) return false;
 		$mod = $this->parent->loaded('bbmail');
-		$sql = "SELECT count(*) FROM ".$mod->dbname." WHERE outbox='n' AND id_recipient=".$_SESSION[CONS_SESSION_ACCESS_USER]['id'];
-		if ($filterOnlyNew) $sql .= " AND dateseen<>'0000-00-00 00:00:00'";
-		return $this->parent->dbo->fetch($sql);
+		$sql = "SELECT count(*) FROM ".$mod->dbname." WHERE outbox='n' AND id_recipient=?";
+		$types = 'i';
+		$params = array((int)$_SESSION[CONS_SESSION_ACCESS_USER]['id']);
+		if ($filterOnlyNew) {
+			$sql .= " AND dateseen<>?";
+			$types .= 's';
+			$params[] = '0000-00-00 00:00:00';
+		}
+		return $this->parent->dbo->fetchPrepared($sql, $types, $params);
 	}
 	
 	function showHeader() {

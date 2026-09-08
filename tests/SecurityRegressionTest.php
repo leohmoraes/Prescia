@@ -87,6 +87,27 @@ SQL, $payload);
         self::assertStringNotContainsString('$core->dbo->simpleQuery($usql)', $list);
     }
 
+    public function testBiBbMessageCountUsesPreparedRecipientAndDateFilters(): void
+    {
+        $module = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_bb/module.php');
+
+        self::assertStringContainsString('return $this->parent->dbo->fetchPrepared($sql, $types, $params);', $module);
+        self::assertStringContainsString('$types = \'i\';', $module);
+        self::assertStringContainsString('$params[] = \'0000-00-00 00:00:00\';', $module);
+        self::assertStringNotContainsString('id_recipient=".$_SESSION[CONS_SESSION_ACCESS_USER][\'id\']', $module);
+    }
+
+    public function testAdministrativeEditUsesPreparedSingleAndMultipleKeys(): void
+    {
+        $edit = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/content/edit.php');
+
+        self::assertStringContainsString('$sql[\'WHERE\'][] = $module->name.".$key = ?";', $edit);
+        self::assertStringContainsString('$sql[\'_preparedParams\'] = $preparedParams;', $edit);
+        self::assertStringContainsString('queryPrepared($sql,str_repeat(\'s\',count($msi_nfiltered)),array_map(\'strval\',$msi_nfiltered),$r,$n)', $edit);
+        self::assertStringNotContainsString('IN ($msi_nfiltered)', $edit);
+        self::assertStringNotContainsString('$core->dbo->query($sql,$r,$n);', $edit);
+    }
+
     public function testUniqueAjaxRouteUsesFieldAllowlistRbacAndPreparedValues(): void
     {
         $route = (string) file_get_contents(__DIR__ . '/../prescia/lazyload/ajaxqueryunique.php');

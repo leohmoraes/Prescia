@@ -107,7 +107,9 @@
 	$sql = $module->get_base_sql(); // Prepare SQL to fetch data >>if<< this is an EDIT based on incomming keys (if keys fail, won't even use it, but load first to fill the WHERE field)
 	if (!$p['isMultiple']) {
 		$p['isADD'] = false; // assume this is edit (alas just prep the variable here)
-		// on add, some data might be comming already defined. Do not show them, while still considering ADD and not EDIT
+			$preparedTypes = '';
+			$preparedParams = array();
+			// on add, some data might be comming already defined. Do not show them, while still considering ADD and not EDIT
 		// also remember to remove autoincrement key if present (we never change these)
 		foreach ($module->keys as $key) {
 			// for each key for this module
@@ -117,17 +119,23 @@
 				$p['allKeys'] .= "&".$key."=".$_REQUEST[$key];
 				$p['hideKeys'][] = $key;
 				$p['refererKeys'][] = $_REQUEST[$key];
-				$sql['WHERE'][] = $module->name.".$key = \"".$_REQUEST[$key]."\"";
+					$sql['WHERE'][] = $module->name.".$key = ?";
+					$preparedTypes .= 's';
+					$preparedParams[] = (string)$_REQUEST[$key];
 			} else { // a key is missing, this is most certainly not an edit
 				$p['isADD'] = true;
 				if (strpos($module->fields[$key][CONS_XML_SQL],"AUTO_INCREMENT")!==false) {
 					// the item missing is the main auto_increment key, which is always hidden
 					$p['hideKeys'][] = $key; // hide auto_increment fields
 				}
+				}
 			}
-		}
-	} else {
-		$p['isADD'] = false; // multiple EDIT, so behave as an EDIT
+			if ($preparedTypes !== '') {
+				$sql['_preparedTypes'] = $preparedTypes;
+				$sql['_preparedParams'] = $preparedParams;
+			}
+		} else {
+			$p['isADD'] = false; // multiple EDIT, so behave as an EDIT
 		foreach ($module->keys as $key) {
 			// locate autoincrement keys so we never show them
 			if (strpos($module->fields[$key][CONS_XML_SQL],"AUTO_INCREMENT")!==false) {
@@ -158,11 +166,11 @@
 
 		# TODO: not working for multiple keys!
 
-		$msi_nfiltered = implode(",",$msi_nfiltered);
-		$sql = "SELECT ".$module->title." as title, ".$module->keys[0]." as id FROM ".$module->dbname." WHERE ".$module->keys[0]." IN ($msi_nfiltered)";
-		$r = false;
-		$n = 0;
-		$core->dbo->query($sql,$r,$n);
+			$placeholders = implode(',',array_fill(0,count($msi_nfiltered),'?'));
+			$sql = "SELECT ".$module->title." as title, ".$module->keys[0]." as id FROM ".$module->dbname." WHERE ".$module->keys[0]." IN ($placeholders)";
+			$r = false;
+			$n = 0;
+			$core->dbo->queryPrepared($sql,str_repeat('s',count($msi_nfiltered)),array_map('strval',$msi_nfiltered),$r,$n);
 		if ($n == 0) {
 			// no return? some error or the keys specified don't exist
 			$core->errorControl->raise(513,$msi_nfiltered,$module->name,"multiSelectedIds=".$_REQUEST['multiSelectedIds']);
