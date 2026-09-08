@@ -379,6 +379,7 @@ PHP, $route);
         $dockerfile = (string) file_get_contents(__DIR__ . '/../Dockerfile');
 
         self::assertStringContainsString('COPY --chown=root:root . /var/www/app/', $dockerfile);
+        self::assertStringContainsString('&& apt-get upgrade -y', $dockerfile);
         self::assertStringContainsString('ENV APACHE_DOCUMENT_ROOT=/var/www/public', $dockerfile);
         self::assertStringContainsString('cp /var/www/app/public/index.php /var/www/public/index.php', $dockerfile);
         self::assertStringContainsString('Alias /pages/ /var/www/app/pages/', $dockerfile);
