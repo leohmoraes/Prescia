@@ -13,6 +13,17 @@ RUN apt-get update && apt-get install -y \
 # Enable Apache modules
 RUN a2enmod rewrite headers expires
 
+# Keep framework internals and deployment artifacts outside the public surface.
+RUN printf '%s\n' \
+    '<FilesMatch "^(\\.env|composer\\.(json|lock)|Dockerfile|.*\\.(ini|log|sql|bak|dist))$">' \
+    '    Require all denied' \
+    '</FilesMatch>' \
+    '<DirectoryMatch "^/var/www/html/(config|prescia|tests|tools|docs)(/|$)">' \
+    '    Require all denied' \
+    '</DirectoryMatch>' \
+    > /etc/apache2/conf-available/prescia-hardening.conf \
+    && a2enconf prescia-hardening
+
 # Set working directory
 WORKDIR /var/www/html
 

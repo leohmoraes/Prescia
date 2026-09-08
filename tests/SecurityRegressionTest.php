@@ -255,6 +255,17 @@ PHP, $route);
         self::assertStringNotContainsString('Location:', $loader);
     }
 
+    public function testDockerImageDeniesFrameworkInternalsFromHttpSurface(): void
+    {
+        $dockerfile = (string) file_get_contents(__DIR__ . '/../Dockerfile');
+
+        self::assertStringContainsString('COPY --chown=root:root . /var/www/html/', $dockerfile);
+        self::assertStringContainsString('a2enconf prescia-hardening', $dockerfile);
+        self::assertStringContainsString('<DirectoryMatch "^/var/www/html/(config|prescia|tests|tools|docs)(/|$)">', $dockerfile);
+        self::assertStringContainsString('Require all denied', $dockerfile);
+        self::assertStringContainsString('chown -R www-data:www-data _temp', $dockerfile);
+    }
+
     public function testValidatedConnectionDoesNotReResolveHostnameDuringDnsRebinding(): void
     {
         require_once __DIR__ . '/../prescia/lib/loadURL.php';
