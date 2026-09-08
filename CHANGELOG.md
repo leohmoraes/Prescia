@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the conservative migration helper in `tools/migrate_php83.php`, with dry-run, timestamped backups and a security blocker report.
 
 ### Changed
+- Replaced the free-form SQL filters accepted by `mod_bi_bb::getTags()` and `getArchieveDates()` with metadata-validated equality filters and prepared query parameters; added a security regression test and preserved the PHPStan baseline.
 - Parameterized administrative import link lookups and related-option filters, including selected values and prerequisite fields, while preserving metadata-derived identifiers.
 - Parameterized the `bi_bb` inbox message count and the administrative edit key filters, including single-key and multi-selection paths, with regression coverage for recipient, date and `IN` values.
 - Replaced the legacy `eval()` used to encode ZIP DOS timestamps with deterministic little-endian `pack()` serialization, and added regression coverage for the generated local file header.
