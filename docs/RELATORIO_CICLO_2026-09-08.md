@@ -42,3 +42,11 @@ Foi adicionado `tests/ZipfileTest.php`, que verifica a ausência de `eval()`, a 
 O primeiro commit `00e8666` passou no PHPStan, mas o teste falhou porque a asserção tratava o payload ZIP comprimido como texto plano. O segundo commit `2fd3ba0` corrigiu a regressão usando `gzinflate()` sobre o comprimento declarado no cabeçalho. No SHA final `2fd3ba01806f8e0bf312706927cadd2ae00a503c`, os dois workflows ficaram verdes: [PHPStan on PHP 8.3](https://github.com/leohmoraes/Prescia/actions/runs/34272493043/job/102217303077) e [PHP 8.3 tests](https://github.com/leohmoraes/Prescia/actions/runs/34272493040/job/102217303029).
 
 A próxima frente independente continua sendo a revisão de consultas SQL legadas em plugins, especialmente os fluxos de `bi_bb` que ainda montam filtros de tags/data e contagem de mensagens, além dos caminhos administrativos com comparações derivadas de dados de formulário.
+
+## Lote SQL bi_bb/admin — 2026-09-08
+
+O primeiro lote da nova varredura parametrizou `mod_bi_bb::countMessages()`, transportando o identificador do destinatário e o filtro opcional de data por `fetchPrepared()`. No fluxo `bi_adm/payload/content/edit.php`, as chaves de edição simples passaram a ser anexadas como placeholders ao SQL-array e seus tipos/parâmetros são encaminhados ao `runContent()`; a seleção múltipla passou a gerar placeholders e usar `queryPrepared()`.
+
+Foi adicionada cobertura estática em `tests/SecurityRegressionTest.php`. A baseline permaneceu sem alteração e `git diff --check` passou. O commit `189bbe2c1c1cd85781f655806b8e5394d2c7c740` foi publicado no `master`; os check-runs PHPStan e PHP 8.3 tests concluíram com sucesso. Referências: [PHPStan](https://github.com/leohmoraes/Prescia/actions/runs/34273834077/job/102221831412) e [PHP 8.3 tests](https://github.com/leohmoraes/Prescia/actions/runs/34273835122/job/102221832404).
+
+Ainda pendem, sem alteração neste lote, as APIs `getTags()` e `getArchieveDates()`, que aceitam cláusulas SQL livres e não possuem call sites no repositório, a resolução parametrizada dos lookups de link em `bi_adm/payload/actions/import.php` e comparações SQL derivadas de valores em `bi_adm/payload/content/edit.php` para opções relacionadas. Esses fluxos exigem contratos preparados próprios e devem ser tratados em lotes separados.
