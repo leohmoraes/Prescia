@@ -201,6 +201,19 @@ PHP, $route);
         self::assertStringNotContainsString('Content-Security-Policy-Report-Only:', $frontController);
     }
 
+    public function testCkfinderDoesNotSelectOrAdvertiseThePhp4Runtime(): void
+    {
+        $entrypoint = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/ckfinder.php');
+        $constants = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/constants.php');
+
+        self::assertStringContainsString("throw new RuntimeException('CKFinder no longer supports PHP 4.');", $entrypoint);
+        self::assertStringContainsString("require_once 'core/ckfinder_php5.php';", $entrypoint);
+        self::assertStringNotContainsString("require_once 'core/ckfinder_php4.php'", $entrypoint);
+        self::assertStringContainsString("define('CKFINDER_CONNECTOR_PHP_MODE', 5);", $constants);
+        self::assertStringContainsString("define('CKFINDER_CONNECTOR_LIB_DIR', \"./php5\");", $constants);
+        self::assertStringNotContainsString('"./php4"', $constants);
+    }
+
     public function testCKFinderP0UploadPolicyUsesPositiveLimitsAndNoActiveTypes(): void
     {
         $config = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/config.php');

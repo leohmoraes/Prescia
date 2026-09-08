@@ -11,7 +11,8 @@
  * this file is part of the Source Code of CKFinder.
  */
 
-if ( version_compare( phpversion(), '5', '<' ) )
-	require_once 'core/ckfinder_php4.php' ;
-else
-	require_once 'core/ckfinder_php5.php' ;
+if (version_compare(PHP_VERSION, '5', '<')) {
+	throw new RuntimeException('CKFinder no longer supports PHP 4.');
+}
+
+require_once 'core/ckfinder_php5.php';

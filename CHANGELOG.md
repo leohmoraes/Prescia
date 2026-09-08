@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the conservative migration helper in `tools/migrate_php83.php`, with dry-run, timestamped backups and a security blocker report.
 
 ### Changed
+- Officialized the retirement of the CKFinder PHP4 runtime: the entrypoint now rejects PHP versions below 5, the connector always uses the PHP5-compatible implementation, and the legacy fallback is no longer selected.
 - Hardened input-driven SQL paths: remote-key filters, AJAX filters, administrative reference selection, forum IDs and group IDs now use typed values or prepared statements.
 - Hardened file-manager paths against traversal: raw delete filenames are no longer used as a fallback, directory inputs are allowlisted, and safe-file checks resolve canonical paths to prevent `..` and symlink escapes.
 - Audited AJAX and administrative payloads for safety-flag bypasses; the import route now restores the previous safety state after `ignoreErrors` processing.
