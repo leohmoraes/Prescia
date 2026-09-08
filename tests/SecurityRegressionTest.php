@@ -203,6 +203,19 @@ PHP, $route);
         self::assertStringNotContainsString('WHERE ".$sql[\'where\']', $module);
     }
 
+    public function testForumListingUsesPreparedLanguageFilterAndIntegerPaging(): void
+    {
+        $bbModule = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_bb/module.php');
+        $forum = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_bb/payload/content/forum.php');
+
+        self::assertStringContainsString('forum.lang=?', $bbModule);
+        self::assertStringContainsString("'types'=>'s'", $bbModule);
+        self::assertStringContainsString("'params'=>array((string)\$_SESSION[CONS_SESSION_LANG])", $bbModule);
+        self::assertStringContainsString("?(int)\$_REQUEST['p_init']", $forum);
+        self::assertStringContainsString("?(int)\$_REQUEST['id_forum']", $forum);
+        self::assertStringNotContainsString("forum.lang=\"'.\$_SESSION[CONS_SESSION_LANG]", $bbModule);
+    }
+
     public function testBiStatsEscapesExternalTelemetryBeforeLegacySql(): void
     {
         $stats = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/module.php');
