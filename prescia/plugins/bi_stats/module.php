@@ -40,16 +40,23 @@ class mod_bi_stats extends CscriptedModule  {
 	}
 
 	function onCheckActions() {
+		$core = &$this->parent;
 		if ($this->parent->layout == 2 && $this->parent->context_str == "/" && ($this->parent->action == "setres" || $this->parent->action == "bdstats")) {
 			$this->doNotLogMe = true; // no point loging this
-			if ($this->parent->action == "setres" && isset($_REQUEST['res']) && strlen($_REQUEST['res'])>6) { // set resolution
+			$resolution = isset($_REQUEST['res']) ? (string)$_REQUEST['res'] : '';
+			if ($this->parent->action == "setres" && preg_match('/^[1-9][0-9]{1,4}x[1-9][0-9]{1,4}$/', $resolution) === 1) { // set resolution
 				echo "ok";
-				$_SESSION[CONS_USER_RESOLUTION] = $_REQUEST['res'];
-				$visits = $this->parent->dbo->fetch("SELECT hits FROM ".$this->parent->modules['statsres']->dbname." WHERE data='".date("Y-m-d")."' AND resolution=\"".$_SESSION[CONS_USER_RESOLUTION]."\"");
+				$_SESSION[CONS_USER_RESOLUTION] = $resolution;
+				$statsResolution = $this->parent->modules['statsres']->dbname;
+				$visits = $this->parent->dbo->fetchPrepared("SELECT hits FROM ".$statsResolution." WHERE data=? AND resolution=?", 'ss', array(date("Y-m-d"), $resolution));
 				if ($visits === false) { # first
-					$this->parent->dbo->simpleQuery("INSERT INTO ".$this->parent->modules['statsres']->dbname." SET data=NOW(), resolution=\"".$_SESSION[CONS_USER_RESOLUTION]."\",hits=1");
+					$r = false;
+					$n = 0;
+					$this->parent->dbo->queryPrepared("INSERT INTO ".$statsResolution." SET data=NOW(), resolution=?,hits=1", 's', array($resolution), $r, $n);
 				} else { # second+ visit
-					$this->parent->dbo->simpleQuery("UPDATE ".$this->parent->modules['statsres']->dbname." SET hits=hits+1 WHERE data='".date("Y-m-d")."' AND resolution=\"".$_SESSION[CONS_USER_RESOLUTION]."\"");
+					$r = false;
+					$n = 0;
+					$this->parent->dbo->queryPrepared("UPDATE ".$statsResolution." SET hits=hits+1 WHERE data=? AND resolution=?", 'ss', array(date("Y-m-d"), $resolution), $r, $n);
 				}
 			} else if ($this->parent->action == "bdstats") { // backdoor browser statistics (last year)
 				$output = $this->parent->cacheControl->getCachedContent('bdstats');
@@ -474,22 +481,28 @@ class mod_bi_stats extends CscriptedModule  {
 			# -- end Browser stats --
 			# -- RESOLUTION stats --
 
-			if (isset($_SESSION[CONS_USER_RESOLUTION])) {
-				$visits = $core->dbo->fetch("SELECT hits FROM ".$core->modules['statsres']->dbname." WHERE data='".date("Y-m-d")."' AND resolution=\"".$_SESSION[CONS_USER_RESOLUTION]."\"");
-				if ($visits === false) {
-					# first
-					$ok = $core->dbo->simpleQuery("INSERT INTO ".$core->modules['statsres']->dbname." SET data=NOW(), resolution=\"".$_SESSION[CONS_USER_RESOLUTION]."\",hits=1");
-					if (!$ok) {
-						$lastError = $this->parent->dbo->log[count($this->parent->dbo->log)-1];
-						if (strpos(strtolower($lastError),"duplicate") !== false) { // concurrent INSERT happened first! use update
-							array_pop($this->parent->dbo->log); // ignore this error please
-							$core->dbo->simpleQuery("UPDATE ".$core->modules['statsres']->dbname." SET hits=hits+1 WHERE data='".date("Y-m-d")."' AND resolution=\"".$_SESSION[CONS_USER_RESOLUTION]."\"");							
+				if (isset($_SESSION[CONS_USER_RESOLUTION]) && preg_match('/^[1-9][0-9]{1,4}x[1-9][0-9]{1,4}$/', (string)$_SESSION[CONS_USER_RESOLUTION]) === 1) {
+					$resolution = (string)$_SESSION[CONS_USER_RESOLUTION];
+					$statsResolution = $core->modules['statsres']->dbname;
+					$visits = $core->dbo->fetchPrepared("SELECT hits FROM ".$statsResolution." WHERE data=? AND resolution=?", 'ss', array(date("Y-m-d"), $resolution));
+					if ($visits === false) {
+						# first
+						$r = false;
+						$n = 0;
+						$ok = $core->dbo->queryPrepared("INSERT INTO ".$statsResolution." SET data=NOW(), resolution=?,hits=1", 's', array($resolution), $r, $n);
+						if (!$ok) {
+							$lastError = $this->parent->dbo->log[count($this->parent->dbo->log)-1];
+							if (strpos(strtolower($lastError),"duplicate") !== false) { // concurrent INSERT happened first! use update
+								array_pop($this->parent->dbo->log); // ignore this error please
+								$core->dbo->queryPrepared("UPDATE ".$statsResolution." SET hits=hits+1 WHERE data=? AND resolution=?", 'ss', array(date("Y-m-d"), $resolution), $r, $n);
+							}
 						}
+					} else { # second+ visit
+						$r = false;
+						$n = 0;
+						$core->dbo->queryPrepared("UPDATE ".$statsResolution." SET hits=hits+1 WHERE data=? AND resolution=?", 'ss', array(date("Y-m-d"), $resolution), $r, $n);
 					}
-				} else { # second+ visit
-					$core->dbo->simpleQuery("UPDATE ".$core->modules['statsres']->dbname." SET hits=hits+1 WHERE data='".date("Y-m-d")."' AND resolution=\"".$_SESSION[CONS_USER_RESOLUTION]."\"");
 				}
-			}
 
 		}
 
