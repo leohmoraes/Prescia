@@ -154,3 +154,7 @@ Uma vulnerabilidade estará corrigida quando houver implementação revisada, te
 ## Registro de execução — preview do fórum
 
 Em 2026-09-07, o fluxo de preview de `bi_bb` foi corrigido: os IDs de fórum e tópico passaram a ser vinculados por `queryPrepared()` e não são mais concatenados em SQL. Foi adicionado teste de regressão estático para impedir a reintrodução da concatenação direta. Permanecem pendentes os demais fluxos de entrada listados na Fase 2, especialmente autenticação, CSRF e sessão.
+
+## Atualização do ciclo 2026-09-08
+
+Foi removido o uso de `eval()` em `prescia/lib/zipfile.php`, substituído por `pack('V', ...)` para serialização determinística do timestamp DOS, com teste de regressão do cabeçalho ZIP. A alteração é um lote independente de hardening e não encerra a frente de SQL parametrizado. O próximo lote deve continuar a revisão dos filtros legados em plugins, preservando nomes de tabela/coluna derivados de metadados internos e transportando valores externos por parâmetros preparados.

@@ -32,3 +32,11 @@ Não havia uma alteração de código pendente nem uma PR aberta para mesclar. C
 ## Próximo alvo
 
 Quando uma nova pendência de implementação for aberta, seguir a skill por lote pequeno: confirmar o contexto dinâmico, aplicar a menor correção, validar focalizadamente, executar a suíte global no CI, publicar a branch e mesclar somente após todos os checks do SHA mergeado estarem `completed`/`success`. A frente técnica documentada como próxima prioridade é a revisão de prepared statements restante, especialmente os consumidores de SQL dinâmico em plugins e fluxos administrativos.
+
+## Próximo ciclo de melhorias — lote ZIP
+
+A varredura identificou `eval()` em `prescia/lib/zipfile.php`, usado somente para converter o timestamp DOS em quatro bytes. O fluxo foi confirmado como serialização local de um valor inteiro; a implementação foi substituída por `pack('V', $this->unix2DosTime($time))`, preservando o formato little-endian do cabeçalho ZIP e eliminando interpretação dinâmica de código.
+
+Foi adicionado `tests/ZipfileTest.php`, que verifica a ausência de `eval()`, a assinatura do cabeçalho local, o timestamp empacotado e o conteúdo do arquivo. A baseline PHPStan permanece sem alteração. A validação local de PHP/PHPUnit/PHPStan continua indisponível neste sandbox; o lote deve ser confirmado pelos workflows PHP 8.3 após publicação.
+
+A próxima frente independente continua sendo a revisão de consultas SQL legadas em plugins, especialmente os fluxos de `bi_bb` que ainda montam filtros de tags/data e contagem de mensagens, além dos caminhos administrativos com comparações derivadas de dados de formulário.
