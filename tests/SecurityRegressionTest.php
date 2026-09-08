@@ -95,6 +95,17 @@ PHP, $route);
         self::assertStringNotContainsString('"=\\\"".$_GET[$fname]."\\\""', $ajaxQuery);
     }
 
+    public function testGenericCrudUsesPreparedKeysForPruningParentChecksAndMutations(): void
+    {
+        $module = (string) file_get_contents(__DIR__ . '/../prescia/components/module.php');
+
+        self::assertStringContainsString('function getPreparedKeys(', $module);
+        self::assertStringContainsString('$this->parent->dbo->queryPrepared($sql,"s",array((string)$data[$field])', $module);
+        self::assertStringContainsString('fetchPrepared("SELECT ".$name." FROM ".$this->dbname." WHERE ".$this->keys[0]."=?"', $module);
+        self::assertStringContainsString('$this->parent->dbo->queryPrepared("DELETE FROM ".$this->dbname." WHERE ".$wS', $module);
+        self::assertStringNotContainsString('WHERE ".$this->dbname.".", $module);
+    }
+
     public function testBiStatsEscapesExternalTelemetryBeforeLegacySql(): void
     {
         $stats = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/module.php');
