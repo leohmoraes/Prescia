@@ -43,11 +43,14 @@ class mod_bi_stats extends CscriptedModule  {
 		$core = &$this->parent;
 		if ($this->parent->layout == 2 && $this->parent->context_str == "/" && ($this->parent->action == "setres" || $this->parent->action == "bdstats")) {
 			$this->doNotLogMe = true; // no point loging this
-			$resolution = isset($_REQUEST['res']) ? (string)$_REQUEST['res'] : '';
-			if ($this->parent->action == "setres" && preg_match('/^[1-9][0-9]{1,4}x[1-9][0-9]{1,4}$/', $resolution) === 1) { // set resolution
-				echo "ok";
-				$_SESSION[CONS_USER_RESOLUTION] = $resolution;
-				$statsResolution = $this->parent->modules['statsres']->dbname;
+				$resolution = isset($_REQUEST['res']) && is_string($_REQUEST['res']) ? $_REQUEST['res'] : '';
+				$resolutionParts = array();
+				if (preg_match('/^([1-9][0-9]{0,4})x([1-9][0-9]{0,4})$/', $resolution, $matches) === 1)
+					$resolutionParts = $matches;
+				if ($this->parent->action == "setres" && $_SERVER['REQUEST_METHOD'] === 'POST' && count($resolutionParts) === 3 && (int)$resolutionParts[1] <= 10000 && (int)$resolutionParts[2] <= 10000) { // set resolution
+					$resolution = ((int)$resolutionParts[1]).'x'.((int)$resolutionParts[2]);
+					echo "ok";
+					$statsResolution = $this->parent->modules['statsres']->dbname;
 				$visits = $this->parent->dbo->fetchPrepared("SELECT hits FROM ".$statsResolution." WHERE data=? AND resolution=?", 'ss', array(date("Y-m-d"), $resolution));
 				if ($visits === false) { # first
 					$r = false;
@@ -56,8 +59,9 @@ class mod_bi_stats extends CscriptedModule  {
 				} else { # second+ visit
 					$r = false;
 					$n = 0;
-					$this->parent->dbo->queryPrepared("UPDATE ".$statsResolution." SET hits=hits+1 WHERE data=? AND resolution=?", 'ss', array(date("Y-m-d"), $resolution), $r, $n);
-				}
+						$this->parent->dbo->queryPrepared("UPDATE ".$statsResolution." SET hits=hits+1 WHERE data=? AND resolution=?", 'ss', array(date("Y-m-d"), $resolution), $r, $n);
+					}
+					$_SESSION[CONS_USER_RESOLUTION] = $resolution;
 			} else if ($this->parent->action == "bdstats") { // backdoor browser statistics (last year)
 				$output = $this->parent->cacheControl->getCachedContent('bdstats');
 				if ($output === false) {
