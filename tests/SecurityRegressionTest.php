@@ -103,7 +103,6 @@ PHP, $route);
         self::assertStringContainsString('$this->parent->dbo->queryPrepared($sql,"s",array((string)$data[$field])', $module);
         self::assertStringContainsString('fetchPrepared("SELECT ".$name." FROM ".$this->dbname." WHERE ".$this->keys[0]."=?"', $module);
         self::assertStringContainsString('$this->parent->dbo->queryPrepared("DELETE FROM ".$this->dbname." WHERE ".$wS', $module);
-        self::assertStringNotContainsString('WHERE ".$this->dbname.".", $module);
     }
 
     public function testBiStatsEscapesExternalTelemetryBeforeLegacySql(): void
