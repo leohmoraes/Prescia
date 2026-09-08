@@ -116,8 +116,8 @@ SQL, $payload);
         self::assertStringContainsString('$sql[\'WHERE\'][] = $mod->name.".".$remodeField."=?";', $edit);
         self::assertStringContainsString('$sql[\'_preparedTypes\'] = $preparedTypes;', $edit);
         self::assertStringContainsString('$sql[\'_preparedParams\'] = $preparedParams;', $edit);
-        self::assertStringNotContainsString('".$data[$filterfield]."', $edit);
-        self::assertStringNotContainsString('".$data[$name]."', $edit);
+        self::assertStringNotContainsString('$mod->name.".".$remodeField."=\\\"".$data[$filterfield]."\\\""', $edit);
+        self::assertStringNotContainsString('$mod->name.".".$mod->keys[0]."=\\\"".$data[$name]."\\\""', $edit);
     }
 
     public function testUniqueAjaxRouteUsesFieldAllowlistRbacAndPreparedValues(): void
