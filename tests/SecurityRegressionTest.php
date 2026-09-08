@@ -251,6 +251,26 @@ PHP, $stats);
         self::assertStringNotContainsString("'HtmlExtensions'] = array('html'", $config);
     }
 
+    public function testCKFinderConfigurationDoesNotExposeErrorsOrGrantWorldWrite(): void
+    {
+        $config = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/config.php');
+
+        self::assertStringContainsString("ini_set('display_errors', '0')", $config);
+        self::assertStringContainsString(<<<'PHP'
+$config['ChmodFiles'] = 0640
+PHP, $config);
+        self::assertStringContainsString(<<<'PHP'
+$config['ChmodFolders'] = 0750
+PHP, $config);
+        self::assertStringNotContainsString("ini_set('display_errors', 1)", $config);
+        self::assertStringNotContainsString(<<<'PHP'
+$config['ChmodFiles'] = 0775
+PHP, $config);
+        self::assertStringNotContainsString(<<<'PHP'
+$config['ChmodFolders'] = 0775
+PHP, $config);
+    }
+
     public function testCKFinderUploadEnforcesSizeBeforeScalingAndDetectsHtmlForAllExtensions(): void
     {
         $upload = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/FileUpload.php');

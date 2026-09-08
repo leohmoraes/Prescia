@@ -45,7 +45,7 @@ $config['LicenseKey'] = '';
  Do not do this on a production server. Might be helpful when debugging why CKFinder does not work as expected.
 */
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', '0');
 
 /*
 To make it easy to configure CKFinder, the $baseUrl and $baseDir can be used.
@@ -288,13 +288,13 @@ If possible, it is recommended to set more restrictive permissions, like 0755.
 Set to 0 to disable this feature.
 Note: not needed on Windows-based servers.
 */
-$config['ChmodFiles'] = 0775 ;
+$config['ChmodFiles'] = 0640 ;
 
 /*
 See comments above.
 Used when creating folders that does not exist.
 */
-$config['ChmodFolders'] = 0775 ;
+$config['ChmodFolders'] = 0750 ;
 
 /*
 Force ASCII names for files and folders.
