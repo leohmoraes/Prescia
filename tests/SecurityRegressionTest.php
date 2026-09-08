@@ -150,6 +150,14 @@ PHP, $route);
         self::assertStringContainsString('$this->parent->dbo->queryPrepared("DELETE FROM ".$this->dbname." WHERE ".$wS', $module);
     }
 
+    public function testGenericCrudUsesPreparedKeysForSerializedPartialUpdates(): void
+    {
+        $module = (string) file_get_contents(__DIR__ . '/../prescia/components/module.php');
+
+        self::assertStringContainsString('$this->parent->dbo->fetchPrepared($sql,$wTypes,$wParams)', $module);
+        self::assertStringNotContainsString('$this->parent->dbo->fetch($sql);', $module);
+    }
+
     public function testRemoteKeysAndAdministrativeLinkPreviewUsePreparedValues(): void
     {
         $module = (string) file_get_contents(__DIR__ . '/../prescia/components/module.php');

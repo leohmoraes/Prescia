@@ -1351,7 +1351,7 @@ class CModule {
 				} else if ($this->fields[$name][CONS_XML_SERIALIZED] > 1) { // set to WRITE or ALL
 					// note: we ADD fields, never replace, because we should allow partial edits, thus we need to read the original data first
 					$sql = "SELECT $name FROM ".$this->dbname." WHERE $wS";
-					$serialized = $this->parent->dbo->fetch($sql);
+					$serialized = $this->parent->dbo->fetchPrepared($sql,$wTypes,$wParams);
 					if ($serialized === false) $serialized = array();
 					else $serialized = presciaSafeUnserialize($serialized);
 					
