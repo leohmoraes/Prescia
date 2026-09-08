@@ -143,7 +143,7 @@ function storeFile($file, &$destination, $type = "", $completeDebug = false) {
         @unlink($target);
     }
 
-    $ok = $isVirtual ? copy($tmpName, $target) : move_uploaded_file($tmpName, $target);
+    $ok = $isVirtual ? @copy($tmpName, $target) : @move_uploaded_file($tmpName, $target);
     if (!$ok) {
         return 3;
     }

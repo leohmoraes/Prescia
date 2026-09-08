@@ -4,13 +4,13 @@
 **Escopo:** compatibilidade com PHP 8.3 e redução incremental da dívida técnica identificada pelo PHPStan  
 **Versão analisada:** PHPStan 2.2.13, nível 1  
 **Branch:** `master`  
-**Commit de código do lote atual:** `1127c0e`
-**Data de consolidação:** 6 de setembro de 2026
+**Commit de código do lote atual:** `4fa70ad3`
+**Data de consolidação:** 8 de setembro de 2026
 **Issue principal:** [#43 — Atualizar o PHPStan e elevar gradualmente o nível de análise][1]
 
 ## Resumo executivo
 
-O projeto avançou de uma configuração inicial sem contratos suficientes para uma análise estática incremental com **PHPStan 2.x no nível 1**, baseline sem supressões e contratos explícitos para os principais contextos dinâmicos do framework. A análise global do lote atual reduziu o relatório para **219 diagnósticos**, enquanto os arquivos tratados continuam passando na validação focalizada. A suíte de compatibilidade com PHP 8.3 e o PHPUnit permanecem aprovados, mas o workflow completo do PHPStan ainda falha por diagnósticos remanescentes em arquivos que ainda não foram tratados.
+O projeto avançou para uma análise estática incremental com **PHPStan 2.x no nível 1**, baseline sem supressões e contratos explícitos para os principais contextos dinâmicos do framework. No master atual, a análise global, a suíte PHP 8.3, o PHPUnit e o lint estão aprovados; a configuração não introduz novas supressões.
 
 O progresso mais significativo ocorreu na separação entre o núcleo `CPrescia`, módulos concretos e payloads incluídos dinamicamente. Essa separação eliminou os diagnósticos de contexto em vários fluxos de administração, autenticação, fórum, cron e labels. Também foram corrigidos fluxos de variáveis indefinidas em listagens, ações de teste, cron e callbacks de módulos.
 
@@ -22,10 +22,10 @@ A principal limitação atual é que o workflow completo analisa todo o reposit�
 |---|---|---|
 | PHP 8.3 | **Aprovada no lote atual** | `php -l` global sem warnings e `composer test` aprovado no commit `1127c0e` |
 | PHPStan focalizado nos arquivos corrigidos | **Aprovado** | Todos os lotes recentes terminaram com `[OK] No errors` |
-| PHPStan completo do repositório | **Ainda falha** | Análise global do commit `1127c0e`: **219 diagnósticos**; workflow permanece pendente até zerar os erros |
-| PHPUnit | **Aprovado** | `23 testes`, `2745 asserções`, PHP 8.3.6 |
+| PHPStan completo do repositório | **Aprovado** | Run CI `34263723139` no commit `26a5f029`; `[OK] No errors` |
+| PHPUnit | **Aprovado** | `73 testes`, `3014 asserções`, PHP 8.3.6 |
 | Baseline | **Sem novos ocultamentos** | `phpstan-baseline.neon` permanece sem entradas de `ignoreErrors` adicionadas durante os ciclos recentes |
-| Branch e working tree | **Em consolidação** | `fix/security-php83-issues`, código em `1127c0e`; documentação deste lote será registrada no commit seguinte |
+| Branch e working tree | **Consolidado** | `master`, código em `4fa70ad3`; documentação atualizada neste lote |
 
 ## Linha do tempo das correções
 
