@@ -60,3 +60,12 @@ Em `bi_adm/payload/content/edit.php`, as opções relacionadas não-parentais pa
 Foram adicionadas regressões em `tests/SecurityRegressionTest.php`. O primeiro commit `5a8bd3d06cebefb0637511ae66e2d544462e78d0` passou no PHPStan e nos testes PHP 8.3. O commit das opções `4a7c2a4` teve inicialmente uma expectativa estática ampla demais; o commit corretivo `809406073fc99f509362e019d2ec252e5f729191` estreitou a asserção ao padrão legado específico. No SHA final, ambos os check-runs ficaram verdes: [PHPStan](https://github.com/leohmoraes/Prescia/actions/runs/34283406736/job/102253282941) e [PHP 8.3 tests](https://github.com/leohmoraes/Prescia/actions/runs/34283406740/job/102253282883). A baseline não foi alterada.
 
 Permanecem pendentes os filtros SQL livres de `getTags()`/`getArchieveDates()`, os filtros da árvore parental via `getContents()` e outros fluxos administrativos não incluídos neste lote.
+
+
+## Lote SQL bi_bb — contagem de posts do thread — 2026-09-08
+
+O contexto foi confirmado em `prescia/plugins/bi_bb/payload/content/thread.php`: `idf` e `idt` vêm de `friendlyurldata`, já resolvido pelo fluxo de URL amigável, e são identificadores internos de fórum e thread. A contagem agregada ainda interpolava esses valores diretamente em `fetch()`. A menor correção substituiu a chamada por `fetchPrepared()` com dois placeholders e tipos `ii`, preservando a consulta, a agregação e a semântica de paginação.
+
+Foi adicionada a regressão `testBiBbThreadPostCountUsesPreparedInternalIds()` em `tests/SecurityRegressionTest.php`, cobrindo a presença dos placeholders e parâmetros inteiros e rejeitando a concatenação anterior. A baseline PHPStan não foi alterada. `git diff --check` e a auditoria focalizada do plugin foram executados; PHP lint, PHPUnit e PHPStan local não estão disponíveis porque o sandbox não possui PHP nem Composer.
+
+Permanecem pendentes, sem alteração neste lote, a consulta principal de posts do mesmo endpoint, que é consumida pela API `runContent()` a partir de SQL legado e requer transporte estruturado de parâmetros, além de `getTags()`/`getArchieveDates()` e filtros administrativos já registrados nas seções anteriores. O próximo lote deve tratar a consulta principal do thread somente após confirmar o contrato completo de SQL-array e paginação.

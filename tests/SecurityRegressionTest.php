@@ -97,6 +97,17 @@ SQL, $payload);
         self::assertStringNotContainsString('id_recipient=".$_SESSION[CONS_SESSION_ACCESS_USER][\'id\']', $module);
     }
 
+    public function testBiBbThreadPostCountUsesPreparedInternalIds(): void
+    {
+        $thread = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_bb/payload/content/thread.php');
+
+        self::assertStringContainsString('fetchPrepared(', $thread);
+        self::assertStringContainsString('WHERE id_forum=? AND id_forumthread=?', $thread);
+        self::assertStringContainsString("'ii'", $thread);
+        self::assertStringContainsString('array((int)$idf, (int)$idt)', $thread);
+        self::assertStringNotContainsString('WHERE id_forum=$idf AND id_forumthread=$idt', $thread);
+    }
+
     public function testAdministrativeEditUsesPreparedSingleAndMultipleKeys(): void
     {
         $edit = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/content/edit.php');

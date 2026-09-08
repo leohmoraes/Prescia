@@ -90,7 +90,11 @@
 	$idt = $core->storage['friendlyurldata']['id'];
 	
 	// count posts
-	$totalPost = $mode != "articles"?$core->dbo->fetch("SELECT count(id) FROM bb_post WHERE id_forum=$idf AND id_forumthread=$idt GROUP BY id_forumthread"):1;
+	$totalPost = $mode != "articles" ? $core->dbo->fetchPrepared(
+		"SELECT count(id) FROM bb_post WHERE id_forum=? AND id_forumthread=? GROUP BY id_forumthread",
+		'ii',
+		array((int)$idf, (int)$idt)
+	) : 1;
 	// NOTE: if we are not on bb mode, the FIRST post must be IGNORED, that's why we reduce one from totalPost in that case, EVERYWHERE
 	if (isset($_REQUEST['lastpage'])) { // if requested last page, calculate first post of last page
 		$_REQUEST['p_init'] = floor(($mode=='bb'?$totalPost:$totalPost-1)/$ipp)*$ipp;
