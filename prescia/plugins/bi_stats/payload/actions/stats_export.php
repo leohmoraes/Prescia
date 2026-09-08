@@ -39,14 +39,24 @@
 		$yesterday = datecalc($yesterday,0,0,-1);
 	}
 
-	$outputstr = "# DATE, HITS, UNIQUE, ACCEPTED UNIQUE, RETURN IN 24h UNIQUE, CAME FROM BOOKMARK UNIQUE\n";
+	$csv = fopen('php://temp', 'w+');
+	fputcsv($csv, array('# DATE', 'HITS', 'UNIQUE', 'ACCEPTED UNIQUE', 'RETURN IN 24h UNIQUE', 'CAME FROM BOOKMARK UNIQUE'));
 	foreach ($output as $o) {
-		$outputstr .= "\"".array_shift($o)."\",".implode(",",$o)."\n";
+		$date = (string)$o[0];
+		if (preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $date) !== 1) {
+			continue;
+		}
+		fputcsv($csv, array($date, (int)$o[1], (int)$o[2], (int)$o[3], (int)$o[4], (int)$o[5]));
 	}
+	rewind($csv);
+	$outputstr = stream_get_contents($csv);
+	fclose($csv);
 	header("Content-Description: File Transfer");
 	header("Content-Length: ".strlen($outputstr));
 	header("Pragma: public");
-	header("Content-type: text/csv");
+	header("Content-Type: text/csv; charset=utf-8");
+	header("X-Content-Type-Options: nosniff");
+	header("Cache-Control: no-store, no-cache, must-revalidate");
 	header("Content-Disposition: attachment; filename=\"statistics".date("Y-m-d").".csv\"");
 
 	echo $outputstr;

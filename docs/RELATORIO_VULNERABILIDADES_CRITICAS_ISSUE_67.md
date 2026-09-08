@@ -30,7 +30,7 @@ A Issue #67 permanece aberta. A correção de CSP e o hardening de SSRF foram tr
 | C-08 | CKFinder | Permissões de arquivos e diretórios permissivas | `ChmodFiles=0775`, `ChmodFolders=0775` | **Alta** | Corrigida na PR #80 para `0640`/`0750`; ownership e deploy ainda requerem confirmação |
 | C-09 | CKFinder | Renderização sem escaping contextual em HTML/URL | `ckfinder_php4.php` e `ckfinder_php5.php` | **Alta** | Potencial; origem dos valores deve ser confirmada |
 | C-10 | CKFinder | Runtime PHP4 e código de connector legado disponível | `core/ckfinder_php4.php`, `core/connector/php/php4/*` | **Alta** | Descontinuação proposta no PR #69; ainda não mesclada |
-| C-11 | `bi_stats` | CSV sem proteção explícita contra formula injection | `payload/actions/stats_export.php:42-50` | **Média/Alta** | Não corrigida; Issue #70 |
+| C-11 | `bi_stats` | CSV sem proteção explícita contra formula injection | `payload/actions/stats_export.php:42-50` | **Média/Alta** | Corrigida no lote da PR #84 com `fputcsv`, validação de data, tipagem numérica e headers seguros |
 | C-12 | `bi_stats` | Cookies de rastreamento sem atributos de segurança explícitos | `module.php:420-428`, `440-449` | **Média/Alta** | Não corrigida; Issue #70 |
 | C-13 | `bi_stats` | Concatenação SQL em métodos auxiliares com contratos de entrada incompletos | `module.php:106-179` | **Alta se alcançável por entrada externa** | Call sites pendentes de classificação |
 | C-14 | `bi_stats` | Persistência sem limites uniformes de User-Agent, referer e caminhos | `module.php:257-263`, `286-388` | **Média/Alta** | Não corrigida; risco de abuso de armazenamento e exposição |
