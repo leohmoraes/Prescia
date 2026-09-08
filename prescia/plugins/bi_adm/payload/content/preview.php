@@ -147,15 +147,21 @@
 						}
 						$content = $using->techo($fillDT,$emptyme);
 					break;
-					case CONS_TIPO_LINK: // ############################################### LINK TO ANOTHER MODULE
-						$mod = $core->loaded($module->fields[$name][CONS_XML_MODULE]);
-						$where = $module->getRemoteKeys($mod,$data);
-						$sql = "SELECT ".$mod->title." FROM ".$mod->dbname." as ".$mod->name." WHERE ".implode(" AND ",$where);
+		case CONS_TIPO_LINK: // ############################################### LINK TO ANOTHER MODULE
+			$mod = $core->loaded($module->fields[$name][CONS_XML_MODULE]);
+			$remoteWhere = '';
+			$remoteTypes = '';
+			$remoteParams = array();
+			if (!$module->getRemotePreparedKeys($mod,$remoteWhere,$remoteTypes,$remoteParams,$data)) {
+				$content = false;
+				continue 2;
+			}
+			$sql = "SELECT ".$mod->title." FROM ".$mod->dbname." as ".$mod->name." WHERE ".$remoteWhere;
 
 						$field_select = $core->template->get("_select_field");
 						$using = clone $field_select;
 						
-						$fillDT['title'] = $core->dbo->fetch($sql);
+			$fillDT['title'] = $core->dbo->fetchPrepared($sql,$remoteTypes,$remoteParams);
 						 
 						$content = $using->techo($fillDT);
 						

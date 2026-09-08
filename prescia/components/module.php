@@ -269,7 +269,7 @@ class CModule {
 	/*
 	 * MODULE (me) is pointing to RMODULE. Convert MY KEYS $data (that point to RMODULE) to RMODULE keys so I can run a select from RMODULE to find itself
 	 */
-	function getRemoteKeys($rmodule,$data) {
+		function getRemoteKeys($rmodule,$data) {
 			$where = array();
 			$escape = static function ($value) use ($rmodule): string {
 				return addslashes_EX((string)$value, true, $rmodule->parent->dbo);
@@ -293,9 +293,44 @@ class CModule {
 					$where[] = $rmodule->name.".".$key."='".$escape($data[$key])."'";
 			} // else I can't decide how to link it
 		}
-		return $where;
-	}
-#-
+			return $where;
+		}
+
+		/**
+		 * Build a parameterized WHERE clause for a linked module.
+		 * Identifiers come only from the module metadata; linked values are bound.
+		 */
+		function getRemotePreparedKeys($rmodule,&$whereStruct,&$whereTypes,&$whereParams,$data) {
+			$where = array();
+			$whereTypes = '';
+			$whereParams = array();
+			$add = function ($field,$value) use (&$where,&$whereTypes,&$whereParams,$rmodule): void {
+				$where[] = $rmodule->name.".".$field."=?";
+				$isInteger = isset($rmodule->fields[$field][CONS_XML_TIPO]) && $rmodule->fields[$field][CONS_XML_TIPO] == CONS_TIPO_INT;
+				$whereTypes .= $isInteger ? 'i' : 's';
+				$whereParams[] = $isInteger ? (int)$value : (string)$value;
+			};
+			foreach ($rmodule->fields as $key => $field) {
+				if ($field[CONS_XML_TIPO] == CONS_TIPO_INT) {
+					if ($key == 'id') {
+						$mykey = $this->get_key_from($rmodule->name,'id_'.$rmodule->name);
+						if ($mykey != '' && isset($data[$mykey]) && $data[$mykey] != 0 && $data[$mykey] !== null)
+							$add($key,$data[$mykey]);
+					} else if (isset($this->fields[$key]) && isset($data[$key]) && $key != $this->options[CONS_MODULE_PARENT]) {
+						$add($key,$data[$key]);
+					}
+				} else if ($field[CONS_XML_TIPO] == CONS_TIPO_LINK) {
+					$mykey = $this->get_key_from($field[CONS_XML_MODULE],'id_'.$field[CONS_XML_MODULE]);
+					if ($mykey != '' && isset($data[$mykey]) && $data[$mykey] != 0 && $data[$mykey] !== null && $key != $this->options[CONS_MODULE_PARENT])
+						$add($key,$data[$mykey]);
+				} else if (isset($this->fields[$key]) && isset($data[$key])) {
+					$add($key,$data[$key]);
+				}
+			}
+			$whereStruct = implode(' AND ',$where);
+			return $whereStruct !== '';
+		}
+	#-
 	function get_advanced_sql($taglist,$embedWhere = "", $embedOrder = "", $embedLimit = "",$cacheTAG=false) {
 		# This function searches the $taglist (from template) and only adds the sql required to fetch those data, thus preventing unnecessary joins and selects
 		$sql = false;
