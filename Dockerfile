@@ -18,22 +18,31 @@ RUN printf '%s\n' \
     '<FilesMatch "^(\\.env|composer\\.(json|lock)|Dockerfile|.*\\.(ini|log|sql|bak|dist))$">' \
     '    Require all denied' \
     '</FilesMatch>' \
-    '<DirectoryMatch "^/var/www/html/(config|prescia|tests|tools|docs)(/|$)">' \
+    'Alias /pages/ /var/www/app/pages/' \
+    '<Directory "/var/www/app/pages/">' \
+    '    Require all granted' \
+    '</Directory>' \
+    '<DirectoryMatch "^/var/www/app/(config|prescia|tests|tools|docs)(/|$)">' \
     '    Require all denied' \
     '</DirectoryMatch>' \
     > /etc/apache2/conf-available/prescia-hardening.conf \
     && a2enconf prescia-hardening
 
-# Set working directory
-WORKDIR /var/www/html
+# Keep the application outside Apache's document root.
+WORKDIR /var/www/app
 
-# Copy application files as immutable application code
-COPY --chown=root:root . /var/www/html/
+# Copy application files as immutable application code.
+COPY --chown=root:root . /var/www/app/
+
+# Expose only the public wrapper and routing rules from the document root.
+RUN mkdir -p /var/www/public \
+    && cp /var/www/app/public/index.php /var/www/public/index.php \
+    && cp /var/www/app/.htaccess /var/www/public/.htaccess
 
 # Set up required directories with proper permissions
 RUN mkdir -p _temp/_logs _temp/_cache _temp/_backups \
-    && find /var/www/html -type d -exec chmod 0755 {} + \
-    && find /var/www/html -type f -exec chmod 0644 {} + \
+    && find /var/www/app /var/www/public -type d -exec chmod 0755 {} + \
+    && find /var/www/app /var/www/public -type f -exec chmod 0644 {} + \
     && chown -R www-data:www-data _temp \
     && chmod -R 0770 _temp
 
@@ -42,7 +51,7 @@ RUN if [ ! -f config/domains ]; then cp config/domains.original config/domains; 
     && if [ ! -f config/settings.php ]; then cp config/settings.php.original config/settings.php; fi
 
 # Configure Apache
-ENV APACHE_DOCUMENT_ROOT=/var/www/html
+ENV APACHE_DOCUMENT_ROOT=/var/www/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
     && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
