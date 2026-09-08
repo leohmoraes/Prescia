@@ -98,3 +98,9 @@ Foi adicionada a regressão `testParentalContentFiltersUsePreparedSelectedValues
 ### Correção após CI — opções administrativas
 
 O primeiro CI da PR 119 falhou em `testParentalContentFiltersUsePreparedSelectedValues()`: a asserção encontrou uma segunda interpolação no caminho não-parental de `bi_adm/payload/content/options.php`. O caminho também foi convertido para placeholder com `_preparedTypes = 's'` e `_preparedParams`; a correção permanece no escopo do lote administrativo e será validada em novo CI. Nenhuma alteração foi feita na baseline.
+
+## Lote SQL bi_bb — índice de fóruns e últimos threads — em execução
+
+Após a validação pós-merge da PR #119, o próximo lote migrou `prescia/plugins/bi_bb/payload/content/index.php`. O filtro `id_forum` agora aceita apenas identificadores numéricos convertidos para inteiro; idioma e identificador de fórum são transportados por placeholders. As consultas das árvores de fóruns e dos últimos posts/threads usam `queryPrepared()`, e as consultas paginadas de últimos threads usam SQL-arrays com `_preparedTypes`/`_preparedParams`, compatíveis com `runContent()`.
+
+Foi adicionada a regressão `testBiBbIndexUsesPreparedForumAndLanguageFilters()` em `tests/SecurityRegressionTest.php`, cobrindo os binds de idioma/fórum e rejeitando as interpolações antigas. A baseline permanece sem alteração. O lote será validado por `git diff --check`, `php -l` no payload e pelo CI completo antes do merge; a issue ampla de SQL genérico permanece aberta.
