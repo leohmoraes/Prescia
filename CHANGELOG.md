@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the conservative migration helper in `tools/migrate_php83.php`, with dry-run, timestamped backups and a security blocker report.
 
 ### Changed
+- Hardened `bi_stats` CSV export with structured `fputcsv()` rows, date validation, numeric field typing, `nosniff`, and no-store response headers.
 - Hardened CKFinder upload name collision handling by reserving destination paths with exclusive creation before moving the uploaded file, preventing concurrent uploads from selecting the same name.
 - Normalized CKFinder upload extensions before image-content validation so uppercase image suffixes cannot bypass the configured `getimagesize()` check.
 - Hardened CKFinder production configuration by disabling displayed PHP errors and reducing default file and directory modes from world/group-writable `0775` to `0640` and `0750`.
