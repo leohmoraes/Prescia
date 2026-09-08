@@ -82,3 +82,9 @@ O inventário confirmou que `mod_bi_bb::getTags()` e `getArchieveDates()` não p
 Foi adicionada a regressão `testBiBbArchiveFiltersUsePreparedValuesAndMetadataFields()` em `tests/SecurityRegressionTest.php`, que confirma as assinaturas estruturadas, a validação de campos e o uso de `queryPrepared()`, rejeitando o contrato de SQL livre. A baseline não foi alterada.
 
 Validações locais concluídas neste ambiente: `git diff --check` e inspeção focalizada do diff. PHP 8.3, PHPUnit, PHPStan, Composer e Docker não estão instalados no sandbox; os checks completos devem ser confirmados no CI antes do merge. Após o merge, consultar os check-runs do SHA mergeado e então avançar para a consulta principal de posts do thread, mantendo os filtros parentais de `getContents()` como lote separado.
+
+## Lote SQL bi_bb — consulta principal de posts do thread — em execução
+
+Após o merge da PR #117, o próximo lote converteu a consulta principal de posts em `prescia/plugins/bi_bb/payload/content/thread.php` de uma string SQL interpolada para um SQL-array estruturado. Os aliases `p` e `u`, a seleção de campos, o relacionamento entre autor e post, a ordenação por data e o transporte para `runContent()` foram preservados. Os identificadores de fórum e thread agora são placeholders `?`, com tipos `ii` e parâmetros inteiros em `_preparedParams`.
+
+Foi adicionada a regressão `testBiBbThreadPostsUseStructuredSqlAndPreparedIds()` em `tests/SecurityRegressionTest.php`, cobrindo o SQL-array, placeholders e rejeição da interpolação anterior. A baseline permanece sem alteração. A validação local será limitada a `git diff --check` e inspeção estática, pois PHP 8.3, PHPUnit, PHPStan, Composer e Docker não estão disponíveis no sandbox. O lote só será considerado concluído após checks verdes no CI do SHA publicado e checks verdes do SHA mergeado.
