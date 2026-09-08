@@ -104,3 +104,9 @@ O primeiro CI da PR 119 falhou em `testParentalContentFiltersUsePreparedSelected
 Após a validação pós-merge da PR #119, o próximo lote migrou `prescia/plugins/bi_bb/payload/content/index.php`. O filtro `id_forum` agora aceita apenas identificadores numéricos convertidos para inteiro; idioma e identificador de fórum são transportados por placeholders. As consultas das árvores de fóruns e dos últimos posts/threads usam `queryPrepared()`, e as consultas paginadas de últimos threads usam SQL-arrays com `_preparedTypes`/`_preparedParams`, compatíveis com `runContent()`.
 
 Foi adicionada a regressão `testBiBbIndexUsesPreparedForumAndLanguageFilters()` em `tests/SecurityRegressionTest.php`, cobrindo os binds de idioma/fórum e rejeitando as interpolações antigas. A baseline permanece sem alteração. O lote será validado por `git diff --check`, `php -l` no payload e pelo CI completo antes do merge; a issue ampla de SQL genérico permanece aberta.
+
+## Lote SQL bi_auth — grupo guest e leitura direta de ownership — em execução
+
+Após a validação pós-merge da PR #120, o lote seguinte migrou dois pontos em `prescia/plugins/bi_auth/authControl.php`. A carga do grupo guest passou de `get_base_sql()` com identificador interpolado e `query()` para placeholder `id=?` com `queryPrepared()` e tipo `i`. A leitura direta do objeto durante a verificação de ownership passou de `getKeys()`/`query()` para `getPreparedKeys()` e `queryPrepared()`, preservando as chaves e o modo de debug.
+
+Foi ampliada a regressão `testAuthControlGuestGroupUsesPreparedQuery()` em `tests/SecurityRegressionTest.php` para cobrir os dois contratos. A consulta de ownership remoto em `getRemoteKeys()` permanece pendente para lote separado, pois exige uma API parametrizada compatível com chaves e identificadores de campos derivados dos metadados. A baseline PHPStan permanece sem alteração.

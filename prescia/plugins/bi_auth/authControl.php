@@ -147,13 +147,15 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 				if (!is_array($keys)) {
 					$keys = array($module->keys[0] => $keys); # must be an array of fields
 				}
-				$wS = "";
-				$kA = array();
-				$module->getKeys($wS, $kA, $keys,"",true); # locks all my keys to fetch whole table
-				$sql = $module->get_base_sql($wS);
-				$r = false;
-				$n = 0;
-				$this->parent->dbo->query($sql,$r,$n,$this->parent->debugmode);
+					$wS = "";
+					$wTypes = "";
+					$wParams = array();
+					$kA = array();
+					$module->getPreparedKeys($wS, $wTypes, $wParams, $kA, $keys); # locks all my keys to fetch whole table
+					$sql = $module->get_base_sql($wS);
+					$r = false;
+					$n = 0;
+					$this->parent->dbo->queryPrepared($sql,$wTypes,$wParams,$r,$n,$this->parent->debugmode);
 				if ($n>0) {
 					$myData = $this->parent->dbo->fetch_assoc($r);
 				}
@@ -540,10 +542,10 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 			$_SESSION[CONS_SESSION_ACCESS_LEVEL] = CONS_SESSION_ACCESS_LEVEL_GUEST;
 			$_SESSION[CONS_SESSION_ACCESS_PERMISSIONS] = $this->parent->permissionTemplate;
 		} else {
-				$sql = $groups->get_base_sql("id=".(int)$this->parent->dimconfig['guest_group']);
-			$r = false;
-			$n = 0;
-			if ($this->parent->dbo->query($sql,$r,$n) && $n>0) {
+				$sql = $groups->get_base_sql("id=?");
+				$r = false;
+				$n = 0;
+				if ($this->parent->dbo->queryPrepared($sql,'i',array((int)$this->parent->dimconfig['guest_group']),$r,$n) && $n>0) {
 				$groupdata = $this->parent->dbo->fetch_assoc($r);
 				if (!isset($_SESSION[CONS_SESSION_ACCESS_USER])) $_SESSION[CONS_SESSION_ACCESS_USER] = array();
 				$_SESSION[CONS_SESSION_ACCESS_USER]['id_group'] = $groupdata['id'];
