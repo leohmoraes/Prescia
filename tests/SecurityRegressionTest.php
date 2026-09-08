@@ -170,6 +170,16 @@ PHP, $route);
         self::assertStringNotContainsString('$core->dbo->fetch($sql)', $preview);
     }
 
+    public function testGenericDownloadUsesPreparedKeysAndLookup(): void
+    {
+        $core = (string) file_get_contents(__DIR__ . '/../prescia/core.php');
+
+        self::assertStringContainsString('$m->getPreparedKeys($ws,$wTypes,$wParams,$ka,$_REQUEST)', $core);
+        self::assertStringContainsString('$this->dbo->fetchPrepared($sql,$wTypes,$wParams)', $core);
+        self::assertStringNotContainsString('$m->getKeys($ws,$ka,$_REQUEST)', $core);
+        self::assertStringNotContainsString('$this->dbo->fetch($sql)', $core);
+    }
+
     public function testBiStatsEscapesExternalTelemetryBeforeLegacySql(): void
     {
         $stats = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/module.php');

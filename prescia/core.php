@@ -539,11 +539,11 @@ class CPrescia extends CPresciaVar {
 
 				if (!$this->authControl->checkPermission($m)) $this->fastClose(403); // read permission
 
-				$ws = ""; $ka = array();
-				$m->getKeys($ws,$ka,$_REQUEST);
+				$ws = ""; $wTypes = ""; $wParams = array(); $ka = array();
+				if (!$m->getPreparedKeys($ws,$wTypes,$wParams,$ka,$_REQUEST)) $this->fastClose(404);
 
 				$sql = "SELECT ".$m->title." FROM ".$m->dbname." as ".$m->name." WHERE ".$ws;
-				$filename = removeSimbols($this->dbo->fetch($sql),true,false);
+				$filename = removeSimbols($this->dbo->fetchPrepared($sql,$wTypes,$wParams),true,false);
 
 				$file = CONS_FMANAGER.$m->name."/".$_REQUEST['f']."_";
 				foreach ($ka as $kn => $ki) // this is multikey =D
