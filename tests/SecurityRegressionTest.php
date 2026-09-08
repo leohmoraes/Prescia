@@ -283,7 +283,7 @@ PHP, $stats);
         self::assertStringContainsString("'maxSize' => '5M'", $config);
         self::assertStringNotContainsString("'name' => 'Flash'", $config);
         self::assertStringNotContainsString("'allowedExtensions' => 'swf,flv'", $config);
-        self::assertStringNotContainsString("'HtmlExtensions'] = array('html'", $config);
+        self::assertStringContainsString("\$config['HtmlExtensions'] = array('html', 'htm', 'xml', 'js', 'svg')", $config);
     }
 
     public function testCKFinderUploadValidatesMimeAndCanonicalDestination(): void
@@ -295,7 +295,7 @@ PHP, $stats);
         self::assertStringContainsString("finfo_open(FILEINFO_MIME_TYPE)", $upload);
         self::assertStringContainsString('isPathInside($sServerDir, $sFilePath)', $upload);
         self::assertStringContainsString('$extension));', $resourceConfig);
-        self::assertStringNotContainsString('(string)$e', $resourceConfig);
+        self::assertStringNotContainsString('$this->_deniedExtensions[] = strtolower(trim((string)$e));', $resourceConfig);
     }
 
     public function testCKFinderDownloadUsesSafeContentDisposition(): void
@@ -374,7 +374,7 @@ PHP, $upload);
     {
         $download = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/DownloadFile.php');
         self::assertStringContainsString('isPathInside($_resourceTypeInfo->getDirectory(), $filePath)', $download);
-        self::assertStringContainsString('strpbrk($fileName, "\\r\\n")', $download);
+        self::assertStringContainsString('strpbrk($fileName, "\\r\\n\\0")', $download);
         self::assertStringContainsString('X-Content-Type-Options: nosniff', $download);
 
         foreach (array('FileUpload', 'QuickUpload') as $handler) {

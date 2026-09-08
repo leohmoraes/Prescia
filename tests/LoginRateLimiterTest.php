@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Prescia\Tests;
 
+require_once __DIR__ . '/../prescia/lib/loginRateLimiter.php';
+
 use PHPUnit\Framework\TestCase;
 use PresciaLoginRateLimiter;
 
