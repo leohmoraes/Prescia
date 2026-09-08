@@ -14,6 +14,14 @@ vendor/
 *.md
 CHANGELOG.md
 docs/
+tests/
+tools/
+skills/
+phpstan.neon.dist
+phpstan-baseline.neon
+phpunit.xml.dist
+composer.json
+composer.lock
 
 # IDE files
 .vscode

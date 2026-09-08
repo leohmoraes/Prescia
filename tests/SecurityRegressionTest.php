@@ -378,11 +378,18 @@ PHP, $route);
     {
         $dockerfile = (string) file_get_contents(__DIR__ . '/../Dockerfile');
 
-        self::assertStringContainsString('COPY --chown=root:root . /var/www/html/', $dockerfile);
+        self::assertStringContainsString('COPY --chown=root:root . /var/www/app/', $dockerfile);
+        self::assertStringContainsString('ENV APACHE_DOCUMENT_ROOT=/var/www/public', $dockerfile);
+        self::assertStringContainsString('cp /var/www/app/public/index.php /var/www/public/index.php', $dockerfile);
+        self::assertStringContainsString('Alias /pages/ /var/www/app/pages/', $dockerfile);
         self::assertStringContainsString('a2enconf prescia-hardening', $dockerfile);
-        self::assertStringContainsString('<DirectoryMatch "^/var/www/html/(config|prescia|tests|tools|docs)(/|$)">', $dockerfile);
+        self::assertStringContainsString('<DirectoryMatch "^/var/www/app/(config|prescia|tests|tools|docs)(/|$)">', $dockerfile);
         self::assertStringContainsString('Require all denied', $dockerfile);
         self::assertStringContainsString('chown -R www-data:www-data _temp', $dockerfile);
+
+        $workflow = (string) file_get_contents(__DIR__ . '/../.github/workflows/php83.yml');
+        self::assertStringContainsString('aquasecurity/trivy-action@0.28.0', $workflow);
+        self::assertStringContainsString('severity: CRITICAL,HIGH', $workflow);
     }
 
     public function testValidatedConnectionDoesNotReResolveHostnameDuringDnsRebinding(): void
