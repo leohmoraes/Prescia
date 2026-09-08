@@ -138,13 +138,13 @@ class CKFinder_Connector_CommandHandler_FileUpload extends CKFinder_Connector_Co
             $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_UPLOADED_TOO_BIG);
         }
 
-        $sExtension = CKFinder_Connector_Utils_FileSystem::getExtension($sFileNameOrginal);
+        $sExtension = strtolower(CKFinder_Connector_Utils_FileSystem::getExtension($sFileNameOrginal));
 
         if (($detectHtml = CKFinder_Connector_Utils_FileSystem::detectHtml($uploadedFile['tmp_name'])) === true ) {
             $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_UPLOADED_WRONG_HTML_FILE);
         }
 
-        $sExtension = CKFinder_Connector_Utils_FileSystem::getExtension($sFileNameOrginal);
+        $sExtension = strtolower(CKFinder_Connector_Utils_FileSystem::getExtension($sFileNameOrginal));
         $secureImageUploads = $_config->getSecureImageUploads();
         if ($secureImageUploads
         && ($isImageValid = CKFinder_Connector_Utils_FileSystem::isImageValid($uploadedFile['tmp_name'], $sExtension)) === false ) {

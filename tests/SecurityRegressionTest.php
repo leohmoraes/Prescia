@@ -292,6 +292,13 @@ PHP, $upload);
         self::assertStringNotContainsString('inArrayCaseInsensitive($sExtension, $htmlExtensions)', $upload);
     }
 
+    public function testCKFinderImageValidationNormalizesUppercaseExtensions(): void
+    {
+        $upload = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/FileUpload.php');
+
+        self::assertSame(2, substr_count($upload, 'strtolower(CKFinder_Connector_Utils_FileSystem::getExtension($sFileNameOrginal))'));
+    }
+
     public function testCKFinderMutableHandlersUseCanonicalPathContainment(): void
     {
         $fileSystem = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/Utils/FileSystem.php');
