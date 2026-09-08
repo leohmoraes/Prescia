@@ -69,3 +69,8 @@ O contexto foi confirmado em `prescia/plugins/bi_bb/payload/content/thread.php`:
 Foi adicionada a regressão `testBiBbThreadPostCountUsesPreparedInternalIds()` em `tests/SecurityRegressionTest.php`, cobrindo a presença dos placeholders e parâmetros inteiros e rejeitando a concatenação anterior. A baseline PHPStan não foi alterada. `git diff --check` e a auditoria focalizada do plugin foram executados; PHP lint, PHPUnit e PHPStan local não estão disponíveis porque o sandbox não possui PHP nem Composer.
 
 Permanecem pendentes, sem alteração neste lote, a consulta principal de posts do mesmo endpoint, que é consumida pela API `runContent()` a partir de SQL legado e requer transporte estruturado de parâmetros, além de `getTags()`/`getArchieveDates()` e filtros administrativos já registrados nas seções anteriores. O próximo lote deve tratar a consulta principal do thread somente após confirmar o contrato completo de SQL-array e paginação.
+
+
+## Checks do lote de contagem de posts
+
+No SHA `b3bd56fdd2f7d4919369752ece8d976f8a5bddfc`, os checks obrigatórios concluíram com sucesso: [PHP 8.3 tests](https://github.com/leohmoraes/Prescia/actions/runs/34287664122/job/102266879831) e [PHPStan on PHP 8.3](https://github.com/leohmoraes/Prescia/actions/runs/34287664164/job/102266879759).
