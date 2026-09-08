@@ -150,6 +150,18 @@ PHP, $route);
         self::assertStringContainsString('$this->parent->dbo->queryPrepared("DELETE FROM ".$this->dbname." WHERE ".$wS', $module);
     }
 
+    public function testRemoteKeysAndAdministrativeLinkPreviewUsePreparedValues(): void
+    {
+        $module = (string) file_get_contents(__DIR__ . '/../prescia/components/module.php');
+        $preview = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/content/preview.php');
+
+        self::assertStringContainsString('function getRemotePreparedKeys(', $module);
+        self::assertStringContainsString('$whereTypes .= $isInteger ? \'i\' : \'s\';', $module);
+        self::assertStringContainsString('$module->getRemotePreparedKeys($mod,$remoteWhere,$remoteTypes,$remoteParams,$data)', $preview);
+        self::assertStringContainsString('$core->dbo->fetchPrepared($sql,$remoteTypes,$remoteParams)', $preview);
+        self::assertStringNotContainsString('$core->dbo->fetch($sql)', $preview);
+    }
+
     public function testBiStatsEscapesExternalTelemetryBeforeLegacySql(): void
     {
         $stats = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/module.php');
