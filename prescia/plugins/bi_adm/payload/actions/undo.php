@@ -18,10 +18,10 @@
 
 	// load up what we want to undo
 	$undo = $core->loaded('bi_undo');
-		$sql = $undo->get_base_sql($undo->name.".id=".$id);
-	$r = false;
-	$n = 0;
-	$core->dbo->query($sql,$r,$n);
+			$sql = "SELECT * FROM ".$undo->dbname." WHERE id=?";
+		$r = false;
+		$n = 0;
+		$core->dbo->queryPrepared($sql,'i',array($id),$r,$n);
 	if ($n == 0) {
 		$core->fastClose(404);
 		return;
@@ -32,4 +32,3 @@
 
 	if ($sucess) $core->action = "edit";
 	else $core->action = "historymain";
-

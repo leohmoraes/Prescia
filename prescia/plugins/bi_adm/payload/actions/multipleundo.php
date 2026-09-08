@@ -21,10 +21,10 @@
 				foreach ($u as $id) {
 					$id = filter_var($id, FILTER_VALIDATE_INT);
 					if ($id === false || $id < 1) continue;
-					$sql = $undo->get_base_sql($undo->name.".id=".$id);
+					$sql = "SELECT * FROM ".$undo->dbname." WHERE id=?";
 				$r = false;
 				$n = 0;
-				$core->dbo->query($sql,$r,$n);
+				$core->dbo->queryPrepared($sql,'i',array($id),$r,$n);
 				if ($n != 0) {
 					$sucess = $plugin->undo($id,$r);
 					if ($sucess) {
@@ -38,4 +38,3 @@
 			$core->headerControl->internalFoward("historymain.php");
 		}
 	} else $core->action = 404;
-

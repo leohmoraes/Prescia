@@ -63,6 +63,18 @@ SQL, $payload);
         self::assertStringNotContainsString('$core->dbo->simpleQuery("DELETE FROM ".$undoModule->dbname', $undo);
     }
 
+    public function testAdministrativeUndoAndLinkerUsePreparedValues(): void
+    {
+        $undo = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/actions/undo.php');
+        $multipleUndo = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/actions/multipleundo.php');
+        $list = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/actions/list.php');
+
+        self::assertStringContainsString('queryPrepared($sql,\'i\',array($id),$r,$n)', $undo);
+        self::assertStringContainsString('queryPrepared($sql,\'i\',array($id),$r,$n)', $multipleUndo);
+        self::assertStringContainsString('queryPrepared("INSERT INTO ".$lmod->dbname', $list);
+        self::assertStringNotContainsString('$core->dbo->simpleQuery($m)', $list);
+    }
+
     public function testUniqueAjaxRouteUsesFieldAllowlistRbacAndPreparedValues(): void
     {
         $route = (string) file_get_contents(__DIR__ . '/../prescia/lazyload/ajaxqueryunique.php');
@@ -191,7 +203,7 @@ PHP, $stats);
         $multipleUndo = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/actions/multipleundo.php');
 
         self::assertStringContainsString('filter_var($_REQUEST[\'id\'], FILTER_VALIDATE_INT)', $undo);
-        self::assertStringContainsString('$sql = $undo->get_base_sql($undo->name.".id=".$id);', $undo);
+        self::assertStringContainsString('$sql = "SELECT * FROM ".$undo->dbname." WHERE id=?";', $undo);
         self::assertStringNotContainsString('$undo->name.".id=".$_REQUEST[\'id\']', $undo);
         self::assertStringContainsString('$id = filter_var($id, FILTER_VALIDATE_INT);', $multipleUndo);
         self::assertStringContainsString('if ($id === false || $id < 1) continue;', $multipleUndo);
