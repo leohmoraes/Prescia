@@ -174,8 +174,10 @@
 
 							$sql = $mod->get_base_sql();
 							# TODO: this probably won't work on multiple keys
-							$sql['SELECT'] = array($mod->name.".".$mod->keys[0]." as ids",$mod->name.".".$mod->title." as title");
-							$sql['SELECT'][] = "if (".$mod->name.".".$mod->keys[0]."='".$data['value']."',1,0) as selected";
+					$sql['SELECT'] = array($mod->name.".".$mod->keys[0]." as ids",$mod->name.".".$mod->title." as title");
+					$sql['SELECT'][] = "if (".$mod->name.".".$mod->keys[0]."=?,1,0) as selected";
+					$sql['_preparedTypes'] = 's';
+					$sql['_preparedParams'] = array((string)$data['value']);
 							if ($core->runContent($mod,$using,$sql,"_options")===false)
 								$using->assign("_options");
 						}

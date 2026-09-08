@@ -94,3 +94,7 @@ Foi adicionada a regressão `testBiBbThreadPostsUseStructuredSqlAndPreparedIds()
 O contrato parental de `CModule::getContents()` ainda executava SQL-array sempre por `query()`. O terceiro lote adicionou o transporte `_preparedTypes`/`_preparedParams`, converte o SQL-array em texto somente após remover os metadados de bind e usa `queryPrepared()` quando há parâmetros. Os consumidores parentais de `bi_adm` em `edit.php` e `options.php` agora usam `?` para o valor selecionado, com tipo `s` e parâmetro separado; tabelas, colunas, joins e ordenação continuam derivados dos metadados internos.
 
 Foi adicionada a regressão `testParentalContentFiltersUsePreparedSelectedValues()` em `tests/SecurityRegressionTest.php`, cobrindo o transporte do núcleo e os dois consumidores administrativos e rejeitando as interpolações anteriores. A baseline permanece sem alteração. A validação local prevista é `git diff --check` e inspeção estática; o lote só será concluído após PHP 8.3, PHPUnit e PHPStan verdes no CI e no SHA mergeado.
+
+### Correção após CI — opções administrativas
+
+O primeiro CI da PR 119 falhou em `testParentalContentFiltersUsePreparedSelectedValues()`: a asserção encontrou uma segunda interpolação no caminho não-parental de `bi_adm/payload/content/options.php`. O caminho também foi convertido para placeholder com `_preparedTypes = 's'` e `_preparedParams`; a correção permanece no escopo do lote administrativo e será validada em novo CI. Nenhuma alteração foi feita na baseline.
