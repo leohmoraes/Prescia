@@ -70,6 +70,35 @@ class CKFinder_Connector_Utils_FileSystem
     }
 
     /**
+     * Check that a path resolves inside an authorized directory.
+     * Existing symlinks are resolved; for a new path, its parent must resolve
+     * inside the authorized directory.
+     *
+     * @param string $basePath
+     * @param string $candidatePath
+     * @return boolean
+     */
+    public static function isPathInside($basePath, $candidatePath)
+    {
+        $base = realpath($basePath);
+        if ($base === false) {
+            return false;
+        }
+
+        $candidate = realpath($candidatePath);
+        if ($candidate === false) {
+            $parent = realpath(dirname($candidatePath));
+            if ($parent === false) {
+                return false;
+            }
+            $candidate = self::combinePaths($parent, basename($candidatePath));
+        }
+
+        $basePrefix = rtrim($base, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        return $candidate === $base || strpos($candidate, $basePrefix) === 0;
+    }
+
+    /**
      * Check whether $fileName is a valid file name, return true on success
      *
      * @static

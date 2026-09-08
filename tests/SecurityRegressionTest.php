@@ -237,4 +237,18 @@ PHP, $upload);
         self::assertStringNotContainsString('!$_config->checkSizeAfterScaling() && $maxSize', $upload);
         self::assertStringNotContainsString('inArrayCaseInsensitive($sExtension, $htmlExtensions)', $upload);
     }
+
+    public function testCKFinderMutableHandlersUseCanonicalPathContainment(): void
+    {
+        $fileSystem = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/Utils/FileSystem.php');
+        self::assertStringContainsString('public static function isPathInside($basePath, $candidatePath)', $fileSystem);
+        self::assertStringContainsString('$base = realpath($basePath);', $fileSystem);
+        self::assertStringContainsString('$candidate = realpath($candidatePath);', $fileSystem);
+        self::assertStringContainsString('self::combinePaths($parent, basename($candidatePath))', $fileSystem);
+
+        foreach (array('CopyFiles', 'MoveFiles', 'RenameFile', 'RenameFolder', 'DeleteFile', 'DeleteFolder', 'CreateFolder') as $handler) {
+            $source = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/' . $handler . '.php');
+            self::assertStringContainsString('isPathInside(', $source, $handler . ' must validate canonical paths');
+        }
+    }
 }

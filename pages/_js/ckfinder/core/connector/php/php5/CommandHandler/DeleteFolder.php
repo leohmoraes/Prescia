@@ -66,6 +66,13 @@ class CKFinder_Connector_CommandHandler_DeleteFolder extends CKFinder_Connector_
             $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_FOLDER_NOT_FOUND);
         }
 
+        $_config =& CKFinder_Connector_Core_Factory::getInstance("Core_Config");
+        $_resourceTypeInfo = $this->_currentFolder->getResourceTypeConfig();
+        if (!CKFinder_Connector_Utils_FileSystem::isPathInside($_resourceTypeInfo->getDirectory(), $folderServerPath)
+            || !CKFinder_Connector_Utils_FileSystem::isPathInside($_config->getThumbnailsConfig()->getDirectory(), $this->_currentFolder->getThumbsServerPath())) {
+            $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_INVALID_REQUEST);
+        }
+
         if (!CKFinder_Connector_Utils_FileSystem::unlink($folderServerPath)) {
             $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_ACCESS_DENIED);
         }

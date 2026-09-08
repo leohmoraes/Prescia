@@ -95,6 +95,11 @@ class CKFinder_Connector_CommandHandler_RenameFile extends CKFinder_Connector_Co
         $filePath = CKFinder_Connector_Utils_FileSystem::combinePaths($this->_currentFolder->getServerPath(), $fileName);
         $newFilePath = CKFinder_Connector_Utils_FileSystem::combinePaths($this->_currentFolder->getServerPath(), $newFileName);
 
+        if (!CKFinder_Connector_Utils_FileSystem::isPathInside($resourceTypeInfo->getDirectory(), $filePath)
+            || !CKFinder_Connector_Utils_FileSystem::isPathInside($resourceTypeInfo->getDirectory(), $newFilePath)) {
+            $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_INVALID_REQUEST);
+        }
+
         $bMoved = false;
 
         if (!file_exists($filePath)) {
@@ -121,6 +126,9 @@ class CKFinder_Connector_CommandHandler_RenameFile extends CKFinder_Connector_Co
             $oRenamedFileNode->addAttribute("newName", CKFinder_Connector_Utils_FileSystem::convertToConnectorEncoding($newFileName));
 
             $thumbPath = CKFinder_Connector_Utils_FileSystem::combinePaths($this->_currentFolder->getThumbsServerPath(), $fileName);
+            if (!CKFinder_Connector_Utils_FileSystem::isPathInside($_config->getThumbnailsConfig()->getDirectory(), $thumbPath)) {
+                $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_INVALID_REQUEST);
+            }
             CKFinder_Connector_Utils_FileSystem::unlink($thumbPath);
         }
     }

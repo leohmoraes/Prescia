@@ -161,6 +161,11 @@ class CKFinder_Connector_CommandHandler_MoveFiles extends CKFinder_Connector_Com
                     continue;
                 }
 
+                if (!CKFinder_Connector_Utils_FileSystem::isPathInside($_resourceTypeConfig[$type]->getDirectory(), $sourceFilePath)
+                    || !CKFinder_Connector_Utils_FileSystem::isPathInside($currentResourceTypeConfig->getDirectory(), $destinationFilePath)) {
+                    $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_INVALID_REQUEST);
+                }
+
                 // check #9 (max size)
                 if ($currentResourceTypeConfig->getName() != $type) {
                     $maxSize = $currentResourceTypeConfig->getMaxSize();

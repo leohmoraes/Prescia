@@ -68,6 +68,9 @@ class CKFinder_Connector_CommandHandler_CreateFolder extends CKFinder_Connector_
         }
 
         $sServerDir = CKFinder_Connector_Utils_FileSystem::combinePaths($this->_currentFolder->getServerPath(), $sNewFolderName);
+        if (!CKFinder_Connector_Utils_FileSystem::isPathInside($_resourceTypeConfig->getDirectory(), $sServerDir)) {
+            $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_INVALID_REQUEST);
+        }
         if (!is_writeable($this->_currentFolder->getServerPath())) {
             $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_ACCESS_DENIED);
         }
