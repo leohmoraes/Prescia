@@ -136,17 +136,20 @@
 
 								if (!isset($linkerCache[$iFields[$idx]['name']])) # do I have a cache for this table?
 									$linkerCache[$iFields[$idx]['name']] = array(); # no
-								if (!isset($linkerCache[$iFields[$idx]['name']][$regs[$c]])) { # do not have this item cached, look for it
-									$r = false;
-									$n = 0;
-									if (isset($_REQUEST['exactlinkers']))
-													$sql = $iFields[$idx]['remoteModule']->get_base_sql("(".$iFields[$idx]['remoteModule']->title." LIKE \"".cleanString($regs[$c])."\" OR ".$iFields[$idx]['remoteModule']->keys[0]."=\"".cleanString($regs[$c])."\")");
-												else
-													$sql = $iFields[$idx]['remoteModule']->get_base_sql("(".$iFields[$idx]['remoteModule']->title." LIKE \"%".cleanString($regs[$c])."%\" OR ".$iFields[$idx]['remoteModule']->keys[0]."=\"".cleanString($regs[$c])."\")");
-												$sql['SELECT'] = array($iFields[$idx]['remoteModule']->keys[0]);
-												$r = false;
-												$n = 0;
-												$core->dbo->query($sql,$r,$n);
+					if (!isset($linkerCache[$iFields[$idx]['name']][$regs[$c]])) { # do not have this item cached, look for it
+						$r = false;
+						$n = 0;
+						$lookupValue = (string)$regs[$c];
+						$lookupTitle = isset($_REQUEST['exactlinkers']) ? $lookupValue : "%".$lookupValue."%";
+						$remoteModule = $iFields[$idx]['remoteModule'];
+						$sql = $remoteModule->get_base_sql(
+							"(".$remoteModule->title." LIKE ? OR ".$remoteModule->keys[0]."=?)"
+						);
+						$sql['SELECT'] = array($remoteModule->keys[0]);
+						$sqlText = $core->dbo->sqlarray_echo($sql);
+						$r = false;
+						$n = 0;
+						$core->dbo->queryPrepared($sqlText,'ss',array($lookupTitle,$lookupValue),$r,$n);
 												if ($n == 1) {
 													list($coreID) = $core->dbo->fetch_row($r);
 													$linkerCache[$iFields[$idx]['name']][$regs[$c]] = $coreID;

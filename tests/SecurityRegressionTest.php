@@ -137,6 +137,18 @@ PHP, $route);
         self::assertStringContainsString('$core->safety = $previousSafety;', $route);
     }
 
+    public function testAdministrativeImportLinkLookupUsesPreparedTitleAndKeyValues(): void
+    {
+        $route = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/actions/import.php');
+
+        self::assertStringContainsString('$lookupTitle = isset($_REQUEST[\'exactlinkers\']) ? $lookupValue : "%".$lookupValue."%";', $route);
+        self::assertStringContainsString('"(".$remoteModule->title." LIKE ? OR ".$remoteModule->keys[0]."=?)"', $route);
+        self::assertStringContainsString('$core->dbo->queryPrepared($sqlText,\'ss\',array($lookupTitle,$lookupValue),$r,$n);', $route);
+        self::assertStringNotContainsString('LIKE \"".cleanString($regs[$c])', $route);
+        self::assertStringNotContainsString('=\"".cleanString($regs[$c])', $route);
+        self::assertStringNotContainsString('$core->dbo->query($sql,$r,$n);', $route);
+    }
+
     public function testFileManagerDoesNotUseRawDeletePathOrPrefixOnlySafeCheck(): void
     {
         $deleteRoute = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/actions/files.php');
