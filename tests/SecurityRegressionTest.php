@@ -31,6 +31,17 @@ SQL, $payload);
         self::assertStringNotContainsString('simpleQuery("UPDATE ".$loginModule->dbname." SET history=', $authControl);
     }
 
+    public function testLoginUsesAccountAndIpRateLimiterWithoutUserEnumeration(): void
+    {
+        $authControl = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_auth/authControl.php');
+
+        self::assertStringContainsString("require_once dirname(__DIR__, 2) . '/lib/loginRateLimiter.php';", $authControl);
+        self::assertStringContainsString('$this->getLoginLimiter()->isAllowed($login, $ip)', $authControl);
+        self::assertStringContainsString('$this->recordLoginFailure($login, $ip);', $authControl);
+        self::assertStringContainsString('$this->getLoginLimiter()->clear($login, $ip);', $authControl);
+        self::assertStringContainsString('return CONS_AUTH_SESSION_FAIL_UNKNOWN;', $authControl);
+    }
+
     public function testUniqueAjaxRouteUsesFieldAllowlistRbacAndPreparedValues(): void
     {
         $route = (string) file_get_contents(__DIR__ . '/../prescia/lazyload/ajaxqueryunique.php');

@@ -1,12 +1,27 @@
 <?php	# -------------------------------- Prescia Auth control interface
 
 require_once __DIR__ . '/passwords.php';
+require_once dirname(__DIR__, 2) . '/lib/loginRateLimiter.php';
 
 class CauthControlEx extends CauthControl { # Replaces basic auth control
 
-	function __construct(&$parent) {
-		parent::__construct($parent);
-	}
+	private ?PresciaLoginRateLimiter $loginLimiter = null;
+
+		function __construct(&$parent) {
+			parent::__construct($parent);
+		}
+
+		private function getLoginLimiter(): PresciaLoginRateLimiter {
+			if ($this->loginLimiter === null) {
+				$directory = defined('CONS_PATH_TEMP') ? CONS_PATH_TEMP . '_auth/' : sys_get_temp_dir() . '/prescia-auth/';
+				$this->loginLimiter = new PresciaLoginRateLimiter($directory);
+			}
+			return $this->loginLimiter;
+		}
+
+		private function recordLoginFailure(string $login, string $ip): void {
+			$this->getLoginLimiter()->recordFailure($login, $ip);
+		}
 
 	private function setAuthCookie(string $name, string $value, int $expires): void {
 		$secure = defined('CONS_COOKIE_SECURE')
@@ -645,13 +660,20 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 			}
 
 				# POST?
-			if (isset($_POST['login']) && isset($_POST['password']) && $_POST['login'] != "" && $_POST['password'] != "") {
-				$login = is_string($_POST['login']) ? $_POST['login'] : '';
-				$password = is_string($_POST['password']) ? $_POST['password'] : '';
-				$invalidCredentials = $login === '' || $password === '' || strlen($login) > 50 || strlen($password) > 4096
+				if (isset($_POST['login']) && isset($_POST['password']) && $_POST['login'] != "" && $_POST['password'] != "") {
+					$login = is_string($_POST['login']) ? $_POST['login'] : '';
+					$password = is_string($_POST['password']) ? $_POST['password'] : '';
+					$loginAllowed = $this->getLoginLimiter()->isAllowed($login, $ip);
+					if (!$loginAllowed) {
+						$this->logsGuest();
+						$this->parent->errorControl->raise(305,'','',$login);
+						return CONS_AUTH_SESSION_FAIL_UNKNOWN;
+					}
+					$invalidCredentials = $login === '' || $password === '' || strlen($login) > 50 || strlen($password) > 4096
 					|| preg_match('//u',$login) !== 1 || preg_match('//u',$password) !== 1
 					|| preg_match('/[\x00-\x1F\x7F]/',$login) === 1 || preg_match('/[\x00-\x1F\x7F]/',$password) === 1;
-				if ($invalidCredentials) {
+					if ($invalidCredentials) {
+						$this->recordLoginFailure($login, $ip);
 					$this->logsGuest();
 					if (strpos($login,"<") !== false || strpos($password,"<") !== false) {
 						$this->parent->errorControl->raise(144);
@@ -680,6 +702,7 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 						$this->parent->dbo->queryPrepared("UPDATE ".$userModule->dbname." SET password=? WHERE id=?", 'si', array($newHash, (int)$data['id']), $r, $n);
 					}
 						if (!$passwordValid) {
+							$this->recordLoginFailure($login, $ip);
 							$this->logsGuest();
 							$this->parent->errorControl->raise(305,'','',$login);
 							return CONS_AUTH_SESSION_FAIL_UNKNOWN;
@@ -700,8 +723,9 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 								$this->setAuthCookie('scookie',$newkey,time()+CONS_COOKIE_TIME);
 								$this->setAuthCookie('login',(string)$data['id'],time()+CONS_COOKIE_TIME);
 								$this->parent->errorControl->raise(301,'','',$_SESSION[CONS_SESSION_ACCESS_USER]['login']);
-							}
-							return $returnCode;
+								}
+								$this->getLoginLimiter()->clear($login, $ip);
+								return $returnCode;
 						} else { # error on session control
 							$this->parent->errorControl->raise(504);
 							$this->logsGuest(); # consider a guest
@@ -712,12 +736,14 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 							$this->parent->errorControl->raise(($data['active'] == 'n' || $data['groups_active'] == 'n'?303:304),'','',$login);
 						return ($data['active'] == 'n' || $data['groups_active'] == 'n'?CONS_AUTH_SESSION_FAIL_INACTIVE:CONS_AUTH_SESSION_FAIL_EXPIRED);
 					}
-				} else { # no login/pass match
+					} else { # no login/pass match
+						$this->recordLoginFailure($login, $ip);
 					$this->logsGuest();
 					$this->parent->errorControl->raise(305,'','',$login);
 					return CONS_AUTH_SESSION_FAIL_UNKNOWN;
 				}
-				} else { # error on query! consider mismatch (hide from user) but log the error
+					} else { # error on query! consider mismatch (hide from user) but log the error
+						$this->recordLoginFailure($login, $ip);
 					$this->parent->errorControl->raise(504);
 					$this->logsGuest();
 					$this->parent->errorControl->raise(305,'','',$login);
