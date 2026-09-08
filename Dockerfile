@@ -1,7 +1,9 @@
 FROM php:8.3-apache
 
 # Install required PHP extensions and dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends \
     libzip-dev \
     libonig-dev \
     zip \
