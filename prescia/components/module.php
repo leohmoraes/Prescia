@@ -1706,6 +1706,36 @@ class CModule {
 		} # switch
 	} # run_action
 #-
+	private function normalizeContentSqlArray(&$sql) {
+		if (!is_array($sql) || !isset($sql['ORDER']) || !isset($sql['LIMIT'])) return false;
+		$normalizedOrder = array();
+		foreach ($sql['ORDER'] as $orderGroup) {
+			foreach (explode(',',(string)$orderGroup) as $orderItem) {
+				$orderItem = trim($orderItem);
+				if ($orderItem === '') continue;
+				if ($orderItem === 'RAND()') {
+					$normalizedOrder[] = $orderItem;
+				} else if (preg_match('/^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)?(?:\s+(?:ASC|DESC))?$/i',$orderItem)) {
+					$normalizedOrder[] = $orderItem;
+				} else {
+					return false;
+				}
+			}
+		}
+		$normalizedLimit = array();
+		foreach ($sql['LIMIT'] as $limitGroup) {
+			$limitParts = explode(',',(string)$limitGroup);
+			if (count($limitParts) > 2) return false;
+			foreach ($limitParts as $limitPart) {
+				if (!preg_match('/^[0-9]+$/',trim($limitPart))) return false;
+			}
+			$normalizedLimit[] = implode(',',array_map('intval',$limitParts));
+		}
+		$sql['ORDER'] = $normalizedOrder;
+		$sql['LIMIT'] = $normalizedLimit;
+		return true;
+	} # normalizeContentSqlArray
+#-
 	function runContent(&$tp,$sql="",$tag="",$usePaging=false, $cacheTAG = false,$callback = false) {
 		# callback function parameters: &template, &params, data AND returns data (if returns FALSE, will skip this item)
 		# will return and set the $this->parent->lastReturnCode to a number (TOTAL possible, not just those listed) or the returned item (one item returned and NO TAG set)
@@ -1741,17 +1771,17 @@ class CModule {
 	  	if ($usePaging) { # if enabled (was sent TRUE or with the page size), get start and end right.
 	  		if (!isset($this->parent->templateParams['p_init']) || !is_numeric($this->parent->templateParams['p_init']) || $this->parent->templateParams['p_init']<0) {
 				if (isset($_REQUEST['p_init']) && is_numeric($_REQUEST['p_init']) && $_REQUEST['p_init']>=0)
-					$this->parent->templateParams['p_init'] = $_REQUEST['p_init'];
+					$this->parent->templateParams['p_init'] = (int)$_REQUEST['p_init'];
 	  	  		else
 	  	  			$this->parent->templateParams['p_init'] = 0;
 	  	  	}
 	  	  	if (!isset($this->parent->templateParams['p_size']) || !is_numeric($this->parent->templateParams['p_size']) || $this->parent->templateParams['p_size']<0) {
 				if (isset($_REQUEST['p_size']) && is_numeric($_REQUEST['p_size']) && $_REQUEST['p_size']>=0) # came numeric value
-					$this->parent->templateParams['p_size'] = $_REQUEST['p_size'];
+					$this->parent->templateParams['p_size'] = (int)$_REQUEST['p_size'];
 				else if (isset($_SESSION[CONS_SESSION_ACCESS_USER]['userprefs'])) { # non numeric, try user preferences
 					$up = is_array($_SESSION[CONS_SESSION_ACCESS_USER]['userprefs'])?$_SESSION[CONS_SESSION_ACCESS_USER]['userprefs']:presciaSafeUnserialize($_SESSION[CONS_SESSION_ACCESS_USER]['userprefs']);
 					if (isset($up['pfim']) && is_numeric($up['pfim']) && $up['pfim']>0)
-						$this->parent->templateParams['p_size'] = $up['pfim'];
+						$this->parent->templateParams['p_size'] = (int)$up['pfim'];
 					else
 						$this->parent->templateParams['p_size'] = CONS_DEFAULT_PAGESIZE;
 				} else # user preferences fail fallback
@@ -1760,7 +1790,7 @@ class CModule {
 	  	}
 	  	$originalSQL = false;
 		if (is_numeric($sql)) { # a number means just the ID
-			$sql = $this->get_base_sql($this->name.".".$this->keys[0]."='$sql'");
+			$sql = $this->get_base_sql($this->name.".".$this->keys[0]."='".(int)$sql."'");
 			$originalSQL = true; // no change based on original SQL
 		} else if ($sql == "") { # no sql? use the default
 			$sql = $this->get_base_sql();
@@ -1785,6 +1815,11 @@ class CModule {
 		if ($tag == '') $sql['LIMIT'] = array(1);
 		$sql = $this->parent->authControl->forcePermissions($this,$sql);
 		if ($sql === false) { # forcePermissions failed
+			unset($this->parent->templateParams['reverse']);
+			return false;
+		}
+		if (!$this->normalizeContentSqlArray($sql)) {
+			$this->parent->errorControl->raise(144,$this->parent->dbo->sqlarray_echo($sql),$this->name);
 			unset($this->parent->templateParams['reverse']);
 			return false;
 		}
