@@ -213,4 +213,28 @@ PHP, $route);
         self::assertStringContainsString("define('CKFINDER_CONNECTOR_LIB_DIR', \"./php5\");", $constants);
         self::assertStringNotContainsString('"./php4"', $constants);
     }
+
+    public function testCKFinderP0UploadPolicyUsesPositiveLimitsAndNoActiveTypes(): void
+    {
+        $config = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/config.php');
+
+        self::assertSame(2, substr_count($config, "'maxSize' => '"));
+        self::assertStringContainsString("'maxSize' => '8M'", $config);
+        self::assertStringContainsString("'maxSize' => '5M'", $config);
+        self::assertStringNotContainsString("'name' => 'Flash'", $config);
+        self::assertStringNotContainsString("'allowedExtensions' => 'swf,flv'", $config);
+        self::assertStringNotContainsString("'HtmlExtensions'] = array('html'", $config);
+    }
+
+    public function testCKFinderUploadEnforcesSizeBeforeScalingAndDetectsHtmlForAllExtensions(): void
+    {
+        $upload = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/FileUpload.php');
+
+        self::assertStringContainsString('if ($maxSize && $uploadedFile[\'size\']>$maxSize)', $upload);
+        self::assertStringContainsString(<<<'PHP'
+if (($detectHtml = CKFinder_Connector_Utils_FileSystem::detectHtml($uploadedFile['tmp_name'])) === true )
+PHP, $upload);
+        self::assertStringNotContainsString('!$_config->checkSizeAfterScaling() && $maxSize', $upload);
+        self::assertStringNotContainsString('inArrayCaseInsensitive($sExtension, $htmlExtensions)', $upload);
+    }
 }
