@@ -218,7 +218,10 @@ PHP, $stats);
         self::assertStringContainsString('X-Frame-Options: SAMEORIGIN', $frontController);
         self::assertStringContainsString('Referrer-Policy: strict-origin-when-cross-origin', $frontController);
         self::assertStringContainsString('Permissions-Policy:', $frontController);
+        self::assertStringContainsString('X-Download-Options: noopen', $frontController);
+        self::assertStringContainsString('X-DNS-Prefetch-Control: off', $frontController);
         self::assertStringContainsString('Cross-Origin-Opener-Policy: same-origin', $frontController);
+        self::assertStringContainsString('Cross-Origin-Resource-Policy: same-origin', $frontController);
         self::assertStringContainsString('Strict-Transport-Security:', $frontController);
     }
 

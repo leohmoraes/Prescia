@@ -52,8 +52,11 @@ if (CONS_ONSERVER && is_file("heavymaint.html")) {
 				header('X-Frame-Options: SAMEORIGIN');
 				header('Referrer-Policy: strict-origin-when-cross-origin');
 				header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
-				header('X-Permitted-Cross-Domain-Policies: none');
-				header('Cross-Origin-Opener-Policy: same-origin');
+					header('X-Permitted-Cross-Domain-Policies: none');
+					header('X-Download-Options: noopen');
+					header('X-DNS-Prefetch-Control: off');
+					header('Cross-Origin-Opener-Policy: same-origin');
+					header('Cross-Origin-Resource-Policy: same-origin');
 				header("Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self'; script-src 'self' 'nonce-".$cspNonce."'; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self';");
 			if (!empty($_SERVER['HTTPS']) && strtolower((string)$_SERVER['HTTPS']) !== 'off')
 				header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
