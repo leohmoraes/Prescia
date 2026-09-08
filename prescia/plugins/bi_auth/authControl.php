@@ -508,10 +508,12 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 
 				}
 			}
-			if ($restore) {
-				# group information at the database is incorrect or corrupt
-				$groups = $this->parent->loaded(CONS_AUTH_GROUPMODULE);
-				$this->parent->dbo->simpleQuery("UPDATE ".$groups->dbname." SET permissions=\"".cleanString(serialize($p),true,false)."\" WHERE id=".$_SESSION[CONS_SESSION_ACCESS_USER]["id_group"]);
+				if ($restore) {
+					# group information at the database is incorrect or corrupt
+					$groups = $this->parent->loaded(CONS_AUTH_GROUPMODULE);
+					$updateResult = false;
+					$updateRows = 0;
+					$this->parent->dbo->queryPrepared("UPDATE ".$groups->dbname." SET permissions=? WHERE id=?", 'si', array(serialize($p), (int)$_SESSION[CONS_SESSION_ACCESS_USER]["id_group"]), $updateResult, $updateRows);
 			}
 		}
 		$_SESSION[CONS_SESSION_ACCESS_PERMISSIONS] = $p;
@@ -538,7 +540,7 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 			$_SESSION[CONS_SESSION_ACCESS_LEVEL] = CONS_SESSION_ACCESS_LEVEL_GUEST;
 			$_SESSION[CONS_SESSION_ACCESS_PERMISSIONS] = $this->parent->permissionTemplate;
 		} else {
-			$sql = $groups->get_base_sql("id=".$this->parent->dimconfig['guest_group']);
+				$sql = $groups->get_base_sql("id=".(int)$this->parent->dimconfig['guest_group']);
 			$r = false;
 			$n = 0;
 			if ($this->parent->dbo->query($sql,$r,$n) && $n>0) {

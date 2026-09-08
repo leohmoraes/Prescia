@@ -31,6 +31,17 @@ SQL, $payload);
         self::assertStringNotContainsString('simpleQuery("UPDATE ".$loginModule->dbname." SET history=', $authControl);
     }
 
+    public function testAuthBootstrapAndPermissionUpdatesUsePreparedValues(): void
+    {
+        $module = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_auth/module.php');
+        $authControl = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_auth/authControl.php');
+
+        self::assertStringContainsString('INSERT INTO ".$groupTable." SET name=?, level=?, id=?, permissions=?', $module);
+        self::assertStringContainsString('INSERT INTO ".$userTable." SET name=?, id=?, id_group=?, login=?, password=?, active=?', $module);
+        self::assertStringContainsString('UPDATE ".$groups->dbname." SET permissions=? WHERE id=?', $authControl);
+        self::assertStringNotContainsString('simpleQuery("INSERT INTO ".$this->parent->modules[CONS_AUTH_USERMODULE]->dbname', $module);
+    }
+
     public function testLoginUsesAccountAndIpRateLimiterWithoutUserEnumeration(): void
     {
         $authControl = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_auth/authControl.php');

@@ -117,22 +117,28 @@ class mod_bi_auth extends CscriptedModule  {
 		$sql = $this->parent->modules[CONS_AUTH_GROUPMODULE]->get_base_sql("id=1");
 		$r = false;
 		$n = 0;
-		if (!$this->parent->dbo->query($sql,$r,$n) || $n==0) {
-			# database present (query ok) but empty ... create default groups
-			$this->parent->dbo->simpleQuery("INSERT INTO ".$this->parent->modules[CONS_AUTH_GROUPMODULE]->dbname." SET name='Guest', level=0, id=1, permissions=''");
-			$this->parent->dbo->simpleQuery("INSERT INTO ".$this->parent->modules[CONS_AUTH_GROUPMODULE]->dbname." SET name='Administrator', level=90, id=2, permissions=''");
-			$this->parent->dbo->simpleQuery("INSERT INTO ".$this->parent->modules[CONS_AUTH_GROUPMODULE]->dbname." SET name='Master Administrator', level=100, id=3, permissions=''");
-			$this->parent->dbo->simpleQuery("INSERT INTO ".$this->parent->modules[CONS_AUTH_GROUPMODULE]->dbname." SET name='Default User', level=5, id=4, permissions=''");
+			if (!$this->parent->dbo->query($sql,$r,$n) || $n==0) {
+				# database present (query ok) but empty ... create default groups
+				$groupTable = $this->parent->modules[CONS_AUTH_GROUPMODULE]->dbname;
+				foreach (array(array('Guest', 0, 1), array('Administrator', 90, 2), array('Master Administrator', 100, 3), array('Default User', 5, 4)) as $group) {
+					$insertResult = false;
+					$insertRows = 0;
+					$this->parent->dbo->queryPrepared("INSERT INTO ".$groupTable." SET name=?, level=?, id=?, permissions=?", 'siis', array($group[0], $group[1], $group[2], ''), $insertResult, $insertRows);
+				}
 		}
 		$sql = $this->parent->modules[CONS_AUTH_USERMODULE]->get_base_sql(CONS_AUTH_USERMODULE.".id=1");
 		$r = false;
 		$n = 0;
 		if (!$this->parent->dbo->query($sql,$r,$n) || $n==0) {
-			# database present (query ok) but empty ... create default user
-			$newPass = bin2hex(random_bytes(24));
-			$hashedPass = $this->parent->dbo->escape(presciaPasswordHash($newPass));
-			$this->parent->dbo->simpleQuery("INSERT INTO ".$this->parent->modules[CONS_AUTH_USERMODULE]->dbname." SET name='Master', id=1, id_group=3,login='master',password='".$hashedPass."',active='y'");
-			$this->parent->dbo->simpleQuery("INSERT INTO ".$this->parent->modules[CONS_AUTH_USERMODULE]->dbname." SET name='Administrador', id=2, id_group=2,login='admin',password='".$hashedPass."',active='y'");
+				# database present (query ok) but empty ... create default user
+				$newPass = bin2hex(random_bytes(24));
+				$hashedPass = presciaPasswordHash($newPass);
+				$userTable = $this->parent->modules[CONS_AUTH_USERMODULE]->dbname;
+				foreach (array(array('Master', 1, 3, 'master'), array('Administrador', 2, 2, 'admin')) as $user) {
+					$insertResult = false;
+					$insertRows = 0;
+					$this->parent->dbo->queryPrepared("INSERT INTO ".$userTable." SET name=?, id=?, id_group=?, login=?, password=?, active=?", 'siisss', array($user[0], $user[1], $user[2], $user[3], $hashedPass, 'y'), $insertResult, $insertRows);
+				}
 			$this->parent->log[] = "Master and Admin accounts created; rotate the generated credentials before deployment.";
 		}
 	}
