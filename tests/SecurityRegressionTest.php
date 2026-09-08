@@ -96,6 +96,31 @@ PHP, $route);
         self::assertStringContainsString('$browser = $sqlEscape($browser);', $stats);
     }
 
+    public function testBiStatsResolutionUsesValidationAndPreparedQueries(): void
+    {
+        $stats = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/module.php');
+
+        self::assertStringContainsString(<<<'PHP'
+preg_match('/^[1-9][0-9]{1,4}x[1-9][0-9]{1,4}$/', $resolution)
+PHP, $stats);
+        self::assertStringContainsString('fetchPrepared("SELECT hits FROM ".$statsResolution." WHERE data=? AND resolution=?"', $stats);
+        self::assertStringContainsString('queryPrepared("UPDATE ".$statsResolution." SET hits=hits+1 WHERE data=? AND resolution=?"', $stats);
+        self::assertStringContainsString('fetchPrepared("SELECT hits FROM ".$statsResolution." WHERE data=? AND resolution=?", \'ss\'', $stats);
+        self::assertStringNotContainsString('resolution=\\"".$_SESSION[CONS_USER_RESOLUTION]', $stats);
+    }
+
+    public function testBiStatsRealtimeEndpointAuthorizesAndEscapesOutput(): void
+    {
+        $route = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/payload/actions/stats_rtajax.php');
+
+        self::assertStringContainsString('$_SESSION[CONS_SESSION_ACCESS_LEVEL] < 10', $route);
+        self::assertStringContainsString("filter_var(\$_REQUEST['ip'] ?? '', FILTER_VALIDATE_IP)", $route);
+        self::assertStringContainsString('queryPrepared("SELECT * from ".$rt->dbname." WHERE ip=?"', $route);
+        self::assertStringContainsString("htmlspecialchars((string)\$value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')", $route);
+        self::assertStringNotContainsString('WHERE ip=\'$ip\'', $route);
+        self::assertStringNotContainsString("echo \"Navegador: \".\$dados['agent']", $route);
+    }
+
     public function testUndoUsesPreparedQueriesForRecordKeysAndHistoryDeletion(): void
     {
         $undo = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_undo/module.php');
