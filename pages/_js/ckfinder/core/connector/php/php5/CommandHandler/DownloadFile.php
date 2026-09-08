@@ -73,6 +73,9 @@ class CKFinder_Connector_CommandHandler_DownloadFile extends CKFinder_Connector_
         }
 
         $fileName = CKFinder_Connector_Utils_FileSystem::convertToConnectorEncoding($fileName);
+        if (strpbrk($fileName, "\r\n\0") !== false || preg_match('/[\x00-\x1F\x7F]/', $fileName)) {
+            $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_INVALID_REQUEST);
+        }
 
         header("Cache-Control: cache, must-revalidate");
         header("Pragma: public");
@@ -81,17 +84,13 @@ class CKFinder_Connector_CommandHandler_DownloadFile extends CKFinder_Connector_
             header("Content-Type: text/plain; charset=utf-8");
         }
         else {
-            $user_agent = !empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : "";
-            if (strpbrk($fileName, "\r\n") !== false) {
-                $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_INVALID_REQUEST);
-            }
-            $encodedName = str_replace(array("\\", "\""), array("\\\\", "\\\""), $fileName);
-            if (strpos($user_agent, "MSIE") !== false) {
-                $encodedName = str_replace(array("+", "%2E"), array(" ", "."), urlencode($encodedName));
-            }
+            $fallbackName = preg_replace('/[^A-Za-z0-9._-]/', '_', $fileName);
+            $fallbackName = is_string($fallbackName) && $fallbackName !== '' ? $fallbackName : 'download';
+            $encodedName = addcslashes($fallbackName, "\\\"");
+            $encodedUtf8Name = rawurlencode($fileName);
             header("X-Content-Type-Options: nosniff");
-            header("Content-type: application/octet-stream; name=\"" . $encodedName . "\"");
-            header("Content-Disposition: attachment; filename=\"" . $encodedName. "\"");
+            header("Content-Type: application/octet-stream");
+            header("Content-Disposition: attachment; filename=\"" . $encodedName . "\"; filename*=UTF-8''" . $encodedUtf8Name);
         }
         header("Content-Length: " . filesize($filePath));
         CKFinder_Connector_Utils_FileSystem::readfileChunked($filePath);

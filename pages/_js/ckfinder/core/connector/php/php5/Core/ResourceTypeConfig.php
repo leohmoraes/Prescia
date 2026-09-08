@@ -134,7 +134,7 @@ class CKFinder_Connector_Core_ResourceTypeConfig
             if (is_array($resourceTypeNode["deniedExtensions"])) {
 
                 foreach ($resourceTypeNode["deniedExtensions"] as $extension) {
-                    $this->_deniedExtensions[] = strtolower(trim((string)$e));
+                    $this->_deniedExtensions[] = strtolower(trim((string)$extension));
                 }
             }
             else {

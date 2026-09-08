@@ -276,6 +276,28 @@ PHP, $stats);
         self::assertStringNotContainsString("'HtmlExtensions'] = array('html'", $config);
     }
 
+    public function testCKFinderUploadValidatesMimeAndCanonicalDestination(): void
+    {
+        $upload = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/FileUpload.php');
+        $resourceConfig = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/Core/ResourceTypeConfig.php');
+
+        self::assertStringContainsString("is_uploaded_file(", $upload);
+        self::assertStringContainsString("finfo_open(FILEINFO_MIME_TYPE)", $upload);
+        self::assertStringContainsString('isPathInside($sServerDir, $sFilePath)', $upload);
+        self::assertStringContainsString('$extension));', $resourceConfig);
+        self::assertStringNotContainsString('(string)$e', $resourceConfig);
+    }
+
+    public function testCKFinderDownloadUsesSafeContentDisposition(): void
+    {
+        $download = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/DownloadFile.php');
+
+        self::assertStringContainsString("filename*=UTF-8''", $download);
+        self::assertStringContainsString('X-Content-Type-Options: nosniff', $download);
+        self::assertStringNotContainsString('HTTP_USER_AGENT', $download);
+        self::assertStringNotContainsString('Content-type: application/octet-stream; name=', $download);
+    }
+
     public function testCKFinderConfigurationDoesNotExposeErrorsOrGrantWorldWrite(): void
     {
         $config = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/config.php');

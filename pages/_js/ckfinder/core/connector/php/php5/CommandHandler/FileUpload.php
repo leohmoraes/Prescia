@@ -138,6 +138,24 @@ class CKFinder_Connector_CommandHandler_FileUpload extends CKFinder_Connector_Co
             $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_UPLOADED_TOO_BIG);
         }
 
+        if ($uploadedFile['size'] < 1 || !is_readable($uploadedFile['tmp_name'])) {
+            $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_UPLOADED_CORRUPT);
+        }
+
+        if (function_exists('finfo_open')) {
+            $mimeInfo = finfo_open(FILEINFO_MIME_TYPE);
+            $detectedMime = $mimeInfo !== false ? finfo_file($mimeInfo, $uploadedFile['tmp_name']) : false;
+            if ($mimeInfo !== false) finfo_close($mimeInfo);
+            $activeMimes = array(
+                'text/html', 'text/javascript', 'application/javascript', 'application/x-javascript',
+                'application/xml', 'text/xml', 'image/svg+xml', 'application/x-shockwave-flash',
+                'application/x-httpd-php', 'text/x-php',
+            );
+            if (is_string($detectedMime) && in_array(strtolower($detectedMime), $activeMimes, true)) {
+                $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_INVALID_EXTENSION);
+            }
+        }
+
         $sExtension = strtolower(CKFinder_Connector_Utils_FileSystem::getExtension($sFileNameOrginal));
 
         if (($detectHtml = CKFinder_Connector_Utils_FileSystem::detectHtml($uploadedFile['tmp_name'])) === true ) {
@@ -157,6 +175,10 @@ class CKFinder_Connector_CommandHandler_FileUpload extends CKFinder_Connector_Co
         while (true)
         {
             $sFilePath = CKFinder_Connector_Utils_FileSystem::combinePaths($sServerDir, $sFileName);
+
+            if (!CKFinder_Connector_Utils_FileSystem::isPathInside($sServerDir, $sFilePath)) {
+                $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_ACCESS_DENIED);
+            }
 
             $destinationHandle = @fopen($sFilePath, 'x');
             if ($destinationHandle === false) {
@@ -185,9 +207,7 @@ class CKFinder_Connector_CommandHandler_FileUpload extends CKFinder_Connector_Co
                     }
                 }
                 if (is_file($sFilePath) && ($perms = $_config->getChmodFiles())) {
-                    $oldumask = umask(0);
-                    chmod($sFilePath, $perms);
-                    umask($oldumask);
+                    @chmod($sFilePath, $perms & 0770);
                 }
                 break;
             }
