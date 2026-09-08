@@ -46,7 +46,7 @@ class mod_bi_undo extends CscriptedModule  {
 			$sql = "SELECT id, files FROM ".$undoModule->dbname." WHERE files<>'' AND data<NOW() - INTERVAL 1 WEEK";
 			$r = false;
 			$n = 0;
-			$core->dbo->query($sql,$r,$n);
+				$core->dbo->queryPrepared($sql,'',array(),$r,$n);
 			if ($n>0) {
 				for ($c=0;$c<$n;$c++) {
 					list($id,$files) = $core->dbo->fetch_row($r);
@@ -59,7 +59,9 @@ class mod_bi_undo extends CscriptedModule  {
 					}
 				}
 			}
-			$core->dbo->simpleQuery("DELETE FROM ".$undoModule->dbname." WHERE data<NOW() - INTERVAL 1 WEEK");
+			$deleteResult = false;
+			$deleteRows = 0;
+			$core->dbo->queryPrepared("DELETE FROM ".$undoModule->dbname." WHERE data<NOW() - INTERVAL 1 WEEK",'',array(),$deleteResult,$deleteRows);
 			# Find orphan files and delete them
 			$lastWeek = date("Y-m-d")." 00:00:00";
 			$lastWeek = datecalc($lastWeek,0,0,-7);
@@ -80,14 +82,11 @@ class mod_bi_undo extends CscriptedModule  {
 
 			$core = &$this->parent;
 			$id = (int)$id;
-			$sqlEscape = static function ($value) use ($core): string {
-				return addslashes_EX((string)$value, true, $core->dbo);
-			};
 			$undo = $core->loaded('bi_undo');
 			if (!$record) {
-				$sql = $undo->get_base_sql($undo->name.".id=".$id);
+				$sql = "SELECT * FROM ".$undo->dbname." WHERE id=?";
 			$n = 0;
-			$core->dbo->query($sql,$record,$n);
+			$core->dbo->queryPrepared($sql,'i',array($id),$record,$n);
 			if ($n == 0) {
 				$core->fastClose(404);
 				return false;
@@ -110,19 +109,25 @@ class mod_bi_undo extends CscriptedModule  {
 				if ($fields[CONS_XML_TIPO] == CONS_TIPO_LINK && $history[$fname]!=0 && $history[$fname] != NULL) {
 					$remoteOk = true;
 					$remoteModule = $core->loaded($fields[CONS_XML_MODULE]);
-					$sql = $remoteModule->get_base_sql("","","",true);
-					$sql['SELECT'] = array("count(*)"); # just want to check if it exists
-					foreach ($remoteModule->keys as $key) {
-						if ($key == $remoteModule->keys[0])
-								$sql['WHERE'][] = $key."=\"".$sqlEscape($history[$fname])."\"";
-							else if (isset($undodados[$key]))
-								$sql['WHERE'][] = $key."=\"".$sqlEscape($history[$key])."\"";
-						else {
-							$remoteOk =false;
-							break;
+						$where = array();
+						$whereTypes = '';
+						$whereParams = array();
+						foreach ($remoteModule->keys as $key) {
+							if ($key == $remoteModule->keys[0]) {
+								$where[] = $key."=?";
+								$whereParams[] = (string)$history[$fname];
+							} else if (isset($undodados[$key])) {
+								$where[] = $key."=?";
+								$whereParams[] = (string)$undodados[$key];
+							}
+							else {
+								$remoteOk =false;
+								break;
+							}
+							$whereTypes .= 's';
 						}
-					}
-					$n = $core->dbo->fetch($sql);					
+						$sql = "SELECT count(*) FROM ".$remoteModule->dbname." WHERE ".implode(" AND ",$where);
+						$n = $remoteOk ? $core->dbo->fetchPrepared($sql,$whereTypes,$whereParams,false) : 0;
 					if ($n == 0) $remoteOk = false;
 					if (!$remoteOk) {
 						// field does not exist, what now?
