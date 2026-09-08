@@ -74,3 +74,11 @@ Permanecem pendentes, sem alteração neste lote, a consulta principal de posts 
 ## Checks do lote de contagem de posts
 
 No SHA `b3bd56fdd2f7d4919369752ece8d976f8a5bddfc`, os checks obrigatórios concluíram com sucesso: [PHP 8.3 tests](https://github.com/leohmoraes/Prescia/actions/runs/34287664122/job/102266879831) e [PHPStan on PHP 8.3](https://github.com/leohmoraes/Prescia/actions/runs/34287664164/job/102266879759).
+
+## Lote SQL bi_bb — filtros de tags e datas — em execução
+
+O inventário confirmou que `mod_bi_bb::getTags()` e `getArchieveDates()` não possuem call sites no repositório, mas aceitavam uma cláusula SQL livre por meio do parâmetro `$filter`. O primeiro lote do loop substituiu esse contrato por filtros de igualdade estruturados (`array<string, scalar|null>`), validando cada campo contra os metadados do módulo e transportando os valores por placeholders com tipos explícitos. Tabelas, aliases, colunas estruturais, ordenação e as condições base de tags/datas continuam controlados pelo código.
+
+Foi adicionada a regressão `testBiBbArchiveFiltersUsePreparedValuesAndMetadataFields()` em `tests/SecurityRegressionTest.php`, que confirma as assinaturas estruturadas, a validação de campos e o uso de `queryPrepared()`, rejeitando o contrato de SQL livre. A baseline não foi alterada.
+
+Validações locais concluídas neste ambiente: `git diff --check` e inspeção focalizada do diff. PHP 8.3, PHPUnit, PHPStan, Composer e Docker não estão instalados no sandbox; os checks completos devem ser confirmados no CI antes do merge. Após o merge, consultar os check-runs do SHA mergeado e então avançar para a consulta principal de posts do thread, mantendo os filtros parentais de `getContents()` como lote separado.

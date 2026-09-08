@@ -108,6 +108,19 @@ SQL, $payload);
         self::assertStringNotContainsString('WHERE id_forum=$idf AND id_forumthread=$idt', $thread);
     }
 
+    public function testBiBbArchiveFiltersUsePreparedValuesAndMetadataFields(): void
+    {
+        $module = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_bb/module.php');
+
+        self::assertStringContainsString('function getTags(array $filters = array())', $module);
+        self::assertStringContainsString('function getArchieveDates(array $filters = array())', $module);
+        self::assertStringContainsString('array_key_exists($field, $mod->fields)', $module);
+        self::assertStringContainsString('$this->parent->dbo->queryPrepared($sql,$types,$params,$r,$n);', $module);
+        self::assertStringNotContainsString('function getTags($filter="")', $module);
+        self::assertStringNotContainsString('function getArchieveDates($filter="")', $module);
+        self::assertStringNotContainsString('" AND ".$filter', $module);
+    }
+
     public function testAdministrativeEditUsesPreparedSingleAndMultipleKeys(): void
     {
         $edit = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/content/edit.php');

@@ -185,15 +185,29 @@ class mod_bi_bb extends CscriptedModule  {
 
 	}
 
-	function getTags($filter="") { # Filter is an SQL where statement
+	/**
+	 * @param array<string, scalar|null> $filters Equality filters keyed by module field.
+	 * @return array<string, int>
+	 */
+	function getTags(array $filters = array()) {
 		# tag sizes 0 ~ 4
 		$TAGS = array();
 		$maxTAG = 1;
 		$mod = $this->parent->loaded($this->moduleRelation);
-		$sql = "SELECT ".$mod->name.".tags FROM ".$mod->dbname." as ".$mod->name." WHERE ".$mod->name.".tags<>''".($filter != ""?" AND ".$filter:"");
+		$types = '';
+		$params = array();
+		$clauses = array($mod->name.".tags<>''");
+		foreach ($filters as $field => $value) {
+			if (!is_string($field) || !array_key_exists($field, $mod->fields))
+				throw new InvalidArgumentException('Tag filter field is not available in the selected module.');
+			$clauses[] = $mod->name.".".$field."=?";
+			$types .= is_int($value) ? 'i' : (is_float($value) ? 'd' : 's');
+			$params[] = $value;
+		}
+		$sql = "SELECT ".$mod->name.".tags FROM ".$mod->dbname." as ".$mod->name." WHERE ".implode(' AND ', $clauses);
 		$r = false;
 		$n = 0;
-		$this->parent->dbo->query($sql,$r,$n);
+		$this->parent->dbo->queryPrepared($sql,$types,$params,$r,$n);
 		for ($c=0;$c<$n;$c++) {
 			list($ttags) = $this->parent->dbo->fetch_row($r);
 			$ttags = multiexplode(array(" ",',',';'),strtolower($ttags));
@@ -214,13 +228,27 @@ class mod_bi_bb extends CscriptedModule  {
 		return $TAGS;
 	}
 
-	function getArchieveDates($filter="") { # Filter is an SQL where statement
+	/**
+	 * @param array<string, scalar|null> $filters Equality filters keyed by module field.
+	 * @return array<string, array<string, string>>
+	 */
+	function getArchieveDates(array $filters = array()) {
 		$mod = $this->parent->loaded($this->moduleRelation);
-		$sql = "SELECT ".$mod->name.".date FROM ".$mod->dbname." as ".$mod->name." ".($filter!=""?"WHERE $filter":"")." ORDER BY ".$mod->name.".date DESC";
+		$types = '';
+		$params = array();
+		$clauses = array($mod->name.".date<>''");
+		foreach ($filters as $field => $value) {
+			if (!is_string($field) || !array_key_exists($field, $mod->fields))
+				throw new InvalidArgumentException('Archive date filter field is not available in the selected module.');
+			$clauses[] = $mod->name.".".$field."=?";
+			$types .= is_int($value) ? 'i' : (is_float($value) ? 'd' : 's');
+			$params[] = $value;
+		}
+		$sql = "SELECT ".$mod->name.".date FROM ".$mod->dbname." as ".$mod->name." WHERE ".implode(' AND ', $clauses)." ORDER BY ".$mod->name.".date DESC";
 		$result = array();
 		$r = false;
 		$n = 0;
-		$this->parent->dbo->query($sql,$r,$n);
+		$this->parent->dbo->queryPrepared($sql,$types,$params,$r,$n);
 		for($c=0;$c<$n;$c++) {
 			list($date) = $this->parent->dbo->fetch_row($r);
 			$YM = substr($date,0,4).substr($date,5,2);
