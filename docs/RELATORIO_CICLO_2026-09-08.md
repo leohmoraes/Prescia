@@ -37,6 +37,8 @@ Quando uma nova pendência de implementação for aberta, seguir a skill por lot
 
 A varredura identificou `eval()` em `prescia/lib/zipfile.php`, usado somente para converter o timestamp DOS em quatro bytes. O fluxo foi confirmado como serialização local de um valor inteiro; a implementação foi substituída por `pack('V', $this->unix2DosTime($time))`, preservando o formato little-endian do cabeçalho ZIP e eliminando interpretação dinâmica de código.
 
-Foi adicionado `tests/ZipfileTest.php`, que verifica a ausência de `eval()`, a assinatura do cabeçalho local, o timestamp empacotado e o conteúdo do arquivo. A baseline PHPStan permanece sem alteração. A validação local de PHP/PHPUnit/PHPStan continua indisponível neste sandbox; o lote deve ser confirmado pelos workflows PHP 8.3 após publicação.
+Foi adicionado `tests/ZipfileTest.php`, que verifica a ausência de `eval()`, a assinatura do cabeçalho local, o timestamp empacotado e o conteúdo descomprimido do arquivo. A baseline PHPStan permanece sem alteração. A validação local de PHP/PHPUnit/PHPStan continua indisponível neste sandbox.
+
+O primeiro commit `00e8666` passou no PHPStan, mas o teste falhou porque a asserção tratava o payload ZIP comprimido como texto plano. O segundo commit `2fd3ba0` corrigiu a regressão usando `gzinflate()` sobre o comprimento declarado no cabeçalho. No SHA final `2fd3ba01806f8e0bf312706927cadd2ae00a503c`, os dois workflows ficaram verdes: [PHPStan on PHP 8.3](https://github.com/leohmoraes/Prescia/actions/runs/34272493043/job/102217303077) e [PHP 8.3 tests](https://github.com/leohmoraes/Prescia/actions/runs/34272493040/job/102217303029).
 
 A próxima frente independente continua sendo a revisão de consultas SQL legadas em plugins, especialmente os fluxos de `bi_bb` que ainda montam filtros de tags/data e contagem de mensagens, além dos caminhos administrativos com comparações derivadas de dados de formulário.
