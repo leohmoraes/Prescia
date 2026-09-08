@@ -32,7 +32,11 @@ function CheckAuthentication()
 	// user logs in your system. To be able to use session variables don't
 	// forget to add session_start() at the top of this file.
 
-	return isset($_SESSION['CODE']) && isset($_SESSION['prescia_sa_level']) && $_SESSION['prescia_sa_level']>10;
+	$isAuthorized = isset($_SESSION['CODE']) && isset($_SESSION['prescia_sa_level']) && $_SESSION['prescia_sa_level']>10;
+	if ($isAuthorized) {
+		$_SESSION['CKFinder_UserRole'] = 'admin';
+	}
+	return $isAuthorized;
 }
 
 // LicenseKey : Paste your license key here. If left blank, CKFinder will be
@@ -139,7 +143,7 @@ Subfolders inherit their default settings from their parents' definitions.
 */
 
 $config['AccessControl'][] = Array(
-		'role' => '*',
+		'role' => 'admin',
 		'resourceType' => '*',
 		'folder' => '/',
 

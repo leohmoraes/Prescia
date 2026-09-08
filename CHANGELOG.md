@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the conservative migration helper in `tools/migrate_php83.php`, with dry-run, timestamped backups and a security blocker report.
 
 ### Changed
+- Restricted CKFinder's full root ACL to the authenticated `admin` role and assigned that role only after the existing administrator session check succeeds.
 - Hardened CKFinder production configuration by disabling displayed PHP errors and reducing default file and directory modes from world/group-writable `0775` to `0640` and `0750`.
 - Hardened CKFinder upload callbacks against ambiguous array parameters, added no-store and nosniff response headers, and rejected multi-file `$_FILES` payloads in the single-upload command.
 - Hardened `bi_stats`: validated browser resolution values and moved `setres` queries to prepared statements; restricted the realtime statistics endpoint to administrators, validated IP input, and escaped persisted output.

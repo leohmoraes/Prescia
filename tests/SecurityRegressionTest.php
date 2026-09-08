@@ -271,6 +271,15 @@ $config['ChmodFolders'] = 0775
 PHP, $config);
     }
 
+    public function testCKFinderAccessControlBindsFullAccessToAuthenticatedAdminRole(): void
+    {
+        $config = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/config.php');
+
+        self::assertStringContainsString("\$_SESSION['CKFinder_UserRole'] = 'admin'", $config);
+        self::assertStringContainsString("'role' => 'admin'", $config);
+        self::assertStringNotContainsString("'role' => '*',\n\t\t'resourceType' => '*',\n\t\t'folder' => '/'", $config);
+    }
+
     public function testCKFinderUploadEnforcesSizeBeforeScalingAndDetectsHtmlForAllExtensions(): void
     {
         $upload = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/FileUpload.php');
