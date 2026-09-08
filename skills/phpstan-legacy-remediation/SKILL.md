@@ -107,6 +107,20 @@ Ao concluir um lote, registre:
 
 Use linguagem precisa: um arquivo analisado mas não modificado é **pendente**, não concluído.
 
+## Validações comprovadas no ciclo 2026-09-08
+
+Ao trabalhar neste repositório, considere as seguintes evidências operacionais já comprovadas:
+
+- O workflow `.github/workflows/php83.yml` executa separadamente compatibilidade PHP 8.3 e PHPStan on PHP 8.3. Trate um resultado verde de um job como insuficiente até que todos os check-runs do commit estejam `completed` com `conclusion=success`.
+- Após merge, consulte os check-runs do SHA real de `origin/master`; os checks do PR e os checks pós-merge são execuções distintas.
+- Para verificação sem ambiguidade, use `gh api repos/leohmoraes/Prescia/commits/<sha>/check-runs` e confirme `status=completed` e `conclusion=success` para PHP 8.3 e PHPStan.
+- Em consultas de PR, confirme `state=MERGED`, `mergedAt` preenchido, `mergeable=true` e `mergeable_state=clean` antes de considerar o lote concluído.
+- Se uma branch de PR incluir commits que já entraram no `master`, faça `git fetch origin --prune`, rebase sobre `origin/master`, valide `git diff --check origin/master...HEAD` e publique com `git push --force-with-lease`. Não force-puxe uma branch sem confirmar o SHA remoto.
+- Atualizações de testes que codificam SQL antigo devem acompanhar a implementação. Quando o CI falhar por uma expectativa obsoleta, corrija a regressão no mesmo PR, mantenha o teste orientado ao contrato seguro e aguarde nova execução completa.
+- Para mudanças SQL, prefira `queryPrepared`, `queryPrepared` com tipos explícitos e `fetchPrepared` quando a API do driver oferecer a operação. Mantenha nomes de tabela e coluna derivados de metadados internos; nunca transforme entrada externa em identificador SQL.
+- Para o fechamento administrativo, só encerre uma issue quando o PR relacionado estiver mergeado e os checks do commit mergeado estiverem verdes. Adicione comentário com a referência do PR, escopo efetivamente entregue e eventuais limitações antes de fechar.
+- Registre a validação final no `docs/RELATORIO_CICLO_2026-09-08.md` e no `CHANGELOG.md` quando a alteração for pública. Não declare uma auditoria ampla concluída por causa de um lote parcial; mantenha issues de escopo maior abertas.
+
 ## Política de baseline
 
 Mantenha `phpstan-baseline.neon` sem crescimento automático. Não adicione diagnósticos de regressão, segurança, compatibilidade PHP 8.3 ou arquivos recém-alterados. Remova entradas somente quando a correção for comprovada e documentada.
