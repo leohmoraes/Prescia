@@ -135,6 +135,18 @@ SQL, $payload);
         self::assertStringNotContainsString('t.id_forum=".$data[\'id\']', $index);
     }
 
+    public function testAuthControlGuestGroupUsesPreparedQuery(): void
+    {
+        $auth = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_auth/authControl.php');
+
+        self::assertStringContainsString('$groups->get_base_sql("id=?")', $auth);
+        self::assertStringContainsString('queryPrepared($sql,\'i\',array((int)$this->parent->dimconfig[\'guest_group\']),$r,$n)', $auth);
+        self::assertStringNotContainsString('$groups->get_base_sql("id=".(int)$this->parent->dimconfig[\'guest_group\'])', $auth);
+        self::assertStringContainsString('$module->getPreparedKeys($wS, $wTypes, $wParams, $kA, $keys)', $auth);
+        self::assertStringContainsString('$this->parent->dbo->queryPrepared($sql,$wTypes,$wParams,$r,$n,$this->parent->debugmode)', $auth);
+        self::assertStringNotContainsString('$module->getKeys($wS, $kA, $keys,"",true)', $auth);
+    }
+
     public function testBiBbArchiveFiltersUsePreparedValuesAndMetadataFields(): void
     {
         $module = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_bb/module.php');
