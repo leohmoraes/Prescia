@@ -358,6 +358,16 @@ PHP, $upload);
         self::assertStringNotContainsString('preg_replace("/[^0-9]/", "", $_GET[', $quickUploadError);
     }
 
+    public function testCKFinderUploadReservesDestinationWithoutCheckThenMoveRace(): void
+    {
+        $upload = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/FileUpload.php');
+
+        self::assertStringContainsString("fopen(\$sFilePath, 'x')", $upload);
+        self::assertStringContainsString('fclose($destinationHandle)', $upload);
+        self::assertStringContainsString('@unlink($sFilePath)', $upload);
+        self::assertStringNotContainsString('if (file_exists($sFilePath))', $upload);
+    }
+
     public function testCKFinderMutableCopiesPublishAtomically(): void
     {
         $fileSystem = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/Utils/FileSystem.php');
