@@ -216,6 +216,17 @@ PHP, $route);
         self::assertStringNotContainsString("forum.lang=\"'.\$_SESSION[CONS_SESSION_LANG]", $bbModule);
     }
 
+    public function testAdminListingPassesExternalFiltersAsPreparedParameters(): void
+    {
+        $listing = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/content/list.php');
+
+        self::assertStringContainsString('$addPreparedWhere = function ($fragment,$value)', $listing);
+        self::assertStringContainsString('$sql[\'WHERE\'][] = $fragment.\'?\';', $listing);
+        self::assertStringContainsString('$sql[\'_preparedTypes\'] = $preparedTypes;', $listing);
+        self::assertStringContainsString('$core->dbo->queryPrepared($sqlText,$preparedTypes,$preparedParams', $listing);
+        self::assertStringNotContainsString('$sql[\'WHERE\'][] = $module->name.".".$name."$compare\\\"".$_REQUEST[$name]', $listing);
+    }
+
     public function testBiStatsEscapesExternalTelemetryBeforeLegacySql(): void
     {
         $stats = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/module.php');
