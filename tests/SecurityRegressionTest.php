@@ -192,6 +192,17 @@ PHP, $route);
         self::assertStringContainsString('if (!$this->normalizeContentSqlArray($sql))', $module);
     }
 
+    public function testGenericListingsAcceptStructuredPreparedFilters(): void
+    {
+        $module = (string) file_get_contents(__DIR__ . '/../prescia/components/module.php');
+
+        self::assertStringContainsString("isset(\$sql['where'],\$sql['types'],\$sql['params'])", $module);
+        self::assertStringContainsString('$preparedTypes = (string)$sql[\'types\'];', $module);
+        self::assertStringContainsString('$this->parent->dbo->queryPrepared($sqlText,$preparedTypes,$preparedParams', $module);
+        self::assertStringContainsString('$this->parent->dbo->fetchPrepared($countSqlText,$preparedTypes,$preparedParams)', $module);
+        self::assertStringNotContainsString('WHERE ".$sql[\'where\']', $module);
+    }
+
     public function testBiStatsEscapesExternalTelemetryBeforeLegacySql(): void
     {
         $stats = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/module.php');
