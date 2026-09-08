@@ -462,10 +462,13 @@
 
 								$using = clone $field_sel;
 
-								$sql = $mod->get_base_sql();
-								if (isset($data[$name]))
-									$sql['SELECT'][] = "if (".$mod->name.".".$mod->keys[0]."='".$data[$name]."',1,0) as selected";
-								$sql['SELECT'][] = $mod->name.".".$mod->title." as treetitle";
+							$sql = $mod->get_base_sql();
+							if (isset($data[$name])) {
+								$sql['SELECT'][] = "if (".$mod->name.".".$mod->keys[0]."=?,1,0) as selected";
+								$sql['_preparedTypes'] = 's';
+								$sql['_preparedParams'] = array((string)$data[$name]);
+							}
+							$sql['SELECT'][] = $mod->name.".".$mod->title." as treetitle";
 
 								$tree = $mod->getContents("","treetitle","","\\",$sql);
 								$using->getTreeTemplate("_sdirs","_ssubdirs",$tree);

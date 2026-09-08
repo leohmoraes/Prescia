@@ -156,6 +156,22 @@ SQL, $payload);
         self::assertStringNotContainsString('$mod->name.".".$mod->keys[0]."=\\\"".$data[$name]."\\\""', $edit);
     }
 
+    public function testParentalContentFiltersUsePreparedSelectedValues(): void
+    {
+        $module = (string) file_get_contents(__DIR__ . '/../prescia/components/module.php');
+        $edit = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/content/edit.php');
+        $options = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/content/options.php');
+
+        self::assertStringContainsString('$preparedTypes = (string)$sql[\'_preparedTypes\'];', $module);
+        self::assertStringContainsString('$this->parent->dbo->queryPrepared($sqlText,$preparedTypes,$preparedParams,$r,$n)', $module);
+        self::assertStringContainsString('$sql[\'_preparedTypes\'] = \'s\';', $edit);
+        self::assertStringContainsString('$sql[\'_preparedParams\'] = array((string)$data[$name]);', $edit);
+        self::assertStringContainsString('$sql[\'_preparedTypes\'] = \'s\';', $options);
+        self::assertStringContainsString('$sql[\'_preparedParams\'] = array((string)$data[\'value\']);', $options);
+        self::assertStringNotContainsString('"if (".$mod->name.".".$mod->keys[0]."=\'".$data[$name]."\',1,0) as selected"', $edit);
+        self::assertStringNotContainsString('"if (".$mod->name.".".$mod->keys[0]."=\'".$data[\'value\']."\',1,0) as selected"', $options);
+    }
+
     public function testUniqueAjaxRouteUsesFieldAllowlistRbacAndPreparedValues(): void
     {
         $route = (string) file_get_contents(__DIR__ . '/../prescia/lazyload/ajaxqueryunique.php');
