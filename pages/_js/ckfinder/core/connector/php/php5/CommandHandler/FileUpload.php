@@ -48,10 +48,55 @@ class CKFinder_Connector_CommandHandler_FileUpload extends CKFinder_Connector_Co
         $oRegistry =& CKFinder_Connector_Core_Factory::getInstance("Core_Registry");
         $oRegistry->set("FileUpload_fileName", "unknown file");
 
-        $uploadedFile = array_shift($_FILES);
-
-        if (!isset($uploadedFile['name'])) {
+        if (!is_array($_FILES) || empty($_FILES)) {
             $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_UPLOADED_INVALID);
+        }
+
+        $uploadedFile = array_shift($_FILES);
+        if (!is_array($uploadedFile)) {
+            $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_UPLOADED_INVALID);
+        }
+        $requiredUploadFields = array('name', 'type', 'tmp_name', 'error', 'size');
+        foreach ($requiredUploadFields as $field) {
+            if (!array_key_exists($field, $uploadedFile)) {
+                $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_UPLOADED_INVALID);
+            }
+        }
+
+        if (!is_string($uploadedFile['name']) || !is_string($uploadedFile['type'])
+            || !is_string($uploadedFile['tmp_name']) || !is_int($uploadedFile['error'])
+            || !is_int($uploadedFile['size']) || $uploadedFile['size'] < 0) {
+            $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_UPLOADED_INVALID);
+        }
+
+        switch ($uploadedFile['error']) {
+            case UPLOAD_ERR_OK:
+                if (!is_uploaded_file($uploadedFile['tmp_name'])) {
+                    $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_UPLOADED_CORRUPT);
+                }
+                break;
+
+            case UPLOAD_ERR_INI_SIZE:
+            case UPLOAD_ERR_FORM_SIZE:
+                $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_UPLOADED_TOO_BIG);
+                break;
+
+            case UPLOAD_ERR_PARTIAL:
+            case UPLOAD_ERR_NO_FILE:
+                $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_UPLOADED_CORRUPT);
+                break;
+
+            case UPLOAD_ERR_NO_TMP_DIR:
+                $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_UPLOADED_NO_TMP_DIR);
+                break;
+
+            case UPLOAD_ERR_CANT_WRITE:
+            case UPLOAD_ERR_EXTENSION:
+                $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_ACCESS_DENIED);
+                break;
+
+            default:
+                $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_UPLOADED_INVALID);
         }
 
         $sUnsafeFileName = CKFinder_Connector_Utils_FileSystem::convertToFilesystemEncoding(CKFinder_Connector_Utils_Misc::mbBasename($uploadedFile['name']));
@@ -104,33 +149,6 @@ class CKFinder_Connector_CommandHandler_FileUpload extends CKFinder_Connector_Co
         if ($secureImageUploads
         && ($isImageValid = CKFinder_Connector_Utils_FileSystem::isImageValid($uploadedFile['tmp_name'], $sExtension)) === false ) {
             $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_UPLOADED_CORRUPT);
-        }
-
-        switch ($uploadedFile['error']) {
-            case UPLOAD_ERR_OK:
-                break;
-
-            case UPLOAD_ERR_INI_SIZE:
-            case UPLOAD_ERR_FORM_SIZE:
-                $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_UPLOADED_TOO_BIG);
-                break;
-
-            case UPLOAD_ERR_PARTIAL:
-            case UPLOAD_ERR_NO_FILE:
-                $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_UPLOADED_CORRUPT);
-                break;
-
-            case UPLOAD_ERR_NO_TMP_DIR:
-                $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_UPLOADED_NO_TMP_DIR);
-                break;
-
-            case UPLOAD_ERR_CANT_WRITE:
-                $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_ACCESS_DENIED);
-                break;
-
-            case UPLOAD_ERR_EXTENSION:
-                $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_ACCESS_DENIED);
-                break;
         }
 
         $sServerDir = $this->_currentFolder->getServerPath();
