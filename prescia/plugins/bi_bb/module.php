@@ -244,6 +244,6 @@ class mod_bi_bb extends CscriptedModule  {
 		$this->parent->template->assign("areaname",$this->areaname);
 		$this->parent->template->assign("homename",$this->homename);
 		if ($this->parent->template->get("_topforums") !== false)
-			$this->parent->runContent('forum',$this->parent->template,array('(forum.id_parent=0 OR forum.id_parent is NULL)  AND forum.urla<>"" AND forum.lang="'.$_SESSION[CONS_SESSION_LANG].'"','forum.ordem asc',''),'_topforums',false,'frameforuns');
+			$this->parent->runContent('forum',$this->parent->template,array('where'=>'(forum.id_parent=0 OR forum.id_parent is NULL) AND forum.urla<>"" AND forum.lang=?','types'=>'s','params'=>array((string)$_SESSION[CONS_SESSION_LANG]),'order'=>'forum.ordem ASC','limit'=>''),'_topforums',false,'frameforuns');
 	}	
 }
