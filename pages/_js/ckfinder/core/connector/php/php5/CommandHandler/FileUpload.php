@@ -89,16 +89,13 @@ class CKFinder_Connector_CommandHandler_FileUpload extends CKFinder_Connector_Co
         $oRegistry->set("FileUpload_url", $this->_currentFolder->getUrl());
 
         $maxSize = $resourceTypeInfo->getMaxSize();
-        if (!$_config->checkSizeAfterScaling() && $maxSize && $uploadedFile['size']>$maxSize) {
+        if ($maxSize && $uploadedFile['size']>$maxSize) {
             $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_UPLOADED_TOO_BIG);
         }
 
-        $htmlExtensions = $_config->getHtmlExtensions();
         $sExtension = CKFinder_Connector_Utils_FileSystem::getExtension($sFileNameOrginal);
 
-        if ($htmlExtensions
-        && !CKFinder_Connector_Utils_Misc::inArrayCaseInsensitive($sExtension, $htmlExtensions)
-        && ($detectHtml = CKFinder_Connector_Utils_FileSystem::detectHtml($uploadedFile['tmp_name'])) === true ) {
+        if (($detectHtml = CKFinder_Connector_Utils_FileSystem::detectHtml($uploadedFile['tmp_name'])) === true ) {
             $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_UPLOADED_WRONG_HTML_FILE);
         }
 
