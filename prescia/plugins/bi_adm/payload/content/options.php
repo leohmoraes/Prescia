@@ -159,10 +159,12 @@
 							$field_sel = $core->template->get("_selecttree_field");
 							$using = clone $field_sel;
 
-							$sql = $mod->get_base_sql();
-							$sql['SELECT'][] = "if (".$mod->name.".".$mod->keys[0]."='".$data['value']."',1,0) as selected";
+						$sql = $mod->get_base_sql();
+						$sql['SELECT'][] = "if (".$mod->name.".".$mod->keys[0]."=?,1,0) as selected";
+						$sql['_preparedTypes'] = 's';
+						$sql['_preparedParams'] = array((string)$data['value']);
 
-							$tree = $mod->getContents("","","","\\",$sql);
+						$tree = $mod->getContents("","","","\\",$sql);
 							$using->getTreeTemplate("_sdirs","_ssubdirs",$tree);
 
 						} else {

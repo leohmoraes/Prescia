@@ -222,18 +222,27 @@ class CModule {
 				}
 				$order = implode(",",$odb);
 			}
-			if ($originalSQL == "") // built SQL, will use where provided
-				$sql = $this->get_base_sql($where,$this->name.".".$this->options[CONS_MODULE_PARENT]." ASC".($order != ''?','.$order:''));
-			else { // give a full SQL, will just add proper order and treetitle
-				$sql = $originalSQL;
-				if (!is_array($sql)) $sql = $this->parent->dbo->sqlarray_break($sql);
-				$sql['ORDER'] = explode(",",$this->name.".".$this->options[CONS_MODULE_PARENT]." ASC".($order != ''?','.$order:''));
-			}
-			$r = false;
-			$n = 0;
-			if (!$this->parent->dbo->query($sql,$r,$n)) {
-				$this->parent->errorControl->raise(146,$this->parent->dbo->log[count($this->parent->dbo->log)-1],$this->name,'on getContents');
-			}
+				if ($originalSQL == "") // built SQL, will use where provided
+					$sql = $this->get_base_sql($where,$this->name.".".$this->options[CONS_MODULE_PARENT]." ASC".($order != ''?','.$order:''));
+				else { // give a full SQL, will just add proper order and treetitle
+					$sql = $originalSQL;
+					if (!is_array($sql)) $sql = $this->parent->dbo->sqlarray_break($sql);
+					$sql['ORDER'] = explode(",",$this->name.".".$this->options[CONS_MODULE_PARENT]." ASC".($order != ''?','.$order:''));
+				}
+				$preparedTypes = '';
+				$preparedParams = array();
+				if (is_array($sql) && isset($sql['_preparedTypes'])) {
+					$preparedTypes = (string)$sql['_preparedTypes'];
+					$preparedParams = isset($sql['_preparedParams']) && is_array($sql['_preparedParams'])?$sql['_preparedParams']:array();
+					unset($sql['_preparedTypes'],$sql['_preparedParams']);
+				}
+				$r = false;
+				$n = 0;
+				$sqlText = $this->parent->dbo->sqlarray_echo($sql);
+				$ok = $preparedTypes !== '' ? $this->parent->dbo->queryPrepared($sqlText,$preparedTypes,$preparedParams,$r,$n) : $this->parent->dbo->query($sql,$r,$n);
+				if (!$ok) {
+					$this->parent->errorControl->raise(146,$this->parent->dbo->log[count($this->parent->dbo->log)-1],$this->name,'on getContents');
+				}
 			$this->parent->templateParams['core'] = &$this->parent;
 			$this->parent->templateParams['module'] = &$this;
 			for ($c=0;$c<$n;$c++) {
