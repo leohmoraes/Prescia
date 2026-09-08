@@ -1,8 +1,8 @@
 # Pendências e loop de execução — Prescia
 
-**Data da auditoria:** 2026-09-08  
-**Commit auditado:** `659cdc6` (`master`)  
-**Skill instalada:** `phpstan-legacy-remediation`  
+**Data da auditoria:** 2026-09-08
+**Commit auditado:** `659cdc6` (`master`)
+**Skill instalada:** `phpstan-legacy-remediation`
 **Estado da skill:** validada pelo `quick_validate.py`; cópia instalada em `/home/ubuntu/skills/phpstan-legacy-remediation/SKILL.md`, idêntica à versão versionada em `skills/phpstan-legacy-remediation/SKILL.md`.
 
 ## Estado atual
