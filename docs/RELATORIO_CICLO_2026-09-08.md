@@ -110,3 +110,7 @@ Foi adicionada a regressão `testBiBbIndexUsesPreparedForumAndLanguageFilters()`
 Após a validação pós-merge da PR #120, o lote seguinte migrou dois pontos em `prescia/plugins/bi_auth/authControl.php`. A carga do grupo guest passou de `get_base_sql()` com identificador interpolado e `query()` para placeholder `id=?` com `queryPrepared()` e tipo `i`. A leitura direta do objeto durante a verificação de ownership passou de `getKeys()`/`query()` para `getPreparedKeys()` e `queryPrepared()`, preservando as chaves e o modo de debug.
 
 Foi ampliada a regressão `testAuthControlGuestGroupUsesPreparedQuery()` em `tests/SecurityRegressionTest.php` para cobrir os dois contratos. A consulta de ownership remoto em `getRemoteKeys()` permanece pendente para lote separado, pois exige uma API parametrizada compatível com chaves e identificadores de campos derivados dos metadados. A baseline PHPStan permanece sem alteração.
+
+### Correção após CI — regressão authControl
+
+O primeiro CI da PR #121 falhou porque a nova asserção usava uma string PHP com interpolação de `$sql`, `$this`, `$r` e `$n`; isso causou quatro diagnósticos PHPStan e a falha da suíte. A expectativa foi corrigida para uma string literal com escapes, sem alteração no código de produção. O CI será repetido no novo commit.
