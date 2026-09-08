@@ -180,6 +180,18 @@ PHP, $route);
         self::assertStringNotContainsString('$this->dbo->fetch($sql)', $core);
     }
 
+    public function testGenericListingsNormalizePaginationAndWhitelistSqlArrayOrdering(): void
+    {
+        $module = (string) file_get_contents(__DIR__ . '/../prescia/components/module.php');
+
+        self::assertStringContainsString('private function normalizeContentSqlArray(&$sql)', $module);
+        self::assertStringContainsString("preg_match('/^[A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)?(?:\\s+(?:ASC|DESC))?$/i'", $module);
+        self::assertStringContainsString('preg_match(\'/^[0-9]+$/\',trim($limitPart))', $module);
+        self::assertStringContainsString('$this->parent->templateParams[\'p_init\'] = (int)$_REQUEST[\'p_init\'];', $module);
+        self::assertStringContainsString('$this->parent->templateParams[\'p_size\'] = (int)$_REQUEST[\'p_size\'];', $module);
+        self::assertStringContainsString('if (!$this->normalizeContentSqlArray($sql))', $module);
+    }
+
     public function testBiStatsEscapesExternalTelemetryBeforeLegacySql(): void
     {
         $stats = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/module.php');
