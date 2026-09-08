@@ -108,6 +108,18 @@ SQL, $payload);
         self::assertStringNotContainsString('$core->dbo->query($sql,$r,$n);', $edit);
     }
 
+    public function testAdministrativeRelatedOptionsUsePreparedPrerequisitesAndSelectedValue(): void
+    {
+        $edit = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/content/edit.php');
+
+        self::assertStringContainsString('"if (".$mod->name.".".$mod->keys[0]."=?,1,0) as selected"', $edit);
+        self::assertStringContainsString('$sql[\'WHERE\'][] = $mod->name.".".$remodeField."=?";', $edit);
+        self::assertStringContainsString('$sql[\'_preparedTypes\'] = $preparedTypes;', $edit);
+        self::assertStringContainsString('$sql[\'_preparedParams\'] = $preparedParams;', $edit);
+        self::assertStringNotContainsString('".$data[$filterfield]."', $edit);
+        self::assertStringNotContainsString('".$data[$name]."', $edit);
+    }
+
     public function testUniqueAjaxRouteUsesFieldAllowlistRbacAndPreparedValues(): void
     {
         $route = (string) file_get_contents(__DIR__ . '/../prescia/lazyload/ajaxqueryunique.php');

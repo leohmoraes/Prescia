@@ -494,31 +494,45 @@
 										for ($cbf=0;$cbf<count($canBeFilteredBy);$cbf++)
 											$canBeFilteredBy_translated[$cbf] = $core->langOut($canBeFilteredBy[$cbf]);
 										$using->assign("_options","<option value=\"\">".$core->langOut("select_other_field").": ".implode(", ",$canBeFilteredBy_translated)."</option>");
-									} else  { // we can fill this since all prerequisites are present!
-										$sql = $mod->get_base_sql();
-										$sql['SELECT'] = array($mod->name.".".$mod->keys[0]." as ids",$mod->name.".".$mod->title." as title");
-										if (isset($data[$name]))
-											$sql['SELECT'][] = "if (".$mod->name.".".$mod->keys[0]."='".$data[$name]."',1,0) as selected";
-										// add filters
-										foreach ($canBeFilteredBy as $filterfield) { // we know the data exists because this is an edit, but it could be empty
-											if ($data[$filterfield] != '') {
-												$remodeField = $mod->get_key_from($module->fields[$filterfield][CONS_XML_MODULE]);
-												$sql['WHERE'][] = $mod->name.".".$remodeField."=\"".$data[$filterfield]."\"";
-											}
-										}
-										if ($core->runContent($mod,$using,$sql,"_options")===false)
+						} else  { // we can fill this since all prerequisites are present!
+							$sql = $mod->get_base_sql();
+							$sql['SELECT'] = array($mod->name.".".$mod->keys[0]." as ids",$mod->name.".".$mod->title." as title");
+							$preparedTypes = '';
+							$preparedParams = array();
+							if (isset($data[$name])) {
+								$sql['SELECT'][] = "if (".$mod->name.".".$mod->keys[0]."=?,1,0) as selected";
+								$preparedTypes .= 's';
+								$preparedParams[] = (string)$data[$name];
+							}
+							// add filters
+							foreach ($canBeFilteredBy as $filterfield) { // we know the data exists because this is an edit, but it could be empty
+								if ($data[$filterfield] != '') {
+									$remodeField = $mod->get_key_from($module->fields[$filterfield][CONS_XML_MODULE]);
+									$sql['WHERE'][] = $mod->name.".".$remodeField."=?";
+									$preparedTypes .= 's';
+									$preparedParams[] = (string)$data[$filterfield];
+								}
+							}
+							if ($preparedTypes !== '') {
+								$sql['_preparedTypes'] = $preparedTypes;
+								$sql['_preparedParams'] = $preparedParams;
+							}
+							if ($core->runContent($mod,$using,$sql,"_options")===false)
 											$using->assign("_options");
 									}
 									// add the corresponding data for the ajaxContextHandler
 									$p['ajaxContextHandler'][$name] = $canBeFilteredBy;
 								} else {
-									$sql = $mod->get_base_sql();
+						$sql = $mod->get_base_sql();
 
 									# TODO: this probably won't work on multiple keys
 
 									$sql['SELECT'] = array($mod->name.".".$mod->keys[0]." as ids",$mod->name.".".$mod->title." as title");
-									if (isset($data[$name]))
-										$sql['SELECT'][] = "if (".$mod->name.".".$mod->keys[0]."='".$data[$name]."',1,0) as selected";
+						if (isset($data[$name])) {
+							$sql['SELECT'][] = "if (".$mod->name.".".$mod->keys[0]."=?,1,0) as selected";
+							$sql['_preparedTypes'] = 's';
+							$sql['_preparedParams'] = array((string)$data[$name]);
+						}
 									//print_r($sql);
 									//die();
 									if ($core->runContent($mod,$using,$sql,"_options")===false)
