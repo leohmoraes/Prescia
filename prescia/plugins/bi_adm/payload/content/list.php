@@ -650,8 +650,10 @@
 				$up['smartfields'][$module->name][$fname] = $fweight;
 			}
 		}
-		$usql = "UPDATE ".$uMod->dbname." SET userprefs=\"".addslashes(serialize($up))."\" WHERE id=".$_SESSION[CONS_SESSION_ACCESS_USER]['id'];
-		if ($core->dbo->simpleQuery($usql)) {
+			$usql = "UPDATE ".$uMod->dbname." SET userprefs=? WHERE id=?";
+			$updateResult = false;
+			$updateRows = 0;
+			if ($core->dbo->queryPrepared($usql, 'si', array(serialize($up), (int)$_SESSION[CONS_SESSION_ACCESS_USER]['id']), $updateResult, $updateRows)) {
 			$_SESSION[CONS_SESSION_ACCESS_USER]['userprefs'] = $up;
 		}
 		unset($uMod);
