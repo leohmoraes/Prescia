@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the conservative migration helper in `tools/migrate_php83.php`, with dry-run, timestamped backups and a security blocker report.
 
 ### Changed
+- Updated generic backup export to build its full-table read through the structured SQL-array contract and prepared execution path.
 - Updated generic delete notifications to obtain module keys through `getPreparedKeys()` instead of the legacy `getKeys()` contract.
 - Replaced the remote ownership SQL assembled through `getRemoteKeys()` with metadata-derived field selection and prepared value parameters via `getRemotePreparedKeys()`.
 - Replaced the guest-group lookup and direct ownership read in `bi_auth` with prepared queries and `getPreparedKeys()`.

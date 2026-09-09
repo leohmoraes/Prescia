@@ -160,6 +160,17 @@ SQL, $payload);
         self::assertStringNotContainsString('$module->getKeys($wS,$kA,$data);', $notification);
     }
 
+    public function testGenericBackupUsesStructuredQueryContract(): void
+    {
+        $module = (string) file_get_contents(__DIR__ . '/../prescia/components/module.php');
+        $backup = strstr($module, 'function generateBackup(');
+
+        self::assertNotFalse($backup);
+        self::assertStringContainsString('"SELECT" => array("*")', $backup);
+        self::assertStringContainsString('queryPrepared($this->parent->dbo->sqlarray_echo($sql),"",array(),$r,$n)', $backup);
+        self::assertStringNotContainsString('$this->parent->dbo->query($sql,$r,$n);', $backup);
+    }
+
     public function testBiBbArchiveFiltersUsePreparedValuesAndMetadataFields(): void
     {
         $module = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_bb/module.php');

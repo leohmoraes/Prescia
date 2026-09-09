@@ -1996,10 +1996,10 @@ class CModule {
 		if (is_file($bck)) @unlink($bck);
 		$fd = fopen ($bck, "wb");
 		if ($fd) {
-			$sql = "SELECT * FROM ".$this->dbname;
+			$sql = array("SELECT" => array("*"), "FROM" => array($this->dbname), "WHERE" => array(), "GROUP" => array(), "ORDER" => array(), "LIMIT" => array(), "HAVING" => array(), "LEFT" => array());
 			$r = false;
 			$n = 0;
-			$this->parent->dbo->query($sql,$r,$n);
+			$this->parent->dbo->queryPrepared($this->parent->dbo->sqlarray_echo($sql),"",array(),$r,$n);
 			$baseLine = "INSERT INTO ".$this->dbname." (";
 			foreach ($this->fields as $fn=>&$f)
 				$baseLine .= $fn.",";
