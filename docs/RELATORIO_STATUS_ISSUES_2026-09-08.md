@@ -3,12 +3,12 @@
 **Repositório:** [leohmoraes/Prescia](https://github.com/leohmoraes/Prescia)  
 **Data do levantamento:** 2026-09-08 22:34 (America/Sao_Paulo)  
 **Branch de referência:** `master`  
-**HEAD:** `411732316ed9fb2e80a409e65945775cf21f0bf1`  
-**PRs abertas no momento do levantamento:** nenhuma
+**HEAD:** `be224764ed2fb73accb8ffb127b53a65e48d3b67`  
+**PRs abertas no momento desta atualização:** `#139` foi mesclada; nenhuma PR do loop SQL permanece aberta.
 
 ## Resumo executivo
 
-O repositório está limpo e o `master` contém cinco lotes recentes de hardening SQL, nas PRs #121 a #125. O CI pós-merge do lote mais recente está sendo acompanhado separadamente. Há **15 issues abertas**. As issues de segurança SQL (#9, #27, #33, #34 e #94) já receberam implementação parcial relevante, mas continuam abertas porque os escopos são mais amplos que os lotes mergeados. A próxima frente prioritária é `bi_stats/module.php`, onde ainda existem consultas concatenadas com dados de sessão, datas, navegador, página e identificadores.
+O `master` contém os lotes de hardening SQL das PRs #121–#139. Há **15 issues abertas**. As issues de segurança SQL (#9, #27, #33, #34 e #94) receberam implementação parcial relevante, mas continuam abertas porque os escopos são mais amplos que os lotes mergeados. A auditoria dos módulos prioritários `bi_stats`, `bi_fm`, `bi_dev` e `bi_cms` não encontrou chamadas diretas SQL restantes nos componentes tratados. A próxima frente deve priorizar SSRF/DNS rebinding (#65–#66), CKFinder (#67) e escaping contextual (#24), sem abandonar a migração genérica remanescente de #94.
 
 Nenhuma nova issue foi criada neste levantamento: as pendências encontradas estão cobertas pelas issues abertas existentes, principalmente #9, #34 e #94. O loop deve criar uma nova issue somente quando surgir um escopo independente, verificável e não coberto por estas issues.
 
@@ -16,7 +16,7 @@ Nenhuma nova issue foi criada neste levantamento: as pendências encontradas est
 
 | Issue | Tema | Prioridade | Status atual | Próximo passo do loop |
 |---:|---|---|---|---|
-| #94 | Migrar SQL restante do módulo genérico | Alta | **Em execução parcial**; `getContents()`, backup e notificações foram migrados nas PRs #123–#125. | Auditar consumidores genéricos restantes e separar lotes pequenos com regressão. |
+| #94 | Migrar SQL restante do módulo genérico | Alta | **Em execução parcial**; `getContents()`, backup, notificações e vários plugins foram migrados nas PRs #123–#139. | Auditar consumidores genéricos restantes e separar lotes pequenos com regressão. |
 | #67 | Revisão dos 114 PHP legados do CKFinder | Não classificada | **Pendente; não iniciada neste ciclo.** | Inventariar por arquivo, priorizar entrada externa e dividir em lotes revisáveis. |
 | #66 | Monitoramento de tentativas de SSRF em runtime | Não classificada | **Pendente; não iniciada neste ciclo.** | Definir pontos de observabilidade, eventos e política de retenção sem expor dados sensíveis. |
 | #65 | Testes e mitigações contra DNS rebinding em `loadURL` | Não classificada | **Pendente; não iniciada neste ciclo.** | Auditar resolução, validação de IP e revalidação no momento da conexão. |
@@ -30,7 +30,7 @@ Nenhuma nova issue foi criada neste levantamento: as pendências encontradas est
 | #27 | Refatorar `getKeys` para WHERE parametrizado | Alta | **Em execução parcial**; APIs preparadas foram adicionadas e usadas em lotes recentes. | Completar adoção pelos consumidores e preservar compatibilidade da API legada. |
 | #25 | Container PHP 8.3, short tags e CI de compatibilidade | Não classificada | **Pendente; CI PHP 8.3 existente, container/short tags ainda não concluídos.** | Verificar configuração de imagem, short tags e matriz de versões antes de alterar o pipeline. |
 | #24 | Sanitização HTML contextual e biblioteca segura | Não classificada | **Pendente; não iniciada neste ciclo.** | Inventariar `cleanHTML`/`stripHTML`, definir allowlist e criar testes XSS antes da substituição. |
-| #9 | Substituir SQL concatenado por prepared statements | Alta | **Em execução parcial**; múltiplos módulos foram corrigidos, mas o inventário ainda aponta `bi_stats` e outros plugins. | Priorizar `bi_stats`, depois continuar por risco e presença de entrada externa. |
+| #9 | Substituir SQL concatenado por prepared statements | Alta | **Em execução parcial avançada**; `bi_stats`, `bi_fm`, `bi_dev` e `bi_cms` foram tratados nas PRs #126–#139, mas o inventário genérico ainda não está zerado. | Auditar consumidores restantes e migrar por risco e presença de entrada externa. |
 
 ## Lotes concluídos neste ciclo
 
@@ -41,16 +41,22 @@ Nenhuma nova issue foi criada neste levantamento: as pendências encontradas est
 | #123 | Notificações genéricas com `getPreparedKeys()` | `83581528d5f9d883f25ff49ee380efb9298c23e4` |
 | #124 | Backup genérico com SQL-array e `queryPrepared()` | `cbfbe603ad182eab01cf01fa3b5d654d0cf99aad` |
 | #125 | `getContents()` no caminho preparado | `411732316ed9fb2e80a409e65945775cf21f0bf1` |
+| #134 | `bi_stats` analytics summary | `7638bd61264ceed0e69db4900153622e1ff65e03` |
+| #135 | `bi_stats` analytics ranking e bot lookup | `8bb9c228e0f5e5c98d9dd3ab34480495f579332f` |
+| #136 | `bi_stats` referências e exportação | `e1479ae8eebc5260aa6590ec5095cab91e4d687c` |
+| #137 | `bi_stats` counters e `bi_fm` filters | `72afea5ed9e9dea44abe5cee368f2693d759840f` |
+| #138 | Operações de banco em `bi_dev` | `f5bf426bf2ffabeede26aaaccecd36ba4bf1e8d9` |
+| #139 | Consultas de conteúdo em `bi_cms` | `be224764ed2fb73accb8ffb127b53a65e48d3b67` |
 
 ## Ordem operacional do loop
 
-1. Confirmar checks pós-merge da PR #125.
-2. Auditar e parametrizar o primeiro lote de `bi_stats/module.php`, começando por hits e estatísticas de navegador.
+1. Confirmar e documentar o merge da PR #139.
+2. Auditar consumidores genéricos restantes da issue #94 e validar o inventário de SQL legado.
 3. Adicionar regressões estáticas e, quando viável, testes de comportamento para aspas, Unicode e payloads de injeção.
 4. Publicar uma PR pequena, aguardar CI verde, fazer merge autorizado e atualizar este relatório.
-5. Repetir a auditoria para `bi_stats` diário, `bi_seo`, `bi_fm`, `bi_dev`, `bi_cms` e fluxos administrativos, sempre separando lotes por risco.
+5. Repetir a auditoria para módulos genéricos restantes e fluxos administrativos, sempre separando lotes por risco.
 6. Recalcular o inventário PHPStan e iniciar os lotes #38, #43, #44 e #45 somente após estabelecer a sobreposição entre eles.
-7. Tratar SSRF/DNS rebinding (#65 e #66), CKFinder (#67) e sanitização HTML (#24) como frentes independentes, criando uma nova issue apenas se o escopo não estiver coberto por nenhuma issue existente.
+7. Tratar SSRF/DNS rebinding (#65 e #66), CKFinder (#67) e sanitização HTML (#24) como as próximas frentes, criando nova issue apenas se o escopo não estiver coberto por nenhuma issue existente.
 
 ## Critérios para criação de nova issue
 
@@ -98,3 +104,9 @@ Após o merge da PR #132, a varredura identificou `stats_pathajax.php` como o pr
 ### Continuação — analytics agregado de `bi_stats`
 
 O lote seguinte, `security/parameterize-bi-stats-analytics-summary`, converte as consultas de séries históricas, referers, janelas de 24 horas e lookup de títulos de páginas para execução preparada. O fluxo contém consultas adicionais de ranking que permanecerão em lotes subsequentes, mantendo o loop incremental e verificável.
+
+### Atualização do loop — PRs #134–#139
+
+O ciclo SQL foi concluído nos módulos prioritários auditados. A PR #134 tratou o resumo de analytics; a #135 concluiu rankings, browsers, resoluções, bots e idioma; a #136 concluiu referências e exportação; a #137 concluiu contadores de `bi_stats` e filtros do gerenciador de arquivos; a #138 concluiu operações de banco de `bi_dev`; e a #139 concluiu consultas dinâmicas de conteúdo, idioma, código e hierarquia em `bi_cms`. Todas foram mescladas após checks verdes de PHP 8.3, PHPStan e revisão de dependências.
+
+A auditoria seguinte das issues abertas encontrou somente escopos já cobertos por #9, #24, #34, #65, #66, #67 e #94. Portanto, nenhuma nova issue foi criada nesta etapa. O próximo lote operacional deve partir da análise de SSRF/DNS rebinding e da revisão sistemática do CKFinder, mantendo os critérios de não introduzir regressões e de atualizar este relatório após cada merge.

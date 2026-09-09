@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the conservative migration helper in `tools/migrate_php83.php`, with dry-run, timestamped backups and a security blocker report.
 
 ### Changed
+- Parameterized remaining `bi_stats` counters and `bi_fm` file-name filters, then migrated the remaining `bi_dev` and `bi_cms` database operations to prepared execution.
 - Completed prepared execution for the remaining `bi_stats` analytics ranking, browser, resolution, bot and language queries.
 - Replaced remaining fixed-window analytics summary queries and page-title lookup in `bi_stats` with prepared execution.
 - Replaced interpolated page and date filters in the `bi_stats` path analytics endpoint with prepared queries.
