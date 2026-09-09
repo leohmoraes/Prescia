@@ -464,21 +464,26 @@ class mod_bi_stats extends CscriptedModule  {
 			# -- end HIT/UHIT/BHIT stats --
 			# -- BROWSER stats --
 
-			if ($browser != "") {
-				if ($ismob) $browser .= " (mob)";
-				$visits = $core->dbo->fetch("SELECT hits FROM ".$core->modules['statsbrowser']->dbname." WHERE data='".date("Y-m-d")."' AND browser=\"$browser\"");
-				if ($visits === false) {
-					# first
-					$ok = $core->dbo->simpleQuery("INSERT INTO ".$core->modules['statsbrowser']->dbname." SET data=NOW(), browser=\"$browser\",hits=1");
+				if ($browser != "") {
+					if ($ismob) $browser .= " (mob)";
+					$statsBrowser = $core->modules['statsbrowser']->dbname;
+					$visits = $core->dbo->fetchPrepared("SELECT hits FROM ".$statsBrowser." WHERE data=? AND browser=?", 'ss', array(date("Y-m-d"), $browser));
+					if ($visits === false) {
+						# first
+						$r = false;
+						$n = 0;
+						$ok = $core->dbo->queryPrepared("INSERT INTO ".$statsBrowser." SET data=NOW(), browser=?,hits=1", 's', array($browser), $r, $n);
 					if (!$ok) {
 						$lastError = $this->parent->dbo->log[count($this->parent->dbo->log)-1];
 						if (strpos(strtolower($lastError),"duplicate") !== false) { // concurrent INSERT happened first! use update
-							array_pop($this->parent->dbo->log); // ignore this error please
-							$core->dbo->simpleQuery("UPDATE ".$core->modules['statsbrowser']->dbname." SET hits=hits+1 WHERE data='".date("Y-m-d")."' AND browser=\"$browser\"");							
+								array_pop($this->parent->dbo->log); // ignore this error please
+								$core->dbo->queryPrepared("UPDATE ".$statsBrowser." SET hits=hits+1 WHERE data=? AND browser=?", 'ss', array(date("Y-m-d"), $browser), $r, $n);
 						}
 					}
 				} else { # second+ visit
-					$core->dbo->simpleQuery("UPDATE ".$core->modules['statsbrowser']->dbname." SET hits=hits+1 WHERE data='".date("Y-m-d")."' AND browser=\"$browser\"");
+					$r = false;
+					$n = 0;
+					$core->dbo->queryPrepared("UPDATE ".$statsBrowser." SET hits=hits+1 WHERE data=? AND browser=?", 'ss', array(date("Y-m-d"), $browser), $r, $n);
 				}
 			}
 
