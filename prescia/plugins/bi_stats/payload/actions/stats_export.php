@@ -13,7 +13,7 @@
 	$sql = "SELECT data,sum(hits),sum(uhits),sum(bhits),sum(rhits) FROM ".$statsfullObj->dbname." GROUP BY data ORDER BY data DESC";
 	$r = false;
 	$n = 0;
-	$core->dbo->query($sql,$r,$n);
+	$core->dbo->queryPrepared($sql, "", array(), $r, $n);
 	for ($c=0;$c<$n;$c++) {
 		list($data,$hits,$uhits,$bhits,$rhits) = $core->dbo->fetch_row($r);
 		$outputArr[$data] = array($hits,$uhits,$bhits,$rhits,0);
@@ -22,7 +22,7 @@
 	$sql = "SELECT data,sum(hits) FROM ".$statsrObj->dbname." WHERE referer=\"\" GROUP BY data ORDER BY data DESC";
 	$r = false;
 	$n = 0;
-	$core->dbo->query($sql,$r,$n);
+	$core->dbo->queryPrepared($sql, "", array(), $r, $n);
 	for ($c=0;$c<$n;$c++) {
 		list($data,$khits) = $core->dbo->fetch_row($r);
 		if (isset($outputArr[$data]))

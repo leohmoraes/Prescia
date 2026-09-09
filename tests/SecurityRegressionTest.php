@@ -573,11 +573,21 @@ PHP, $route);
     {
         $export = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/payload/actions/stats_export.php');
 
+        self::assertStringContainsString('queryPrepared($sql, "", array(), $r, $n)', $export);
+        self::assertStringNotContainsString('->dbo->query(', $export);
         self::assertStringContainsString("fputcsv(\$csv", $export);
         self::assertStringContainsString("preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', \$date)", $export);
         self::assertStringContainsString('X-Content-Type-Options: nosniff', $export);
         self::assertStringContainsString('Cache-Control: no-store, no-cache, must-revalidate', $export);
         self::assertStringNotContainsString('$outputstr .= "\\\"".array_shift($o)', $export);
+    }
+
+    public function testBiStatsReferencesUsesPreparedQueries(): void
+    {
+        $references = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/payload/content/stats_ref.php');
+
+        self::assertStringContainsString('queryPrepared($sql, "", array(), $r, $n)', $references);
+        self::assertStringNotContainsString('->dbo->query(', $references);
     }
 
     public function testUndoUsesPreparedQueriesForRecordKeysAndHistoryDeletion(): void
