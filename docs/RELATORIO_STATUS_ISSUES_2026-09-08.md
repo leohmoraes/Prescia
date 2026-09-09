@@ -78,3 +78,7 @@ Após o merge da PR #127, o loop iniciou `security/parameterize-bi-stats-navigat
 ### Subsequente — estatísticas de referer de `bi_stats`
 
 Após o merge da PR #128, o loop iniciou `security/parameterize-bi-stats-referers`. As consultas de leitura, inserção e atualização de referers foram convertidas para `queryPrepared()`, preservando o cálculo de hits e páginas e o tratamento de concorrência. Foi adicionada regressão específica. Hits gerais e rotinas diárias continuam pendentes.
+
+### Subsequente — hits gerais e identificação de página em `bi_stats`
+
+Após o merge da PR #129, o loop iniciou `security/parameterize-bi-stats-hits-general`. A leitura, inserção e atualização dos contadores gerais de hits, aceitação, visitantes recorrentes e administradores foram convertidas para queries preparadas, mantendo os incrementos condicionais como parâmetros numéricos. Foi adicionada regressão específica. As rotinas diárias e demais consultas de manutenção ainda permanecem pendentes.
