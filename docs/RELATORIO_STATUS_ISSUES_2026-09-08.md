@@ -82,3 +82,7 @@ Após o merge da PR #128, o loop iniciou `security/parameterize-bi-stats-referer
 ### Subsequente — hits gerais e identificação de página em `bi_stats`
 
 Após o merge da PR #129, o loop iniciou `security/parameterize-bi-stats-hits-general`. A leitura, inserção e atualização dos contadores gerais de hits, aceitação, visitantes recorrentes e administradores foram convertidas para queries preparadas, mantendo os incrementos condicionais como parâmetros numéricos. Foi adicionada regressão específica. As rotinas diárias e demais consultas de manutenção ainda permanecem pendentes.
+
+### Subsequente — manutenção diária de `bi_stats`
+
+Após o merge da PR #130, o loop iniciou `security/parameterize-bi-stats-maintenance`. As leituras de bots e navegadores usadas no benchmark e a consolidação diária de hits e referers passaram para `fetchPrepared()`/`queryPrepared()`, com parâmetros separados para datas, textos e contadores. A regressão foi ampliada. A auditoria de `bi_stats` segue para os pontos restantes e depois avançará para outros plugins legados.
