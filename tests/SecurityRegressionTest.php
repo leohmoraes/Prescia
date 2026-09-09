@@ -558,6 +558,20 @@ PHP, $route);
         self::assertStringNotContainsString('->dbo->fetch("SELECT ', $dev);
     }
 
+    public function testBiCmsUsesPreparedContentAndPermissionQueries(): void
+    {
+        $cms = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_cms/module.php');
+
+        self::assertStringContainsString('WHERE code=? AND page=? AND lang=?', $cms);
+        self::assertStringContainsString('fetchPrepared($sql, $types, $params)', $cms);
+        self::assertStringContainsString('fetchPrepared($sql, \'i\', array((int)$data[\'id\']))', $cms);
+        self::assertStringContainsString('queryPrepared($sql, \'ss\', array($this->serveThisPage, $_SESSION[CONS_SESSION_LANG])', $cms);
+        self::assertStringContainsString('queryPrepared($sql, \'i\', array((int)$id)', $cms);
+        self::assertStringNotContainsString('->dbo->query($sql,$r,$n)', $cms);
+        self::assertStringNotContainsString('->dbo->fetch($sql)', $cms);
+        self::assertStringNotContainsString('->dbo->simpleQuery(', $cms);
+    }
+
     public function testBiSeoUsesPreparedQueries(): void
     {
         $seo = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_seo/module.php');
