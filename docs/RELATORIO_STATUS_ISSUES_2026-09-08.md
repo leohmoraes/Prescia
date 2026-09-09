@@ -70,3 +70,7 @@ O relatório foi publicado no `master` pelo commit `60e26d2`. O primeiro lote po
 ### Subsequente — admin e bots de `bi_stats`
 
 Após o merge da PR #126, o loop abriu o sublote `security/parameterize-bi-stats-hits`. O código agora usa `fetchPrepared()`/`queryPrepared()` para a leitura e os contadores de administradores e bots, com regressão adicional. O restante das consultas de referer, realtime, path e hits gerais permanece no backlog da issue #9.
+
+### Subsequente — realtime e caminhos de navegação de `bi_stats`
+
+Após o merge da PR #127, o loop iniciou `security/parameterize-bi-stats-navigation`. O sublote converte a consulta de sessão realtime, o registro/atualização de visita e os contadores de caminho para `fetchPrepared()`/`queryPrepared()`. A cobertura de regressão foi ampliada. Consultas de referer, hits gerais e rotinas diárias ainda serão tratadas em lotes posteriores.

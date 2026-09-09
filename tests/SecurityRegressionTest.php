@@ -478,6 +478,18 @@ PHP, $route);
         self::assertStringContainsString('queryPrepared("UPDATE ".$statsBots." SET hits=hits+1 WHERE data=?"', $stats);
     }
 
+    public function testBiStatsNavigationCountersUsePreparedQueries(): void
+    {
+        $stats = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/module.php');
+
+        self::assertStringContainsString('queryPrepared("SELECT page,fullpath FROM ".$statsRealtime." WHERE ip=?"', $stats);
+        self::assertStringContainsString('queryPrepared("INSERT INTO ".$statsRealtime." SET ip=?, page=?, pagelast=?', $stats);
+        self::assertStringContainsString('queryPrepared("UPDATE ".$statsRealtime." SET page=?, pagelast=?', $stats);
+        self::assertStringContainsString('fetchPrepared("SELECT hits FROM ".$statsPath." WHERE data=? AND page=? AND pagefoward=?"', $stats);
+        self::assertStringContainsString('queryPrepared("INSERT INTO ".$statsPath." SET data=?, page=?, pagefoward=?, hits=1"', $stats);
+        self::assertStringNotContainsString('WHERE ip=\'".CONS_IP."\'', $stats);
+    }
+
     public function testBiStatsRealtimeEndpointAuthorizesAndEscapesOutput(): void
     {
         $route = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/payload/actions/stats_rtajax.php');
