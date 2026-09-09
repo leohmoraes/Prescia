@@ -74,3 +74,7 @@ Após o merge da PR #126, o loop abriu o sublote `security/parameterize-bi-stats
 ### Subsequente — realtime e caminhos de navegação de `bi_stats`
 
 Após o merge da PR #127, o loop iniciou `security/parameterize-bi-stats-navigation`. O sublote converte a consulta de sessão realtime, o registro/atualização de visita e os contadores de caminho para `fetchPrepared()`/`queryPrepared()`. A cobertura de regressão foi ampliada. Consultas de referer, hits gerais e rotinas diárias ainda serão tratadas em lotes posteriores.
+
+### Subsequente — estatísticas de referer de `bi_stats`
+
+Após o merge da PR #128, o loop iniciou `security/parameterize-bi-stats-referers`. As consultas de leitura, inserção e atualização de referers foram convertidas para `queryPrepared()`, preservando o cálculo de hits e páginas e o tratamento de concorrência. Foi adicionada regressão específica. Hits gerais e rotinas diárias continuam pendentes.

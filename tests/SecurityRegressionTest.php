@@ -490,6 +490,16 @@ PHP, $route);
         self::assertStringNotContainsString('WHERE ip=\'".CONS_IP."\'', $stats);
     }
 
+    public function testBiStatsRefererCountersUsePreparedQueries(): void
+    {
+        $stats = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/module.php');
+
+        self::assertStringContainsString('queryPrepared("SELECT hits, pages FROM ".$statsReferer." WHERE data=? AND referer=? AND entrypage=?"', $stats);
+        self::assertStringContainsString('queryPrepared("INSERT INTO ".$statsReferer." SET data=?, referer=?, entrypage=?, hits=?, pages=?"', $stats);
+        self::assertStringContainsString('queryPrepared("UPDATE ".$statsReferer." SET hits=?, pages=? WHERE data=? AND referer=? AND entrypage=?"', $stats);
+        self::assertStringNotContainsString('referer=\\"$domain\\"', $stats);
+    }
+
     public function testBiStatsRealtimeEndpointAuthorizesAndEscapesOutput(): void
     {
         $route = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/payload/actions/stats_rtajax.php');

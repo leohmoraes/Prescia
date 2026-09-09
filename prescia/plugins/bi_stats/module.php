@@ -364,18 +364,23 @@ class mod_bi_stats extends CscriptedModule  {
 						}
 						$hits++;
 						if (strpos($pages,$referer.",") === false) $pages .= cleanString($referer).",";
-						$pages = $sqlEscape($pages);
-						if ($n == 0) {
-							$ok = $core->dbo->simpleQuery("INSERT INTO ".$core->modules['statsref']->dbname." SET data='".date("Y-m-d")."', referer=\"$domain\", entrypage=\"".$pageToBelogged."\", hits=$hits, pages=\"".$pages."\"");
+					$pages = $sqlEscape($pages);
+					if ($n == 0) {
+						$r = false;
+						$n = 0;
+						$ok = $core->dbo->queryPrepared("INSERT INTO ".$statsReferer." SET data=?, referer=?, entrypage=?, hits=?, pages=?", 'sssis', array(date("Y-m-d"), $domain, $pageToBelogged, (int)$hits, $pages), $r, $n);
 							if (!$ok) {
 								$lastError = $this->parent->dbo->log[count($this->parent->dbo->log)-1];
 								if (strpos(strtolower($lastError),"duplicate") !== false) { // concurrent INSERT happened first! use update
-									array_pop($this->parent->dbo->log); // ignore this error please
-									$core->dbo->simpleQuery("UPDATE ".$core->modules['statsref']->dbname." SET hits=$hits, pages=\"".$pages."\" WHERE data='".date("Y-m-d")."' AND referer=\"$domain\" AND entrypage=\"".$pageToBelogged."\"");
+								array_pop($this->parent->dbo->log); // ignore this error please
+								$core->dbo->queryPrepared("UPDATE ".$statsReferer." SET hits=?, pages=? WHERE data=? AND referer=? AND entrypage=?", 'issss', array((int)$hits, $pages, date("Y-m-d"), $domain, $pageToBelogged), $r, $n);
 								}
 							}
-						} else
-							$core->dbo->simpleQuery("UPDATE ".$core->modules['statsref']->dbname." SET hits=$hits, pages=\"".$pages."\" WHERE data='".date("Y-m-d")."' AND referer=\"$domain\" AND entrypage=\"".$pageToBelogged."\"");
+						} else {
+							$r = false;
+							$n = 0;
+							$core->dbo->queryPrepared("UPDATE ".$statsReferer." SET hits=?, pages=? WHERE data=? AND referer=? AND entrypage=?", 'issss', array((int)$hits, $pages, date("Y-m-d"), $domain, $pageToBelogged), $r, $n);
+						}
 
 
 					} # not log by IP (is set if detected this IP already visited in the last 15 min, but has no cookies)
