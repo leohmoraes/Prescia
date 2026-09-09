@@ -34,11 +34,11 @@ class mod_bi_seo extends CscriptedModule  {
 		if (isset($this->parent->dimconfig['_seoManager']) && in_array(strtolower($context_for_seo.$this->parent->action),$this->parent->dimconfig['_seoManager'])) {
 			
 			$seo = $this->parent->loaded($this->moduleRelation);
-			$sql = "SELECT * FROM ".$seo->dbname." WHERE alias=\"".$context_for_seo.$this->parent->action."\" AND lang='".$_SESSION[CONS_SESSION_LANG]."'";
+				$sql = "SELECT * FROM ".$seo->dbname." WHERE alias=? AND lang=?";
 
 			$r = false;
 			$n = 0;
-			$this->parent->dbo->query($sql,$r,$n);
+				$this->parent->dbo->queryPrepared($sql, 'ss', array($context_for_seo.$this->parent->action, $_SESSION[CONS_SESSION_LANG]), $r, $n);
 			if ($n>0) {
 				
 				$seo = $this->parent->dbo->fetch_assoc($r);
@@ -132,11 +132,11 @@ class mod_bi_seo extends CscriptedModule  {
 	function notifyEvent(&$module,$action,$data,$startedAt="",$earlyNotify =false) {
 		if ($module === false) return;
 		if ($module->name == $this->moduleRelation && !$earlyNotify) {
-			$seo = $this->parent->loaded($this->moduleRelation);
-			$sql = "SELECT DISTINCT(alias) FROM ".$seo->dbname;
-			$r = false;
-			$n = 0;
-			$this->parent->dbo->query($sql,$r,$n);
+				$seo = $this->parent->loaded($this->moduleRelation);
+				$sql = "SELECT DISTINCT(alias) FROM ".$seo->dbname;
+				$r = false;
+				$n = 0;
+				$this->parent->dbo->queryPrepared($sql, "", array(), $r, $n);
 			$this->parent->loadDimconfig(true);
 			$newC = array();
 			for($c=0;$c<$n;$c++) {
@@ -157,10 +157,10 @@ class mod_bi_seo extends CscriptedModule  {
 			else {
 				$_SESSION[CONS_SEO_LOADED] = array();
 				$seo = $this->parent->loaded($this->moduleRelation);
-				$sql = "SELECT page,alias FROM ".$seo->dbname." WHERE publicar='y' AND lang='".$_SESSION[CONS_SESSION_LANG]."'";
+					$sql = "SELECT page,alias FROM ".$seo->dbname." WHERE publicar='y' AND lang=?";
 				$r = false;
 				$n = 0;
-				$this->parent->dbo->query($sql,$r,$n);
+					$this->parent->dbo->queryPrepared($sql, 's', array($_SESSION[CONS_SESSION_LANG]), $r, $n);
 				for ($c=0;$c<$n;$c++) {
 					$dados = $this->parent->dbo->fetch_row($r);
 					if ($dados[0] != '' && $dados[0][0] == "/") $dados[0] = substr($dados[0],1); // SEO does not meddle with base path

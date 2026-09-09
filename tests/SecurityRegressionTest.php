@@ -521,6 +521,17 @@ PHP, $route);
         self::assertStringNotContainsString('WHERE data=\'".$previousDay."\'', $stats);
     }
 
+    public function testBiSeoUsesPreparedQueries(): void
+    {
+        $seo = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_seo/module.php');
+
+        self::assertStringContainsString('WHERE alias=? AND lang=?', $seo);
+        self::assertStringContainsString('queryPrepared($sql, \'ss\'', $seo);
+        self::assertStringContainsString('WHERE publicar=\'y\' AND lang=?', $seo);
+        self::assertStringContainsString('queryPrepared($sql, \'s\'', $seo);
+        self::assertStringNotContainsString('alias=\\".$context_for_seo', $seo);
+    }
+
     public function testBiStatsRealtimeEndpointAuthorizesAndEscapesOutput(): void
     {
         $route = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/payload/actions/stats_rtajax.php');

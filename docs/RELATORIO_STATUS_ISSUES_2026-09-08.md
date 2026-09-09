@@ -86,3 +86,7 @@ Após o merge da PR #129, o loop iniciou `security/parameterize-bi-stats-hits-ge
 ### Subsequente — manutenção diária de `bi_stats`
 
 Após o merge da PR #130, o loop iniciou `security/parameterize-bi-stats-maintenance`. As leituras de bots e navegadores usadas no benchmark e a consolidação diária de hits e referers passaram para `fetchPrepared()`/`queryPrepared()`, com parâmetros separados para datas, textos e contadores. A regressão foi ampliada. A auditoria de `bi_stats` segue para os pontos restantes e depois avançará para outros plugins legados.
+
+### Subsequente — aliases e cache de `bi_seo`
+
+Após o merge da PR #131, o loop iniciou `security/parameterize-bi-seo`. A resolução de aliases, a reconstrução do índice de aliases e o carregamento de páginas SEO publicadas agora usam `queryPrepared()`, com filtros de alias e idioma separados. Foi adicionada regressão específica. O próximo ciclo continuará a varredura dos plugins com SQL legado e valores externos.
