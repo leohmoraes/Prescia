@@ -510,6 +510,17 @@ PHP, $route);
         self::assertStringNotContainsString('SET hits=hits+1, uhits=uhits+1 ".($isReturning', $stats);
     }
 
+    public function testBiStatsMaintenanceUsesPreparedQueries(): void
+    {
+        $stats = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/module.php');
+
+        self::assertStringContainsString('fetchPrepared("SELECT hits FROM ".$sb->dbname." WHERE data=?"', $stats);
+        self::assertStringContainsString('queryPrepared("SELECT sum(hits), browser FROM ".$sb->dbname', $stats);
+        self::assertStringContainsString('fetchPrepared("SELECT hits FROM ".$statsDaily." WHERE data=?"', $stats);
+        self::assertStringContainsString('queryPrepared("SELECT referer,entrypage,hits FROM ".$statsReferer." WHERE data=?"', $stats);
+        self::assertStringNotContainsString('WHERE data=\'".$previousDay."\'', $stats);
+    }
+
     public function testBiStatsRealtimeEndpointAuthorizesAndEscapesOutput(): void
     {
         $route = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/payload/actions/stats_rtajax.php');
