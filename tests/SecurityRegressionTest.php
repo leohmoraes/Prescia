@@ -532,6 +532,16 @@ PHP, $route);
         self::assertStringNotContainsString('alias=\\".$context_for_seo', $seo);
     }
 
+    public function testBiStatsPathAnalyticsUsesPreparedQueries(): void
+    {
+        $analytics = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/payload/content/stats_pathajax.php');
+
+        self::assertStringContainsString('queryPrepared("SELECT data,SUM(hits) as shits', $analytics);
+        self::assertStringContainsString('fetchPrepared("SELECT sum(hits) FROM ".$statsh->dbname." WHERE data >= ? AND data < ? AND page=?"', $analytics);
+        self::assertStringContainsString('queryPrepared($sql, \'sss\'', $analytics);
+        self::assertStringNotContainsString('page=\\"$page\\"', $analytics);
+    }
+
     public function testBiStatsRealtimeEndpointAuthorizesAndEscapesOutput(): void
     {
         $route = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/payload/actions/stats_rtajax.php');

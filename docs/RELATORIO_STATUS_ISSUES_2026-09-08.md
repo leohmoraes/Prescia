@@ -90,3 +90,7 @@ Após o merge da PR #130, o loop iniciou `security/parameterize-bi-stats-mainten
 ### Subsequente — aliases e cache de `bi_seo`
 
 Após o merge da PR #131, o loop iniciou `security/parameterize-bi-seo`. A resolução de aliases, a reconstrução do índice de aliases e o carregamento de páginas SEO publicadas agora usam `queryPrepared()`, com filtros de alias e idioma separados. Foi adicionada regressão específica. O próximo ciclo continuará a varredura dos plugins com SQL legado e valores externos.
+
+### Próximo lote — analytics de caminhos de `bi_stats`
+
+Após o merge da PR #132, a varredura identificou `stats_pathajax.php` como o próximo fluxo com filtros externos concatenados. O lote `security/parameterize-bi-stats-analytics` converte as consultas de histórico diário, total do intervalo e páginas de entrada/saída para parâmetros preparados, com regressão específica.
