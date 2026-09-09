@@ -223,7 +223,7 @@ class mod_bi_dev extends CscriptedModule  {
 								$hasParent = true;
 								$rmodule = $this->parent->loaded($field[CONS_XML_MODULE]);
 								# TODO: this won't work for multikeys
-								$dataToAdd[$fname] = $this->parent->dbo->fetch("SELECT ".$rmodule->keys[0]." FROM ".$rmodule->dbname." ORDER BY RAND() LIMIT 1");
+								$dataToAdd[$fname] = $this->parent->dbo->fetchPrepared("SELECT ".$rmodule->keys[0]." FROM ".$rmodule->dbname." ORDER BY RAND() LIMIT 1", "", array());
 								break;
 							case CONS_TIPO_OPTIONS:
 								$dataToAdd[$fname] = "";
@@ -290,7 +290,7 @@ class mod_bi_dev extends CscriptedModule  {
 			$sql = "SELECT ".implode(",",$keys)." FROM ".$this->parent->modules[$module]->dbname;
 			$r = false;
 			$n = 0;
-			$this->parent->dbo->query($sql,$r,$n);
+			$this->parent->dbo->queryPrepared($sql, "", array(), $r, $n);
 			$report[] = "-Module '".$this->parent->modules[$module]->dbname."' opened with $n entries, each with ".count($keys)." key".(count($keys)>1?"s":"");
 			$keystore[$this->parent->modules[$module]->name] = array();
 			for ($c=0;$c<$n;$c++)
@@ -333,7 +333,7 @@ class mod_bi_dev extends CscriptedModule  {
 				$sql = "SELECT ".implode(",",$desired)." FROM ".$module->dbname;
 				$r = false;
 				$n = 0;
-				$this->parent->dbo->query($sql,$r,$n);
+				$this->parent->dbo->queryPrepared($sql, "", array(), $r, $n);
 				$report[] = "-Performing integrity check on table '".$module->dbname."' with $n entries";
 				for ($c=0;$c<$n;$c++) {
 					$data = $this->parent->dbo->fetch_row($r); # keys, then desired in module order
@@ -395,7 +395,7 @@ class mod_bi_dev extends CscriptedModule  {
 			if (count($uploadFields)>0) {
 				$setStatement = substr($setStatement,0,strlen($setStatement)-1);
 				$sql = "UPDATE ".$module->dbname." SET $setStatement";
-				$ok = $this->parent->dbo->simpleQuery($sql);
+				$ok = $r = false; $n = 0; $this->parent->dbo->queryPrepared($sql, "", array(), $r, $n);
 				$existingFiles = listFiles(CONS_FMANAGER.$name,'@^(.*)$@',false,false,true);
 				$report[] = "-Module $name has uploads: ".count($existingFiles)." files found at ".CONS_FMANAGER.$name."/. ".($ok?"Database markers reset":"Unable to reset markers")." ...";
 				foreach ($existingFiles as $file) {
@@ -426,7 +426,7 @@ class mod_bi_dev extends CscriptedModule  {
 								}
 								$keys = implode(" AND ",$keys2);
 								$sql = "UPDATE ".$module->dbname." SET $field='y' WHERE $keys";
-								if ($this->parent->dbo->simpleQuery($sql)) $notorphans++;
+								$r = false; $n = 0; if ($this->parent->dbo->queryPrepared($sql, "", array(), $r, $n)) $notorphans++;
 							}
 						}
 					}
