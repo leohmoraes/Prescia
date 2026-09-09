@@ -126,3 +126,9 @@ A regressão `testAuthControlGuestGroupUsesPreparedQuery()` foi ampliada para ga
 Após a validação pós-merge da PR #122, o lote seguinte atualizou o caminho de notificações de exclusão em `CModule`. O consumidor deixou de chamar diretamente `getKeys()` e passou a usar `getPreparedKeys()`, preservando o `keyArray` usado pela tradução de relacionamentos e pelos eventos posteriores. A alteração reutiliza o contrato preparado já existente no núcleo e não altera a API legada, que permanece disponível para compatibilidade.
 
 Foi adicionada a regressão `testModuleNotificationKeyExtractionUsesPreparedKeyContract()` em `tests/SecurityRegressionTest.php`. A baseline PHPStan permanece sem alteração; o backup genérico continua separado por ser uma operação interna de exportação, sem parâmetros externos.
+
+## Lote CRUD genérico — exportação de backup — em execução
+
+Após os checks pós-merge da PR #123, a auditoria do CRUD genérico atualizou `CModule::generateBackup()`. A leitura de tabela inteira deixou de ser uma string SQL livre passada a `query()` e passou a usar o contrato SQL-array, com execução por `queryPrepared()` sem valores externos. O exportador continua restrito à tabela e aos campos do próprio módulo e mantém o formato do arquivo de backup.
+
+Foi adicionada a regressão `testGenericBackupUsesStructuredQueryContract()` em `tests/SecurityRegressionTest.php`, cobrindo o SQL-array e rejeitando o caminho legado. A baseline PHPStan permanece sem alteração.
