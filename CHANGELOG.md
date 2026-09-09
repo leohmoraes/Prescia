@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the conservative migration helper in `tools/migrate_php83.php`, with dry-run, timestamped backups and a security blocker report.
 
 ### Changed
+- Replaced concatenated general hit, acceptance and returning-visitor counters in `bi_stats` with prepared queries.
 - Replaced concatenated referer statistics reads, inserts and updates in `bi_stats` with prepared queries.
 - Replaced concatenated realtime and navigation-path counters in `bi_stats` with prepared queries.
 - Replaced concatenated administrator and bot counters in `bi_stats` with prepared queries.

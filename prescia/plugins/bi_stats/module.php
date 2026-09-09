@@ -446,21 +446,29 @@ class mod_bi_stats extends CscriptedModule  {
 			$isReturning = isset($_COOKIE['akr_returning']);
 			$isAdm = str_replace("/","",$this->parent->context_str) == $this->admFolder;
 
-			$x = $core->dbo->fetch("SELECT hits FROM ".$core->modules['stats']->dbname." WHERE data = '".date("Y-m-d")."' AND hour = '".date("H")."' AND page=\"".$pageToBelogged."\" AND hid=\"".$id."\" AND lang=\"".$_SESSION[CONS_SESSION_LANG]."\"");
+				$statsTable = $core->modules['stats']->dbname;
+				$statsKeyParams = array(date("Y-m-d"), date("H"), $pageToBelogged, (string)$id, (string)$_SESSION[CONS_SESSION_LANG]);
+				$x = $core->dbo->fetchPrepared("SELECT hits FROM ".$statsTable." WHERE data=? AND hour=? AND page=? AND hid=? AND lang=?", 'sssss', $statsKeyParams);
 			$ok = true; // also control concurrent includes from here
 			if ($x===false) {
 				# FIRST hit on this page here today
 				if (!isset($_COOKIE['session_visited']) && !$logByIP) { // no cookie and we do not want to log by IP
 					// first hit (1 1 0)
-					$ok = $core->dbo->simpleQuery("INSERT INTO ".$core->modules['stats']->dbname." SET data = '".date("Y-m-d")."' , hour = '".date("H")."' , page=\"".$pageToBelogged."\" , hid=\"".$id."\", hits=1, uhits=1, bhits=0, ahits=".($isAdm?1:0).", rhits=".($isReturning?"1":"0").", lang=\"".$_SESSION[CONS_SESSION_LANG]."\"");
+						$r = false;
+						$n = 0;
+						$ok = $core->dbo->queryPrepared("INSERT INTO ".$statsTable." SET data=?, hour=?, page=?, hid=?, hits=1, uhits=1, bhits=0, ahits=?, rhits=?, lang=?", 'ssssiis', array(date("Y-m-d"), date("H"), $pageToBelogged, (string)$id, (int)$isAdm, (int)$isReturning, $_SESSION[CONS_SESSION_LANG]), $r, $n);
 					if (!$isReturning) @setcookie("akr_returning",'1',Time() + 86400); // 1 day
 						@setcookie("session_visited",'1',Time()+3600); // 60 min
 				} else if (!$logByIP && $_COOKIE['session_visited'] == 1) { // when logging by IP, we can't gather acceptance/browsing (b) hits
 					// second hit (1 0 1)
-					$ok = $core->dbo->simpleQuery("INSERT INTO ".$core->modules['stats']->dbname." SET data = '".date("Y-m-d")."' , hour = '".date("H")."' , page=\"".$pageToBelogged."\" , hid=\"".$id."\", hits=1, uhits=0, bhits=1, ahits=".($isAdm?1:0).", rhits=0, lang=\"".$_SESSION[CONS_SESSION_LANG]."\"");
+						$r = false;
+						$n = 0;
+						$ok = $core->dbo->queryPrepared("INSERT INTO ".$statsTable." SET data=?, hour=?, page=?, hid=?, hits=1, uhits=0, bhits=1, ahits=?, rhits=0, lang=?", 'ssssis', array(date("Y-m-d"), date("H"), $pageToBelogged, (string)$id, (int)$isAdm, $_SESSION[CONS_SESSION_LANG]), $r, $n);
 					@setcookie("session_visited",'2',Time()+3600); // 60 min
 				} else { // third+ hit (1 0 0)
-					$ok = $core->dbo->simpleQuery("INSERT INTO ".$core->modules['stats']->dbname." SET data = '".date("Y-m-d")."' , hour = '".date("H")."' , page=\"".$pageToBelogged."\" , hid=\"".$id."\", hits=1, uhits=0, bhits=0, ahits=".($isAdm?1:0).", rhits=0, lang=\"".$_SESSION[CONS_SESSION_LANG]."\"");
+						$r = false;
+						$n = 0;
+						$ok = $core->dbo->queryPrepared("INSERT INTO ".$statsTable." SET data=?, hour=?, page=?, hid=?, hits=1, uhits=0, bhits=0, ahits=?, rhits=0, lang=?", 'ssssis', array(date("Y-m-d"), date("H"), $pageToBelogged, (string)$id, (int)$isAdm, $_SESSION[CONS_SESSION_LANG]), $r, $n);
 					@setcookie("session_visited",'2',Time()+3600); // 60 min
 				}
 				if (!$ok) {
@@ -473,15 +481,21 @@ class mod_bi_stats extends CscriptedModule  {
 			if (!$ok || $x !== false) { // second+ hit of day
 				if (!isset($_COOKIE['session_visited']) && !$logByIP) {
 					// first hit 1 1 0
-					$core->dbo->simpleQuery("UPDATE ".$core->modules['stats']->dbname." SET hits=hits+1, uhits=uhits+1 ".($isReturning?", rhits=rhits+1":"").($isAdm?", ahits=ahits+1":"")." WHERE data = '".date("Y-m-d")."' AND hour = '".date("H")."' AND page=\"".$pageToBelogged."\" AND hid=\"".$id."\" AND lang=\"".$_SESSION[CONS_SESSION_LANG]."\"");
+						$r = false;
+						$n = 0;
+						$core->dbo->queryPrepared("UPDATE ".$statsTable." SET hits=hits+1, uhits=uhits+1, rhits=rhits+?, ahits=ahits+? WHERE data=? AND hour=? AND page=? AND hid=? AND lang=?", 'iisssss', array((int)$isReturning, (int)$isAdm, date("Y-m-d"), date("H"), $pageToBelogged, (string)$id, (string)$_SESSION[CONS_SESSION_LANG]), $r, $n);
 					if (!$isReturning) @setcookie("akr_returning",'1',Time() + 86400); // 1 day
 					@setcookie("session_visited",'1',Time()+3600); // 60 min
 				} else if (!$logByIP && $_COOKIE['session_visited'] == 1) {
 					// second hit (1 0 1)
-					$core->dbo->simpleQuery("UPDATE ".$core->modules['stats']->dbname." SET hits=hits+1, bhits=bhits+1".($isAdm?", ahits=ahits+1":"")." WHERE data = '".date("Y-m-d")."' AND hour = '".date("H")."' AND page=\"".$pageToBelogged."\" AND hid=\"".$id."\" AND lang=\"".$_SESSION[CONS_SESSION_LANG]."\"");
+						$r = false;
+						$n = 0;
+						$core->dbo->queryPrepared("UPDATE ".$statsTable." SET hits=hits+1, bhits=bhits+1, ahits=ahits+? WHERE data=? AND hour=? AND page=? AND hid=? AND lang=?", 'isssss', array((int)$isAdm, date("Y-m-d"), date("H"), $pageToBelogged, (string)$id, (string)$_SESSION[CONS_SESSION_LANG]), $r, $n);
 					@setcookie("session_visited",'2',Time()+3600); // 60 min
 				} else { // third+ hit (1 0 0)
-					$core->dbo->simpleQuery("UPDATE ".$core->modules['stats']->dbname." SET hits=hits+1".($isAdm?", ahits=ahits+1":"")." WHERE data = '".date("Y-m-d")."' AND hour = '".date("H")."' AND page=\"".$pageToBelogged."\" AND hid=\"".$id."\" AND lang=\"".$_SESSION[CONS_SESSION_LANG]."\"");
+						$r = false;
+						$n = 0;
+						$core->dbo->queryPrepared("UPDATE ".$statsTable." SET hits=hits+1, ahits=ahits+? WHERE data=? AND hour=? AND page=? AND hid=? AND lang=?", 'isssss', array((int)$isAdm, date("Y-m-d"), date("H"), $pageToBelogged, (string)$id, (string)$_SESSION[CONS_SESSION_LANG]), $r, $n);
 					@setcookie("session_visited",'2',Time()+3600); // 60 min
 				}
 			}

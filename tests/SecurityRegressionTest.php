@@ -500,6 +500,16 @@ PHP, $route);
         self::assertStringNotContainsString('referer=\\"$domain\\"', $stats);
     }
 
+    public function testBiStatsGeneralHitCountersUsePreparedQueries(): void
+    {
+        $stats = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/module.php');
+
+        self::assertStringContainsString('fetchPrepared("SELECT hits FROM ".$statsTable." WHERE data=? AND hour=? AND page=? AND hid=? AND lang=?"', $stats);
+        self::assertStringContainsString('queryPrepared("INSERT INTO ".$statsTable." SET data=?, hour=?, page=?, hid=?, hits=1', $stats);
+        self::assertStringContainsString('queryPrepared("UPDATE ".$statsTable." SET hits=hits+1', $stats);
+        self::assertStringNotContainsString('SET hits=hits+1, uhits=uhits+1 ".($isReturning', $stats);
+    }
+
     public function testBiStatsRealtimeEndpointAuthorizesAndEscapesOutput(): void
     {
         $route = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/payload/actions/stats_rtajax.php');
