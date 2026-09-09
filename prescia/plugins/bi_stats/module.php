@@ -69,7 +69,7 @@ class mod_bi_stats extends CscriptedModule  {
 					$output = array('IE' => 0,'FF' => 0, 'SA' => 0, 'OP' => 0, 'CH' => 0, 'UN' => 0, 'mob' =>0,'total' =>0);
 					$r = false;
 					$n = 0;
-					if ($this->parent->dbo->query($sql,$r,$n) && $n>0) {
+					if ($this->parent->dbo->queryPrepared($sql, "", array(), $r, $n) && $n>0) {
 						for ($c=0;$c<$n;$c++) {
 							list($h,$b) = $this->parent->dbo->fetch_row($r);
 							if (strpos($b,"Internet")!==false) $output['IE'] += $h;
@@ -120,11 +120,13 @@ class mod_bi_stats extends CscriptedModule  {
 		// if there is no cache ...
 		if ($sum === false) {
 			// sum all hits in the page specified. Language is conditional
-			$sql = "SELECT sum(hits) FROM stats_hitsh WHERE page=\"$filterPage\"".($filterLang!=''?" AND lang=\"$filterLang\"":"")." GROUP BY page";
-			$sum = $this->parent->dbo->fetch($sql);
+			$sql = "SELECT sum(hits) FROM stats_hitsh WHERE page=?".($filterLang!=''?" AND lang=?":"")." GROUP BY page";
+			$types = $filterLang != '' ? 'ss' : 's';
+			$params = $filterLang != '' ? array($filterPage, $filterLang) : array($filterPage);
+			$sum = $this->parent->dbo->fetchPrepared($sql, $types, $params);
 			// remember, TODAY's hits are only in statsdaily
-			$sql = "SELECT sum(hits) FROM stats_hitsd WHERE page=\"$filterPage\"".($filterLang!=''?" AND lang=\"$filterLang\"":"")." GROUP BY page";
-			$more = $this->parent->dbo->fetch($sql);
+			$sql = "SELECT sum(hits) FROM stats_hitsd WHERE page=?".($filterLang!=''?" AND lang=?":"")." GROUP BY page";
+			$more = $this->parent->dbo->fetchPrepared($sql, $types, $params);
 			if ($more>0) $sum+=$more;
 			$this->parent->cacheControl->addCachedContent('getCounter'.$filterPage."_".$filterLang,$sum,true);
 		}
@@ -133,43 +135,31 @@ class mod_bi_stats extends CscriptedModule  {
 
 	function getHits($days=1,$groupDays=1,$filterPage='',$filterLang='') {
 		$stats = array();
-		// today's stats are not in the statsdaily, but in stats ... get only TODAY's:
 		$sdh = $this->parent->loaded('stats');
-		$sql = "SELECT sum(hits), sum(uhits), sum(bhits), sum(rhits) FROM ".$sdh->dbname." WHERE ";
-		$where = array();
-		$where[] = "data = '".date("Y-m-d")."'"; // only today, see?
-		if ($filterPage!='') {
-			$where[] = "page=\"$filterPage\"";
-		}
-		if ($filterLang!='') {
-			$where[] = "lang=\"$filterLang\"";
-		}
-		$sql .= implode(" AND ",$where);
+		$sql = "SELECT sum(hits), sum(uhits), sum(bhits), sum(rhits) FROM ".$sdh->dbname." WHERE data = ?";
+		$types = 's';
+		$params = array(date("Y-m-d"));
+		if ($filterPage!='') { $sql .= " AND page=?"; $types .= 's'; $params[] = $filterPage; }
+		if ($filterLang!='') { $sql .= " AND lang=?"; $types .= 's'; $params[] = $filterLang; }
 		$sql .= " GROUP BY data".($filterPage!=''?',page':'').($filterLang!=''?',lang':'');
 		$r = false;
 		$n = 0;
-		if ($this->parent->dbo->query($sql,$r,$n) && $n>0) {
-			$stats[] = $this->parent->dbo->fetch_row($r); // if more come, WHAT!?
-		}
-		if ($days == 1) return $stats; // done
+		if ($this->parent->dbo->queryPrepared($sql,$types,$params,$r,$n) && $n>0)
+			$stats[] = $this->parent->dbo->fetch_row($r);
+		if ($days == 1) return $stats;
+
 		$sd = $this->parent->loaded('statsdaily');
-		$sql = "SELECT sum(hits), sum(uhits), sum(bhits), sum(rhits) FROM ".$sd->dbname." WHERE ";
-		$where = array();
-		$where[] = "data > NOW() - INTERVAL $days DAY";
-		if ($filterPage!='') {
-			$where[] = "page=\"$filterPage\"";
-		}
-		if ($filterLang!='') {
-			$where[] = "lang=\"$filterLang\"";
-		}
-		$sql .= implode(" AND ",$where);
-		$sql .= " GROUP BY data".($filterPage!=''?',page':'').($filterLang!=''?',lang':'');
-		$sql .= " ORDER BY data DESC";
+		$days = max(1, (int)$days);
+		$sql = "SELECT sum(hits), sum(uhits), sum(bhits), sum(rhits) FROM ".$sd->dbname." WHERE data > NOW() - INTERVAL ".$days." DAY";
+		$types = '';
+		$params = array();
+		if ($filterPage!='') { $sql .= " AND page=?"; $types .= 's'; $params[] = $filterPage; }
+		if ($filterLang!='') { $sql .= " AND lang=?"; $types .= 's'; $params[] = $filterLang; }
+		$sql .= " GROUP BY data".($filterPage!=''?',page':'').($filterLang!=''?',lang':'')." ORDER BY data DESC";
 		$r = false;
 		$n = 0;
-		if ($this->parent->dbo->query($sql,$r,$n) && $n>0) {
-			for ($c=0;$c<$n;$c++)
-				$stats[] = $this->parent->dbo->fetch_row($r);
+		if ($this->parent->dbo->queryPrepared($sql,$types,$params,$r,$n) && $n>0) {
+			for ($c=0;$c<$n;$c++) $stats[] = $this->parent->dbo->fetch_row($r);
 		}
 		if ($groupDays != 1) {
 			$newstats = array();
@@ -188,7 +178,6 @@ class mod_bi_stats extends CscriptedModule  {
 		}
 		return $stats;
 	}
-
 
 	function onEcho(&$PAGE){
 

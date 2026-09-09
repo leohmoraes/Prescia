@@ -87,7 +87,7 @@ class mod_bi_fm extends CscriptedModule  {
 				$sql = "SELECT filenm FROM ".$mod->dbname." WHERE has_expiration='y' AND expiration_date <> '0000-00-00' AND expiration_date < NOW()";
 				$r = false;
 				$n = 0;
-				if ($this->parent->dbo->query($sql,$r,$n) && $n>0) {
+				if ($this->parent->dbo->queryPrepared($sql, "", array(), $r, $n) && $n>0) {
 				// clean up files which reached expiration
 				for ($c=0;$c<$n;$c++) {
 					list($filenm) = $this->parent->dbo->fetch_row($r);
@@ -97,7 +97,7 @@ class mod_bi_fm extends CscriptedModule  {
 				$this->parent->errorControl->raise(526,$n,'bi_fm');
 			}
 			$sql = "DELETE FROM ".$mod->dbname." WHERE has_expiration='y' AND expiration_date <> '0000-00-00' AND expiration_date < NOW()";
-			$this->parent->dbo->simpleQuery($sql);
+			$r = false; $n = 0; $this->parent->dbo->queryPrepared($sql, "", array(), $r, $n);
 		}
 	}
 
@@ -138,8 +138,8 @@ class mod_bi_fm extends CscriptedModule  {
 				$buffer = $core->safety;
 				$core->safety = false;
 
-				$sql = "SELECT filenm FROM ".$mod->dbname." WHERE filenm LIKE \"".$arquivo."\"";
-				$hasData = $core->dbo->fetch($sql) !== false;
+				$sql = "SELECT filenm FROM ".$mod->dbname." WHERE filenm LIKE ?";
+				$hasData = $core->dbo->fetchPrepared($sql, 's', array($arquivo)) !== false;
 				if ($hasData)
 					$core->runAction($mod,CONS_ACTION_UPDATE,$data);
 				else
@@ -154,10 +154,11 @@ class mod_bi_fm extends CscriptedModule  {
 			if ($arquivo[0]!='/') $arquivo = "/".$arquivo;
 			if (substr($arquivo,0,strlen("/".CONS_FMANAGER.CONS_FMANAGER_SAFE."/")) == "/".CONS_FMANAGER.CONS_FMANAGER_SAFE."/") {
 				$arquivo = substr($arquivo,strlen(CONS_FMANAGER.CONS_FMANAGER_SAFE)+2); // +2 for the /.../
-				$sql = "DELETE FROM ".$mod->dbname." WHERE filenm LIKE \"".$arquivo."\"";
+				$sql = "DELETE FROM ".$mod->dbname." WHERE filenm LIKE ?";
 				$buffer = $core->safety;
 				$core->safety = false;
-				$core->dbo->simpleQuery($sql);
+				$r = false; $n = 0;
+				$core->dbo->queryPrepared($sql, 's', array($arquivo), $r, $n);
 				$core->safety = $buffer;
 			}
 		}
@@ -170,10 +171,10 @@ class mod_bi_fm extends CscriptedModule  {
 		if (!isset($this->cache[$file]) || $this->currentDir === false) {
 			// test manually in the database, if no cache available
 			$mod = $this->parent->loaded('bi_fm');
-			$sql = "SELECT id_allowed_group,allowed_users,has_expiration,expiration_date FROM ".$mod->dbname." WHERE filenm LIKE \"".$file."\"";
+			$sql = "SELECT id_allowed_group,allowed_users,has_expiration,expiration_date FROM ".$mod->dbname." WHERE filenm LIKE ?";
 			$r = false;
 			$n = 0;
-			if ($this->parent->dbo->query($sql,$r,$n) && $n == 1) {
+			if ($this->parent->dbo->queryPrepared($sql, 's', array($file), $r, $n) && $n == 1) {
 				list($idG,$idU,$heD,$eD) = $this->parent->dbo->fetch_row($r);
 				$idU = explode(",",$idU);
 				$idUclean = array();
@@ -210,10 +211,10 @@ class mod_bi_fm extends CscriptedModule  {
 		$dir = substr($dir,strlen(CONS_FMANAGER_SAFE)+1); // removes SAFE+ /
 
 		$mod = $this->parent->loaded('bi_fm');
-		$sql = "SELECT id_allowed_group,allowed_users,has_expiration,expiration_date,filenm FROM ".$mod->dbname." WHERE filenm LIKE \"".$dir."%\"";
+		$sql = "SELECT id_allowed_group,allowed_users,has_expiration,expiration_date,filenm FROM ".$mod->dbname." WHERE filenm LIKE ?";
 		$r = false;
 		$n = 0;
-		if ($this->parent->dbo->query($sql,$r,$n)) {
+		if ($this->parent->dbo->queryPrepared($sql, 's', array($dir.'%'), $r, $n)) {
 			for ($c=0;$c<$n;$c++) {
 				list($idG,$idU,$heD,$eD,$fln) = $this->parent->dbo->fetch_row($r);
 				$idU = explode(",",$idU);

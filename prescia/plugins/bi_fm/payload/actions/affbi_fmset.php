@@ -27,8 +27,8 @@
 		}
 	}
 	$mod = $core->loaded('bi_fm');
-	$sql = "SELECT filenm FROM ".$mod->dbname." WHERE filenm LIKE \"".$data['filenm']."\"";
-	$hasData = $core->dbo->fetch($sql) !== false;
+	$sql = "SELECT filenm FROM ".$mod->dbname." WHERE filenm LIKE ?";
+	$hasData = $core->dbo->fetchPrepared($sql, 's', array($data['filenm'])) !== false;
 	$core->safety = false;
 	if ($hasData)
 		$core->runAction('bi_fm',CONS_ACTION_UPDATE,$data);

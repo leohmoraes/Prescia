@@ -521,6 +521,32 @@ PHP, $route);
         self::assertStringNotContainsString('WHERE data=\'".$previousDay."\'', $stats);
     }
 
+    public function testBiStatsCounterMethodsUsePreparedFilters(): void
+    {
+        $stats = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/module.php');
+
+        self::assertStringContainsString('fetchPrepared($sql, $types, $params)', $stats);
+        self::assertStringContainsString('queryPrepared($sql,$types,$params,$r,$n)', $stats);
+        self::assertStringContainsString('$days = max(1, (int)$days);', $stats);
+        self::assertStringNotContainsString('WHERE page=\"$filterPage\"', $stats);
+        self::assertStringNotContainsString('$this->parent->dbo->query($sql,$r,$n)', $stats);
+        self::assertStringNotContainsString('$this->parent->dbo->fetch($sql)', $stats);
+    }
+
+    public function testBiFileManagerUsesPreparedFileNameFilters(): void
+    {
+        $fileManager = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_fm/module.php');
+        $settings = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_fm/payload/actions/affbi_fmset.php');
+
+        self::assertStringContainsString('fetchPrepared($sql, \'s\', array($arquivo))', $fileManager);
+        self::assertStringContainsString('queryPrepared($sql, \'s\', array($arquivo), $r, $n)', $fileManager);
+        self::assertStringContainsString('queryPrepared($sql, \'s\', array($file), $r, $n)', $fileManager);
+        self::assertStringContainsString('queryPrepared($sql, \'s\', array($dir.\'%\'), $r, $n)', $fileManager);
+        self::assertStringContainsString('fetchPrepared($sql, \'s\', array($data[\'filenm\']))', $settings);
+        self::assertStringNotContainsString('->dbo->fetch($sql)', $fileManager);
+        self::assertStringNotContainsString('->dbo->simpleQuery($sql)', $fileManager);
+    }
+
     public function testBiSeoUsesPreparedQueries(): void
     {
         $seo = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_seo/module.php');
