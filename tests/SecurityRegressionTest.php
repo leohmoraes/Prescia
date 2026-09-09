@@ -171,6 +171,18 @@ SQL, $payload);
         self::assertStringNotContainsString('$this->parent->dbo->query($sql,$r,$n);', $backup);
     }
 
+    public function testGenericGetContentsUsesPreparedExecutionPath(): void
+    {
+        $module = (string) file_get_contents(__DIR__ . '/../prescia/components/module.php');
+        $contents = strstr($module, 'function getContents(');
+        $contents = strstr((string)$contents, 'function invalidHTML(', true);
+
+        self::assertNotFalse($contents);
+        self::assertStringContainsString('queryPrepared($sqlText,$preparedTypes,$preparedParams,$r,$n)', $contents);
+        self::assertStringContainsString('queryPrepared($this->parent->dbo->sqlarray_echo($sql),"",array(),$r,$n)', $contents);
+        self::assertStringNotContainsString('$this->parent->dbo->query($sql,$r,$n)', $contents);
+    }
+
     public function testBiBbArchiveFiltersUsePreparedValuesAndMetadataFields(): void
     {
         $module = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_bb/module.php');

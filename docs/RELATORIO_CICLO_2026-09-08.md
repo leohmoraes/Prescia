@@ -132,3 +132,9 @@ Foi adicionada a regressão `testModuleNotificationKeyExtractionUsesPreparedKeyC
 Após os checks pós-merge da PR #123, a auditoria do CRUD genérico atualizou `CModule::generateBackup()`. A leitura de tabela inteira deixou de ser uma string SQL livre passada a `query()` e passou a usar o contrato SQL-array, com execução por `queryPrepared()` sem valores externos. O exportador continua restrito à tabela e aos campos do próprio módulo e mantém o formato do arquivo de backup.
 
 Foi adicionada a regressão `testGenericBackupUsesStructuredQueryContract()` em `tests/SecurityRegressionTest.php`, cobrindo o SQL-array e rejeitando o caminho legado. A baseline PHPStan permanece sem alteração.
+
+## Continuação do lote CRUD genérico — execução de getContents
+
+Na mesma auditoria da issue #94, os dois caminhos de `CModule::getContents()` foram unificados em `queryPrepared()`. Consultas estruturadas sem parâmetros usam tipos e parâmetros vazios, enquanto consultas com `_preparedTypes` preservam seus binds. Isso elimina o fallback direto para `query()` no consumidor genérico sem modificar o contrato de SQL-array.
+
+Foi adicionada a regressão `testGenericGetContentsUsesPreparedExecutionPath()`. A baseline PHPStan permanece sem alteração.
