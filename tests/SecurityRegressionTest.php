@@ -458,6 +458,16 @@ PHP, $route);
         self::assertStringContainsString('encodeURIComponent(screen.width + "x" + screen.height)', $client);
     }
 
+    public function testBiStatsBrowserCountersUsePreparedQueries(): void
+    {
+        $stats = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/module.php');
+
+        self::assertStringContainsString('fetchPrepared("SELECT hits FROM ".$statsBrowser." WHERE data=? AND browser=?"', $stats);
+        self::assertStringContainsString('queryPrepared("INSERT INTO ".$statsBrowser." SET data=NOW(), browser=?,hits=1"', $stats);
+        self::assertStringContainsString('queryPrepared("UPDATE ".$statsBrowser." SET hits=hits+1 WHERE data=? AND browser=?"', $stats);
+        self::assertStringNotContainsString('browser=\\"$browser\\"', $stats);
+    }
+
     public function testBiStatsRealtimeEndpointAuthorizesAndEscapesOutput(): void
     {
         $route = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/payload/actions/stats_rtajax.php');

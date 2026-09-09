@@ -62,3 +62,7 @@ Uma nova issue deverá ser criada somente se a auditoria encontrar uma vulnerabi
 - [Pull requests](https://github.com/leohmoraes/Prescia/pulls)
 - [Relatório do ciclo](./RELATORIO_CICLO_2026-09-08.md)
 - [Pendências e loop](./PENDENCIAS_LOOP.md)
+
+## Atualização do loop — 2026-09-08 22:35
+
+O relatório foi publicado no `master` pelo commit `60e26d2`. O primeiro lote posterior ao levantamento foi iniciado na branch `security/parameterize-bi-stats`, cobrindo as consultas de estatísticas de navegador em `bi_stats/module.php`. O lote converteu leitura, inserção e atualizações de contadores para `fetchPrepared()`/`queryPrepared()` e adicionou regressão específica. O restante de `bi_stats` permanece pendente e será dividido em lotes subsequentes.
