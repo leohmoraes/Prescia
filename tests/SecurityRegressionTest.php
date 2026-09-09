@@ -547,6 +547,17 @@ PHP, $route);
         self::assertStringNotContainsString('->dbo->simpleQuery($sql)', $fileManager);
     }
 
+    public function testBiDevUsesPreparedDatabaseOperations(): void
+    {
+        $dev = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_dev/module.php');
+
+        self::assertStringContainsString('fetchPrepared("SELECT ".$rmodule->keys[0]', $dev);
+        self::assertStringContainsString('queryPrepared($sql, "", array(), $r, $n)', $dev);
+        self::assertStringNotContainsString('->dbo->query($sql,$r,$n)', $dev);
+        self::assertStringNotContainsString('->dbo->simpleQuery($sql)', $dev);
+        self::assertStringNotContainsString('->dbo->fetch("SELECT ', $dev);
+    }
+
     public function testBiSeoUsesPreparedQueries(): void
     {
         $seo = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_seo/module.php');
