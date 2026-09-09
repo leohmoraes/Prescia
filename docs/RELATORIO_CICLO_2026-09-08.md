@@ -114,3 +114,9 @@ Foi ampliada a regressão `testAuthControlGuestGroupUsesPreparedQuery()` em `tes
 ### Correção após CI — regressão authControl
 
 O primeiro CI da PR #121 falhou porque a nova asserção usava uma string PHP com interpolação de `$sql`, `$this`, `$r` e `$n`; isso causou quatro diagnósticos PHPStan e a falha da suíte. A expectativa foi corrigida para uma string literal com escapes, sem alteração no código de produção. O CI será repetido no novo commit.
+
+## Lote SQL bi_auth — ownership remoto parametrizado — em execução
+
+Após os checks pós-merge da PR #121, o lote seguinte atualizou o consumidor de ownership remoto em `prescia/plugins/bi_auth/authControl.php`. O fluxo deixou de montar a cláusula com `getRemoteKeys()` e `query()` e passou a usar `getRemotePreparedKeys()`, com tipos e valores separados em `whereTypes`/`whereParams`, enquanto as colunas selecionadas e a tabela continuam derivados dos metadados dos módulos. A consulta de grupo do owner já usava `fetchPrepared()` e foi preservada.
+
+A regressão `testAuthControlGuestGroupUsesPreparedQuery()` foi ampliada para garantir o novo contrato e rejeitar o consumidor legado. A baseline PHPStan permanece sem alteração. A validação local será `git diff --check`; o lote será concluído somente após CI verde e checks verdes do SHA mergeado.

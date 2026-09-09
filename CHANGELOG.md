@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the conservative migration helper in `tools/migrate_php83.php`, with dry-run, timestamped backups and a security blocker report.
 
 ### Changed
+- Replaced the remote ownership SQL assembled through `getRemoteKeys()` with metadata-derived field selection and prepared value parameters via `getRemotePreparedKeys()`.
 - Replaced the guest-group lookup and direct ownership read in `bi_auth` with prepared queries and `getPreparedKeys()`.
 - Replaced interpolated forum, language and callback filters in the `bi_bb` index payload with prepared parameters while preserving forum trees and latest-thread pagination.
 - Added prepared-parameter transport to parental `getContents()` trees and migrated the selected-value markers in administrative edit and options payloads away from SQL interpolation.

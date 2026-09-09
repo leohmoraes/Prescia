@@ -187,11 +187,14 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 						$remoteModule = $this->parent->loaded($module->fields[$ownerLink][CONS_XML_MODULE]); // remote module
 						$remoteOwners = $this->getOwners($remoteModule,false,false); // remote link to USER owners
 						if (count($remoteOwners)>0) { // yes, we can have a level 2 check
-							$where = $module->getRemoteKeys($remoteModule,$myData); // build WHERE to locate remote module item (we need to fetch the links to users)
-							$sql = "SELECT ".implode(",".$remoteModule->name.".",$remoteOwners)." FROM ".$remoteModule->dbname." as ".$remoteModule->name." WHERE ".implode(" AND ",$where);
-							$r = false;
-							$n = 0;
-							if ($this->parent->dbo->query($sql,$r,$n) && $n>0) { // get keys (should return 1 field)
+							$where = "";
+							$whereTypes = "";
+							$whereParams = array();
+							if ($module->getRemotePreparedKeys($remoteModule,$where,$whereTypes,$whereParams,$myData)) {
+								$sql = "SELECT ".implode(",".$remoteModule->name.".",$remoteOwners)." FROM ".$remoteModule->dbname." as ".$remoteModule->name." WHERE ".$where;
+								$r = false;
+								$n = 0;
+								if ($this->parent->dbo->queryPrepared($sql,$whereTypes,$whereParams,$r,$n) && $n>0) { // get keys (should return 1 field)
 								$users = $this->parent->dbo->fetch_row($r);
 								foreach ($users as $u) {
 									if ($u == $_SESSION[CONS_SESSION_ACCESS_USER]['id']) { // is it me?
@@ -205,6 +208,7 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 										}
 									}
 								}
+							}
 							}
 						} else { // owner is NOT linkable to a user, so perhaps it's reverse (links to a module the user links to)
 						$remoteModule = $this->parent->loaded($module->fields[$ownerLink][CONS_XML_MODULE]); // remote module

@@ -145,6 +145,9 @@ SQL, $payload);
         self::assertStringContainsString('$module->getPreparedKeys($wS, $wTypes, $wParams, $kA, $keys)', $auth);
         self::assertStringContainsString('$this->parent->dbo->queryPrepared($sql,$wTypes,$wParams,$r,$n,$this->parent->debugmode)', $auth);
         self::assertStringNotContainsString('$module->getKeys($wS, $kA, $keys,"",true)', $auth);
+        self::assertStringContainsString('$module->getRemotePreparedKeys($remoteModule,$where,$whereTypes,$whereParams,$myData)', $auth);
+        self::assertStringContainsString('$this->parent->dbo->queryPrepared($sql,$whereTypes,$whereParams,$r,$n)', $auth);
+        self::assertStringNotContainsString('$module->getRemoteKeys($remoteModule,$myData)', $auth);
     }
 
     public function testBiBbArchiveFiltersUsePreparedValuesAndMetadataFields(): void
