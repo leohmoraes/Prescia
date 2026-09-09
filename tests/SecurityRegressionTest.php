@@ -550,6 +550,8 @@ PHP, $route);
         self::assertStringContainsString('fetchPrepared("SELECT ".$mod->title." FROM ".$mod->dbname." WHERE id=?"', $analytics);
         self::assertStringContainsString('WHERE referer=? GROUP BY data', $analytics);
         self::assertStringNotContainsString('WHERE id=".$pages[$c][2]', $analytics);
+        self::assertStringNotContainsString('->dbo->query(', $analytics);
+        self::assertStringNotContainsString('->dbo->fetch(', $analytics);
     }
 
     public function testBiStatsRealtimeEndpointAuthorizesAndEscapesOutput(): void

@@ -364,7 +364,7 @@
 	$output = "";
 	$r = false;
 	$n = 0;
-	$core->dbo->query($sql,$r,$n);
+	$core->dbo->queryPrepared($sql, "", array(), $r, $n);
 	for ($c=0;$c<$n;$c++) {
 		$data = $core->dbo->fetch_assoc($r);
 		$data['checked'] = $data['page'] == "index"?"selected":"";
@@ -404,7 +404,7 @@
 
 	$r = false;
 	$n = 0;
-	$core->dbo->query($sql,$r,$n);
+	$core->dbo->queryPrepared($sql, "", array(), $r, $n);
 	$total  =0;
 	$mobtotal = 0;
 	for ($c=0;$c<$n;$c++) {
@@ -478,7 +478,7 @@
 	$sql = "SELECT sum(hits) as hits, browser FROM ".$statsb->dbname." WHERE data>=NOW() - INTERVAL 31 DAY GROUP BY browser ORDER BY hits DESC";
 	$r = false;
 	$n = 0;
-	$core->dbo->query($sql,$r,$n);
+	$core->dbo->queryPrepared($sql, "", array(), $r, $n);
 	$obj = $core->template->get("_browserEX");
 	$output = "";
 	for ($c=0;$c<$n;$c++) {
@@ -509,7 +509,7 @@
 	$sql = "SELECT sum(hits) as hits, resolution FROM ".$statsb->dbname." WHERE data>=NOW() - INTERVAL 31 DAY GROUP BY resolution ORDER BY hits DESC";
 	$r = false;
 	$n = 0;
-	$core->dbo->query($sql,$r,$n);
+	$core->dbo->queryPrepared($sql, "", array(), $r, $n);
 	$res=array();
 	$total  =0;
 	$simpleList = array(array('prop' => 'Standard 4:3','hits' => 0,'code' => DIM_ST),
@@ -565,7 +565,7 @@
 	$core->runContent('STATSRT',$core->template,array("data > NOW() - INTERVAL 30 MINUTE","data_ini DESC",""),"_rvisitor",false,false,'counthitsrt');
 	
 	#################################### BOT HITS 24h ########################################
-	$core->template->assign("bothits",CONS_ECONOMICMODE?'economic mode on':$core->dbo->fetch("SELECT hits FROM stats_bots WHERE data='".date("Y-m-d")."'"));
+	$core->template->assign("bothits",CONS_ECONOMICMODE?'economic mode on':$core->dbo->fetchPrepared("SELECT hits FROM stats_bots WHERE data=?", 's', array(date("Y-m-d"))));
 	
 	#################################### HONEYPOT ############################################
 	$core->template->assign("honeypot",isset($_SESSION[CONS_SESSION_HONEYPOTLIST])?count($_SESSION[CONS_SESSION_HONEYPOTLIST]):0);
@@ -574,7 +574,7 @@
 	$sql = "SELECT sum(uhits) as hits, lang FROM stats_hitsh WHERE data>NOW() - INTERVAL 1 MONTH GROUP BY lang ORDER BY lang ASC";
 	$r = false;
 	$n = 0;
-	$core->dbo->query($sql,$r,$n);
+	$core->dbo->queryPrepared($sql, "", array(), $r, $n);
 	
 	$t = 0;
 	$langs = array();
