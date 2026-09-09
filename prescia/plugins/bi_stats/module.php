@@ -456,19 +456,19 @@ class mod_bi_stats extends CscriptedModule  {
 					// first hit (1 1 0)
 						$r = false;
 						$n = 0;
-						$ok = $core->dbo->queryPrepared("INSERT INTO ".$statsTable." SET data=?, hour=?, page=?, hid=?, hits=1, uhits=1, bhits=0, ahits=?, rhits=?, lang=?", 'sssssii', array(date("Y-m-d"), date("H"), $pageToBelogged, (int)$id, (int)$isAdm, (int)$isReturning, $_SESSION[CONS_SESSION_LANG]), $r, $n);
+						$ok = $core->dbo->queryPrepared("INSERT INTO ".$statsTable." SET data=?, hour=?, page=?, hid=?, hits=1, uhits=1, bhits=0, ahits=?, rhits=?, lang=?", 'ssssiis', array(date("Y-m-d"), date("H"), $pageToBelogged, (string)$id, (int)$isAdm, (int)$isReturning, $_SESSION[CONS_SESSION_LANG]), $r, $n);
 					if (!$isReturning) @setcookie("akr_returning",'1',Time() + 86400); // 1 day
 						@setcookie("session_visited",'1',Time()+3600); // 60 min
 				} else if (!$logByIP && $_COOKIE['session_visited'] == 1) { // when logging by IP, we can't gather acceptance/browsing (b) hits
 					// second hit (1 0 1)
 						$r = false;
 						$n = 0;
-						$ok = $core->dbo->queryPrepared("INSERT INTO ".$statsTable." SET data=?, hour=?, page=?, hid=?, hits=1, uhits=0, bhits=1, ahits=?, rhits=0, lang=?", 'sssssi', array(date("Y-m-d"), date("H"), $pageToBelogged, (string)$id, (int)$isAdm, $_SESSION[CONS_SESSION_LANG]), $r, $n);
+						$ok = $core->dbo->queryPrepared("INSERT INTO ".$statsTable." SET data=?, hour=?, page=?, hid=?, hits=1, uhits=0, bhits=1, ahits=?, rhits=0, lang=?", 'ssssis', array(date("Y-m-d"), date("H"), $pageToBelogged, (string)$id, (int)$isAdm, $_SESSION[CONS_SESSION_LANG]), $r, $n);
 					@setcookie("session_visited",'2',Time()+3600); // 60 min
 				} else { // third+ hit (1 0 0)
 						$r = false;
 						$n = 0;
-						$ok = $core->dbo->queryPrepared("INSERT INTO ".$statsTable." SET data=?, hour=?, page=?, hid=?, hits=1, uhits=0, bhits=0, ahits=?, rhits=0, lang=?", 'sssssi', array(date("Y-m-d"), date("H"), $pageToBelogged, (string)$id, (int)$isAdm, $_SESSION[CONS_SESSION_LANG]), $r, $n);
+						$ok = $core->dbo->queryPrepared("INSERT INTO ".$statsTable." SET data=?, hour=?, page=?, hid=?, hits=1, uhits=0, bhits=0, ahits=?, rhits=0, lang=?", 'ssssis', array(date("Y-m-d"), date("H"), $pageToBelogged, (string)$id, (int)$isAdm, $_SESSION[CONS_SESSION_LANG]), $r, $n);
 					@setcookie("session_visited",'2',Time()+3600); // 60 min
 				}
 				if (!$ok) {
