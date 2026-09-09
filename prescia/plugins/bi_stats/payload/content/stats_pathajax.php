@@ -29,7 +29,7 @@
 	$statsh = $core->loaded('statsdaily');
 	$r = false;
 	$n = 0;
-	$core->dbo->query("SELECT data,SUM(hits) as shits FROM ".$statsh->dbname." WHERE data >= '$weekAgo' AND page=\"$page\" GROUP BY data ORDER BY data ASC",$r,$n);
+	$core->dbo->queryPrepared("SELECT data,SUM(hits) as shits FROM ".$statsh->dbname." WHERE data >= ? AND page=? GROUP BY data ORDER BY data ASC", 'ss', array($weekAgo, $page), $r, $n);
 	$biggest = 1;
 	for ($c=0;$c<$n;$c++) {
 		$data=$core->dbo->fetch_row($r);
@@ -57,14 +57,14 @@
 	unset($dias);
 
 	## how many hits in this interval the page had? ##
-	$phits = $core->dbo->fetch("SELECT sum(hits) FROM ".$statsh->dbname." WHERE data >= '$dataini' AND data < '$datafim' AND page=\"$page\"");
+	$phits = $core->dbo->fetchPrepared("SELECT sum(hits) FROM ".$statsh->dbname." WHERE data >= ? AND data < ? AND page=?", 'sss', array($dataini, $datafim, $page));
 
 	## ENTRY PAGES ##
 	$statspath = $core->loaded('statspath');
-	$sql = "SELECT sum(hits) as shits, page FROM ".$statspath->dbname." WHERE pagefoward='$page' AND data >= '$dataini' AND data < '$datafim' GROUP BY page ORDER BY shits DESC";
+	$sql = "SELECT sum(hits) as shits, page FROM ".$statspath->dbname." WHERE pagefoward=? AND data >= ? AND data < ? GROUP BY page ORDER BY shits DESC";
 	$r = false;
 	$n = 0;
-	$core->dbo->query($sql,$r,$n);
+	$core->dbo->queryPrepared($sql, 'sss', array($page, $dataini, $datafim), $r, $n);
 	$graphObj = $core->template->get("_pg");
 	$output = "";
 	$pages = array();
@@ -101,10 +101,10 @@
 	$core->template->assign("_pg",$output);
 
 	## EXIT PAGES ##
-	$sql = "SELECT sum(hits) as shits, pagefoward FROM ".$statspath->dbname." WHERE page='$page' AND data >= '$dataini' AND data < '$datafim' GROUP BY pagefoward ORDER BY shits DESC";
+	$sql = "SELECT sum(hits) as shits, pagefoward FROM ".$statspath->dbname." WHERE page=? AND data >= ? AND data < ? GROUP BY pagefoward ORDER BY shits DESC";
 	$r = false;
 	$n = 0;
-	$core->dbo->query($sql,$r,$n);
+	$core->dbo->queryPrepared($sql, 'sss', array($page, $dataini, $datafim), $r, $n);
 	$graphObj = $core->template->get("_pg2");
 	$output = "";
 	$pages = array();
