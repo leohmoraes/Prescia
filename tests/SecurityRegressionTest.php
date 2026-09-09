@@ -150,6 +150,16 @@ SQL, $payload);
         self::assertStringNotContainsString('$module->getRemoteKeys($remoteModule,$myData)', $auth);
     }
 
+    public function testModuleNotificationKeyExtractionUsesPreparedKeyContract(): void
+    {
+        $module = (string) file_get_contents(__DIR__ . '/../prescia/components/module.php');
+        $notification = strstr($module, 'if ($action == CONS_ACTION_DELETE)');
+
+        self::assertNotFalse($notification);
+        self::assertStringContainsString('$module->getPreparedKeys($wS,$wTypes,$wParams,$kA,$data);', $notification);
+        self::assertStringNotContainsString('$module->getKeys($wS,$kA,$data);', $notification);
+    }
+
     public function testBiBbArchiveFiltersUsePreparedValuesAndMetadataFields(): void
     {
         $module = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_bb/module.php');

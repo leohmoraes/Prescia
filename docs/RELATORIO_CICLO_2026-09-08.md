@@ -120,3 +120,9 @@ O primeiro CI da PR #121 falhou porque a nova asserção usava uma string PHP co
 Após os checks pós-merge da PR #121, o lote seguinte atualizou o consumidor de ownership remoto em `prescia/plugins/bi_auth/authControl.php`. O fluxo deixou de montar a cláusula com `getRemoteKeys()` e `query()` e passou a usar `getRemotePreparedKeys()`, com tipos e valores separados em `whereTypes`/`whereParams`, enquanto as colunas selecionadas e a tabela continuam derivados dos metadados dos módulos. A consulta de grupo do owner já usava `fetchPrepared()` e foi preservada.
 
 A regressão `testAuthControlGuestGroupUsesPreparedQuery()` foi ampliada para garantir o novo contrato e rejeitar o consumidor legado. A baseline PHPStan permanece sem alteração. A validação local será `git diff --check`; o lote será concluído somente após CI verde e checks verdes do SHA mergeado.
+
+## Lote CRUD genérico — chaves de notificações — em execução
+
+Após a validação pós-merge da PR #122, o lote seguinte atualizou o caminho de notificações de exclusão em `CModule`. O consumidor deixou de chamar diretamente `getKeys()` e passou a usar `getPreparedKeys()`, preservando o `keyArray` usado pela tradução de relacionamentos e pelos eventos posteriores. A alteração reutiliza o contrato preparado já existente no núcleo e não altera a API legada, que permanece disponível para compatibilidade.
+
+Foi adicionada a regressão `testModuleNotificationKeyExtractionUsesPreparedKeyContract()` em `tests/SecurityRegressionTest.php`. A baseline PHPStan permanece sem alteração; o backup genérico continua separado por ser uma operação interna de exportação, sem parâmetros externos.

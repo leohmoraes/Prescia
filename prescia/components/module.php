@@ -1943,8 +1943,10 @@ class CModule {
 	 		if ($action == CONS_ACTION_DELETE) {
 
 	 			$wS = ""; # whereStruct
+	 			$wTypes = "";
+	 			$wParams = array();
 	 			$kA = array(); # keyArray
-	 			$module->getKeys($wS,$kA,$data);
+	 			$module->getPreparedKeys($wS,$wTypes,$wParams,$kA,$data);
 	 			$data = $kA; // we want only the keys of the module which called the notification
 
 	 			if (isset($data[$module->keys[0]])) {
