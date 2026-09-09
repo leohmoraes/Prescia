@@ -239,7 +239,7 @@ class CModule {
 				$r = false;
 				$n = 0;
 				$sqlText = $this->parent->dbo->sqlarray_echo($sql);
-				$ok = $preparedTypes !== '' ? $this->parent->dbo->queryPrepared($sqlText,$preparedTypes,$preparedParams,$r,$n) : $this->parent->dbo->query($sql,$r,$n);
+				$ok = $this->parent->dbo->queryPrepared($sqlText,$preparedTypes,$preparedParams,$r,$n);
 				if (!$ok) {
 					$this->parent->errorControl->raise(146,$this->parent->dbo->log[count($this->parent->dbo->log)-1],$this->name,'on getContents');
 				}
@@ -259,7 +259,7 @@ class CModule {
 			$sql = $this->get_base_sql('',$order);
 			$r = false;
 			$n = 0;
-			$this->parent->dbo->query($sql,$r,$n);
+				$this->parent->dbo->queryPrepared($this->parent->dbo->sqlarray_echo($sql),"",array(),$r,$n);
 			for ($c=0;$c<$n;$c++) {
 				$tmpData = $this->parent->dbo->fetch_assoc($r);
 				$params = array('module'=>$this);
