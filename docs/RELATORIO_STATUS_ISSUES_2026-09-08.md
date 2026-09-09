@@ -94,3 +94,7 @@ Após o merge da PR #131, o loop iniciou `security/parameterize-bi-seo`. A resol
 ### Próximo lote — analytics de caminhos de `bi_stats`
 
 Após o merge da PR #132, a varredura identificou `stats_pathajax.php` como o próximo fluxo com filtros externos concatenados. O lote `security/parameterize-bi-stats-analytics` converte as consultas de histórico diário, total do intervalo e páginas de entrada/saída para parâmetros preparados, com regressão específica.
+
+### Continuação — analytics agregado de `bi_stats`
+
+O lote seguinte, `security/parameterize-bi-stats-analytics-summary`, converte as consultas de séries históricas, referers, janelas de 24 horas e lookup de títulos de páginas para execução preparada. O fluxo contém consultas adicionais de ranking que permanecerão em lotes subsequentes, mantendo o loop incremental e verificável.

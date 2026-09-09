@@ -25,7 +25,7 @@
 	$sql = "SELECT data,sum(hits),sum(uhits),sum(bhits),sum(rhits) FROM ".$statsfullObj->dbname." GROUP BY data ORDER BY data DESC";
 	$r = false;
 	$n = 0;
-	$core->dbo->query($sql,$r,$n);
+	$core->dbo->queryPrepared($sql, "", array(), $r, $n);
 	for ($c=0;$c<$n;$c++) {
 		list($data,$hits,$uhits,$bhits,$rhits) = $core->dbo->fetch_row($r);
 		if ($uhits<$bhits) $uhits = $bhits; // weird bugs not getting uhits (uhit might have started on the day before, bhit the day next)
@@ -33,10 +33,10 @@
 	}
 
 	// khits = bookmarks
-	$sql = "SELECT data,sum(hits) FROM ".$statsrObj->dbname." WHERE referer=\"\" GROUP BY data ORDER BY data DESC";
+	$sql = "SELECT data,sum(hits) FROM ".$statsrObj->dbname." WHERE referer=? GROUP BY data ORDER BY data DESC";
 	$r = false;
 	$n = 0;
-	$core->dbo->query($sql,$r,$n);
+	$core->dbo->queryPrepared($sql, 's', array(''), $r, $n);
 	for ($c=0;$c<$n;$c++) {
 		list($data,$khits) = $core->dbo->fetch_row($r);
 		if (isset($outputArr[$data]))
@@ -99,10 +99,10 @@
 			$core->log[] = "Error trying to normalize ".$normalizeHour."h hits";
 	}
 
-	$sql = "SELECT data,hour,sum(hits),sum(uhits) FROM ".$statsObj->dbname." WHERE data>='$yesterday' GROUP BY data,hour ORDER BY data DESC";
 	$r = false;
 	$n = 0;
-	$core->dbo->query($sql,$r,$n);
+	$sql = "SELECT data,hour,sum(hits),sum(uhits) FROM ".$statsObj->dbname." WHERE data>=? GROUP BY data,hour ORDER BY data DESC";
+	$core->dbo->queryPrepared($sql, 's', array($yesterday), $r, $n);
 	for ($c=0;$c<$n;$c++) {
 		list($data,$hour,$hits,$uhits) = $core->dbo->fetch_row($r);
 		if ($data != date("Y-m-d") && $hour <= date("H")) continue; // more than 24h
@@ -136,7 +136,7 @@
 	$horarios = array();
 	$r = false;
 	$n = 0;
-	$core->dbo->query("SELECT sum(hits) as hits,sum(uhits) as uhits, data, hour FROM ".$statsObj->dbname." WHERE data<'$df' AND data>='$di' GROUP BY data, hour",$r,$n);
+	$core->dbo->queryPrepared("SELECT sum(hits) as hits,sum(uhits) as uhits, data, hour FROM ".$statsObj->dbname." WHERE data<? AND data>=? GROUP BY data, hour", 'ss', array($df, $di), $r, $n);
 	for ($c=0;$c<$n;$c++) {
 		$data = $core->dbo->fetch_assoc($r);
 		if (!isset($datebuffer[$data['data']])) {
@@ -233,7 +233,7 @@
 	$sql = "SELECT sum( hits ) AS h, page,hid FROM ".$statsh->dbname." WHERE DATA > NOW() - INTERVAL 32 DAY AND page <> 'setres' AND page <> '' GROUP BY page,hid ORDER BY h DESC LIMIT 20";
 	$r = false;
 	$n = 0;
-	$core->dbo->query($sql,$r,$n);
+	$core->dbo->queryPrepared($sql, "", array(), $r, $n);
 	$pagesTotal = $n;
 	$where = array();
 	for ($c=0;$c<$n;$c++) {
@@ -253,7 +253,7 @@
 	$sql = "SELECT hits, page, data, hid FROM ".$statsh->dbname." WHERE data > NOW( ) - INTERVAL 32 DAY AND (".implode(" OR ",$where).") ORDER BY DATA ASC";
 	$r = false;
 	$n = 0;
-	$core->dbo->query($sql,$r,$n);
+	$core->dbo->queryPrepared($sql, "", array(), $r, $n);
 	for ($c=0;$c<$n;$c++) {
 		list($hits,$page,$data,$hid) = $core->dbo->fetch_row($r);
 		$datediff = date_diff_ex($yesterday,$data);
@@ -264,7 +264,7 @@
 	for ($c=0;$c<$pagesTotal;$c++) {
 		if (isset($moduletranslator[$pages[$c][1]]) && $pages[$c][2] != 0) {
 			$mod = $core->loaded($moduletranslator[$pages[$c][1]]);
-			$name = $core->dbo->fetch("SELECT ".$mod->title." FROM ".$mod->dbname." WHERE id=".$pages[$c][2]);
+			$name = $core->dbo->fetchPrepared("SELECT ".$mod->title." FROM ".$mod->dbname." WHERE id=?", 'i', array((int)$pages[$c][2]));
 			if ($name == '') $name = $pages[$c][1].($pages[$c][2]==0?'':' ('.$pages[$c][2].')');
 			$pages[$c][3] = trim($name);
 		}
@@ -295,7 +295,7 @@
 	$sql = "SELECT sum(hits) as hits, referer FROM ".$refD->dbname." WHERE data > NOW() - INTERVAL 2 DAY GROUP BY referer ORDER BY hits DESC LIMIT 100";
 	$r = false;
 	$n = 0;
-	$core->dbo->query($sql,$r,$n);
+	$core->dbo->queryPrepared($sql, "", array(), $r, $n);
 	$refs = array();
 	$total = 0;
 	for($c=0;$c<$n;$c++) {
@@ -317,7 +317,7 @@
 	$sql = "SELECT sum(hits) as h, referer FROM ".$refH->dbname." WHERE data > NOW() - INTERVAL 31 DAY  GROUP BY referer HAVING h>2 ORDER BY h DESC LIMIT 100";
 	$r = false;
 	$n = 0;
-	$core->dbo->query($sql,$r,$n);
+	$core->dbo->queryPrepared($sql, "", array(), $r, $n);
 	$refs = array();
 	$total = 0;
 	for($c=0;$c<$n;$c++) {
@@ -339,7 +339,7 @@
 	$sql = "SELECT sum(hits) as h, referer, entrypage FROM ".$refH->dbname." WHERE data > NOW() - INTERVAL 31 DAY GROUP BY referer,entrypage ORDER BY h DESC LIMIT 100";
 	$r = false;
 	$n = 0;
-	$core->dbo->query($sql,$r,$n);
+	$core->dbo->queryPrepared($sql, "", array(), $r, $n);
 	$refs = array();
 	$total = 0;
 	for($c=0;$c<$n;$c++) {

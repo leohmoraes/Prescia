@@ -542,6 +542,16 @@ PHP, $route);
         self::assertStringNotContainsString('page=\\"$page\\"', $analytics);
     }
 
+    public function testBiStatsAnalyticsSummaryUsesPreparedQueries(): void
+    {
+        $analytics = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/payload/content/stats_analytics.php');
+
+        self::assertStringContainsString('queryPrepared($sql, "", array(), $r, $n)', $analytics);
+        self::assertStringContainsString('fetchPrepared("SELECT ".$mod->title." FROM ".$mod->dbname." WHERE id=?"', $analytics);
+        self::assertStringContainsString('WHERE referer=? GROUP BY data', $analytics);
+        self::assertStringNotContainsString('WHERE id=".$pages[$c][2]', $analytics);
+    }
+
     public function testBiStatsRealtimeEndpointAuthorizesAndEscapesOutput(): void
     {
         $route = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/payload/actions/stats_rtajax.php');
