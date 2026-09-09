@@ -542,7 +542,7 @@ PHP, $route);
         self::assertStringContainsString("queryPrepared($sql, 's', array($arquivo), $r, $n)", $fileManager);
         self::assertStringContainsString("queryPrepared($sql, 's', array($file), $r, $n)", $fileManager);
         self::assertStringContainsString("queryPrepared($sql, 's', array($dir.'%'), $r, $n)", $fileManager);
-        self::assertStringContainsString("fetchPrepared($sql, 's', array($data['filenm']))", $settings);
+        self::assertStringContainsString('fetchPrepared($sql, \'s\', array($data[\'filenm\']))', $settings);
         self::assertStringNotContainsString('->dbo->fetch($sql)', $fileManager);
         self::assertStringNotContainsString('->dbo->simpleQuery($sql)', $fileManager);
     }
