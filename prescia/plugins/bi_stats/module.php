@@ -312,7 +312,8 @@ class mod_bi_stats extends CscriptedModule  {
 			$alreadyVisited = false;
 			$r = false;
 			$n = 0;
-			if ($core->dbo->query("SELECT page,fullpath FROM ".$core->modules['statsrt']->dbname." WHERE ip='".CONS_IP."'",$r,$n) && $n != 0) {
+				$statsRealtime = $core->modules['statsrt']->dbname;
+				if ($core->dbo->queryPrepared("SELECT page,fullpath FROM ".$statsRealtime." WHERE ip=?", 's', array(CONS_IP), $r, $n) && $n != 0) {
 				list($page,$fullpath) = $core->dbo->fetch_row($r);
 				$alreadyVisited = true; // by IP
 			} else {
@@ -353,7 +354,8 @@ class mod_bi_stats extends CscriptedModule  {
 							$domain = $sqlEscape($domain);
 							$r = false;
 						$n = 0;
-						$core->dbo->query("SELECT hits, pages FROM ".$core->modules['statsref']->dbname." WHERE data='".date("Y-m-d")."' AND referer=\"$domain\" AND entrypage=\"".$pageToBelogged."\"",$r,$n);
+							$statsReferer = $core->modules['statsref']->dbname;
+							$core->dbo->queryPrepared("SELECT hits, pages FROM ".$statsReferer." WHERE data=? AND referer=? AND entrypage=?", 'sss', array(date("Y-m-d"), $domain, $pageToBelogged), $r, $n);
 						if ($n>0)
 							list($hits,$pages) = $core->dbo->fetch_row($r);
 						else {
@@ -394,7 +396,9 @@ class mod_bi_stats extends CscriptedModule  {
 				$referer = $sqlEscape($referer);
 				$whatToSave = CONS_BROWSER_ISMOB?"MO":CONS_BROWSER;
 				$browser = $sqlEscape($browser);
-				$ok = $core->dbo->simpleQuery("INSERT INTO ".$core->modules['statsrt']->dbname." SET ip='".CONS_IP."', page=\"".$pageToBelogged."\", pagelast=\"".$pageToBelogged."\", agent=\"".$browser."\", agentcode=\"".$whatToSave."\", fullpath=\"".$pageToBelogged.",\", data=NOW(), data_ini=NOW(), referer=\"$referer\"",true);
+					$r = false;
+					$n = 0;
+					$ok = $core->dbo->queryPrepared("INSERT INTO ".$statsRealtime." SET ip=?, page=?, pagelast=?, agent=?, agentcode=?, fullpath=?, data=NOW(), data_ini=NOW(), referer=?", 'sssssss', array(CONS_IP, $pageToBelogged, $pageToBelogged, $browser, $whatToSave, $pageToBelogged.",", $referer), $r, $n, true);
 				if (!$ok) {
 					$lastError = $this->parent->dbo->log[count($this->parent->dbo->log)-1];
 					if (strpos(strtolower($lastError),"duplicate") === false) { // concurrent INSERT happened first! use update
@@ -405,21 +409,28 @@ class mod_bi_stats extends CscriptedModule  {
 			if (!$ok) { # second+ visit or concurrent include
 				if ($page != $pageToBelogged)
 					$fullpath .= $pageToBelogged.",";
-				$core->dbo->simpleQuery("UPDATE ".$core->modules['statsrt']->dbname." SET page=\"".$pageToBelogged."\", pagelast=\"$page\", data=NOW(), fullpath=\"$fullpath\" WHERE ip='".CONS_IP."'");
+					$r = false;
+					$n = 0;
+					$core->dbo->queryPrepared("UPDATE ".$statsRealtime." SET page=?, pagelast=?, data=NOW(), fullpath=? WHERE ip=?", 'ssss', array($pageToBelogged, $page, $fullpath, CONS_IP), $r, $n);
 
 				# -- STATS PATH --
-				$count = $core->dbo->fetch("SELECT hits FROM ".$core->modules['statspath']->dbname." WHERE data='".date("Y-m-d")."' AND page=\"$page\" AND pagefoward=\"".$pageToBelogged."\"");
+					$statsPath = $core->modules['statspath']->dbname;
+					$count = $core->dbo->fetchPrepared("SELECT hits FROM ".$statsPath." WHERE data=? AND page=? AND pagefoward=?", 'sss', array(date("Y-m-d"), $page, $pageToBelogged));
 				if ($count === false) {
-					$ok = $core->dbo->simpleQuery("INSERT INTO ".$core->modules['statspath']->dbname." SET data='".date("Y-m-d")."', page=\"$page\", pagefoward=\"".$pageToBelogged."\", hits=1");
+						$r = false;
+						$n = 0;
+						$ok = $core->dbo->queryPrepared("INSERT INTO ".$statsPath." SET data=?, page=?, pagefoward=?, hits=1", 'sss', array(date("Y-m-d"), $page, $pageToBelogged), $r, $n);
 					if (!$ok) {
 						$lastError = $this->parent->dbo->log[count($this->parent->dbo->log)-1];
 						if (strpos(strtolower($lastError),"duplicate") !== false) { // concurrent INSERT happened first! use update
-							array_pop($this->parent->dbo->log); // ignore this error please
-							$core->dbo->simpleQuery("UPDATE ".$core->modules['statspath']->dbname." SET hits=hits+1 WHERE data='".date("Y-m-d")."' AND page=\"$page\" AND pagefoward=\"".$pageToBelogged."\"");
+								array_pop($this->parent->dbo->log); // ignore this error please
+								$core->dbo->queryPrepared("UPDATE ".$statsPath." SET hits=hits+1 WHERE data=? AND page=? AND pagefoward=?", 'sss', array(date("Y-m-d"), $page, $pageToBelogged), $r, $n);
 						}
 					}
-				} else {
-					$core->dbo->simpleQuery("UPDATE ".$core->modules['statspath']->dbname." SET hits=hits+1 WHERE data='".date("Y-m-d")."' AND page=\"$page\" AND pagefoward=\"".$pageToBelogged."\"");
+					} else {
+						$r = false;
+						$n = 0;
+						$core->dbo->queryPrepared("UPDATE ".$statsPath." SET hits=hits+1 WHERE data=? AND page=? AND pagefoward=?", 'sss', array(date("Y-m-d"), $page, $pageToBelogged), $r, $n);
 				}
 				# -- end STATS PATH --
 			}
