@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the conservative migration helper in `tools/migrate_php83.php`, with dry-run, timestamped backups and a security blocker report.
 
 ### Changed
+- Replaced concatenated administrator and bot counters in `bi_stats` with prepared queries.
 - Replaced concatenated browser telemetry reads and counters in `bi_stats` with prepared queries.
 - Unified generic `getContents()` reads on the prepared execution path, including structured queries without bound values.
 - Updated generic backup export to build its full-table read through the structured SQL-array contract and prepared execution path.

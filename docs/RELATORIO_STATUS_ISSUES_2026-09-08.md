@@ -66,3 +66,7 @@ Uma nova issue deverá ser criada somente se a auditoria encontrar uma vulnerabi
 ## Atualização do loop — 2026-09-08 22:35
 
 O relatório foi publicado no `master` pelo commit `60e26d2`. O primeiro lote posterior ao levantamento foi iniciado na branch `security/parameterize-bi-stats`, cobrindo as consultas de estatísticas de navegador em `bi_stats/module.php`. O lote converteu leitura, inserção e atualizações de contadores para `fetchPrepared()`/`queryPrepared()` e adicionou regressão específica. O restante de `bi_stats` permanece pendente e será dividido em lotes subsequentes.
+
+### Subsequente — admin e bots de `bi_stats`
+
+Após o merge da PR #126, o loop abriu o sublote `security/parameterize-bi-stats-hits`. O código agora usa `fetchPrepared()`/`queryPrepared()` para a leitura e os contadores de administradores e bots, com regressão adicional. O restante das consultas de referer, realtime, path e hits gerais permanece no backlog da issue #9.

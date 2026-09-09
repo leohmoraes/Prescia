@@ -468,6 +468,16 @@ PHP, $route);
         self::assertStringNotContainsString('browser=\\"$browser\\"', $stats);
     }
 
+    public function testBiStatsAdminAndBotCountersUsePreparedQueries(): void
+    {
+        $stats = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/module.php');
+
+        self::assertStringContainsString('fetchPrepared("SELECT hits FROM ".$statsTable." WHERE data=? AND hour=? AND page=? AND hid=? AND lang=?"', $stats);
+        self::assertStringContainsString('queryPrepared("INSERT INTO ".$statsTable." SET data=?, hour=?, page=?, hid=?, hits=0', $stats);
+        self::assertStringContainsString('queryPrepared("SELECT hits FROM ".$statsBots." WHERE data=?"', $stats);
+        self::assertStringContainsString('queryPrepared("UPDATE ".$statsBots." SET hits=hits+1 WHERE data=?"', $stats);
+    }
+
     public function testBiStatsRealtimeEndpointAuthorizesAndEscapesOutput(): void
     {
         $route = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/payload/actions/stats_rtajax.php');
