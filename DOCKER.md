@@ -90,8 +90,8 @@ The docker-compose setup includes:
 
 The Docker image includes:
 
-- PHP 8.2 with Apache
-- Short open tags enabled (required by Prescia)
+- PHP 8.3 with Apache
+- Short open tags are not required; application PHP files use `<?php` or `<?=`
 - Timezone set to America/Sao_Paulo
 - MySQLi and PDO extensions
 - Apache mod_rewrite enabled
