@@ -1008,4 +1008,14 @@ PHP, $upload);
         self::assertStringNotContainsString('@unlink($destinationFilePath)', $move);
         self::assertStringContainsString('@rename($sourceFilePath, $destinationFilePath)', $move);
     }
+
+    public function testCKFinderRenameFolderValidatesThumbnailDestinationAndNeverDeletesOnFailure(): void
+    {
+        $rename = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/RenameFolder.php');
+
+        self::assertStringContainsString('$oldThumbsServerPath = $this->_currentFolder->getThumbsServerPath();', $rename);
+        self::assertStringContainsString('isPathInside($_thumbnailsConfig->getDirectory(), $newThumbsServerPath)', $rename);
+        self::assertStringContainsString('is_dir($oldThumbsServerPath) && !@rename($oldThumbsServerPath, $newThumbsServerPath)', $rename);
+        self::assertStringNotContainsString('Utils_FileSystem::unlink($this->_currentFolder->getThumbsServerPath())', $rename);
+    }
 }
