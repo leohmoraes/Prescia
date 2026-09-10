@@ -18,6 +18,30 @@ function presciaLoadUrlIsValidHost(string $host): bool {
     return strtolower(rtrim($host, '.')) !== 'localhost';
 }
 
+/** Emit a redacted, low-cardinality security event without affecting the request result. */
+function presciaLoadUrlLogEvent(string $reason, string $scheme, string $host, int $port, string $method): void {
+    $safeHost = strtolower(trim($host));
+    $safeHost = preg_replace('/[^a-z0-9.:%_-]/i', '', $safeHost);
+    if (!is_string($safeHost)) $safeHost = '';
+    $safeHost = substr($safeHost, 0, 253);
+    $event = array(
+        'schema' => 'prescia.security.v1',
+        'event' => 'ssrf_blocked',
+        'reason' => $reason,
+        'scheme' => $scheme,
+        'host' => $safeHost,
+        'port' => $port > 0 && $port <= 65535 ? $port : null,
+        'method' => $method,
+        'timestamp' => gmdate('c'),
+    );
+    try {
+        $encoded = json_encode($event, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+        error_log($encoded);
+    } catch (Throwable $exception) {
+        // Logging must never change a fail-closed SSRF decision.
+    }
+}
+
 /** @return list<string> */
 function presciaLoadUrlResolvePublicIps(string $host): array {
     if (filter_var($host, FILTER_VALIDATE_IP)) {
@@ -74,22 +98,26 @@ function presciaLoadUrlOpenValidatedConnection(array $ips, string $scheme, int $
  */
 function loadURL($url, $agent = 'PHP', $method = 'get') {
     $url = is_string($url) ? trim($url) : '';
-    if ($url === '' || strpbrk($url, "\r\n") !== false) return false;
+    $fail = static function (string $reason, string $scheme = '', string $host = '', int $port = 0, string $method = 'get'): bool {
+        presciaLoadUrlLogEvent($reason, $scheme, $host, $port, $method);
+        return false;
+    };
+    if ($url === '' || strpbrk($url, "\r\n") !== false) return $fail('invalid_url');
     try {
         $parts = $url !== '' ? parse_url($url) : false;
     } catch (ValueError $exception) {
-        return false;
+        return $fail('invalid_url');
     }
     $scheme = is_array($parts) && isset($parts['scheme']) ? strtolower($parts['scheme']) : '';
     $host = is_array($parts) && isset($parts['host']) ? strtolower($parts['host']) : '';
     $method = strtolower((string) $method);
     if (!is_array($parts) || !in_array($scheme, array('http', 'https'), true) || !presciaLoadUrlIsValidHost($host) ||
-        isset($parts['user']) || isset($parts['pass']) || !in_array($method, array('get', 'post'), true)) return false;
+        isset($parts['user']) || isset($parts['pass']) || !in_array($method, array('get', 'post'), true)) return $fail('invalid_request', $scheme, $host, 0, $method);
 
     $port = isset($parts['port']) ? (int) $parts['port'] : ($scheme === 'https' ? 443 : 80);
-    if ($port < 1 || $port > 65535 || ($scheme === 'https' && $port !== 443) || ($scheme === 'http' && $port !== 80)) return false;
+    if ($port < 1 || $port > 65535 || ($scheme === 'https' && $port !== 443) || ($scheme === 'http' && $port !== 80)) return $fail('invalid_port', $scheme, $host, $port, $method);
     $ips = presciaLoadUrlResolvePublicIps($host);
-    if (!$ips) return false;
+    if (!$ips) return $fail('private_or_unresolved_address', $scheme, $host, $port, $method);
 
     $path = isset($parts['path']) && $parts['path'] !== '' ? $parts['path'] : '/';
     $query = isset($parts['query']) ? $parts['query'] : '';
@@ -98,7 +126,7 @@ function loadURL($url, $agent = 'PHP', $method = 'get') {
         'verify_peer' => true, 'verify_peer_name' => true, 'peer_name' => $host, 'SNI_enabled' => true,
     )));
     $fp = presciaLoadUrlOpenValidatedConnection($ips, $scheme, $port, $context);
-    if (!is_resource($fp)) return false;
+    if (!is_resource($fp)) return $fail('connection_failed', $scheme, $host, $port, $method);
     stream_set_timeout($fp, 10);
 
     $safeAgent = preg_replace('/[\r\n]+/', ' ', (string) $agent);
@@ -109,7 +137,7 @@ function loadURL($url, $agent = 'PHP', $method = 'get') {
     } else {
         $request .= "\r\n";
     }
-    if (@fwrite($fp, $request) === false) { fclose($fp); return false; }
+    if (@fwrite($fp, $request) === false) { fclose($fp); return $fail('write_failed', $scheme, $host, $port, $method); }
 
     $response = '';
     while (!feof($fp) && strlen($response) <= PRESCIA_LOADURL_MAX_BYTES + 65536) {
@@ -118,10 +146,10 @@ function loadURL($url, $agent = 'PHP', $method = 'get') {
         $response .= $chunk;
     }
     fclose($fp);
-    if (strlen($response) > PRESCIA_LOADURL_MAX_BYTES + 65536) return false;
+    if (strlen($response) > PRESCIA_LOADURL_MAX_BYTES + 65536) return $fail('response_too_large', $scheme, $host, $port, $method);
     $parts = explode("\r\n\r\n", $response, 2);
     $body = isset($parts[1]) ? $parts[1] : '';
-    if (strlen($body) > PRESCIA_LOADURL_MAX_BYTES) return false;
+    if (strlen($body) > PRESCIA_LOADURL_MAX_BYTES) return $fail('body_too_large', $scheme, $host, $port, $method);
     return array(explode("\r\n", $parts[0]), $body);
 }
 
