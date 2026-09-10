@@ -141,11 +141,15 @@ class CintlControl {
 			if (!isset($_REQUEST['nocache'])) { # if nocache is specified, ignore caches ... not the case
 			if ($standard) {
 				if ($plugin!='') $plugin .= '/';
-				if (!is_dir(CONS_PATH_CACHE."locale/$plugin")) safe_mkdir(CONS_PATH_CACHE."locale/$plugin");
+					if (!is_dir(CONS_PATH_CACHE."locale/$plugin")) {
+						(new \Prescia\Services\FileService())->ensureDirectory(CONS_PATH_CACHE."locale/$plugin");
+					}
 				$cacheFile = CONS_PATH_CACHE."locale/$plugin".$strippedFile.".cache";
 				$cacheMTFile = CONS_PATH_CACHE."locale/$plugin".$strippedFile.".cachemd";
 			} else {
-				if (!is_dir(CONS_PATH_CACHE.$_SESSION['CODE']."/meta/locale/")) safe_mkdir(CONS_PATH_CACHE.$_SESSION['CODE']."/meta/locale/");
+					if (!is_dir(CONS_PATH_CACHE.$_SESSION['CODE']."/meta/locale/")) {
+						(new \Prescia\Services\FileService())->ensureDirectory(CONS_PATH_CACHE.$_SESSION['CODE']."/meta/locale/");
+					}
 				$cacheFile = CONS_PATH_CACHE.$_SESSION['CODE']."/meta/locale/".$strippedFile.".cache";
 				$cacheMTFile = CONS_PATH_CACHE.$_SESSION['CODE']."/meta/locale/".$strippedFile.".cachemd";
 			}
