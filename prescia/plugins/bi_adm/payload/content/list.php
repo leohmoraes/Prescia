@@ -39,7 +39,7 @@
 	// control's maximum size
 	if ($core->layout == 0 && defined('CONS_USER_RESOLUTION') && isset($_SESSION[CONS_USER_RESOLUTION]) && !isset($_REQUEST['cellwidth'])) {
 		$maxcellwidth = explode("x",$_SESSION[CONS_USER_RESOLUTION]);
-		$maxcellwidth = floor(($maxcellwidth[0] - $listMarginOffset)/$maxColumns);
+		$maxcellwidth = floor(((int) $maxcellwidth[0] - $listMarginOffset)/$maxColumns);
 	} else {
 		$maxcellwidth = isset($_REQUEST['cellwidth'])?$_REQUEST['cellwidth']:floor((1024-$listMarginOffset)/$maxColumns); // 1024 considered
 	}
