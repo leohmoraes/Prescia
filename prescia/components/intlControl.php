@@ -72,8 +72,8 @@ class CintlControl {
 			if ($regs[7] == '') $regs[7] = '00';
 			else if (strlen($regs[7])==1) $regs[7] = '0'.$regs[7];
 			if ($regs[8+$pregPositions[0]] == '') $regs[8+$pregPositions[0]] = '0000';
-			else if ($regs[8+$pregPositions[0]]<ADODB_TWODIGITYEAR_OFFSET) {
-				$regs[8+$pregPositions[0]] += 2000;
+				else if ((int) $regs[8+$pregPositions[0]] < ADODB_TWODIGITYEAR_OFFSET) {
+					$regs[8+$pregPositions[0]] = (string) ((int) $regs[8+$pregPositions[0]] + 2000);
 			} else { # $pregPositions 0 is the year, 4 digits
 				while (strlen($regs[8+$pregPositions[0]])<4)
 					$regs[8+$pregPositions[0]] = '0'.$regs[8+$pregPositions[0]];
