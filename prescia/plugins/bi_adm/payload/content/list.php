@@ -1188,12 +1188,8 @@
 			$_REQUEST['multiSelectedIds'] = array();
 			$r = false;
 			$n = 0;
-			if ($preparedTypes !== '') {
 				$sqlText = $core->dbo->sqlarray_echo($sql);
 				$core->dbo->queryPrepared($sqlText,$preparedTypes,$preparedParams,$r,$n);
-			} else {
-				$core->dbo->query($sql,$r,$n);
-			}
 		for ($c=0;$c<$n;$c++) {
 			$msidata = $core->dbo->fetch_assoc($r);
 			$checkkeys = "";
@@ -1267,7 +1263,7 @@
 					$core->template->assign("linkermodule_relate",$modobj->fields[$prevKey][CONS_XML_MODULE]);
 					$core->template->assign("linkermodule",$mname);
 					$mod = $core->modules[$modobj->fields[$prevKey][CONS_XML_MODULE]];
-					$n = $core->dbo->fetch("SELECT count(*) FROM ".$mod->dbname);
+						$n = $core->dbo->fetchPrepared("SELECT count(*) FROM ".$mod->dbname, "", array());
 					if ($n>CONS_MAX_RELATESIZE) {
 						$core->template->assign("_relatewithlinker","");
 						$core->log[] = $core->langOut('relatewithlinkertoobig')." :".$mod->name;

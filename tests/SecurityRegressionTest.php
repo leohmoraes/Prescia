@@ -112,6 +112,16 @@ SQL, $payload);
         self::assertStringNotContainsString('$core->dbo->query($sql,$r,$n)', $reorder);
     }
 
+    public function testAdministrativeListingHasNoRawSelectionFallbacks(): void
+    {
+        $listing = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/content/list.php');
+
+        self::assertStringContainsString('$core->dbo->queryPrepared($sqlText,$preparedTypes,$preparedParams,$r,$n)', $listing);
+        self::assertStringContainsString('$core->dbo->fetchPrepared("SELECT count(*) FROM ".$mod->dbname, "", array())', $listing);
+        self::assertStringNotContainsString('$core->dbo->query($sql,$r,$n);', $listing);
+        self::assertStringNotContainsString('$core->dbo->fetch("SELECT count(*) FROM ".$mod->dbname)', $listing);
+    }
+
     public function testAdministrativeHistoryLinkLookupUsesPreparedRemoteKeys(): void
     {
         $history = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/content/history.php');
