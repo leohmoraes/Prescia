@@ -175,3 +175,10 @@ Foi adicionada a regressão `testAdministrativeAjaxMonitorUsesPreparedExecution(
 O fluxo de reordenação recebia `multiSelectedIds` e concatenava os valores diretamente no `IN (...)`. O lote passou a aceitar somente inteiros, construir placeholders vinculados e executar o SQL-array por `queryPrepared()`. Quando nenhum ID válido é recebido, usa `IN (NULL)` para evitar SQL inválido e não selecionar registros.
 
 Foi adicionada a regressão `testAdministrativeReorderIdsUsePreparedParameters()`. O escopo continua limitado à leitura inicial da tela de reordenação; o processamento posterior da ordenação permanece pendente para lote próprio.
+
+
+## Lote SQL bi_adm — listagem sem fallbacks legados — 2026-09-10
+
+A listagem administrativa ainda usava `query()` quando não havia tipos preparados e `fetch()` para contar registros de módulos linker. O primeiro caminho agora sempre serializa o SQL-array e chama `queryPrepared()` com os metadados disponíveis; a contagem também usa `fetchPrepared()` com parâmetros vazios. A alteração elimina os fallbacks sem mudar filtros, paginação ou seleção de módulos.
+
+Foi adicionada a regressão `testAdministrativeListingHasNoRawSelectionFallbacks()`.
