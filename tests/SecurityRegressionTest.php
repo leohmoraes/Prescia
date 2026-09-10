@@ -667,6 +667,7 @@ PHP, $route);
         $undo = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_undo/module.php');
 
         self::assertStringContainsString('$module->getPreparedKeys($ws,$wTypes,$wParams,$ka,$data);', $undo);
+        self::assertStringNotContainsString('$module->getKeys($ws,$ka,$data);', $undo);
         self::assertStringContainsString('$this->parent->dbo->queryPrepared($sql,$wTypes,$wParams,$r,$n)', $undo);
         self::assertStringContainsString('queryPrepared("DELETE FROM ".$undo->dbname." WHERE id=?", \'i\'', $undo);
         self::assertStringContainsString("queryPrepared(\$sql, 'sssssi'", $undo);
