@@ -41,3 +41,7 @@ A revisão estrutural foi concluída. PHP, Composer, Docker e PHPStan não estã
 A revisão do código atual confirmou que parte de CKF-01 e CKF-02 já havia sido corrigida em lotes anteriores: os callbacks PHP5 usam `json_encode()` com flags hexadecimais, e `FileUpload` valida estrutura de `$_FILES`, códigos `UPLOAD_ERR_*`, `is_uploaded_file()`, tamanho e MIME ativo. O lote atual adiciona regressão explícita para esses controles e rejeita estruturas malformadas no comando `CopyFiles`, evitando warnings e coerções de arrays para strings em `name`, `type`, `folder` e `options`.
 
 Esses controles não encerram a issue #67: a variante PHP4, os handlers de filesystem, CSRF, ACL, isolamento de conteúdo ativo e limites de imagem ainda permanecem no escopo aberto.
+
+## Atualização do loop — contenção centralizada de diretórios
+
+O `FolderHandler` PHP5 agora valida o caminho do recurso e o caminho de thumbnails com `isPathInside()` imediatamente após sua composição, antes de criar diretórios ou permitir que handlers prossigam. Isso reduz a dependência de verificações distribuídas e transforma uma configuração/caminho inválido em erro explícito. O controle não elimina todas as condições de corrida entre validação e operação; os handlers de mutação ainda requerem testes de symlink e revalidação no ponto de escrita/renomeação.
