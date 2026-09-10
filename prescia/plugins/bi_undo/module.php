@@ -32,8 +32,8 @@ class mod_bi_undo extends CscriptedModule  {
 	function onMeta() {
 		# Run this function during meta-load (debugmode >>ONLY<<)
 		###### -> Construct should add this module to the onMeta array
-		if (!is_dir(CONS_FMANAGER."_undodata/"))
-			safe_mkdir(CONS_FMANAGER."_undodata/");
+			if (!is_dir(CONS_FMANAGER."_undodata/"))
+				(new \Prescia\Services\FileService())->ensureDirectory(CONS_FMANAGER."_undodata/");
 	}
 
 
