@@ -84,11 +84,17 @@
 	foreach($theKeys as $ids) {
 		if ($ids != "" && preg_match('/'.$ereg_pattern.'/',$ids,$regs)) { // valid multiple keys (checkboxes)
 			$sql = $basesql;
-			for($pos=0;$pos<$keyscount;$pos++) // build WHERE based on keys
-				$sql['WHERE'][] = $module->name.".".$keys[$pos]."=\"".$regs[$pos+1]."\"";
+			$preparedTypes = '';
+			$preparedParams = array();
+			for($pos=0;$pos<$keyscount;$pos++) { // build WHERE based on keys
+				$sql['WHERE'][] = $module->name.".".$keys[$pos]."=?";
+				$isInteger = in_array($module->fields[$keys[$pos]][CONS_XML_TIPO],array(CONS_TIPO_INT,CONS_TIPO_LINK),true);
+				$preparedTypes .= $isInteger ? 'i' : 's';
+				$preparedParams[] = $isInteger ? (int)$regs[$pos+1] : $regs[$pos+1];
+			}
 			$r = false;
 			$n = 0;
-			if ($core->dbo->query($sql,$r,$n) && $n>0) { // get data
+			if ($core->dbo->queryPrepared($core->dbo->sqlarray_echo($sql),$preparedTypes,$preparedParams,$r,$n) && $n>0) { // get data
 				$data = $core->dbo->fetch_assoc($r);
 				$data['width'] = $lData['sw'];
 				$data['height'] = $lData['sh'];

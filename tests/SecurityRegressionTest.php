@@ -133,6 +133,16 @@ SQL, $payload);
         self::assertStringNotContainsString('implode(",",$errorKeys)', $edit);
     }
 
+    public function testLabelPrintingUsesPreparedSelectedKeys(): void
+    {
+        $labels = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_labels/payload/content/labels_print.php');
+
+        self::assertStringContainsString('$core->dbo->queryPrepared($core->dbo->sqlarray_echo($sql),$preparedTypes,$preparedParams,$r,$n)', $labels);
+        self::assertStringContainsString('$sql[\'WHERE\'][] = $module->name.".".$keys[$pos]."=?";', $labels);
+        self::assertStringNotContainsString('$core->dbo->query($sql,$r,$n)', $labels);
+        self::assertStringNotContainsString('="".$regs[$pos+1].""', $labels);
+    }
+
     public function testAdministrativeHistoryLinkLookupUsesPreparedRemoteKeys(): void
     {
         $history = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/content/history.php');

@@ -189,3 +189,10 @@ Foi adicionada a regressão `testAdministrativeListingHasNoRawSelectionFallbacks
 Os lookups exibidos quando uma edição múltipla tinha sucessos e falhas concatenavam arrays de chaves em `IN (...)`, além de não suportarem corretamente o formato interno das chaves. O lote criou um único helper que extrai a primeira chave para o fluxo atualmente suportado, cria placeholders, vincula os valores como strings e preserva as mensagens de sucesso/erro. O helper retorna vazio quando não há valores válidos.
 
 Foi adicionada a regressão `testAdministrativeMultipleEditLookupsUsePreparedIds()`. O suporte funcional a múltiplas chaves continua explicitamente fora deste lote, conforme o TODO existente.
+
+
+## Lote SQL bi_labels — impressão por chaves selecionadas — 2026-09-10
+
+A impressão de labels montava as cláusulas de chave com valores extraídos dos checkboxes e executava `query()`. O fluxo já valida o formato de cada chave por expressão regular; a correção preserva essa validação, usa placeholders, tipa inteiros/links como `i` e demais chaves como `s`, e executa o SQL-array por `queryPrepared()`.
+
+Foi adicionada a regressão `testLabelPrintingUsesPreparedSelectedKeys()`.
