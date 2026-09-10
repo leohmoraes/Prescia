@@ -48,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated generic delete notifications to obtain module keys through `getPreparedKeys()` instead of the legacy `getKeys()` contract.
 - Replaced the remote ownership SQL assembled through `getRemoteKeys()` with metadata-derived field selection and prepared value parameters via `getRemotePreparedKeys()`.
 - Replaced the guest-group lookup and direct ownership read in `bi_auth` with prepared queries and `getPreparedKeys()`.
+- Routed the remaining `bi_auth` bootstrap group and user existence reads through the prepared SQL-array executor, with regression coverage and no bound values.
 - Replaced interpolated forum, language and callback filters in the `bi_bb` index payload with prepared parameters while preserving forum trees and latest-thread pagination.
 - Added prepared-parameter transport to parental `getContents()` trees and migrated the selected-value markers in administrative edit and options payloads away from SQL interpolation.
 - Replaced the legacy raw SQL string used to load `bi_bb` thread posts with a structured SQL array and prepared forum/thread identifiers, preserving joins, ordering and pagination behavior.

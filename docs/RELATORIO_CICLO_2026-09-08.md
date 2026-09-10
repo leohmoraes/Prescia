@@ -138,3 +138,12 @@ Foi adicionada a regressão `testGenericBackupUsesStructuredQueryContract()` em 
 Na mesma auditoria da issue #94, os dois caminhos de `CModule::getContents()` foram unificados em `queryPrepared()`. Consultas estruturadas sem parâmetros usam tipos e parâmetros vazios, enquanto consultas com `_preparedTypes` preservam seus binds. Isso elimina o fallback direto para `query()` no consumidor genérico sem modificar o contrato de SQL-array.
 
 Foi adicionada a regressão `testGenericGetContentsUsesPreparedExecutionPath()`. A baseline PHPStan permanece sem alteração.
+
+
+## Lote SQL bi_auth — bootstrap de grupos e usuários — 2026-09-10
+
+Após a sincronização de `master` para `17e4aed`, a auditoria identificou duas leituras de existência em `prescia/plugins/bi_auth/module.php` que ainda chamavam `query()` sobre SQL-arrays sem parâmetros externos. O lote confirmou que os nomes de tabela e filtros `id=1` vêm dos módulos internos; a correção passou ambas as leituras por `queryPrepared($this->parent->dbo->sqlarray_echo($sql), "", array(), ...)`, preservando o resultado e o caminho de criação dos registros padrão.
+
+Foi adicionada a regressão `testAuthBootstrapReadsUsePreparedExecutionForSqlArrays()` em `tests/SecurityRegressionTest.php`. A baseline PHPStan não foi alterada. A validação local deve registrar a ausência de PHP/Composer; o CI PHP 8.3, PHPUnit, PHPStan, lint, dependências e Docker será o critério de conclusão do SHA publicado.
+
+A auditoria ampla ainda encontra chamadas legadas em fluxos administrativos, cron, busca, friendly URLs, labels e páginas de teste. Elas permanecem pendentes e não serão declaradas resolvidas por este lote.

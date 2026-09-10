@@ -117,7 +117,7 @@ class mod_bi_auth extends CscriptedModule  {
 		$sql = $this->parent->modules[CONS_AUTH_GROUPMODULE]->get_base_sql("id=1");
 		$r = false;
 		$n = 0;
-			if (!$this->parent->dbo->query($sql,$r,$n) || $n==0) {
+			if (!$this->parent->dbo->queryPrepared($this->parent->dbo->sqlarray_echo($sql),"",array(),$r,$n) || $n==0) {
 				# database present (query ok) but empty ... create default groups
 				$groupTable = $this->parent->modules[CONS_AUTH_GROUPMODULE]->dbname;
 				foreach (array(array('Guest', 0, 1), array('Administrator', 90, 2), array('Master Administrator', 100, 3), array('Default User', 5, 4)) as $group) {
@@ -129,7 +129,7 @@ class mod_bi_auth extends CscriptedModule  {
 		$sql = $this->parent->modules[CONS_AUTH_USERMODULE]->get_base_sql(CONS_AUTH_USERMODULE.".id=1");
 		$r = false;
 		$n = 0;
-		if (!$this->parent->dbo->query($sql,$r,$n) || $n==0) {
+		if (!$this->parent->dbo->queryPrepared($this->parent->dbo->sqlarray_echo($sql),"",array(),$r,$n) || $n==0) {
 				# database present (query ok) but empty ... create default user
 				$newPass = bin2hex(random_bytes(24));
 				$hashedPass = presciaPasswordHash($newPass);

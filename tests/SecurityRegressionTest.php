@@ -42,6 +42,14 @@ SQL, $payload);
         self::assertStringNotContainsString('simpleQuery("INSERT INTO ".$this->parent->modules[CONS_AUTH_USERMODULE]->dbname', $module);
     }
 
+    public function testAuthBootstrapReadsUsePreparedExecutionForSqlArrays(): void
+    {
+        $module = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_auth/module.php');
+
+        self::assertSame(2, substr_count($module, 'queryPrepared($this->parent->dbo->sqlarray_echo($sql),"",array(),$r,$n)'));
+        self::assertStringNotContainsString('$this->parent->dbo->query($sql,$r,$n)', $module);
+    }
+
     public function testLoginUsesAccountAndIpRateLimiterWithoutUserEnumeration(): void
     {
         $authControl = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_auth/authControl.php');
