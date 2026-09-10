@@ -198,6 +198,10 @@ class CKFinder_Connector_Core_FolderHandler
         if (is_null($this->_serverPath)) {
             $this->_resourceTypeConfig = $this->getResourceTypeConfig();
             $this->_serverPath = CKFinder_Connector_Utils_FileSystem::combinePaths($this->_resourceTypeConfig->getDirectory(), ltrim($this->_clientPath, "/"));
+            if (!CKFinder_Connector_Utils_FileSystem::isPathInside($this->_resourceTypeConfig->getDirectory(), $this->_serverPath)) {
+                $connector =& CKFinder_Connector_Core_Factory::getInstance("Core_Connector");
+                $connector->getErrorHandler()->throwError(CKFINDER_CONNECTOR_ERROR_INVALID_REQUEST);
+            }
         }
 
         return $this->_serverPath;
@@ -222,6 +226,11 @@ class CKFinder_Connector_Core_FolderHandler
 
             // Return the resource type directory combined with the required path.
             $this->_thumbsServerPath = CKFinder_Connector_Utils_FileSystem::combinePaths($this->_thumbsServerPath, ltrim($this->_clientPath, '/'));
+
+            if (!CKFinder_Connector_Utils_FileSystem::isPathInside($_thumbnailsConfig->getDirectory(), $this->_thumbsServerPath)) {
+                $connector =& CKFinder_Connector_Core_Factory::getInstance("Core_Connector");
+                $connector->getErrorHandler()->throwError(CKFINDER_CONNECTOR_ERROR_INVALID_REQUEST);
+            }
 
             if (!is_dir($this->_thumbsServerPath)) {
                 if(!CKFinder_Connector_Utils_FileSystem::createDirectoryRecursively($this->_thumbsServerPath)) {

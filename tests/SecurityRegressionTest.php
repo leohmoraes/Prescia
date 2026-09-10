@@ -720,6 +720,15 @@ PHP, $route);
         self::assertStringContainsString('!is_string($arr[\'folder\'])', $copy);
     }
 
+    public function testCkfinderFolderHandlerContainsResourceAndThumbnailPaths(): void
+    {
+        $folderHandler = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/Core/FolderHandler.php');
+
+        self::assertStringContainsString('isPathInside($this->_resourceTypeConfig->getDirectory(), $this->_serverPath)', $folderHandler);
+        self::assertStringContainsString('isPathInside($_thumbnailsConfig->getDirectory(), $this->_thumbsServerPath)', $folderHandler);
+        self::assertStringContainsString('CKFINDER_CONNECTOR_ERROR_INVALID_REQUEST', $folderHandler);
+    }
+
     public function testDockerImageDeniesFrameworkInternalsFromHttpSurface(): void
     {
         $dockerfile = (string) file_get_contents(__DIR__ . '/../Dockerfile');
