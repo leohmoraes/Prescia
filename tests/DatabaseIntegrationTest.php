@@ -80,6 +80,7 @@ final class DatabaseIntegrationTest extends TestCase
             (string) getenv('PRESCIA_DB_PASSWORD'),
             (string) getenv('PRESCIA_DB_NAME')
         );
+        self::assertTrue($driver->connect());
         $result = 'stale';
         $rows = 99;
         self::assertTrue($driver->queryPrepared('SELECT value_text FROM prepared_regression WHERE id=?', 'i', [999], $result, $rows));
