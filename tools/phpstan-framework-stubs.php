@@ -62,6 +62,7 @@ class CPrescia
     public array $moduleOptions = [];
     public mixed $errorControl = null;
 
+    public function applyMetaData(): void {}
     public function saveConfig(bool $force = false): void {}
 }
 

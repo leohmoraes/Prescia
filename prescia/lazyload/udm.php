@@ -90,15 +90,18 @@
 			$n=-1;
 			$r = false;
 			$n = 0;
-				if ($this->dbo->queryPrepared($this->dbo->sqlarray_echo($sql),$preparedTypes,$preparedParams,$r,$n) && $n>0) { // found!
+				if ($this->dbo->queryPrepared($this->dbo->sqlarray_echo($sql),$preparedTypes,$preparedParams,$r,$n)) {
+				$result = $this->dbo->fetch_assoc($r);
+				if (!is_array($result)) {
+					return false;
+				}
 				$matched = true;
-				if ($n>1) {
+				if (is_array($this->dbo->fetch_assoc($r))) {
 					// can't determine which, considers NOT found
 					$this->warning[] = "Too many UDM results";
 					return false;
 				} else { // 1 result
 					#$this->warning[] = "UDM ok";
-					$result = $this->dbo->fetch_assoc($r);
 					$keys = array();
 					foreach ($module->keys as $index) {
 						$keys[] = $result[$index];

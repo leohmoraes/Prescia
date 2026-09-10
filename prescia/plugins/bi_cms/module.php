@@ -302,11 +302,11 @@ class mod_bi_cms extends CscriptedModule  {
 			$sql = "SELECT id,content,header,code,title,meta,metakeys,page FROM ".$cm->dbname." WHERE page=? AND lang=? ORDER BY code ASC";
 			$r = false;
 			$n = 0;
-				if ($this->parent->dbo->queryPrepared($sql, 'ss', array($this->serveThisPage, $_SESSION[CONS_SESSION_LANG]), $r, $n) && $n>0) {
+				if ($this->parent->dbo->queryPrepared($sql, 'ss', array($this->serveThisPage, $_SESSION[CONS_SESSION_LANG]), $r, $n)) {
 				$this->cmscache = array();
-				for ($c=0;$c<$n;$c++)
-					$this->cmscache[] = $this->parent->dbo->fetch_row($r);
-				return $this->cmscache[0];
+				while (is_array($cmsRow = $this->parent->dbo->fetch_row($r)))
+					$this->cmscache[] = $cmsRow;
+				return $this->cmscache[0] ?? false;
 			} else
 				return false;
 		} else
