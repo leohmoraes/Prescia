@@ -697,6 +697,10 @@ PHP, $route);
         self::assertStringContainsString("stream_socket_client", $loader);
         self::assertStringContainsString("'verify_peer' => true", $loader);
         self::assertStringContainsString("PRESCIA_LOADURL_MAX_BYTES", $loader);
+        self::assertStringContainsString('PRESCIA_LOADURL_MAX_DNS_RECORDS', $loader);
+        self::assertStringContainsString('PRESCIA_LOADURL_MAX_IPS', $loader);
+        self::assertStringContainsString('count($records) > PRESCIA_LOADURL_MAX_DNS_RECORDS', $loader);
+        self::assertStringContainsString('count($ips) > PRESCIA_LOADURL_MAX_IPS', $loader);
         self::assertStringNotContainsString('fsockopen(', $loader);
         self::assertStringNotContainsString('Location:', $loader);
     }
