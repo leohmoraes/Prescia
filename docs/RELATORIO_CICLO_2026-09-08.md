@@ -210,3 +210,10 @@ Foi adicionada a regressão `testFriendlyUrlActionAndQueryFiltersUsePreparedValu
 A busca completa usava o executor legado para uma consulta construída pelo contrato de módulo e por filtros declarativos da definição de busca. O lote preserva título, descrição, ordenação, limite e agrupamento, mas serializa o SQL-array e usa `queryPrepared()` com parâmetros vazios.
 
 Foi adicionada a regressão `testFullSearchUsesPreparedStructuredExecution()`.
+
+
+## Lote SQL RSS — SQL-array preparado — 2026-09-10
+
+O gerador RSS executava diretamente o SQL-array produzido pelo módulo para cada fonte configurada. A consulta agora passa por `queryPrepared()` com parâmetros vazios, preservando limite por módulo, campos de título/descrição, data e categoria.
+
+Foi adicionada a regressão `testRssUsesPreparedStructuredExecution()`.

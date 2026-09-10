@@ -58,6 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parameterized selected keys in the `bi_labels` print path with metadata-aware integer/string types.
 - Parameterized friendly URL action and request-derived query filters while preserving configured declarative filters.
 - Routed `fullSearch()` structured module queries through the prepared executor without changing declarative search behavior.
+- Routed RSS module queries through the prepared SQL-array executor while preserving feed limits and rendering.
 - Replaced interpolated forum, language and callback filters in the `bi_bb` index payload with prepared parameters while preserving forum trees and latest-thread pagination.
 - Added prepared-parameter transport to parental `getContents()` trees and migrated the selected-value markers in administrative edit and options payloads away from SQL interpolation.
 - Replaced the legacy raw SQL string used to load `bi_bb` thread posts with a structured SQL array and prepared forum/thread identifiers, preserving joins, ordering and pagination behavior.
