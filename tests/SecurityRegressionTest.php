@@ -94,6 +94,14 @@ SQL, $payload);
         self::assertStringNotContainsString('$core->dbo->query($sql,$r,$n)', $default);
     }
 
+    public function testAdministrativeAjaxMonitorUsesPreparedExecution(): void
+    {
+        $monitor = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/actions/ajaxmonitor.php');
+
+        self::assertStringContainsString('$core->dbo->queryPrepared($core->dbo->sqlarray_echo($sql), "", array(), $r, $n)', $monitor);
+        self::assertStringNotContainsString('$core->dbo->query($sql,$r,$n)', $monitor);
+    }
+
     public function testAdministrativeHistoryLinkLookupUsesPreparedRemoteKeys(): void
     {
         $history = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/content/history.php');
