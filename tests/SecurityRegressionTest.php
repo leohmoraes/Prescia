@@ -102,6 +102,16 @@ SQL, $payload);
         self::assertStringNotContainsString('$core->dbo->query($sql,$r,$n)', $monitor);
     }
 
+    public function testAdministrativeReorderIdsUsePreparedParameters(): void
+    {
+        $reorder = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/content/reorder.php');
+
+        self::assertStringContainsString('filter_var($msi,FILTER_VALIDATE_INT)', $reorder);
+        self::assertStringContainsString('$core->dbo->queryPrepared($core->dbo->sqlarray_echo($sql),$preparedTypes,$preparedParams,$r,$n)', $reorder);
+        self::assertStringNotContainsString('IN ($ids)', $reorder);
+        self::assertStringNotContainsString('$core->dbo->query($sql,$r,$n)', $reorder);
+    }
+
     public function testAdministrativeHistoryLinkLookupUsesPreparedRemoteKeys(): void
     {
         $history = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/content/history.php');

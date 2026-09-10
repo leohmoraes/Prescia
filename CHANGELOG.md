@@ -52,6 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replaced the administrative history link lookup with `getRemotePreparedKeys()` and `queryPrepared()`, preserving metadata-derived identifiers and ambiguous-link handling.
 - Routed both administrative export read modes through `queryPrepared()` with explicit empty parameter metadata.
 - Routed the administrative AJAX monitor count through the prepared SQL-array executor, matching the main dashboard monitor path.
+- Parameterized administrative reorder selection IDs with integer validation, placeholders, and an `IN (NULL)` empty-selection guard.
 - Replaced interpolated forum, language and callback filters in the `bi_bb` index payload with prepared parameters while preserving forum trees and latest-thread pagination.
 - Added prepared-parameter transport to parental `getContents()` trees and migrated the selected-value markers in administrative edit and options payloads away from SQL interpolation.
 - Replaced the legacy raw SQL string used to load `bi_bb` thread posts with a structured SQL array and prepared forum/thread identifiers, preserving joins, ordering and pagination behavior.

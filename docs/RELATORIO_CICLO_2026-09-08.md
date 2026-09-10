@@ -168,3 +168,10 @@ Foi adicionada a regressão `testAdministrativeExportReadsUsePreparedExecution()
 O endpoint de monitoramento AJAX repetia a consulta de contagem do painel e ainda executava o SQL-array com `query()`. Como o filtro vem da configuração de monitoramento e o identificador de usuário é incorporado no fluxo existente, a migração segura é usar `sqlarray_echo()` com `queryPrepared()` e parâmetros vazios, mantendo o comportamento e o fail-closed do tratamento de erro.
 
 Foi adicionada a regressão `testAdministrativeAjaxMonitorUsesPreparedExecution()`.
+
+
+## Lote SQL bi_adm — reordenação por IDs — 2026-09-10
+
+O fluxo de reordenação recebia `multiSelectedIds` e concatenava os valores diretamente no `IN (...)`. O lote passou a aceitar somente inteiros, construir placeholders vinculados e executar o SQL-array por `queryPrepared()`. Quando nenhum ID válido é recebido, usa `IN (NULL)` para evitar SQL inválido e não selecionar registros.
+
+Foi adicionada a regressão `testAdministrativeReorderIdsUsePreparedParameters()`. O escopo continua limitado à leitura inicial da tela de reordenação; o processamento posterior da ordenação permanece pendente para lote próprio.
