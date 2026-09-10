@@ -49,6 +49,8 @@ foreach ($m as $moduletxt) {
 		$this->errorControl->raise(185,'friendlyur',$moduletxt,"Module not found (multiple)");
 	$preparedTypes = '';
 	$preparedParams = array();
+	$filterTypes = '';
+	$filterParams = array();
 	if (isset($param['queryfilter'])) {
 		$param['queryfilter'] = explode(",",$param['queryfilter']);
 		foreach ($param['queryfilter'] as $field) {
@@ -57,8 +59,8 @@ foreach ($m as $moduletxt) {
 			if (isset($_REQUEST[$field])) {
 					if (!isset($param['filter'])) $param['filter'] = $field."=?";
 					else $param['filter'] .= " AND ".$field."=?";
-					$preparedTypes .= 's';
-					$preparedParams[] = (string)$this->checkHackAttempt($_REQUEST[$field]);
+					$filterTypes .= 's';
+					$filterParams[] = (string)$this->checkHackAttempt($_REQUEST[$field]);
 			}
 		}
 	} # queryfilter
@@ -70,18 +72,21 @@ foreach ($m as $moduletxt) {
 	$fields = explode(",",$param['keys']);
 	$sql = $module->get_base_sql("","",1);
 	foreach ($fields as $field) {
-		if ($module->fields[$field][CONS_XML_TIPO] == CONS_TIPO_INT && is_numeric($this->action))
+		if ($module->fields[$field][CONS_XML_TIPO] == CONS_TIPO_INT && is_numeric($this->action)) {
 			// if the mysql field is INT, and one test id = "123_this_is_a_url", it will actually test id=123 duh
-				$sql['WHERE'][] = $module->name.".".$field."=?";
-				$preparedTypes .= 'i';
-				$preparedParams[] = (int)$this->action;
-		else if ($module->fields[$field][CONS_XML_TIPO] != CONS_TIPO_INT)
-				$sql['WHERE'][] = $module->name.".".$field."=?";
-				$preparedTypes .= 's';
-				$preparedParams[] = (string)$this->action;
+			$sql['WHERE'][] = $module->name.".".$field."=?";
+			$preparedTypes .= 'i';
+			$preparedParams[] = (int)$this->action;
+		} else if ($module->fields[$field][CONS_XML_TIPO] != CONS_TIPO_INT) {
+			$sql['WHERE'][] = $module->name.".".$field."=?";
+			$preparedTypes .= 's';
+			$preparedParams[] = (string)$this->action;
+		}
 	}
 	if (isset($param['filter']))
 		$sql['WHERE'][] = $param['filter'];
+	$preparedTypes .= $filterTypes;
+	$preparedParams = array_merge($preparedParams,$filterParams);
 
 
 	$r = false;
