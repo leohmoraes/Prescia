@@ -502,6 +502,15 @@ PHP, $route);
         self::assertStringNotContainsString('WHERE ip=\'".CONS_IP."\'', $stats);
     }
 
+    public function testBiStatsModuleUsesPreparedPageFilter(): void
+    {
+        $module = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/payload/content/module.php');
+
+        self::assertStringContainsString('WHERE s.page=?', $module);
+        self::assertStringContainsString('queryPrepared($sql,"s",array($page),$r,$n)', $module);
+        self::assertStringNotContainsString("WHERE s.page='\$page'", $module);
+    }
+
     public function testBiStatsRefererCountersUsePreparedQueries(): void
     {
         $stats = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_stats/module.php');

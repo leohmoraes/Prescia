@@ -41,13 +41,13 @@
 		$page = $moduleToPage[$selmod];
 		$sql = "SELECT sum(s.hits) as hits,s.hid as id,".$statmod->name.".".$statmod->title." as titulo
 				FROM ".$statsh->dbname." as s, ".$statmod->dbname." as ".$statmod->name."
-			    WHERE s.page='$page' AND
+			    WHERE s.page=? AND
 					  s.data>NOW()-INTERVAL 1 MONTH AND
 					  ".$statmod->name.".".$statmod->keys[0]."=s.hid
 				GROUP BY s.hid";
 		$r = false;
 		$n = 0;
-		$this->parent->dbo->query($sql,$r,$n);
+			$this->parent->dbo->queryPrepared($sql,"s",array($page),$r,$n);
 		for ($c=0;$c<$n;$c++) {
 				$data = $this->parent->dbo->fetch_assoc($r);
 			$data['page'] = $page;
