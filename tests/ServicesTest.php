@@ -22,6 +22,17 @@ final class ServicesTest extends TestCase
         self::assertSame("hello<br/>\nworld", Sanitizer::stripTags("<b>hello</b>\nworld", true));
     }
 
+    public function testSanitizeHtmlUsesAllowlistAndSafeLinkSchemes(): void
+    {
+        $html = Sanitizer::sanitizeHtml('<p>Hello <strong>world</strong><script>alert(1)</script><a href="javascript:alert(1)" onclick="alert(2)">link</a></p>');
+
+        self::assertStringContainsString('<p>Hello <strong>world</strong>alert(1)', $html);
+        self::assertStringContainsString('<a>link</a>', $html);
+        self::assertStringNotContainsString('<script', $html);
+        self::assertStringNotContainsString('onclick', $html);
+        self::assertStringNotContainsString('javascript:', $html);
+    }
+
     public function testFileServiceWritesReadsAndCreatesDirectories(): void
     {
         $root = sys_get_temp_dir() . '/prescia-services-' . bin2hex(random_bytes(6));
