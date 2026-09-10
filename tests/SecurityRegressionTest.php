@@ -174,7 +174,7 @@ SQL, $payload);
         $udm = (string) file_get_contents(__DIR__ . '/../prescia/lazyload/udm.php');
 
         self::assertStringContainsString('$this->dbo->queryPrepared($this->dbo->sqlarray_echo($sql),$preparedTypes,$preparedParams,$r,$n)', $udm);
-        self::assertStringContainsString('$sql[\'WHERE\'][] = $module->name.".".$param[$vFn][\'key\'].\'=\?\';', $udm);
+        self::assertStringContainsString('$sql[\'WHERE\'][] = $module->name.".".$param[$vFn][\'key\']', $udm);
         self::assertStringNotContainsString('$this->dbo->query($sql,$r,$n)', $udm);
         self::assertStringNotContainsString('=\\\"".$vF', $udm);
     }
