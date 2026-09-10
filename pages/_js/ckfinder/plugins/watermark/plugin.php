@@ -12,6 +12,7 @@
 *
 * CKFinder extension: adds watermark to uploaded images.
 */
+if (!defined('IN_CKFINDER')) exit;
 
 class Watermark
 {
