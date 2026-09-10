@@ -107,7 +107,13 @@ class CDBO_mysqli extends CDBO  {
 			if (!$this->connection || strlen($types) !== count($params)) return false;
 			$this->dbc++;
 			$numrows = 0;
-			$stmt = $this->connection->prepare($sql);
+				try {
+					$stmt = $this->connection->prepare($sql);
+				} catch (Throwable $exception) {
+					$this->errorRaised = true;
+					$this->log[] = $exception->getMessage();
+					return false;
+				}
 			if ($stmt === false) {
 				$this->errorRaised = true;
 				$this->log[] = $this->connection->error;
