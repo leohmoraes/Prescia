@@ -704,6 +704,22 @@ PHP, $route);
         self::assertStringContainsString("if (!defined('IN_CKFINDER')) exit;", $watermark);
     }
 
+    public function testCkfinderUploadAndCopyHandlersRejectMalformedInputAndUseSafeCallbacks(): void
+    {
+        $upload = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/FileUpload.php');
+        $fileUploadErrors = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/ErrorHandler/FileUpload.php');
+        $quickUploadErrors = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/ErrorHandler/QuickUpload.php');
+        $copy = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/CopyFiles.php');
+
+        self::assertStringContainsString('is_uploaded_file($uploadedFile[\'tmp_name\'])', $upload);
+        self::assertStringContainsString('UPLOAD_ERR_OK', $upload);
+        self::assertStringContainsString('JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP', $fileUploadErrors);
+        self::assertStringContainsString('JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP', $quickUploadErrors);
+        self::assertStringContainsString('if (!is_array($arr))', $copy);
+        self::assertStringContainsString("!is_string($arr['type'])", $copy);
+        self::assertStringContainsString("!is_string($arr['folder'])", $copy);
+    }
+
     public function testDockerImageDeniesFrameworkInternalsFromHttpSurface(): void
     {
         $dockerfile = (string) file_get_contents(__DIR__ . '/../Dockerfile');

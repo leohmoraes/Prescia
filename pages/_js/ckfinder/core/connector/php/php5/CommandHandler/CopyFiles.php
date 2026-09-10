@@ -78,10 +78,13 @@ class CKFinder_Connector_CommandHandler_CopyFiles extends CKFinder_Connector_Com
 
         if (!empty($_POST['files']) && is_array($_POST['files'])) {
             foreach ($_POST['files'] as $index => $arr) {
-                if (empty($arr['name'])) {
+                if (!is_array($arr)) {
+                    $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_INVALID_REQUEST);
+                }
+                if (!isset($arr['name']) || !is_string($arr['name']) || $arr['name'] === '') {
                     continue;
                 }
-                if (!isset($arr['name'], $arr['type'], $arr['folder'])) {
+                if (!isset($arr['type'], $arr['folder']) || !is_string($arr['type']) || !is_string($arr['folder'])) {
                     $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_INVALID_REQUEST);
                 }
 
@@ -92,7 +95,7 @@ class CKFinder_Connector_CommandHandler_CopyFiles extends CKFinder_Connector_Com
                 // client path
                 $path = CKFinder_Connector_Utils_FileSystem::convertToFilesystemEncoding($arr['folder']);
                 // options
-                $options = (!empty($arr['options'])) ? $arr['options'] : '';
+                $options = (!empty($arr['options']) && is_string($arr['options'])) ? $arr['options'] : '';
 
                 $destinationFilePath = $sServerDir.$name;
 
