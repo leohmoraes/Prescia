@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Extended the MySQL integration suite to exercise `CDBO_mysqli` output initialization for empty results and failed prepared queries.
 - Migrated the `bi_undo` storage-directory bootstrap from the global `safe_mkdir()` helper to the typed `FileService`.
 - Continued PHPStan level-2 remediation with explicit numeric coercions in the administrative edit and list payloads; the exploratory residual decreased from 34 to 28 diagnostics without changing the baseline.
+- Added explicit float coercions for PHP upload-limit parsing in `bi_dev`; the exploratory level-2 residual is now 26 diagnostics.
 - Started the systematic CKFinder security remediation: documented 11 findings across PHP5/PHP4 connectors, upload callbacks, active-content policy, filesystem races, ACLs, image processing and CSRF; the first corrective batch validates image resize inputs, rejects invalid image metadata and blocks direct watermark-plugin inclusion.
 - Parameterized remaining `bi_stats` counters and `bi_fm` file-name filters, then migrated the remaining `bi_dev` and `bi_cms` database operations to prepared execution.
 - Completed prepared execution for the remaining `bi_stats` analytics ranking, browser, resolution, bot and language queries.
