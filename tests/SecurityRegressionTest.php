@@ -716,8 +716,8 @@ PHP, $route);
         self::assertStringContainsString('JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP', $fileUploadErrors);
         self::assertStringContainsString('JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP', $quickUploadErrors);
         self::assertStringContainsString('if (!is_array($arr))', $copy);
-        self::assertStringContainsString("!is_string($arr['type'])", $copy);
-        self::assertStringContainsString("!is_string($arr['folder'])", $copy);
+        self::assertStringContainsString('!is_string($arr[\'type\'])', $copy);
+        self::assertStringContainsString('!is_string($arr[\'folder\'])', $copy);
     }
 
     public function testDockerImageDeniesFrameworkInternalsFromHttpSurface(): void
