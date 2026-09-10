@@ -104,6 +104,14 @@ SQL, $payload);
         self::assertStringNotContainsString('$core->dbo->query($sql,$r,$n)', $history);
     }
 
+    public function testAdministrativeExportReadsUsePreparedExecution(): void
+    {
+        $export = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/actions/export.php');
+
+        self::assertSame(2, substr_count($export, '$core->dbo->queryPrepared($sql, "", array(), $r, $n)'));
+        self::assertStringNotContainsString('$core->dbo->query($sql,$r,$n)', $export);
+    }
+
     public function testAdministrativePreviewAndPreferencesUsePreparedValues(): void
     {
         $preview = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/content/preview.php');

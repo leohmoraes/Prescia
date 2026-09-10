@@ -24,13 +24,13 @@
 				//cvsOrder
 				$replacer = explode(",",str_replace(" ","",stripslashes($_POST['cvsOrder'])));
 				$fields = count($replacer);
-				$sepData = trim(stripslashes($_POST['sepDados']));
-				$sepQuote = trim(stripslashes($_POST['sepQuote']));
-				$sql = "SELECT * FROM ".$module->dbname;
-				$output = "";
-				$r = false;
-				$n = 0;
-				if ($core->dbo->query($sql,$r,$n)) {
+					$sepData = trim(stripslashes($_POST['sepDados']));
+					$sepQuote = trim(stripslashes($_POST['sepQuote']));
+					$sql = "SELECT * FROM ".$module->dbname;
+					$output = "";
+					$r = false;
+					$n = 0;
+					if ($core->dbo->queryPrepared($sql, "", array(), $r, $n)) {
 					$core->layout = 2;
 					header("Content-Description: File Transfer");
 					header("Pragma: public");
@@ -64,15 +64,15 @@
 			} else if ($_REQUEST['imode'] == 'fix') {
 				//fixblock
 				//fixOrder
-				$replacer = explode(",",str_replace(" ","",stripslashes($_POST['fixOrder'])));
-				$fields = count($replacer);
-				$sizes = explode(",",str_replace(" ","",stripslashes($_POST['fixblock'])));
-				$sizes[] = 0;
-				$sql = "SELECT * FROM ".$module->dbname;
-				$output = "";
-				$r = false;
-				$n = 0;
-				if ($core->dbo->query($sql,$r,$n)) {
+					$replacer = explode(",",str_replace(" ","",stripslashes($_POST['fixOrder'])));
+					$fields = count($replacer);
+					$sizes = explode(",",str_replace(" ","",stripslashes($_POST['fixblock'])));
+					$sizes[] = 0;
+					$sql = "SELECT * FROM ".$module->dbname;
+					$output = "";
+					$r = false;
+					$n = 0;
+					if ($core->dbo->queryPrepared($sql, "", array(), $r, $n)) {
 					$core->layout = 2;
 					header("Content-Description: File Transfer");
 					header("Pragma: public");
@@ -113,5 +113,3 @@
 		}
 
 	}
-
-

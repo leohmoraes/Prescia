@@ -154,3 +154,10 @@ A auditoria ampla ainda encontra chamadas legadas em fluxos administrativos, cro
 O histórico administrativo ainda fazia lookup de campos relacionados com `getRemoteKeys()` e `query()`. O contexto confirmou que tabela, coluna e relação vêm dos metadados dos módulos, enquanto os valores do histórico são dados persistidos e devem ser vinculados. O lookup passou para `getRemotePreparedKeys()` e `queryPrepared()`, preservando a mensagem de ambiguidade e o comportamento de restauração.
 
 Foi adicionada a regressão `testAdministrativeHistoryLinkLookupUsesPreparedRemoteKeys()`. A baseline PHPStan permanece inalterada; o CI será a validação global deste lote.
+
+
+## Lote SQL bi_adm — exportação — 2026-09-10
+
+O fluxo de exportação administrativo contém dois modos de leitura (`csv` e largura fixa). Embora o arquivo esteja atualmente protegido por retorno antecipado de manutenção, as consultas usam apenas a tabela derivada do módulo carregado e não recebem valores externos no SQL. Ambas foram migradas para `queryPrepared()` com tipos e parâmetros vazios, eliminando o executor legado sem alterar o formato de exportação.
+
+Foi adicionada a regressão `testAdministrativeExportReadsUsePreparedExecution()`. A pendência permanece registrada como lote de hardening; o fluxo de exportação completo e a política de manutenção continuam fora do escopo deste commit.
