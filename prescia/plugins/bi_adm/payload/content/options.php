@@ -19,8 +19,8 @@
 	$maxHeight = 500;
 	if ($core->layout == 0 && defined('CONS_USER_RESOLUTION') && isset($_SESSION[CONS_USER_RESOLUTION])) {
 		$maxWidth = explode("x",$_SESSION[CONS_USER_RESOLUTION]);
-		$maxHeight = $maxWidth[1] - 400;
-		$maxWidth = $maxWidth[0] - 420;
+		$maxHeight = (int) $maxWidth[1] - 400;
+		$maxWidth = (int) $maxWidth[0] - 420;
 	}
 
 
