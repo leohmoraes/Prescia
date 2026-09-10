@@ -143,6 +143,16 @@ SQL, $payload);
         self::assertStringNotContainsString('="".$regs[$pos+1].""', $labels);
     }
 
+    public function testFriendlyUrlActionAndQueryFiltersUsePreparedValues(): void
+    {
+        $friendlyUrl = (string) file_get_contents(__DIR__ . '/../prescia/lazyload/friendlyurl.php');
+
+        self::assertStringContainsString('$this->dbo->queryPrepared($this->dbo->sqlarray_echo($sql),$preparedTypes,$preparedParams,$r,$n)', $friendlyUrl);
+        self::assertStringContainsString('$sql[\'WHERE\'][] = $module->name.".".$field."=?";', $friendlyUrl);
+        self::assertStringNotContainsString('$this->dbo->query($sql,$r,$n)', $friendlyUrl);
+        self::assertStringNotContainsString('checkHackAttempt($_REQUEST[$field])."\\""', $friendlyUrl);
+    }
+
     public function testAdministrativeHistoryLinkLookupUsesPreparedRemoteKeys(): void
     {
         $history = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/content/history.php');
