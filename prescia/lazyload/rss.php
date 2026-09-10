@@ -63,7 +63,7 @@ foreach ($modules as $mod) {
 	$hasCategory = $hasCategory || (isset($category[$rssId]) && $category[$rssId] != "");
 	$r = false;
 	$n = 0;
-	$this->dbo->query($sql,$r,$n);
+	$this->dbo->queryPrepared($this->dbo->sqlarray_echo($sql),"",array(),$r,$n);
 	$dateField = "";
 
 	foreach ($module->fields as $fname => &$field) {

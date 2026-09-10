@@ -161,6 +161,14 @@ SQL, $payload);
         self::assertStringNotContainsString('$this->dbo->query($sql,$r,$n)', $fullSearch);
     }
 
+    public function testRssUsesPreparedStructuredExecution(): void
+    {
+        $rss = (string) file_get_contents(__DIR__ . '/../prescia/lazyload/rss.php');
+
+        self::assertStringContainsString('$this->dbo->queryPrepared($this->dbo->sqlarray_echo($sql),"",array(),$r,$n)', $rss);
+        self::assertStringNotContainsString('$this->dbo->query($sql,$r,$n)', $rss);
+    }
+
     public function testAdministrativeHistoryLinkLookupUsesPreparedRemoteKeys(): void
     {
         $history = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/content/history.php');
