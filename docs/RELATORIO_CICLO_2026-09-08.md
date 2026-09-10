@@ -217,3 +217,10 @@ Foi adicionada a regressão `testFullSearchUsesPreparedStructuredExecution()`.
 O gerador RSS executava diretamente o SQL-array produzido pelo módulo para cada fonte configurada. A consulta agora passa por `queryPrepared()` com parâmetros vazios, preservando limite por módulo, campos de título/descrição, data e categoria.
 
 Foi adicionada a regressão `testRssUsesPreparedStructuredExecution()`.
+
+
+## Lote SQL UDM — pastas virtuais — 2026-09-10
+
+O URL Dispatch Manager concatenava nomes de pastas virtuais no SQL, tanto no modo simples quanto na validação de árvores. O lote preserva `checkHackAttempt()`, filtros declarativos e relações parentais, mas vincula cada valor de pasta com placeholders tipados conforme o campo do módulo e executa por `queryPrepared()`.
+
+Foi adicionada a regressão `testUdmVirtualFolderValuesUsePreparedExecution()`. A correção também usa o índice correto da pasta em cada nível da árvore, mantendo a intenção do algoritmo de validação parental.
