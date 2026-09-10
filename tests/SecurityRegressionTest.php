@@ -83,6 +83,17 @@ SQL, $payload);
         self::assertStringNotContainsString('$core->dbo->simpleQuery($m)', $list);
     }
 
+    public function testAdministrativeDashboardReadsUsePreparedExecution(): void
+    {
+        $index = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/content/index.php');
+        $default = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/content/default.php');
+
+        self::assertStringContainsString('$core->dbo->fetchPrepared($sql, "", array())', $index);
+        self::assertStringContainsString('$core->dbo->queryPrepared($core->dbo->sqlarray_echo($sql), "", array(), $r, $n)', $default);
+        self::assertStringNotContainsString('$core->dbo->fetch($sql)', $index);
+        self::assertStringNotContainsString('$core->dbo->query($sql,$r,$n)', $default);
+    }
+
     public function testAdministrativePreviewAndPreferencesUsePreparedValues(): void
     {
         $preview = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/content/preview.php');
