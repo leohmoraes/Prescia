@@ -265,8 +265,10 @@ class mod_bi_undo extends CscriptedModule  {
 								if ($data[$key] != $iMi[1][$key]) continue 2; // not this item, next item please ...
 							}
 							// if we got here, the keys were compared sucessfuly. Save
-							$undoModule = $this->parent->loaded($this->moduleRelation);
-							$module->getKeys($ws,$ka,$data);
+						$undoModule = $this->parent->loaded($this->moduleRelation);
+						$wTypes = "";
+						$wParams = array();
+						$module->getPreparedKeys($ws,$wTypes,$wParams,$ka,$data);
 							$keys = '';
 							foreach ($ka as $value)
 								$keys = $value."_"; // keys (searchable)
