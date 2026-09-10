@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replaced concatenated browser telemetry reads and counters in `bi_stats` with prepared queries.
 - Unified generic `getContents()` reads on the prepared execution path, including structured queries without bound values.
 - Updated generic backup export to build its full-table read through the structured SQL-array contract and prepared execution path.
+- Parameterized numeric ID lookups in the generic module content path and added a regression test; remaining free-form generic SQL callers stay tracked by #94.
 - Updated generic delete notifications to obtain module keys through `getPreparedKeys()` instead of the legacy `getKeys()` contract.
 - Replaced the remote ownership SQL assembled through `getRemoteKeys()` with metadata-derived field selection and prepared value parameters via `getRemotePreparedKeys()`.
 - Replaced the guest-group lookup and direct ownership read in `bi_auth` with prepared queries and `getPreparedKeys()`.

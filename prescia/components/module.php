@@ -1813,7 +1813,9 @@ class CModule {
 			$originalSQL = $limit == '';
 			$sql = $this->get_base_sql((string)$sql['where'],$order,$limit);
 		} else if (is_numeric($sql)) { # a number means just the ID
-			$sql = $this->get_base_sql($this->name.".".$this->keys[0]."='".(int)$sql."'");
+			$preparedTypes = "i";
+			$preparedParams = array((int)$sql);
+			$sql = $this->get_base_sql($this->name.".".$this->keys[0]."=?");
 			$originalSQL = true; // no change based on original SQL
 		} else if ($sql == "") { # no sql? use the default
 			$sql = $this->get_base_sql();
