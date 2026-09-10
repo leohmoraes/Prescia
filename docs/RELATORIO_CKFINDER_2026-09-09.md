@@ -45,3 +45,13 @@ Esses controles não encerram a issue #67: a variante PHP4, os handlers de files
 ## Atualização do loop — contenção centralizada de diretórios
 
 O `FolderHandler` PHP5 agora valida o caminho do recurso e o caminho de thumbnails com `isPathInside()` imediatamente após sua composição, antes de criar diretórios ou permitir que handlers prossigam. Isso reduz a dependência de verificações distribuídas e transforma uma configuração/caminho inválido em erro explícito. O controle não elimina todas as condições de corrida entre validação e operação; os handlers de mutação ainda requerem testes de symlink e revalidação no ponto de escrita/renomeação.
+
+## Encerramento do ciclo — PRs #140–#142
+
+As três PRs corretivas foram mescladas após CI verde:
+
+- **#140** — validação de dimensões, `overwrite`, imagem inválida e bootstrap do watermark; merge `f417b47d3e9e040ead6b9d0fbfbf83e5cc6a8c13`.
+- **#141** — validação estrutural de entradas do `CopyFiles` e regressões de upload/callbacks; merge `6e75df5a3e6fd5c60b5a36da64c650ee651dbe01`.
+- **#142** — contenção centralizada de caminhos de recursos e thumbnails; merge `29d6445770d9c25556624860328077572cdd383d`.
+
+A issue #67 permanece aberta. O ciclo não encontrou lacuna independente para nova issue e foi encerrado com todas as pendências remanescentes registradas no relatório geral.

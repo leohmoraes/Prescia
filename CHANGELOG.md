@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the conservative migration helper in `tools/migrate_php83.php`, with dry-run, timestamped backups and a security blocker report.
 
 ### Changed
+- Completed the CKFinder review cycle: merged image-input hardening (#140), malformed `CopyFiles` input validation and callback regressions (#141), and centralized resource/thumbnail path containment (#142); remaining PHP4, CSRF, ACL, active-content and TOCTOU work remains tracked in issue #67.
 - Started the systematic CKFinder security remediation: documented 11 findings across PHP5/PHP4 connectors, upload callbacks, active-content policy, filesystem races, ACLs, image processing and CSRF; the first corrective batch validates image resize inputs, rejects invalid image metadata and blocks direct watermark-plugin inclusion.
 - Parameterized remaining `bi_stats` counters and `bi_fm` file-name filters, then migrated the remaining `bi_dev` and `bi_cms` database operations to prepared execution.
 - Completed prepared execution for the remaining `bi_stats` analytics ranking, browser, resolution, bot and language queries.

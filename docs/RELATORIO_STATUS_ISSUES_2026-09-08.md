@@ -3,8 +3,8 @@
 **Repositório:** [leohmoraes/Prescia](https://github.com/leohmoraes/Prescia)  
 **Data do levantamento:** 2026-09-08 22:34 (America/Sao_Paulo)  
 **Branch de referência:** `master`  
-**HEAD:** `be224764ed2fb73accb8ffb127b53a65e48d3b67`  
-**PRs abertas no momento desta atualização:** `#139` foi mesclada; nenhuma PR do loop SQL permanece aberta.
+**HEAD de encerramento do ciclo:** `29d6445770d9c25556624860328077572cdd383d`  
+**PRs abertas do loop:** nenhuma; a PR #142 foi mesclada com CI verde.
 
 ## Resumo executivo
 
@@ -110,3 +110,30 @@ O lote seguinte, `security/parameterize-bi-stats-analytics-summary`, converte as
 O ciclo SQL foi concluído nos módulos prioritários auditados. A PR #134 tratou o resumo de analytics; a #135 concluiu rankings, browsers, resoluções, bots e idioma; a #136 concluiu referências e exportação; a #137 concluiu contadores de `bi_stats` e filtros do gerenciador de arquivos; a #138 concluiu operações de banco de `bi_dev`; e a #139 concluiu consultas dinâmicas de conteúdo, idioma, código e hierarquia em `bi_cms`. Todas foram mescladas após checks verdes de PHP 8.3, PHPStan e revisão de dependências.
 
 A auditoria seguinte das issues abertas encontrou somente escopos já cobertos por #9, #24, #34, #65, #66, #67 e #94. Portanto, nenhuma nova issue foi criada nesta etapa. O próximo lote operacional deve partir da análise de SSRF/DNS rebinding e da revisão sistemática do CKFinder, mantendo os critérios de não introduzir regressões e de atualizar este relatório após cada merge.
+
+
+## Encerramento do ciclo CKFinder — 2026-09-09
+
+A revisão sistemática do CKFinder foi executada e documentada em [`RELATORIO_CKFINDER_2026-09-09.md`](./RELATORIO_CKFINDER_2026-09-09.md). As PRs #140, #141 e #142 foram mescladas com checks verdes. O primeiro lote corrigiu validação de dimensões e imagens inválidas, bloqueio de inclusão direta do watermark, entradas malformadas em `CopyFiles` e contenção centralizada dos caminhos de recursos e thumbnails.
+
+A issue #67 permanece aberta porque ainda existem pendências verificáveis: hardening ou remoção do PHP4 legado; revalidação no ponto de operações de rename/move/delete; testes e mitigação de symlink/TOCTOU; política de conteúdo ativo e isolamento de uploads; revisão de ACL; proteção CSRF; limites de pixels/memória; e verificação de resultados no watermark. Nenhuma nova issue foi criada, pois os itens continuam cobertos por #67 e pelas issues relacionadas #24, #65, #66 e #68.
+
+## Pendências e issues abertas no encerramento
+
+| Issue | Estado ao encerrar o ciclo | Pendência principal |
+|---:|---|---|
+| #94 | Aberta, parcialmente executada | Migrar consumidores SQL genéricos restantes. |
+| #67 | Aberta, revisão executada e hardening parcial | Completar os itens CKF-01–CKF-11 ainda não resolvidos e decidir o destino do PHP4. |
+| #66 | Aberta | Definir observabilidade e retenção para tentativas de SSRF. |
+| #65 | Aberta, mitigação parcial | Completar testes controlados de DNS rebinding, CNAME, AAAA e limites de recursos. |
+| #45 / #44 | Abertas | Consolidar sobreposição e concluir variáveis indefinidas do PHPStan. |
+| #43 | Aberta | Elevar gradualmente o nível do PHPStan após reduzir diagnósticos legados. |
+| #42 | Aberta | Encapsular funções globais de sanitização e arquivos. |
+| #38 | Aberta | Tipar contratos dos drivers e variáveis de saída. |
+| #34 | Aberta, parcialmente executada | Adicionar integração real MySQL/MariaDB e payloads de aspas, Unicode, barras e injection. |
+| #33 / #27 | Abertas, parcialmente executadas | Completar consumidores e compatibilidade da API `getKeys`/prepared keys. |
+| #25 | Aberta | Concluir container, short tags e matriz de compatibilidade. |
+| #24 | Aberta | Completar escaping contextual e biblioteca/allowlist HTML segura. |
+| #9 | Aberta, parcialmente executada | Auditar e migrar SQL concatenado restante fora dos lotes já tratados. |
+
+**Resultado operacional:** não há PR aberta do loop no momento do encerramento; o working tree local está limpo e o `master` aponta para `29d6445770d9c25556624860328077572cdd383d`. O loop fica pausado neste ponto, com as pendências registradas para a próxima execução.
