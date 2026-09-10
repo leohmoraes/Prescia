@@ -161,3 +161,10 @@ Foi adicionada a regressão `testAdministrativeHistoryLinkLookupUsesPreparedRemo
 O fluxo de exportação administrativo contém dois modos de leitura (`csv` e largura fixa). Embora o arquivo esteja atualmente protegido por retorno antecipado de manutenção, as consultas usam apenas a tabela derivada do módulo carregado e não recebem valores externos no SQL. Ambas foram migradas para `queryPrepared()` com tipos e parâmetros vazios, eliminando o executor legado sem alterar o formato de exportação.
 
 Foi adicionada a regressão `testAdministrativeExportReadsUsePreparedExecution()`. A pendência permanece registrada como lote de hardening; o fluxo de exportação completo e a política de manutenção continuam fora do escopo deste commit.
+
+
+## Lote SQL bi_adm — monitor AJAX — 2026-09-10
+
+O endpoint de monitoramento AJAX repetia a consulta de contagem do painel e ainda executava o SQL-array com `query()`. Como o filtro vem da configuração de monitoramento e o identificador de usuário é incorporado no fluxo existente, a migração segura é usar `sqlarray_echo()` com `queryPrepared()` e parâmetros vazios, mantendo o comportamento e o fail-closed do tratamento de erro.
+
+Foi adicionada a regressão `testAdministrativeAjaxMonitorUsesPreparedExecution()`.
