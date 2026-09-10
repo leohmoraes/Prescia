@@ -1870,7 +1870,7 @@ class CModule {
 			$countSQL['GROUP'] = array();
 			$countSQL['ORDER'] = array();
 			$countSqlText = $this->parent->dbo->sqlarray_echo($countSQL);
-			$total = $preparedTypes !== '' ? $this->parent->dbo->fetchPrepared($countSqlText,$preparedTypes,$preparedParams) : $this->parent->dbo->fetch($countSQL,$this->parent->debugmode); # Count total items if not limited by paging
+			$total = $this->parent->dbo->fetchPrepared($countSqlText,$preparedTypes,$preparedParams); # Count total items if not limited by paging
 
 			if ($this->parent->templateParams['p_init'] != 0)
 				$sql['LIMIT'][0] = $this->parent->templateParams['p_init'].",".$this->parent->templateParams['p_size'];
@@ -1882,7 +1882,7 @@ class CModule {
 			$r = false;
 			$n = 0;
 			$sqlText = $this->parent->dbo->sqlarray_echo($sql);
-			$ok = $preparedTypes !== '' ? $this->parent->dbo->queryPrepared($sqlText,$preparedTypes,$preparedParams,$r,$n,$this->parent->debugmode) : $this->parent->dbo->query($sql,$r,$n,$this->parent->debugmode);
+			$ok = $this->parent->dbo->queryPrepared($sqlText,$preparedTypes,$preparedParams,$r,$n,$this->parent->debugmode);
 			$endTime = getmicrotime();
 			if (!$ok)
 				 $this->parent->errorControl->raise(169,$tag,$this->name);
@@ -1899,7 +1899,7 @@ class CModule {
 			$r = false;
 			$n = 0;
 			$sqlText = $this->parent->dbo->sqlarray_echo($sql);
-			if (!($preparedTypes !== '' ? $this->parent->dbo->queryPrepared($sqlText,$preparedTypes,$preparedParams,$r,$n,$this->parent->debugmode) : $this->parent->dbo->query($sql,$r,$n,$this->parent->debugmode)) && $this->parent->debugmode)
+			if (!$this->parent->dbo->queryPrepared($sqlText,$preparedTypes,$preparedParams,$r,$n,$this->parent->debugmode) && $this->parent->debugmode)
 				$this->parent->errorControl->raise(146,$this->parent->dbo->log[count($this->parent->dbo->log)-1],$this->name);
 			$endTime = getmicrotime();
 			if (!$usePaging) $this->parent->templateParams['no_paging'] = true;

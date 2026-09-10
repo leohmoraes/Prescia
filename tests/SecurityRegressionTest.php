@@ -181,6 +181,8 @@ SQL, $payload);
         self::assertStringContainsString('queryPrepared($sqlText,$preparedTypes,$preparedParams,$r,$n)', $contents);
         self::assertStringContainsString('queryPrepared($this->parent->dbo->sqlarray_echo($sql),"",array(),$r,$n)', $contents);
         self::assertStringNotContainsString('$this->parent->dbo->query($sql,$r,$n)', $contents);
+        self::assertStringNotContainsString('->dbo->fetch($countSQL', $contents);
+        self::assertStringNotContainsString('->dbo->query($sql,$r,$n', $contents);
     }
 
     public function testGenericNumericLookupUsesPreparedIdParameter(): void
