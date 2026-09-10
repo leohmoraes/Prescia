@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added fail-closed, versioned SSRF security events to `loadURL()`, with stable rejection reasons and redacted/truncated host metadata that never includes query strings, credentials or remote response bodies.
 - Limited `loadURL()` DNS processing to bounded record and public-IP counts, failing closed before connection attempts when a response exceeds the resource budget.
 - Removed the remaining generic `fetch()`/`query()` fallbacks from the central module content path; structured and legacy raw SQL inputs now use the prepared execution API even when no values are bound.
+- Continued the PHPStan level-2 remediation by making date arithmetic explicitly numeric and guarding cache-control normalization against a zero time range.
 - Started the systematic CKFinder security remediation: documented 11 findings across PHP5/PHP4 connectors, upload callbacks, active-content policy, filesystem races, ACLs, image processing and CSRF; the first corrective batch validates image resize inputs, rejects invalid image metadata and blocks direct watermark-plugin inclusion.
 - Parameterized remaining `bi_stats` counters and `bi_fm` file-name filters, then migrated the remaining `bi_dev` and `bi_cms` database operations to prepared execution.
 - Completed prepared execution for the remaining `bi_stats` analytics ranking, browser, resolution, bot and language queries.

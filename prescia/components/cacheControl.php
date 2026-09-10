@@ -156,8 +156,9 @@ class CCacheControl {
 			$cc = presciaSafeUnserialize(cReadFile(CONS_PATH_CACHE."cachecontrol.dat")); // see updateCacheControl
 			if (is_array($cc)) {
 				$this->parent->storage['CORE_CACHECONTROL'] = $cc;
-				$average = $cc[0];
-				$_SESSION[CONS_CACHECONTROL_MOD] = ($average-CONS_PM_MINTIME)/(CONS_PM_TIME-CONS_PM_MINTIME);
+					$average = (float) $cc[0];
+					$cacheRange = CONS_PM_TIME-CONS_PM_MINTIME;
+					$_SESSION[CONS_CACHECONTROL_MOD] = $cacheRange == 0 ? 0 : ($average-CONS_PM_MINTIME)/$cacheRange;
 				if ($_SESSION[CONS_CACHECONTROL_MOD]<0)$_SESSION[CONS_CACHECONTROL_MOD]=0;
 				if ($_SESSION[CONS_CACHECONTROL_MOD]>1)$_SESSION[CONS_CACHECONTROL_MOD]=1;
 				$this->parent->cachetime = floor(1000*(CONS_DEFAULT_MIN_BROWSERCACHETIME + (CONS_DEFAULT_MAX_BROWSERCACHETIME - CONS_DEFAULT_MIN_BROWSERCACHETIME) * $_SESSION[CONS_CACHECONTROL_MOD])) * ($this->parent->isbot?2:1);

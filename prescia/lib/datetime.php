@@ -85,10 +85,12 @@ if (!defined('ADODB_ALLOW_NEGATIVE_TS')) define('ADODB_NO_NEGATIVE_TS',1);
     $tmp_dat1 = adodb_mktime(0,0,0,substr($dat1,5,2),substr($dat1,8,2),substr($dat1,0,4));
     $tmp_dat2 = adodb_mktime(0,0,0,substr($dat2,5,2),substr($dat2,8,2),substr($dat2,0,4));
     $yeardiff = adodb_date('Y',$tmp_dat1)-adodb_date('Y',$tmp_dat2);
-    if (substr($dat1,5,2)>substr($dat2,5,2)) { // # final month is larger!?
-      return ($yeardiff*12) + (substr($dat1,5,2)-substr($dat2,5,2));
-    } else if (substr($dat1,5,2)<substr($dat2,5,2)) { // # final month is smaller!?
-      return (($yeardiff-1)*12) + (12+(substr($dat1,5,2)-substr($dat2,5,2)));
+    $month1 = (int) substr($dat1,5,2);
+    $month2 = (int) substr($dat2,5,2);
+    if ($month1 > $month2) { // # final month is larger!?
+      return ($yeardiff*12) + ($month1-$month2);
+    } else if ($month1 < $month2) { // # final month is smaller!?
+      return (($yeardiff-1)*12) + (12+($month1-$month2));
     } else # same month
       if (substr($dat1,8,2)>=substr($dat2,8,2)) { # month already passed based on day
         return ($yeardiff*12);
