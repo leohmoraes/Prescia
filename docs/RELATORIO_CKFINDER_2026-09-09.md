@@ -35,3 +35,9 @@ A issue **#67 permanece aberta**: a revisão foi executada e os achados foram li
 ## Validação
 
 A revisão estrutural foi concluída. PHP, Composer, Docker e PHPStan não estão disponíveis localmente; lint, PHPUnit e PHPStan isolado serão executados pelo GitHub Actions. Nenhuma alteração no baseline é permitida para mascarar os achados.
+
+## Atualização do loop — lote de upload e callbacks
+
+A revisão do código atual confirmou que parte de CKF-01 e CKF-02 já havia sido corrigida em lotes anteriores: os callbacks PHP5 usam `json_encode()` com flags hexadecimais, e `FileUpload` valida estrutura de `$_FILES`, códigos `UPLOAD_ERR_*`, `is_uploaded_file()`, tamanho e MIME ativo. O lote atual adiciona regressão explícita para esses controles e rejeita estruturas malformadas no comando `CopyFiles`, evitando warnings e coerções de arrays para strings em `name`, `type`, `folder` e `options`.
+
+Esses controles não encerram a issue #67: a variante PHP4, os handlers de filesystem, CSRF, ACL, isolamento de conteúdo ativo e limites de imagem ainda permanecem no escopo aberto.
