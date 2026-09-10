@@ -86,8 +86,8 @@ class mod_bi_fm extends CscriptedModule  {
 				$mod = $this->parent->loaded($this->moduleRelation);
 				$sql = "SELECT filenm FROM ".$mod->dbname." WHERE has_expiration='y' AND expiration_date <> '0000-00-00' AND expiration_date < NOW()";
 				$r = false;
-				$n = 0;
-				if ($this->parent->dbo->queryPrepared($sql, "", array(), $r, $n) && $n>0) {
+					$n = 0;
+					if ($this->parent->dbo->queryPrepared($sql, "", array(), $r, $n) && (int) $n > 0) {
 				// clean up files which reached expiration
 				for ($c=0;$c<$n;$c++) {
 					list($filenm) = $this->parent->dbo->fetch_row($r);
