@@ -191,6 +191,7 @@ class mod_bi_bb extends CscriptedModule  {
 	 */
 	function getTags(array $filters = array()) {
 		# tag sizes 0 ~ 4
+		/** @var array<string, int> $TAGS */
 		$TAGS = array();
 		$maxTAG = 1;
 		$mod = $this->parent->loaded($this->moduleRelation);
@@ -217,12 +218,13 @@ class mod_bi_bb extends CscriptedModule  {
 						$TAGS[$tag]++;
 					else
 						$TAGS[$tag] = 1;
-					if ($TAGS[$tag]>$maxTAG) $maxTAG =$TAGS[$tag];
+						if ($TAGS[$tag] > $maxTAG) $maxTAG = (int) $TAGS[$tag];
 				}
 			}
 		}
 		foreach ($TAGS as $tag => $count) {
-			$TAGS[$tag] = ($count<$maxTAG/5)?0:(($count<2*$maxTAG/5)?1:(($count<3*$maxTAG/5)?2:(($count<4*$maxTAG/5)?3:4)));
+				$count = (int) $count;
+				$TAGS[$tag] = ($count < $maxTAG / 5) ? 0 : (($count < 2 * $maxTAG / 5) ? 1 : (($count < 3 * $maxTAG / 5) ? 2 : (($count < 4 * $maxTAG / 5) ? 3 : 4)));
 		}
 
 		return $TAGS;
