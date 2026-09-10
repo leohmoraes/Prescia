@@ -638,10 +638,11 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 					$data = $this->parent->dbo->fetch_assoc($r);
 					if ($ip == $data['ip']) { # must maintain same IP
 						$sql = $userModule->get_base_sql(CONS_AUTH_USERMODULE.".id = ?");
-						$this->parent->dbo->queryPrepared($sql, 'i', array((int)$data['id_user']), $r, $n);
-						if ($n>0) {
+							if ($this->parent->dbo->queryPrepared($sql, 'i', array((int)$data['id_user']), $r, $n)) {
 							$userdata = $this->parent->dbo->fetch_assoc($r);
+							if (is_array($userdata)) {
 							$accept_sc = true;
+							}
 						}
 					}
 				}

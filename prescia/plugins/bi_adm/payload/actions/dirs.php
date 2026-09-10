@@ -23,7 +23,7 @@
 						$core->storage['error'] = $core->langOut("create_folder_ok");
 						$core->storage['dir'] = $theDir;
 					} else {
-						$core->logaction(CONS_ACTION_INCLUDE,$fm,false,false);
+						$core->setLog(CONS_LOGGING_ERROR);
 						$core->storage['error'] = $core->langOut("create_folder_error");
 					}
 				} else 
