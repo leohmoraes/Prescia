@@ -127,9 +127,9 @@ class CDBO_mysqli extends CDBO  {
 				$stmt->close();
 				return false;
 			}
-			$result = $stmt->get_result();
-			if ($result instanceof mysqli_result) $numrows = $result->num_rows;
-			$stmt->close();
+				$result = $stmt->get_result();
+				if ($result instanceof mysqli_result) $numrows = (int)$result->num_rows;
+				$stmt->close();
 			return true;
 		}
 

@@ -901,8 +901,12 @@ class mod_bi_dev extends CscriptedModule  {
 			if (!isset($_SESSION['affbidevut'])) { # start up
 				$pages = array();
 				$_SESSION['affbidevut'] = array(0,$pages,array(),"end"); // current test, pages to test, error messages
+				if (count($pages) === 0) {
+					$this->unitTest();
+					return;
+				}
 				sleep(1);
-				$this->parent->headerControl->internalFoward(CONS_INSTALL_ROOT.$_SESSION['affbidevut'][1][0]."?dev_test=1");
+				$this->parent->headerControl->internalFoward(CONS_INSTALL_ROOT.$pages[0]."?dev_test=1");
 			}
 			if ($_SESSION['affbidevut'][3] == "start") { // last script DIED on me! user used "back" button or typed /?dev_test=1 ... redirect to the proper NEXT page to test
 				$_SESSION['affbidevut'][3] = "end";

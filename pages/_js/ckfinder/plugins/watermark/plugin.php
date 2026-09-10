@@ -37,12 +37,14 @@ class Watermark
         }
 
         $watermarkImageAttr = @getimagesize($watermarkFile);
-        $sourceImageAttr = @getimagesize($sourceFile);
-        if ($sourceImageAttr === false || $watermarkImageAttr === false) {
-            return false;
-        }
+	        $sourceImageAttr = @getimagesize($sourceFile);
+	        if ($sourceImageAttr === false || $watermarkImageAttr === false) {
+	            return false;
+	        }
 
-        switch ($watermarkImageAttr['mime'])
+	        $oImage = false;
+	        $oWatermarkImage = false;
+	        switch ($watermarkImageAttr['mime'])
         {
             case 'image/gif':
                 {

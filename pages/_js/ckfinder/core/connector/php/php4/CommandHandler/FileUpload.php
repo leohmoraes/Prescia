@@ -197,7 +197,7 @@ class CKFinder_Connector_CommandHandler_FileUpload extends CKFinder_Connector_Co
                     $iErrorNumber = CKFINDER_CONNECTOR_ERROR_ACCESS_DENIED;
                 }
                 else {
-                    if (isset($detectHtml) && $detectHtml === -1 && CKFinder_Connector_Utils_FileSystem::detectHtml($sFilePath) === true) {
+	                    if ($detectHtml === -1 && CKFinder_Connector_Utils_FileSystem::detectHtml($sFilePath) === true) {
                         @unlink($sFilePath);
                         $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_UPLOADED_WRONG_HTML_FILE);
                     }

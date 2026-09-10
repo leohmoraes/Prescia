@@ -40,6 +40,7 @@ SQL, $payload);
         self::assertStringContainsString('INSERT INTO ".$userTable." SET name=?, id=?, id_group=?, login=?, password=?, active=?', $module);
         self::assertStringContainsString('UPDATE ".$groups->dbname." SET permissions=? WHERE id=?', $authControl);
         self::assertStringNotContainsString('simpleQuery("INSERT INTO ".$this->parent->modules[CONS_AUTH_USERMODULE]->dbname', $module);
+        self::assertStringNotContainsString("addslashes_EX(\$_REQUEST['authcode']", $module);
     }
 
     public function testAuthBootstrapReadsUsePreparedExecutionForSqlArrays(): void
@@ -422,16 +423,21 @@ PHP, $route);
         self::assertStringNotContainsString('substr($dir,0,strlen("/".CONS_FMANAGER.CONS_FMANAGER_SAFE', $fileManager);
     }
 
-    public function testInputDrivenSqlFiltersEscapeValuesBeforeBuildingLegacySql(): void
+    public function testInputDrivenSqlFiltersUsePreparedValuesAndMetadataIdentifiers(): void
     {
         $remoteKeys = (string) file_get_contents(__DIR__ . '/../prescia/components/module.php');
         $ajaxQuery = (string) file_get_contents(__DIR__ . '/../prescia/lazyload/ajaxQuery.php');
         $adminList = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/content/list.php');
 
         self::assertStringContainsString('addslashes_EX((string)$value, true, $rmodule->parent->dbo)', $remoteKeys);
-        self::assertStringContainsString('addslashes_EX((string)$_GET[$fname],true,$this->dbo)', $ajaxQuery);
-        self::assertStringContainsString("addslashes_EX((string)\$_REQUEST['affrefererkeys']", $adminList);
-        self::assertStringNotContainsString('"=\\\"".$_GET[$fname]."\\\""', $ajaxQuery);
+        self::assertStringContainsString('$sql[\'_preparedTypes\'] = $preparedTypes;', $ajaxQuery);
+        self::assertStringContainsString('$sm->getRemotePreparedKeys($module,$remoteWhere,$remoteTypes,$remoteParams,$remoteData)', $ajaxQuery);
+        self::assertStringContainsString('$sql[\'WHERE\'][] = $module->name.".".$fname."=?";', $ajaxQuery);
+        self::assertStringContainsString('$innersql[\'_preparedTypes\'] = \'s\';', $adminList);
+        self::assertStringContainsString('$innersql[\'_preparedParams\'] = array((string)$_REQUEST[\'affrefererkeys\']);', $adminList);
+        self::assertStringNotContainsString('addslashes_EX((string)$_GET[$fname]', $ajaxQuery);
+        self::assertStringNotContainsString('addslashes_EX((string)$_REQUEST[\'affrefererkeys\']', $adminList);
+        self::assertStringNotContainsString('getRemoteKeys($module,$_GET)', $ajaxQuery);
     }
 
     public function testGenericCrudUsesPreparedKeysForPruningParentChecksAndMutations(): void
@@ -835,8 +841,22 @@ PHP, $route);
         self::assertStringContainsString('PRESCIA_LOADURL_MAX_IPS', $loader);
         self::assertStringContainsString('count($records) > PRESCIA_LOADURL_MAX_DNS_RECORDS', $loader);
         self::assertStringContainsString('count($ips) > PRESCIA_LOADURL_MAX_IPS', $loader);
+        self::assertStringNotContainsString('gethostbynamel(', $loader);
         self::assertStringNotContainsString('fsockopen(', $loader);
         self::assertStringNotContainsString('Location:', $loader);
+    }
+
+    public function testLegacyHtmlHelpersDelegateToContextualSanitizer(): void
+    {
+        $helpers = (string) file_get_contents(__DIR__ . '/../prescia/lib/inputSanatizing.php');
+        $template = (string) file_get_contents(__DIR__ . '/../prescia/lib/template/tc.php');
+
+        self::assertStringContainsString('Sanitizer::sanitizeHtml((string)$htmlinput)', $helpers);
+        self::assertStringContainsString('Sanitizer::stripTags((string)$str,$preserveEndOfLine)', $helpers);
+        self::assertStringContainsString('Sanitizer::escapeHtml((string)$content)', $template);
+        self::assertStringNotContainsString('preg_replace("@<\\/?script', $helpers);
+        $legacyEscaper = (string) file_get_contents(__DIR__ . '/../prescia/lib/htmlentities_ex.php');
+        self::assertStringContainsString('Sanitizer::escapeHtml((string)$str)', $legacyEscaper);
     }
 
     public function testLoadUrlSecurityEventsAreVersionedRedactedAndFailClosed(): void
@@ -936,6 +956,43 @@ PHP, $route);
         self::assertSame(array('93.184.216.34:80'), $targets);
         self::assertNotContains('127.0.0.1:80', $targets);
         fclose($socket);
+    }
+
+    public function testLoadUrlRejectsNumericHostRepresentationsAndShortNames(): void
+    {
+        require_once __DIR__ . '/../prescia/lib/loadURL.php';
+
+        self::assertTrue(presciaLoadUrlIsValidHost('example.com'));
+        self::assertTrue(presciaLoadUrlIsValidHost('198.51.100.10'));
+        foreach (array('localhost', 'localhost.', 'internal', '2130706433', '0x7f000001', '0177.0.0.1', '127.1') as $host) {
+            self::assertFalse(presciaLoadUrlIsValidHost($host), $host . ' must not be accepted as a remote host');
+        }
+        self::assertFalse(presciaLoadUrlIsPublicIp('127.0.0.1'));
+        self::assertFalse(presciaLoadUrlIsPublicIp('::1'));
+        self::assertFalse(presciaLoadUrlIsPublicIp('fc00::1'));
+    }
+
+    public function testLoadUrlRejectsMixedDnsFamiliesAndInternalAliases(): void
+    {
+        require_once __DIR__ . '/../prescia/lib/loadURL.php';
+
+        $mixedRecords = static function (string $host): array {
+            return array(
+                array('type' => 'A', 'ip' => '198.51.100.10'),
+                array('type' => 'AAAA', 'ipv6' => '::1'),
+            );
+        };
+        $internalAlias = static function (string $host): array {
+            return array(
+                array('type' => 'A', 'ip' => '10.0.0.5'),
+            );
+        };
+
+        self::assertSame(array(), presciaLoadUrlResolvePublicIps('mixed.example', $mixedRecords));
+        self::assertSame(array(), presciaLoadUrlResolvePublicIps('attacker.example', $internalAlias));
+        self::assertSame(array('198.51.100.10'), presciaLoadUrlResolvePublicIps('public.example', static function (string $host): array {
+            return array(array('type' => 'A', 'ip' => '198.51.100.10'));
+        }));
     }
 
     public function testFrontControllerEmitsBaselineSecurityHeaders(): void

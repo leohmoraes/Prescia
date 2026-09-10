@@ -150,10 +150,10 @@ class mod_bi_auth extends CscriptedModule  {
 			require_once(CONS_PATH_SYSTEM."plugins/".$this->name."/authControl.php");
 			$this->parent->authControl = new CauthControlEx($this->parent);
 		}
-		if ($this->registrationMode == 2 && $this->parent->action == "authuser" && isset($_REQUEST['authcode']) && isset($_REQUEST['user']) && is_numeric($_REQUEST['user'])) {
-			$data = array("id" => $_REQUEST['user'],
-						  "active" => "y",
-							  "authcode" => addslashes_EX($_REQUEST['authcode'],false,$this->parent->dbo));
+			if ($this->registrationMode == 2 && $this->parent->action == "authuser" && isset($_REQUEST['authcode']) && isset($_REQUEST['user']) && is_numeric($_REQUEST['user'])) {
+				$data = array("id" => $_REQUEST['user'],
+							  "active" => "y",
+								  "authcode" => (string)$_REQUEST['authcode']);
 			$this->parent->safety = false;
 			$this->parent->runAction(CONS_AUTH_USERMODULE,CONS_ACTION_UPDATE,$data);
 			$this->parent->safety = false;

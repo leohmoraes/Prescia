@@ -62,27 +62,30 @@
 	## ENTRY PAGES ##
 	$statspath = $core->loaded('statspath');
 	$sql = "SELECT sum(hits) as shits, page FROM ".$statspath->dbname." WHERE pagefoward=? AND data >= ? AND data < ? GROUP BY page ORDER BY shits DESC";
-	$r = false;
-	$n = 0;
-	$core->dbo->queryPrepared($sql, 'sss', array($page, $dataini, $datafim), $r, $n);
-	$graphObj = $core->template->get("_pg");
-	$output = "";
-	$pages = array();
-	$biggest = 0;
-	$total = 0;
-	for($c=0;$c<$n;$c++) {
-		$data=$core->dbo->fetch_assoc($r);
-		$data['hits'] = $data['shits'];
+		$r = false;
+		$n = 0;
+		$core->dbo->queryPrepared($sql, 'sss', array($page, $dataini, $datafim), $r, $n);
+		$graphObj = $core->template->get("_pg");
+		$output = "";
+		$pages = array();
+		$biggest = 0;
+		$total = 0;
+		for($c=0;$c<$n;$c++) {
+			$data=$core->dbo->fetch_assoc($r);
+			if (!is_array($data) || !isset($data['shits'])) continue;
+			$data['shits'] = (float)$data['shits'];
+			$data['hits'] = $data['shits'];
 		$pages[] = $data;
 		if ($data['hits'] > $biggest) $biggest = $data['hits'];
 		$total += $data['hits'];
 	}
 	$outsideEntry = $phits - $total; # this is the number of ENTRY visits to the page
 	if ($outsideEntry > $biggest) $biggest= $outsideEntry;
-	$showOE = false;
-	if ($total == 0) $total = 1;
-	for($c=0;$c<$n;$c++) {
-		if ($outsideEntry > $pages[$c]['hits'] && !$showOE) {
+		$showOE = false;
+		if ($total == 0) $total = 1;
+		for($c=0;$c<$n;$c++) {
+			$pageHits = isset($pages[$c]['hits']) && is_numeric($pages[$c]['hits']) ? (float)$pages[$c]['hits'] : 0.0;
+			if ($outsideEntry > $pageHits && !$showOE) {
 			$pw = $outsideEntry / $biggest;
 			$data = array('width' => ceil($graphWidth * $pw),
 						  'percent' => 100*$outsideEntry/$phits,
@@ -92,9 +95,9 @@
 			$output .= $graphObj->techo($data);
 			$showOE = true;
 		}
-		$pw = $pages[$c]['hits'] / $biggest;
-		$pages[$c]['width'] = ceil($graphWidth * $pw);
-		$pages[$c]['percent'] = 100*$pages[$c]['hits']/($phits==0?1:$phits);
+			$pw = $pageHits / max(1,$biggest);
+			$pages[$c]['width'] = ceil($graphWidth * $pw);
+			$pages[$c]['percent'] = 100*$pageHits/($phits==0?1:$phits);
 		if ($pages[$c]['percent']<1) break;
 		$output .= $graphObj->techo($pages[$c]);
 	}
@@ -102,17 +105,19 @@
 
 	## EXIT PAGES ##
 	$sql = "SELECT sum(hits) as shits, pagefoward FROM ".$statspath->dbname." WHERE page=? AND data >= ? AND data < ? GROUP BY pagefoward ORDER BY shits DESC";
-	$r = false;
-	$n = 0;
-	$core->dbo->queryPrepared($sql, 'sss', array($page, $dataini, $datafim), $r, $n);
-	$graphObj = $core->template->get("_pg2");
-	$output = "";
-	$pages = array();
-	$biggest = 0;
-	$total = 0;
-	for($c=0;$c<$n;$c++) {
-		$data=$core->dbo->fetch_assoc($r);
-		$data['hits'] = $data['shits'];
+		$r = false;
+		$n = 0;
+		$core->dbo->queryPrepared($sql, 'sss', array($page, $dataini, $datafim), $r, $n);
+		$graphObj = $core->template->get("_pg2");
+		$output = "";
+		$pages = array();
+		$biggest = 0;
+		$total = 0;
+		for($c=0;$c<$n;$c++) {
+			$data=$core->dbo->fetch_assoc($r);
+			if (!is_array($data) || !isset($data['shits'])) continue;
+			$data['shits'] = (float)$data['shits'];
+			$data['hits'] = $data['shits'];
 		$pages[] = $data;
 		if ($data['hits'] > $biggest) $biggest = $data['hits'];
 		$total += $data['hits'];
@@ -120,10 +125,11 @@
 
 	$outsideExits = $phits - $total; # this is the number of EXIT visits to the page
 	if ($outsideExits > $biggest) $biggest= $outsideExits;
-	$showOE = false;
-	if ($total == 0) $total = 1;
-	for($c=0;$c<$n;$c++) {
-		if ($outsideExits > $pages[$c]['hits'] && !$showOE) {
+		$showOE = false;
+		if ($total == 0) $total = 1;
+		for($c=0;$c<$n;$c++) {
+			$pageHits = isset($pages[$c]['hits']) && is_numeric($pages[$c]['hits']) ? (float)$pages[$c]['hits'] : 0.0;
+			if ($outsideExits > $pageHits && !$showOE) {
 			$pw = $outsideExits / $biggest;
 			$data = array('width' => ceil($graphWidth * $pw),
 						  'percent' => 100*$outsideExits/($phits==0?1:$phits),
@@ -133,9 +139,9 @@
 			$output .= $graphObj->techo($data);
 			$showOE = true;
 		}
-		$pw = $pages[$c]['hits'] / $biggest;
-		$pages[$c]['width'] = ceil($graphWidth * $pw);
-		$pages[$c]['percent'] = 100*$pages[$c]['hits']/$total;
+			$pw = $pageHits / max(1,$biggest);
+			$pages[$c]['width'] = ceil($graphWidth * $pw);
+			$pages[$c]['percent'] = 100*$pageHits/$total;
 		if ($pages[$c]['percent']<1) break;
 		$output .= $graphObj->techo($pages[$c]);
 	}

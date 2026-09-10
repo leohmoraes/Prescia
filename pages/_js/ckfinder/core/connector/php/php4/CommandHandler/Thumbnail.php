@@ -171,9 +171,10 @@ class CKFinder_Connector_CommandHandler_Thumbnail extends CKFinder_Connector_Com
             $oSize = array('Width' => $iFinalWidth, 'Height' => $iFinalHeight);
         }
 
-        CKFinder_Connector_Utils_Misc::setMemoryForImage($sourceImageWidth, $sourceImageHeight, $sourceImageBits, $sourceImageChannels);
+	        CKFinder_Connector_Utils_Misc::setMemoryForImage($sourceImageWidth, $sourceImageHeight, $sourceImageBits, $sourceImageChannels);
 
-        switch ($sourceImageAttr['mime'])
+	        $oImage = false;
+	        switch ($sourceImageAttr['mime'])
         {
             case 'image/gif':
                 {

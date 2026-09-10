@@ -52,11 +52,14 @@
 		$r = false;
 		$n = 0;
 		$core->dbo->queryPrepared($sql,$preparedTypes,$preparedParams,$r,$n);
-		$data = $n > 0 ? $core->dbo->fetch_assoc($r) : false;
-		if ($core->errorState || $data===false) {
-		// not found? how? keys probable are wrong .. so toggle to 404
-		$core->fastClose(404);
-	}
+			$data = $n > 0 ? $core->dbo->fetch_assoc($r) : false;
+			if ($core->errorState || $data===false) {
+			// not found? how? keys probable are wrong .. so toggle to 404
+			$core->fastClose(404);
+		}
+			if (!is_array($data)) {
+				return;
+			}
 	
 	####################################### PREPARES FORM #####################################
 	$objfield = $core->template->get("_FORM_field"); # how any single field shows
@@ -110,7 +113,11 @@
 							$fillDT['ico'] = filetypeIcon($ext);
 							if (in_array($ext,array("jpg","gif","swf","png","jpeg"))) {
 								$hasImages = true;
-								$h = getimagesize($FirstfileName);
+								$h = @getimagesize($FirstfileName);
+								if (!is_array($h) || !isset($h[0],$h[1])) {
+									$content = false;
+									continue 2;
+								}
 								$fillDT['width'] = $h[0];
 								$fillDT['height'] = $h[1];
 								$fillDT['dim'] = $h[0]."x".$h[1];
@@ -129,10 +136,11 @@
 										$tObj = clone $tobjTemp;
 										$fileName = $fileName;
 										$tTemp= "";
-										$h = getimagesize($path."t/".$fileName."2.jpg");
 										for ($tv = 2; $tv <= $thumbVersions; $tv++) {
-											$tTemp .= $tObj->techo(array('tdownload'=>CONS_INSTALL_ROOT.$path."t/".$fileName.$tv.".jpg"));
-											$h = getimagesize($path."t/".$fileName.$tv.".jpg");
+											$thumbPath = $path."t/".$fileName.$tv.".jpg";
+											$h = @getimagesize($thumbPath);
+											if (!is_array($h) || !isset($h[0],$h[1])) continue;
+											$tTemp .= $tObj->techo(array('tdownload'=>CONS_INSTALL_ROOT.$thumbPath));
 										}
 										$using->assign("_thumb",$tTemp);
 									} else

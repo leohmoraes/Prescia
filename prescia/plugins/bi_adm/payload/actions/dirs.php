@@ -15,14 +15,15 @@
 			$theDir = implode("/",$theDir); // parent
 			if (is_dir(CONS_FMANAGER.$theDir)) { 
 				$core->storage['dir'] = $theDir;
-				$theDir .= "/".$coreDir;			
-				if ($this->canEdit($theDir)) {
-					if (safe_mkdir(CONS_FMANAGER.$theDir)) {
-						$core->log[] = "Folder ".$theDir." created";
+					$theDir .= "/".$coreDir;
+					if ($this->canEdit($theDir)) {
+						try {
+							(new \Prescia\Services\FileService())->ensureDirectory(CONS_FMANAGER.$theDir);
+							$core->log[] = "Folder ".$theDir." created";
 						$core->errorControl->raise(506,"Created $theDir","fmanager");
 						$core->storage['error'] = $core->langOut("create_folder_ok");
 						$core->storage['dir'] = $theDir;
-					} else {
+						} catch (\RuntimeException $exception) {
 						$core->setLog(CONS_LOGGING_ERROR);
 						$core->storage['error'] = $core->langOut("create_folder_error");
 					}

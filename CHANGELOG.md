@@ -15,7 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the conservative migration helper in `tools/migrate_php83.php`, with dry-run, timestamped backups and a security blocker report.
 
 ### Changed
-- Completed the CKFinder review cycle: merged image-input hardening (#140), malformed `CopyFiles` input validation and callback regressions (#141), and centralized resource/thumbnail path containment (#142); remaining PHP4, CSRF, ACL, active-content and TOCTOU work remains tracked in issue #67.
+- Resolved the PHPStan level-3 residual: mysqli row counts, empty database results, upload image metadata, authentication cookie data and bi_stats aggregate row shapes are now guarded or normalized without baseline growth; the full suite remains green on PHP 8.3.
+- Migrated the generic AJAX select filters and administrative linker selected markers to prepared parameters, including remote-key translation and metadata-derived identifiers; removed the remaining production consumers of `safe_mkdir()` in favor of `FileService`.
+- Routed legacy HTML helper behavior through the central DOM allowlist and contextual UTF-8 escaping service, covering `cleanHTML()`, `stripHTML()` and template escaping while preserving compatibility wrappers.
+- Hardened `loadURL()` against numeric and short hostname representations and removed the incomplete IPv4-only DNS fallback; added deterministic rebinding, private IPv6 and alternate-host regression coverage.
+- Added the SSRF monitoring runbook in `docs/SSRF_MONITORING_RUNBOOK.md`, including the versioned event contract, low-cardinality metrics, alert thresholds, retention and controlled integration test procedure.
+- Completed the CKFinder review cycle: merged image-input hardening (#140), malformed `CopyFiles` input validation and callback regressions (#141), centralized resource/thumbnail path containment (#142), and the 120-file status matrix in `docs/CKFINDER_REVIEW_2026-09-10.md`; PHP4 removal and production-only deployment checks remain explicit follow-ups.
 - Hardened CKFinder `RenameFolder` by validating the destination thumbnail path and preserving the source thumbnails when the secondary rename fails; added regression coverage for the containment and non-destructive failure contract.
 - Added fail-closed, versioned SSRF security events to `loadURL()`, with stable rejection reasons and redacted/truncated host metadata that never includes query strings, credentials or remote response bodies.
 - Limited `loadURL()` DNS processing to bounded record and public-IP counts, failing closed before connection attempts when a response exceeds the resource budget.
