@@ -1237,7 +1237,7 @@
 
 
 	// some memory cleaning because we are neat
-	unset($core->templareParams['callbackModule']);
+	unset($core->templateParams['callbackModule']);
 
 
 
