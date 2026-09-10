@@ -183,6 +183,16 @@ SQL, $payload);
         self::assertStringNotContainsString('$this->parent->dbo->query($sql,$r,$n)', $contents);
     }
 
+    public function testGenericNumericLookupUsesPreparedIdParameter(): void
+    {
+        $module = (string) file_get_contents(__DIR__ . '/../prescia/components/module.php');
+
+        self::assertStringContainsString('$preparedTypes = "i";', $module);
+        self::assertStringContainsString('$preparedParams = array((int)$sql);', $module);
+        self::assertStringContainsString('$this->get_base_sql($this->name.".".$this->keys[0]."=?")', $module);
+        self::assertStringNotContainsString('$this->get_base_sql($this->name.".".$this->keys[0]."=\'".(int)$sql."\'")', $module);
+    }
+
     public function testBiBbArchiveFiltersUsePreparedValuesAndMetadataFields(): void
     {
         $module = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_bb/module.php');
