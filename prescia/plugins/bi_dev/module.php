@@ -1086,10 +1086,10 @@ class mod_bi_dev extends CscriptedModule  {
 			if ($this->fulltest(true)) {
 				$pms = strtolower(trim(ini_get('post_max_size')));
 				$pmsv = $pms[strlen($pms)-1];
-				$pms = substr($pms,0,strlen($pms)-1);
+					$pms = (float) substr($pms,0,strlen($pms)-1);
 				$umfs = strtolower(trim(ini_get('upload_max_filesize')));
 				$umfsv = $umfs[strlen($umfs)-1];
-				$umfs = substr($umfs,0,strlen($umfs)-1);
+					$umfs = (float) substr($umfs,0,strlen($umfs)-1);
 				switch ($pmsv) {
 					case 'g':
 						$pms *= 1024;
