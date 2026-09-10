@@ -21,7 +21,7 @@
 			if (!$module->options[CONS_MODULE_SYSTEM] && !$module->linker) {
 				if ($core->authControl->checkPermission($name)) {
 					$sql = "SELECT count(*) FROM ".$module->dbname;
-					$n = $core->dbo->fetch($sql);
+					$n = $core->dbo->fetchPrepared($sql, "", array());
 					$temp .= $template->techo(array('module' => $name,
 													'name' => $core->langOut($name).($module->options[CONS_MODULE_PARTOF]!=''?" (".$core->langOut($module->options[CONS_MODULE_PARTOF]).")":""),
 													'n' => $n)

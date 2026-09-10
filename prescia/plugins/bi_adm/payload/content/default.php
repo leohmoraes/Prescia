@@ -74,7 +74,7 @@
 						if (!isset($monitoredItem['monitor_level'])) $monitoredItem['monitor_level'] = 'low';
 						$r = false;
 						$n = 0;
-						$ok = $core->dbo->query($sql,$r,$n);
+						$ok = $core->dbo->queryPrepared($core->dbo->sqlarray_echo($sql), "", array(), $r, $n);
 						if ($ok) {
 							if ($n>0) list($n) = $core->dbo->fetch_row($r);
 							$monitorData = array(
