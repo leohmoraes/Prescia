@@ -1692,7 +1692,7 @@ class CModule {
 				# security
 				$Owner = $this->parent->authControl->checkOwner($this,$kA); // array with isOwner and isSameGroup
 				if ($this->parent->safety && $_SESSION[CONS_SESSION_ACCESS_LEVEL] < 100) {
-					$this->parent->lockPermissions($this,$data,$Owner);
+					$this->parent->lockPermissions();
 					if (!$this->parent->authControl->checkPermission($this,CONS_ACTION_DELETE,$Owner)) {
 						$this->parent->errorControl->raise(149,'',$this->name);
 						return false;
