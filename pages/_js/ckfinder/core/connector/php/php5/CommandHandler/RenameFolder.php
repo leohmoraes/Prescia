@@ -92,7 +92,10 @@ class CKFinder_Connector_CommandHandler_RenameFolder extends CKFinder_Connector_
         }
 
         $_thumbnailsConfig = $_config->getThumbnailsConfig();
-        if (!CKFinder_Connector_Utils_FileSystem::isPathInside($_thumbnailsConfig->getDirectory(), $this->_currentFolder->getThumbsServerPath())) {
+        $oldThumbsServerPath = $this->_currentFolder->getThumbsServerPath();
+        $newThumbsServerPath = dirname($oldThumbsServerPath) . '/' . $newFolderName . '/';
+        if (!CKFinder_Connector_Utils_FileSystem::isPathInside($_thumbnailsConfig->getDirectory(), $oldThumbsServerPath)
+            || !CKFinder_Connector_Utils_FileSystem::isPathInside($_thumbnailsConfig->getDirectory(), $newThumbsServerPath)) {
             $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_INVALID_REQUEST);
         }
 
@@ -105,9 +108,8 @@ class CKFinder_Connector_CommandHandler_RenameFolder extends CKFinder_Connector_
         if (!$bMoved) {
             $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_ACCESS_DENIED);
         } else {
-            $newThumbsServerPath = dirname($this->_currentFolder->getThumbsServerPath()) . '/' . $newFolderName . '/';
-            if (!@rename($this->_currentFolder->getThumbsServerPath(), $newThumbsServerPath)) {
-                CKFinder_Connector_Utils_FileSystem::unlink($this->_currentFolder->getThumbsServerPath());
+            if (is_dir($oldThumbsServerPath) && !@rename($oldThumbsServerPath, $newThumbsServerPath)) {
+                $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_ACCESS_DENIED);
             }
         }
 
