@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Continued the PHPStan level-2 remediation by making date arithmetic explicitly numeric and guarding cache-control normalization against a zero time range.
 - Parameterized the selected page filter in the bi_stats module report while keeping table and column identifiers derived from validated module metadata.
 - Added centralized allowlisted HTML sanitization with safe link-scheme filtering and regression coverage for scripts, event handlers, and `javascript:` URLs.
+- Corrected Docker documentation to match the PHP 8.3 image and the removal of short-tag requirements; full compatibility tests and PHPStan remain green.
 - Started the systematic CKFinder security remediation: documented 11 findings across PHP5/PHP4 connectors, upload callbacks, active-content policy, filesystem races, ACLs, image processing and CSRF; the first corrective batch validates image resize inputs, rejects invalid image metadata and blocks direct watermark-plugin inclusion.
 - Parameterized remaining `bi_stats` counters and `bi_fm` file-name filters, then migrated the remaining `bi_dev` and `bi_cms` database operations to prepared execution.
 - Completed prepared execution for the remaining `bi_stats` analytics ranking, browser, resolution, bot and language queries.
