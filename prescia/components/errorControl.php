@@ -224,7 +224,9 @@ class CErrorControl {
 			$parameter = $errCode;
 			$errCode = 603;
 		}
-		if (!is_dir(CONS_PATH_LOGS)) safe_mkdir(CONS_PATH_LOGS);
+		if (!is_dir(CONS_PATH_LOGS)) {
+			(new \Prescia\Services\FileService())->ensureDirectory(CONS_PATH_LOGS);
+		}
 		if (($this->ERRORS[$errCode] == CONS_ERROR_FATAL_MAIL || $this->ERRORS[$errCode] == CONS_ERROR_NOTIFYMAIL) && !CONS_ONSERVER) {
 			if (isMail(CONS_MASTERMAIL))
 				@mail(CONS_MASTERMAIL,"Fatal error at ".(isset($_SESSION['CODE'])?$_SESSION['CODE']:"Unknown domain")." err $errCode","Data: $parameter\nModule:$module",CONS_MASTERMAIL);
@@ -287,7 +289,9 @@ class CErrorControl {
 		if ($storeInWarning) $this->parent->warning[] = $errstr;
 		if ($lowLog || $securityLog || $highLog) {
 			if (isset($_SESSION['CODE'])) {
-				if (isset($_SESSION['CODE']) && ! is_dir(CONS_PATH_LOGS.$_SESSION['CODE']."/")) safe_mkdir(CONS_PATH_LOGS.$_SESSION['CODE']."/");
+				if (isset($_SESSION['CODE']) && ! is_dir(CONS_PATH_LOGS.$_SESSION['CODE']."/")) {
+					(new \Prescia\Services\FileService())->ensureDirectory(CONS_PATH_LOGS.$_SESSION['CODE']."/");
+				}
 				if (!is_file(CONS_PATH_LOGS.$_SESSION['CODE']."/err".date("Ymd").".log") || filesize(CONS_PATH_LOGS.$_SESSION['CODE']."/err".date("Ymd").".log") < CONS_MAX_LOGFILESIZE) {
 					$fd = fopen (CONS_PATH_LOGS.$_SESSION['CODE']."/err".date("Ymd").".log", "a");
 				  	if ($fd) {
@@ -315,7 +319,9 @@ class CErrorControl {
 
 
 		if ($actionLog && !CONS_ECONOMICMODE) {
-			if (isset($_SESSION['CODE']) && !is_dir(CONS_PATH_LOGS.$_SESSION['CODE']."/")) safe_mkdir(CONS_PATH_LOGS.$_SESSION['CODE']."/");
+			if (isset($_SESSION['CODE']) && !is_dir(CONS_PATH_LOGS.$_SESSION['CODE']."/")) {
+				(new \Prescia\Services\FileService())->ensureDirectory(CONS_PATH_LOGS.$_SESSION['CODE']."/");
+			}
 			$fd = fopen (CONS_PATH_LOGS.$_SESSION['CODE']."/act".date("Ymd").".log", "a");
 		  	if ($fd) {
 				if ($errCode >= 301 && $errCode <= 305)	{
