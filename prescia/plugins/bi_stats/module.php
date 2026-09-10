@@ -69,7 +69,7 @@ class mod_bi_stats extends CscriptedModule  {
 					$output = array('IE' => 0,'FF' => 0, 'SA' => 0, 'OP' => 0, 'CH' => 0, 'UN' => 0, 'mob' =>0,'total' =>0);
 					$r = false;
 					$n = 0;
-					if ($this->parent->dbo->queryPrepared($sql, "", array(), $r, $n) && $n>0) {
+						if ($this->parent->dbo->queryPrepared($sql, "", array(), $r, $n)) {
 						for ($c=0;$c<$n;$c++) {
 							list($h,$b) = $this->parent->dbo->fetch_row($r);
 							if (strpos($b,"Internet")!==false) $output['IE'] += $h;
@@ -133,8 +133,9 @@ class mod_bi_stats extends CscriptedModule  {
 		return $sum;
 	}
 
-	function getHits($days=1,$groupDays=1,$filterPage='',$filterLang='') {
-		$stats = array();
+		function getHits($days=1,$groupDays=1,$filterPage='',$filterLang='') {
+			$groupDays = max(1, (int) $groupDays);
+			$stats = array();
 		$sdh = $this->parent->loaded('stats');
 		$sql = "SELECT sum(hits), sum(uhits), sum(bhits), sum(rhits) FROM ".$sdh->dbname." WHERE data = ?";
 		$types = 's';
@@ -158,14 +159,14 @@ class mod_bi_stats extends CscriptedModule  {
 		$sql .= " GROUP BY data".($filterPage!=''?',page':'').($filterLang!=''?',lang':'')." ORDER BY data DESC";
 		$r = false;
 		$n = 0;
-		if ($this->parent->dbo->queryPrepared($sql,$types,$params,$r,$n) && $n>0) {
+			if ($this->parent->dbo->queryPrepared($sql,$types,$params,$r,$n)) {
 			for ($c=0;$c<$n;$c++) $stats[] = $this->parent->dbo->fetch_row($r);
 		}
 		if ($groupDays != 1) {
 			$newstats = array();
 			$pos = -1;
 			for ($c=0;$c<count($stats);$c++) {
-				if ($c % $groupDays ==0 || $pos == -1) {
+				if ($c % $groupDays === 0 || $pos === -1) {
 					$pos++;
 					$newstats[$pos] = array(0,0,0,0);
 				}
