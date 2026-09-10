@@ -2,7 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Prescia\Tests;
+namespace {
+    if (!function_exists('getmicrotime')) {
+        function getmicrotime(): float
+        {
+            return microtime(true);
+        }
+    }
+
+    require_once __DIR__ . '/../prescia/lib/dbo/cdbo.php';
+    require_once __DIR__ . '/../prescia/lib/dbo/mysqli.php';
+}
+
+namespace Prescia\Tests {
 
 use PHPUnit\Framework\TestCase;
 
@@ -59,4 +71,28 @@ final class DatabaseIntegrationTest extends TestCase
         self::assertNull($result['value_nullable']);
         self::assertSame('1', (string) $this->connection->query('SELECT COUNT(*) AS total FROM prepared_regression')->fetch_assoc()['total']);
     }
+
+    public function testDriverInitializesOutputsForEmptyAndFailedPreparedQueries(): void
+    {
+        $driver = new \CDBO_mysqli(
+            (string) getenv('PRESCIA_DB_HOST'),
+            (string) getenv('PRESCIA_DB_USER'),
+            (string) getenv('PRESCIA_DB_PASSWORD'),
+            (string) getenv('PRESCIA_DB_NAME')
+        );
+        $result = 'stale';
+        $rows = 99;
+        self::assertTrue($driver->queryPrepared('SELECT value_text FROM prepared_regression WHERE id=?', 'i', [999], $result, $rows));
+        self::assertSame(0, $rows);
+        self::assertInstanceOf(\mysqli_result::class, $result);
+        $result->free();
+
+        $result = 'stale';
+        $rows = 99;
+        self::assertFalse($driver->queryPrepared('SELECT missing_column FROM prepared_regression', '', [], $result, $rows));
+        self::assertFalse($result);
+        self::assertSame(0, $rows);
+    }
+}
+
 }
