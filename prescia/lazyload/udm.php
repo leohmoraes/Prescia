@@ -46,8 +46,11 @@
 			if (!isset($param[$vFn]['key'])) $this->errorControl->raise(186,"","UDM","Key not defined on entry ".$vFn);
 			else $param[$vFn]['key'] = strtolower($param[$vFn]['key']);
 			if (!isset($param[$vFn]['convertquery'])) $this->errorControl->raise(186,"","UDM","Convertquery not defined on entry ".$vFn);
-			else $param[$vFn]['convertquery'] = strtolower($param[$vFn]['convertquery']);
-			if (!isset($module->fields[$param[$vFn]['key']])) $this->errorControl->raise(186,$param[$vFn]['key'],"UDM","Field not found (".$param[$vFn]['key'].") on entry ".$vFn);
+				else $param[$vFn]['convertquery'] = strtolower($param[$vFn]['convertquery']);
+				if (!isset($module->fields[$param[$vFn]['key']])) $this->errorControl->raise(186,$param[$vFn]['key'],"UDM","Field not found (".$param[$vFn]['key'].") on entry ".$vFn);
+				$preparedTypes = '';
+				$preparedParams = array();
+				$keyIsInteger = in_array($module->fields[$param[$vFn]['key']][CONS_XML_TIPO],array(CONS_TIPO_INT,CONS_TIPO_LINK),true);
 
 			if ($isTree) { // we will consume 1 or more folders according to how many are available
 				
@@ -62,24 +65,32 @@
 				}
 				// $vF now have all the folders that must be validated by this tree (alas, we can add the necessary SQL checks
 				// get BASE sql (first check is the top-level folder
-				$sql = $module->get_base_sql($param[$vFn]['module'].".".$param[$vFn]['key']." =\"".$vF[0]."\"".(isset($param[$vFn]['filter'])?" AND (".$param[$vFn]['filter'].")":""),"",1,true); // true so it does not add the parent, we will force it ... better would to join everything EXCEPT parent though
+					$sql = $module->get_base_sql(isset($param[$vFn]['filter'])?"(".$param[$vFn]['filter'].")":"","",1,true);
+					$sql['WHERE'][] = $module->name.".".$param[$vFn]['key'].'=?';
+					$preparedTypes .= $keyIsInteger ? 'i' : 's';
+					$preparedParams[] = $keyIsInteger ? (int)$vF[0] : $vF[0];
 				for ($processed=1;$processed<count($vF);$processed++) {
 					// add extra tests for parent
 					$sql['FROM'][] = $module->dbname." as ".$module->name."_p".$processed; // parent 1..2..3
-					$sql['WHERE'][] = $module->name."_p".$processed.".id = ".($processed==1?$module->name.".id_parent":$module->name."_p".($processed-1).".id_parent")."
-									AND ".$module->name."_p".$processed.".".$param[$vFn]['key']." = \"".$vF[1]."\""; 
+						$sql['WHERE'][] = $module->name."_p".$processed.".id = ".($processed==1?$module->name.".id_parent":$module->name."_p".($processed-1).".id_parent");
+						$sql['WHERE'][] = $module->name."_p".$processed.".".$param[$vFn]['key'].'=?';
+						$preparedTypes .= $keyIsInteger ? 'i' : 's';
+						$preparedParams[] = $keyIsInteger ? (int)$vF[$processed] : $vF[$processed];
 				}
 				#$this->warning[] = "UDM keys = ".vardump($vF);
 			} else {
 				// get the proper (non-tree)SQL
-				$sql = $module->get_base_sql($param[$vFn]['module'].".".$param[$vFn]['key']." =\"".$vF."\"".(isset($param[$vFn]['filter'])?" AND (".$param[$vFn]['filter'].")":""),"",1);
+					$sql = $module->get_base_sql(isset($param[$vFn]['filter'])?"(".$param[$vFn]['filter'].")":"","",1);
+					$sql['WHERE'][] = $module->name.".".$param[$vFn]['key'].'=?';
+					$preparedTypes .= $keyIsInteger ? 'i' : 's';
+					$preparedParams[] = $keyIsInteger ? (int)$vF : $vF;
 				#$this->warning[] = "UDM key = $vF";
 			}
 			
 			$n=-1;
 			$r = false;
 			$n = 0;
-			if ($this->dbo->query($sql,$r,$n) && $n>0) { // found!
+				if ($this->dbo->queryPrepared($this->dbo->sqlarray_echo($sql),$preparedTypes,$preparedParams,$r,$n) && $n>0) { // found!
 				$matched = true;
 				if ($n>1) {
 					// can't determine which, considers NOT found
