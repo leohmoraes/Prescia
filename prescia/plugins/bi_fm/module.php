@@ -34,7 +34,9 @@ class mod_bi_fm extends CscriptedModule  {
 	function onMeta() {
 		# Run this function during meta-load (debugmode >>ONLY<<)
 		###### -> Construct should add this module to the onMeta array
-		if (!is_dir(CONS_FMANAGER.CONS_FMANAGER_SAFE)) safe_mkdir(CONS_FMANAGER.CONS_FMANAGER_SAFE);
+			if (!is_dir(CONS_FMANAGER.CONS_FMANAGER_SAFE)) {
+				(new \Prescia\Services\FileService())->ensureDirectory(CONS_FMANAGER.CONS_FMANAGER_SAFE);
+			}
 		if (!isset($this->parent->dimconfig['default_fm_time']))
 			$this->parent->dimconfig['default_fm_time'] = 30; // default expiration date, set 0 to none
 
