@@ -57,6 +57,6 @@ final class DatabaseIntegrationTest extends TestCase
         self::assertSame($value, $result['value_text']);
         self::assertSame((string) $number, (string) $result['value_num']);
         self::assertNull($result['value_nullable']);
-        self::assertSame(1, $this->connection->query('SELECT COUNT(*) AS total FROM prepared_regression')->fetch_assoc()['total']);
+        self::assertSame('1', (string) $this->connection->query('SELECT COUNT(*) AS total FROM prepared_regression')->fetch_assoc()['total']);
     }
 }
