@@ -11,6 +11,27 @@ jobs:
   tests:
     name: PHP ${{ matrix.php }} tests
     runs-on: ubuntu-latest
+    env:
+      PRESCIA_DB_HOST: 127.0.0.1
+      PRESCIA_DB_PORT: 3306
+      PRESCIA_DB_NAME: prescia_test
+      PRESCIA_DB_USER: prescia_test
+      PRESCIA_DB_PASSWORD: prescia_test
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: prescia_test
+          MYSQL_USER: prescia_test
+          MYSQL_PASSWORD: prescia_test
+          MYSQL_ROOT_PASSWORD: root_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot_test"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
     strategy:
       fail-fast: false
       matrix:
