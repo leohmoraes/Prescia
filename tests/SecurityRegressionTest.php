@@ -122,6 +122,17 @@ SQL, $payload);
         self::assertStringNotContainsString('$core->dbo->fetch("SELECT count(*) FROM ".$mod->dbname)', $listing);
     }
 
+    public function testAdministrativeMultipleEditLookupsUsePreparedIds(): void
+    {
+        $edit = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/actions/edit.php');
+
+        self::assertStringContainsString('$fetchItemsByKeys = function (array $keyGroups)', $edit);
+        self::assertStringContainsString('$core->dbo->queryPrepared($sql,str_repeat(\'s\',count($ids)),$ids,$r,$n)', $edit);
+        self::assertStringNotContainsString('$core->dbo->query($sql,$r,$n);', $edit);
+        self::assertStringNotContainsString('implode(",",$okKeys)', $edit);
+        self::assertStringNotContainsString('implode(",",$errorKeys)', $edit);
+    }
+
     public function testAdministrativeHistoryLinkLookupUsesPreparedRemoteKeys(): void
     {
         $history = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/content/history.php');

@@ -54,6 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Routed the administrative AJAX monitor count through the prepared SQL-array executor, matching the main dashboard monitor path.
 - Parameterized administrative reorder selection IDs with integer validation, placeholders, and an `IN (NULL)` empty-selection guard.
 - Removed the remaining raw `query()`/`fetch()` fallbacks from the administrative listing selection and linker-count paths.
+- Replaced concatenated post-edit success/error lookups with a shared prepared-ID helper and preserved multiple-edit logging behavior.
 - Replaced interpolated forum, language and callback filters in the `bi_bb` index payload with prepared parameters while preserving forum trees and latest-thread pagination.
 - Added prepared-parameter transport to parental `getContents()` trees and migrated the selected-value markers in administrative edit and options payloads away from SQL interpolation.
 - Replaced the legacy raw SQL string used to load `bi_bb` thread posts with a structured SQL array and prepared forum/thread identifiers, preserving joins, ordering and pagination behavior.

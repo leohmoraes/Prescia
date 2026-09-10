@@ -182,3 +182,10 @@ Foi adicionada a regressão `testAdministrativeReorderIdsUsePreparedParameters()
 A listagem administrativa ainda usava `query()` quando não havia tipos preparados e `fetch()` para contar registros de módulos linker. O primeiro caminho agora sempre serializa o SQL-array e chama `queryPrepared()` com os metadados disponíveis; a contagem também usa `fetchPrepared()` com parâmetros vazios. A alteração elimina os fallbacks sem mudar filtros, paginação ou seleção de módulos.
 
 Foi adicionada a regressão `testAdministrativeListingHasNoRawSelectionFallbacks()`.
+
+
+## Lote SQL bi_adm — resultados de edição múltipla — 2026-09-10
+
+Os lookups exibidos quando uma edição múltipla tinha sucessos e falhas concatenavam arrays de chaves em `IN (...)`, além de não suportarem corretamente o formato interno das chaves. O lote criou um único helper que extrai a primeira chave para o fluxo atualmente suportado, cria placeholders, vincula os valores como strings e preserva as mensagens de sucesso/erro. O helper retorna vazio quando não há valores válidos.
+
+Foi adicionada a regressão `testAdministrativeMultipleEditLookupsUsePreparedIds()`. O suporte funcional a múltiplas chaves continua explicitamente fora deste lote, conforme o TODO existente.
