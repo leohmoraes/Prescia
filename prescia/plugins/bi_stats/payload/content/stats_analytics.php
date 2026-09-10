@@ -169,7 +169,7 @@
 
 	foreach ($horarios as $horario => $hdata) {
 		// hits
-		$corRED = 255*($hdata['hits']/$hdata['sum'])/$max;
+		$corRED = 255*((float) $hdata['hits']/(float) $hdata['sum'])/(float) $max;
 		$corBLUE = 255-$corRED;
 		$corRED = dechex($corRED);
 		$corGREEN = dechex(floor($corBLUE/2));
@@ -178,10 +178,12 @@
 		if (strlen($corGREEN)==1) $corGREEN = "0".$corGREEN;
 		if (strlen($corBLUE)==1) $corBLUE = "0".$corBLUE;
 		$horario = explode("_",$horario); // weekday, hour
-		$output .= "<div title=\"".$translateweek[$horario[0]]." ".$horario[1]."h: ".(floor($hdata['hits']/$hdata['sum']))." visitas\" style=\"width:".$daywidth."px;height:".$hourheight."px;left:".($daywidth*($horario[0]+1))."px;top:".($hourheight*$horario[1])."px;position:absolute;background:#".$corRED.$corGREEN.$corBLUE."\">&nbsp;</div>";
+		$weekday = (int) $horario[0];
+		$hour = (int) $horario[1];
+		$output .= "<div title=\"".$translateweek[$weekday]." ".$hour."h: ".(floor((float) $hdata['hits']/(float) $hdata['sum']))." visitas\" style=\"width:".$daywidth."px;height:".$hourheight."px;left:".($daywidth*($weekday+1))."px;top:".($hourheight*$hour)."px;position:absolute;background:#".$corRED.$corGREEN.$corBLUE."\">&nbsp;</div>";
 
 		// uhits
-		$corRED = 255*($hdata['uhits']/$hdata['sum'])/$maxu;
+		$corRED = 255*((float) $hdata['uhits']/(float) $hdata['sum'])/(float) $maxu;
 		$corBLUE = 255-$corRED;
 		$corRED = dechex($corRED);
 		$corGREEN = dechex(floor($corBLUE/2));
@@ -189,7 +191,7 @@
 		if (strlen($corRED)==1) $corRED = "0".$corRED;
 		if (strlen($corGREEN)==1) $corGREEN = "0".$corGREEN;
 		if (strlen($corBLUE)==1) $corBLUE = "0".$corBLUE;
-		$output2 .= "<div title=\"".$translateweek[$horario[0]]." ".$horario[1]."h: ".(floor($hdata['uhits']/$hdata['sum']))." pessoas\" style=\"width:".$daywidth."px;height:".$hourheight."px;left:".($daywidth*($horario[0]+1))."px;top:".($hourheight*$horario[1])."px;position:absolute;background:#".$corRED.$corGREEN.$corBLUE."\">&nbsp;</div>";
+		$output2 .= "<div title=\"".$translateweek[$weekday]." ".$hour."h: ".(floor((float) $hdata['uhits']/(float) $hdata['sum']))." pessoas\" style=\"width:".$daywidth."px;height:".$hourheight."px;left:".($daywidth*($weekday+1))."px;top:".($hourheight*$hour)."px;position:absolute;background:#".$corRED.$corGREEN.$corBLUE."\">&nbsp;</div>";
 
 	}
 	for ($c=0;$c<7;$c++) { // day names
