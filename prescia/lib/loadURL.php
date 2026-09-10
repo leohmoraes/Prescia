@@ -5,6 +5,8 @@
 -*/
 
 if (!defined('PRESCIA_LOADURL_MAX_BYTES')) define('PRESCIA_LOADURL_MAX_BYTES', 2097152);
+if (!defined('PRESCIA_LOADURL_MAX_DNS_RECORDS')) define('PRESCIA_LOADURL_MAX_DNS_RECORDS', 32);
+if (!defined('PRESCIA_LOADURL_MAX_IPS')) define('PRESCIA_LOADURL_MAX_IPS', 16);
 
 /** Return true only for globally routable IP addresses. */
 function presciaLoadUrlIsPublicIp(string $ip): bool {
@@ -51,10 +53,14 @@ function presciaLoadUrlResolvePublicIps(string $host): array {
     $ips = array();
     $records = function_exists('dns_get_record') ? @dns_get_record($host, DNS_A | DNS_AAAA) : false;
     if (is_array($records)) {
+        if (count($records) > PRESCIA_LOADURL_MAX_DNS_RECORDS) return array();
         foreach ($records as $record) {
             $ip = isset($record['ip']) ? $record['ip'] : (isset($record['ipv6']) ? $record['ipv6'] : '');
             if ($ip !== '' && !presciaLoadUrlIsPublicIp($ip)) return array();
-            if ($ip !== '') $ips[] = $ip;
+            if ($ip !== '') {
+                $ips[] = $ip;
+                if (count($ips) > PRESCIA_LOADURL_MAX_IPS) return array();
+            }
         }
     }
     if (!$ips) {
@@ -63,6 +69,7 @@ function presciaLoadUrlResolvePublicIps(string $host): array {
         foreach ($legacyIps as $ip) {
             if (!presciaLoadUrlIsPublicIp($ip)) return array();
             $ips[] = $ip;
+            if (count($ips) > PRESCIA_LOADURL_MAX_IPS) return array();
         }
     }
     return array_values(array_unique($ips));
