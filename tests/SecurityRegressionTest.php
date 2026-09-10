@@ -691,6 +691,19 @@ PHP, $route);
         self::assertStringNotContainsString('Location:', $loader);
     }
 
+    public function testCkfinderImagePluginsValidateRequestsAndBootstrap(): void
+    {
+        $resize = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/plugins/imageresize/plugin.php');
+        $watermark = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/plugins/watermark/plugin.php');
+
+        self::assertStringContainsString('preg_match("/^[1-9]\\d*$/", $newWidth)', $resize);
+        self::assertStringContainsString('preg_match("/^[1-9]\\d*$/", $newHeight)', $resize);
+        self::assertStringContainsString('$overwrite = isset($_POST[\'overwrite\'])', $resize);
+        self::assertStringContainsString('$imageInfo = @getimagesize($filePath)', $resize);
+        self::assertStringContainsString('CKFINDER_CONNECTOR_ERROR_INVALID_REQUEST', $resize);
+        self::assertStringContainsString("if (!defined('IN_CKFINDER')) exit;", $watermark);
+    }
+
     public function testDockerImageDeniesFrameworkInternalsFromHttpSurface(): void
     {
         $dockerfile = (string) file_get_contents(__DIR__ . '/../Dockerfile');

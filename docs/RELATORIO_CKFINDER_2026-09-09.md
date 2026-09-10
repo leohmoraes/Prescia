@@ -1,0 +1,37 @@
+# Revisão sistemática do CKFinder — 2026-09-09
+
+**Repositório:** [leohmoraes/Prescia](https://github.com/leohmoraes/Prescia)  
+**Issue:** [#67](https://github.com/leohmoraes/Prescia/issues/67)  
+**Escopo:** connector PHP5, caminho PHP4 legado, entrypoints, configuração, handlers de mutação, upload, plugins e processamento de imagens.
+
+## Inventário
+
+O pacote contém **36 arquivos PHP5** no connector, **36 arquivos PHP4** legados e três plugins PHP prioritários: `fileeditor`, `imageresize` e `watermark`. O PHPStan global exclui a árvore `pages/_js/ckfinder`, de modo que a validação do pacote requer lint e testes isolados em CI.
+
+## Vulnerabilidades e riscos encontrados
+
+| ID | Severidade | Superfície | Evidência | Impacto | Tratamento |
+|---|---|---|---|---|---|
+| CKF-01 | Alta | Callbacks de upload | `ErrorHandler/FileUpload.php` e `QuickUpload.php` montam JavaScript por concatenação e escaping apenas de aspas simples. | XSS em respostas de upload com nomes, URLs ou mensagens controláveis. | Substituir por serialização JavaScript segura e adicionar payloads com aspas, barra invertida, newline e `</script>`. |
+| CKF-02 | Alta | Upload PHP5/PHP4 | O fluxo legado usa validação parcial de `$_FILES` antes de `move_uploaded_file()`. | Estados inválidos, mensagens inconsistentes e superfície de upload não validada de forma uniforme. | Validar estrutura, erro, tamanho, arquivo temporário e upload HTTP antes do processamento; remover ou desativar PHP4. |
+| CKF-03 | Alta | Tipos de recurso e `FileEditor` | A configuração permite extensões ativas como HTML, JS, XML e SWF; `SaveFile` grava conteúdo enviado. | Stored XSS ou execução em mesmo origin se a árvore for servida diretamente. | Reduzir allowlist ou isolar uploads em origem sem scripts; limitar conteúdo editável. |
+| CKF-04 | Alta | Filesystem e handlers de mutação | Verificações de existência/escrita ocorrem separadas de copy, move, rename, mkdir e delete. | TOCTOU, symlink e escrita fora da raiz em condições concorrentes ou deploys permissivos. | Canonicalizar e revalidar no ponto da operação; usar criação/substituição atômica e testes de symlink. |
+| CKF-05 | Alta | ACL e configuração | ACL padrão usa `role='*'` com view/create/rename/delete/upload. | Qualquer sessão autenticada com acesso ao connector pode receber capacidade excessiva. | Aplicar menor privilégio por papel e recurso; confirmar uso em produção. |
+| CKF-06 | Alta | Exposição de erros e permissões | Configuração histórica usa `display_errors=1` e modos `0775`, com `umask(0)`. | Vazamento de caminhos/configuração e permissões de escrita/execução excessivas. | Já tratado parcialmente em PRs anteriores; validar deploy e manter regressões. |
+| CKF-07 | Alta | `ImageResize` | `width`, `height` e `overwrite` são lidos sem validação completa; há regex duplicada para `newWidth`. | Bypass de limites, comportamento inesperado e DoS por dimensões/decodificação. | Validar inteiros positivos, limites, overwrite por allowlist e falhas de imagem. |
+| CKF-08 | Alta | `ImageResizeInfo` e GD | `getimagesize()` é usado sem verificar retorno; plugins não impõem limite de pixels/memória. | Warnings, respostas inconsistentes e consumo elevado de CPU/memória. | Falha segura para imagem inválida e limites de pixels/bytes. |
+| CKF-09 | Média | `Watermark` | Plugin não bloqueia inclusão direta e aceita caminho de source configurável; resultados de gravação não são verificados. | Execução fora do bootstrap, marca d'água ausente ou arquivo parcialmente escrito. | Bloquear inclusão direta, canonicalizar source e validar saída/limpeza. |
+| CKF-10 | Média | CSRF e dispatch | Comandos são despachados por GET/POST e mutações dependem principalmente de sessão/ACL. | Operações mutáveis podem ser acionadas por requisições cross-site. | Exigir método POST e token CSRF no contrato do connector. |
+| CKF-11 | Média | PHP4 legado | O caminho PHP4 duplica handlers vulneráveis e pode ser reativado em deploy legado. | Correções PHP5 não protegem a variante antiga. | Desativar/remover formalmente a runtime PHP4 ou criar hardening equivalente com testes compatíveis. |
+
+## Lote corretivo iniciado
+
+Este ciclo inicia correções de baixo risco e alta verificabilidade no plugin PHP5: validação completa de dimensões e `overwrite`, tratamento de imagem inválida e bloqueio de inclusão direta do watermark. As correções serão publicadas em PR separada, com regressão estática e CI PHP 8.3. O hardening de upload, callbacks, filesystem e desativação PHP4 permanece em lotes subsequentes.
+
+## Status
+
+A issue **#67 permanece aberta**: a revisão foi executada e os achados foram listados, mas o escopo ainda não atende aos critérios de encerramento enquanto CKF-01–CKF-05, CKF-07–CKF-11 não tiverem correção, desativação formal ou aceite documentado. Nenhuma nova issue foi criada porque todos os achados estão cobertos por #67 ou pelas frentes relacionadas #24, #65, #66 e #68.
+
+## Validação
+
+A revisão estrutural foi concluída. PHP, Composer, Docker e PHPStan não estão disponíveis localmente; lint, PHPUnit e PHPStan isolado serão executados pelo GitHub Actions. Nenhuma alteração no baseline é permitida para mascarar os achados.
