@@ -196,3 +196,10 @@ Foi adicionada a regressão `testAdministrativeMultipleEditLookupsUsePreparedIds
 A impressão de labels montava as cláusulas de chave com valores extraídos dos checkboxes e executava `query()`. O fluxo já valida o formato de cada chave por expressão regular; a correção preserva essa validação, usa placeholders, tipa inteiros/links como `i` e demais chaves como `s`, e executa o SQL-array por `queryPrepared()`.
 
 Foi adicionada a regressão `testLabelPrintingUsesPreparedSelectedKeys()`.
+
+
+## Lote SQL friendly URL — action e queryfilter — 2026-09-10
+
+O resolvedor de friendly URLs concatenava o valor da action e os filtros derivados de `$_REQUEST` no SQL. O lote preserva a validação existente de módulo/campo e `checkHackAttempt()`, mas monta placeholders para action e queryfilter, aplicando tipos `i` a campos inteiros e `s` aos demais valores, e usa `queryPrepared()` no SQL-array.
+
+Foi adicionada a regressão `testFriendlyUrlActionAndQueryFiltersUsePreparedValues()`. Filtros SQL declarativos definidos na configuração continuam sendo tratados como estrutura confiável e permanecem fora deste lote.
