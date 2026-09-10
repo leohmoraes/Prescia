@@ -66,8 +66,8 @@
 	$p['maxHeight'] = 500;
 	if ($core->layout == 0 && defined('CONS_USER_RESOLUTION') && isset($_SESSION[CONS_USER_RESOLUTION])) {
 		$p['maxWidth'] = explode("x",$_SESSION[CONS_USER_RESOLUTION]);
-		$p['maxHeight'] = $p['maxWidth'][1] - 400;
-		$p['maxWidth'] = $p['maxWidth'][0] - 400;
+		$p['maxHeight'] = (int) $p['maxWidth'][1] - 400;
+		$p['maxWidth'] = (int) $p['maxWidth'][0] - 400;
 	}
 
 	// login also comes as cookie, so we must differentiate them by disabling the request/post/get if what we have is the cookie login
@@ -773,9 +773,9 @@
 		$p['mfs'] = 1048576*$p['maxMUPupload'];
 	else {
 		$phpmfs = ini_get('upload_max_filesize'); // detect hard limit
-		if (strpos($phpmfs,"M")!==false) $phpmfs = substr($phpmfs,0,-1)*1048576;
-		else if (strpos($phpmfs,"K")!==false) $phpmfs = substr($phpmfs,0,-1)*1024;
-		else if (strpos($phpmfs,"G")!==false) $phpmfs = substr($phpmfs,0,-1)*1073741824;
+			if (strpos($phpmfs,"M")!==false) $phpmfs = (float) substr($phpmfs,0,-1)*1048576;
+			else if (strpos($phpmfs,"K")!==false) $phpmfs = (float) substr($phpmfs,0,-1)*1024;
+			else if (strpos($phpmfs,"G")!==false) $phpmfs = (float) substr($phpmfs,0,-1)*1073741824;
 
 		if ($p['mfs']>0) $p['mfs'] *=$p['maxReductionSize']; // allows automatic reduction up to X times
 		else $p['mfs'] = $phpmfs; // no automatic reduction, use raw phpmfs
