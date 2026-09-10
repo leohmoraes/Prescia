@@ -701,6 +701,20 @@ PHP, $route);
         self::assertStringNotContainsString('Location:', $loader);
     }
 
+    public function testLoadUrlSecurityEventsAreVersionedRedactedAndFailClosed(): void
+    {
+        $loader = (string) file_get_contents(__DIR__ . '/../prescia/lib/loadURL.php');
+
+        self::assertStringContainsString("'schema' => 'prescia.security.v1'", $loader);
+        self::assertStringContainsString("'event' => 'ssrf_blocked'", $loader);
+        self::assertStringContainsString("'reason' => \$reason", $loader);
+        self::assertStringContainsString("preg_replace('/[^a-z0-9.:%_-]/i'", $loader);
+        self::assertStringContainsString('JSON_THROW_ON_ERROR', $loader);
+        self::assertStringContainsString('catch (Throwable $exception)', $loader);
+        self::assertStringNotContainsString("'url' => \$url", $loader);
+        self::assertStringNotContainsString("'query' => \$query", $loader);
+    }
+
     public function testCkfinderImagePluginsValidateRequestsAndBootstrap(): void
     {
         $resize = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/plugins/imageresize/plugin.php');
