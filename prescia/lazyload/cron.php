@@ -81,17 +81,17 @@ if ($forceCron=='day' || $forceCron=='all' || (date("d") != $this->dimconfig['_c
 				$sql = "SELECT * FROM ".$module->dbname." WHERE ".$module->options[CONS_MODULE_AUTOCLEAN];
 				$r = false;
 				$n = 0;
-				$this->dbo->query($sql,$r,$n);
-				if ($n>0) {
+				if ($this->dbo->query($sql,$r,$n)) {
 					$this->safety = false;
-					for ($c=0;$c<$n;$c++) {
-						$data = $this->dbo->fetch_assoc($r);
+					$c = 0;
+					while (is_array($data = $this->dbo->fetch_assoc($r))) {
 						$this->runAction($module,CONS_ACTION_DELETE,$data,true);
 						if ($c%10 == 0 && $this->nearTimeLimit()) {
 							$this->errorControl->raise(111,'cleanup-stage');
 							$this->safety = true; # aborts cron as of now
 							return;
 						}
+						$c++;
 					}
 					$this->safety = true;
 				}
@@ -154,17 +154,17 @@ if ($forceCron=='hour' || $forceCron=='all' || $this->dimconfig['_cronH'] != dat
 				$sql = "SELECT * FROM ".$module->dbname." WHERE ".$module->options[CONS_MODULE_AUTOCLEAN];
 				$r = false;
 				$n = 0;
-				$this->dbo->query($sql,$r,$n);
-				if ($n>0) {
+				if ($this->dbo->query($sql,$r,$n)) {
 					$this->safety = false;
-					for ($c=0;$c<$n;$c++) {
-						$data = $this->dbo->fetch_assoc($r);
+					$c = 0;
+					while (is_array($data = $this->dbo->fetch_assoc($r))) {
 						$this->runAction($module,CONS_ACTION_DELETE,$data,true);
 						if ($c%10 == 0 && $this->nearTimeLimit()) {
 							$this->errorControl->raise(112,'cleanup-stage');
 							$this->safety = true; # aborts cron as of now
 							return;
 						}
+						$c++;
 					}
 					$this->safety = true;
 				}

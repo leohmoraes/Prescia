@@ -140,7 +140,7 @@ if (!$core->dbconnect()) $core->offlineMode = true;
 # ab -n50 total mean: 30ms	27ms	26ms	26ms
 
 if (!$core->loadMetadata()) $core->errorControl->raise(1,"metamodel fault"); // loadMetadata loads dimconfig
-if ($core->debugmode) $core->applyMetaData(); // only in debug. Executes onMeta's and save metadata/sql changes
+if ($core->debugmode && $core instanceof CPresciaFull) $core->applyMetaData(); // only in debug. Executes onMeta's and save metadata/sql changes
 # ab -n50 total mean: 363ms 	28ms	28ms	28ms
 
 
