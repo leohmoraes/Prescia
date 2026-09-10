@@ -94,6 +94,16 @@ SQL, $payload);
         self::assertStringNotContainsString('$core->dbo->query($sql,$r,$n)', $default);
     }
 
+    public function testAdministrativeHistoryLinkLookupUsesPreparedRemoteKeys(): void
+    {
+        $history = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/content/history.php');
+
+        self::assertStringContainsString('$module->getRemotePreparedKeys($rmodule,$where,$whereTypes,$whereParams,$data)', $history);
+        self::assertStringContainsString('$core->dbo->queryPrepared($sql,$whereTypes,$whereParams,$r,$n)', $history);
+        self::assertStringNotContainsString('$module->getRemoteKeys($rmodule,$data)', $history);
+        self::assertStringNotContainsString('$core->dbo->query($sql,$r,$n)', $history);
+    }
+
     public function testAdministrativePreviewAndPreferencesUsePreparedValues(): void
     {
         $preview = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/content/preview.php');

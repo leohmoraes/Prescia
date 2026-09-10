@@ -147,3 +147,10 @@ Após a sincronização de `master` para `17e4aed`, a auditoria identificou duas
 Foi adicionada a regressão `testAuthBootstrapReadsUsePreparedExecutionForSqlArrays()` em `tests/SecurityRegressionTest.php`. A baseline PHPStan não foi alterada. A validação local deve registrar a ausência de PHP/Composer; o CI PHP 8.3, PHPUnit, PHPStan, lint, dependências e Docker será o critério de conclusão do SHA publicado.
 
 A auditoria ampla ainda encontra chamadas legadas em fluxos administrativos, cron, busca, friendly URLs, labels e páginas de teste. Elas permanecem pendentes e não serão declaradas resolvidas por este lote.
+
+
+## Lote SQL bi_adm — histórico de links — 2026-09-10
+
+O histórico administrativo ainda fazia lookup de campos relacionados com `getRemoteKeys()` e `query()`. O contexto confirmou que tabela, coluna e relação vêm dos metadados dos módulos, enquanto os valores do histórico são dados persistidos e devem ser vinculados. O lookup passou para `getRemotePreparedKeys()` e `queryPrepared()`, preservando a mensagem de ambiguidade e o comportamento de restauração.
+
+Foi adicionada a regressão `testAdministrativeHistoryLinkLookupUsesPreparedRemoteKeys()`. A baseline PHPStan permanece inalterada; o CI será a validação global deste lote.

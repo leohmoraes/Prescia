@@ -61,21 +61,23 @@
 					$fieldDT['conteudo'] = $core->langOut('nofile');
 					
 			break;
-			case CONS_TIPO_LINK:
-				$rmodule = $core->loaded($field[CONS_XML_MODULE]);
-				$where = $module->getRemoteKeys($rmodule,$data);
-			
-					if (count($where)==0) continue 2; // error on getRemoteKeys
-
-				$sql = "SELECT ".$rmodule->title." FROM ".$rmodule->dbname." as ".$rmodule->name." WHERE ".implode(" AND ",$where);
+				case CONS_TIPO_LINK:
+					$rmodule = $core->loaded($field[CONS_XML_MODULE]);
+					$where = '';
+					$whereTypes = '';
+					$whereParams = array();
+					if (!$module->getRemotePreparedKeys($rmodule,$where,$whereTypes,$whereParams,$data))
+						continue 2;
+				
+					$sql = "SELECT ".$rmodule->title." FROM ".$rmodule->dbname." as ".$rmodule->name." WHERE ".$where;
 								
-				$r = false;
-				$n = 0;
-				if ($core->dbo->query($sql,$r,$n) && $n == 1) { 
+					$r = false;
+					$n = 0;
+					if ($core->dbo->queryPrepared($sql,$whereTypes,$whereParams,$r,$n) && $n == 1) { 
 					$fieldDT['conteudo'] = $core->dbo->fetch_row($r);
 					$fieldDT['conteudo'] = $fieldDT['conteudo'][0];
 				} else { // none or more than two ... can't decide thus ambiguous
-					$fieldDT['conteudo'] = "<span style=\"color:#ff0000\">".implode(",",$where)." ?</span>";
+						$fieldDT['conteudo'] = "<span style=\"color:#ff0000\">".$where." ?</span>";
 					$missingField = true;
 				}				
 			break;			
