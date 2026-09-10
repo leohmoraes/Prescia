@@ -50,7 +50,7 @@ foreach ($parameters as $mod) {
 	$sql = $module->get_base_sql($where,$order,$limit);
 	$r = false;
 	$n = 0;
-	$this->dbo->query($sql,$r,$n);
+	$this->dbo->queryPrepared($this->dbo->sqlarray_echo($sql),"",array(),$r,$n);
 
 	$dateField = isset($mod['date'])?$mod['date']:'';
 	if ($dateField == '') {

@@ -153,6 +153,14 @@ SQL, $payload);
         self::assertStringNotContainsString('checkHackAttempt($_REQUEST[$field])."\\""', $friendlyUrl);
     }
 
+    public function testFullSearchUsesPreparedStructuredExecution(): void
+    {
+        $fullSearch = (string) file_get_contents(__DIR__ . '/../prescia/lazyload/fullSearch.php');
+
+        self::assertStringContainsString('$this->dbo->queryPrepared($this->dbo->sqlarray_echo($sql),"",array(),$r,$n)', $fullSearch);
+        self::assertStringNotContainsString('$this->dbo->query($sql,$r,$n)', $fullSearch);
+    }
+
     public function testAdministrativeHistoryLinkLookupUsesPreparedRemoteKeys(): void
     {
         $history = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/content/history.php');

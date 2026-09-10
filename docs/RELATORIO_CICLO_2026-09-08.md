@@ -203,3 +203,10 @@ Foi adicionada a regressão `testLabelPrintingUsesPreparedSelectedKeys()`.
 O resolvedor de friendly URLs concatenava o valor da action e os filtros derivados de `$_REQUEST` no SQL. O lote preserva a validação existente de módulo/campo e `checkHackAttempt()`, mas monta placeholders para action e queryfilter, aplicando tipos `i` a campos inteiros e `s` aos demais valores, e usa `queryPrepared()` no SQL-array.
 
 Foi adicionada a regressão `testFriendlyUrlActionAndQueryFiltersUsePreparedValues()`. Filtros SQL declarativos definidos na configuração continuam sendo tratados como estrutura confiável e permanecem fora deste lote.
+
+
+## Lote SQL fullSearch — SQL-array preparado — 2026-09-10
+
+A busca completa usava o executor legado para uma consulta construída pelo contrato de módulo e por filtros declarativos da definição de busca. O lote preserva título, descrição, ordenação, limite e agrupamento, mas serializa o SQL-array e usa `queryPrepared()` com parâmetros vazios.
+
+Foi adicionada a regressão `testFullSearchUsesPreparedStructuredExecution()`.
