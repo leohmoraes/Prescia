@@ -16,6 +16,7 @@ function presciaLoadUrlIsPublicIp(string $ip): bool {
 function presciaLoadUrlIsValidHost(string $host): bool {
     if ($host === '' || strlen($host) > 253 || strpbrk($host, "\r\n\0") !== false) return false;
     if (filter_var($host, FILTER_VALIDATE_IP)) return true;
+    if (strpos($host, '.') === false || preg_match('/^[0-9.]+$/', $host)) return false;
     if (!preg_match('/^(?=.{1,253}\.?$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)*[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.?$/i', $host)) return false;
     return strtolower(rtrim($host, '.')) !== 'localhost';
 }
@@ -44,14 +45,14 @@ function presciaLoadUrlLogEvent(string $reason, string $scheme, string $host, in
     }
 }
 
-/** @return list<string> */
-function presciaLoadUrlResolvePublicIps(string $host): array {
+/** @param callable|null $resolver @return list<string> */
+function presciaLoadUrlResolvePublicIps(string $host, ?callable $resolver = null): array {
     if (filter_var($host, FILTER_VALIDATE_IP)) {
         return presciaLoadUrlIsPublicIp($host) ? array($host) : array();
     }
 
     $ips = array();
-    $records = function_exists('dns_get_record') ? @dns_get_record($host, DNS_A | DNS_AAAA) : false;
+    $records = $resolver !== null ? $resolver($host) : (function_exists('dns_get_record') ? @dns_get_record($host, DNS_A | DNS_AAAA) : false);
     if (is_array($records)) {
         if (count($records) > PRESCIA_LOADURL_MAX_DNS_RECORDS) return array();
         foreach ($records as $record) {
@@ -63,15 +64,9 @@ function presciaLoadUrlResolvePublicIps(string $host): array {
             }
         }
     }
-    if (!$ips) {
-        $legacyIps = @gethostbynamel($host);
-        if (!is_array($legacyIps)) return array();
-        foreach ($legacyIps as $ip) {
-            if (!presciaLoadUrlIsPublicIp($ip)) return array();
-            $ips[] = $ip;
-            if (count($ips) > PRESCIA_LOADURL_MAX_IPS) return array();
-        }
-    }
+    // Do not fall back to the legacy IPv4-only resolver: it can create a
+    // second, differently scoped DNS decision than dns_get_record.
+    if (!$ips) return array();
     return array_values(array_unique($ips));
 }
 

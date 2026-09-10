@@ -841,10 +841,10 @@ class CModule {
 		$path = CONS_FMANAGER.$this->name."/";
 		if (!is_dir($path)) makeDirs($path);
 
-		if (isset($this->fields[$name][CONS_XML_FILEPATH])) { # custom path
-			$path .= $this->fields[$name][CONS_XML_FILEPATH];
-			if ($path[strlen($path)-1] != "/") $path .= "/";
-			if (!is_dir($path)) safe_mkdir($path);
+			if (isset($this->fields[$name][CONS_XML_FILEPATH])) { # custom path
+				$path .= $this->fields[$name][CONS_XML_FILEPATH];
+				if ($path[strlen($path)-1] != "/") $path .= "/";
+				if (!is_dir($path)) (new \Prescia\Services\FileService())->ensureDirectory($path);
 		}
 
 		# prepares filename with item keys
@@ -1320,10 +1320,10 @@ class CModule {
 							$ext = '';
 							$path = CONS_FMANAGER.$this->name."/";
 						if (is_dir($path)) {
-							if (isset($this->fields[$name][CONS_XML_FILEPATH])) {
-								$path .= $this->fields[$name][CONS_XML_FILEPATH];
-								if ($path[strlen($path)-1] != "/") $path .= "/";
-								if (!is_dir($path)) safe_mkdir($path);
+				if (isset($this->fields[$name][CONS_XML_FILEPATH])) {
+					$path .= $this->fields[$name][CONS_XML_FILEPATH];
+					if ($path[strlen($path)-1] != "/") $path .= "/";
+					if (!is_dir($path)) (new \Prescia\Services\FileService())->ensureDirectory($path);
 							}
 							# prepares filename with item keys
 							$filename = $path.$name."_";

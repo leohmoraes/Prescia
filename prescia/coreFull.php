@@ -87,30 +87,26 @@ class CPresciaFull extends CPrescia {
 		}
 		$this->errorControl->raise(1000);
 		$this->log = array(); // we don't want the above "log" to cause an abort (yes, this function uses the log size to confirm an error - lame but extremelly effective)
-		$this->allModulesLoaded = true;
+			$this->allModulesLoaded = true;
 
-		# initial clean up and check
-		if (!is_dir(CONS_PATH_TEMP)) safe_mkdir(CONS_PATH_TEMP);
-		if (!is_dir(CONS_PATH_CACHE)) safe_mkdir(CONS_PATH_CACHE);
-		if (!is_dir(CONS_PATH_DINCONFIG)) safe_mkdir(CONS_PATH_DINCONFIG);
-		if (!is_dir(CONS_PATH_CACHE."locale/")) safe_mkdir(CONS_PATH_CACHE."locale/");
-		if (!is_dir(CONS_PATH_LOGS)) safe_mkdir(CONS_PATH_LOGS);
-		if (!is_dir(CONS_PATH_LOGS.$_SESSION['CODE']."/")) safe_mkdir(CONS_PATH_LOGS.$_SESSION['CODE']."/");
-		if (!is_dir(CONS_PATH_DINCONFIG.$_SESSION['CODE']."/")) safe_mkdir(CONS_PATH_DINCONFIG.$_SESSION['CODE']."/");
-		if (!is_dir(CONS_PATH_CACHE.$_SESSION['CODE']."/")) safe_mkdir(CONS_PATH_CACHE.$_SESSION['CODE']."/");
-		if (!is_dir(CONS_PATH_CACHE.$_SESSION['CODE']."/meta/")) safe_mkdir(CONS_PATH_CACHE.$_SESSION['CODE']."/meta/");
-		if (!is_dir(CONS_PATH_CACHE.$_SESSION['CODE']."/meta/locale")) safe_mkdir(CONS_PATH_CACHE.$_SESSION['CODE']."/meta/locale/");
-		if (!is_dir(CONS_PATH_PAGES.$_SESSION['CODE']."/")) safe_mkdir(CONS_PATH_PAGES.$_SESSION['CODE']."/");
-		if (!is_dir(CONS_PATH_PAGES.$_SESSION['CODE']."/actions/")) safe_mkdir(CONS_PATH_PAGES.$_SESSION['CODE']."/actions");
-		if (!is_dir(CONS_PATH_PAGES.$_SESSION['CODE']."/content/")) safe_mkdir(CONS_PATH_PAGES.$_SESSION['CODE']."/content");
-		if (!is_dir(CONS_PATH_PAGES.$_SESSION['CODE']."/_config/locale/")) safe_mkdir(CONS_PATH_PAGES.$_SESSION['CODE']."/_config/locale");
-		if (!is_dir(CONS_PATH_PAGES.$_SESSION['CODE']."/files/")) safe_mkdir(CONS_PATH_PAGES.$_SESSION['CODE']."/files");
-		if (!is_dir(CONS_PATH_PAGES.$_SESSION['CODE']."/template/")) {
-			 safe_mkdir(CONS_PATH_PAGES.$_SESSION['CODE']."/template");
+			# initial clean up and check
+			$files = new \Prescia\Services\FileService();
+			$directories = array(
+				CONS_PATH_TEMP, CONS_PATH_CACHE, CONS_PATH_DINCONFIG, CONS_PATH_CACHE."locale/",
+				CONS_PATH_LOGS, CONS_PATH_LOGS.$_SESSION['CODE']."/", CONS_PATH_DINCONFIG.$_SESSION['CODE']."/",
+				CONS_PATH_CACHE.$_SESSION['CODE']."/", CONS_PATH_CACHE.$_SESSION['CODE']."/meta/",
+				CONS_PATH_CACHE.$_SESSION['CODE']."/meta/locale", CONS_PATH_PAGES.$_SESSION['CODE']."/",
+				CONS_PATH_PAGES.$_SESSION['CODE']."/actions/", CONS_PATH_PAGES.$_SESSION['CODE']."/content/",
+				CONS_PATH_PAGES.$_SESSION['CODE']."/_config/locale/", CONS_PATH_PAGES.$_SESSION['CODE']."/files/"
+			);
+			foreach ($directories as $directory)
+				if (!is_dir($directory)) $files->ensureDirectory($directory);
+			if (!is_dir(CONS_PATH_PAGES.$_SESSION['CODE']."/template/")) {
+				 $files->ensureDirectory(CONS_PATH_PAGES.$_SESSION['CODE']."/template");
 			 copy(CONS_PATH_SETTINGS."defaults/basefile.html",CONS_PATH_PAGES.$_SESSION['CODE']."/template/basefile.html");
 			 copy(CONS_PATH_SETTINGS."defaults/index.html",CONS_PATH_PAGES.$_SESSION['CODE']."/template/index.html");
 		}
-		if (!is_dir(CONS_PATH_PAGES.$_SESSION['CODE']."/mail/")) safe_mkdir(CONS_PATH_PAGES.$_SESSION['CODE']."/mail");
+			if (!is_dir(CONS_PATH_PAGES.$_SESSION['CODE']."/mail/")) $files->ensureDirectory(CONS_PATH_PAGES.$_SESSION['CODE']."/mail");
 
 		# Dimconfig
 		if (is_file(CONS_PATH_DINCONFIG.$_SESSION['CODE']."/din.dat"))
@@ -670,12 +666,12 @@ class CPresciaFull extends CPrescia {
 					$this->errorState = true;
 					array_push($this->log,"Base ".$module->dbname." for ".$module->name." not detected and an error occured while creating it! (triggered errorState)");
 				}
-			} else {
-				# checks if all fields are ok
-					$sql = "SHOW FIELDS FROM ".$table;
-				$r = false;
-				$n = 0;
-				$this->dbo->query($sql,$r,$n);
+					} else {
+					# checks if all fields are ok
+						$sql = "SHOW FIELDS FROM ".$table;
+					$r = false;
+					$n = 0;
+					$this->dbo->queryPrepared($sql,"",array(),$r,$n);
 				$camposdb = array();
 				$data = $this->dbo->fetch_row($r);
 				while (is_array($data)){
@@ -695,11 +691,11 @@ class CPresciaFull extends CPrescia {
 						}
 					}
 				}
-				# checks keys and uniques
-					$sql = "SHOW KEYS FROM ".$table;
-				$r = false;
-				$n = 0;
-				$this->dbo->query($sql,$r,$n);
+					# checks keys and uniques
+						$sql = "SHOW KEYS FROM ".$table;
+					$r = false;
+					$n = 0;
+					$this->dbo->queryPrepared($sql,"",array(),$r,$n);
 				$camposdb = array();
 				$uniquedb = array();
 				$normalkeys = array();

@@ -302,6 +302,8 @@
 	$total = 0;
 	for($c=0;$c<$n;$c++) {
 		$ref = $core->dbo->fetch_assoc($r);
+		if (!is_array($ref) || !isset($ref['hits'])) continue;
+		$ref['hits'] = (float)$ref['hits'];
 		if ($ref['referer'] == '') $ref['referer'] = 'BOOKMARK';
 		$refs[] = $ref;
 		$total += $ref['hits'];
@@ -310,7 +312,8 @@
 	$refdObj = $core->template->get("_refd");
 	$output = "";
 	for($c=0;$c<$n;$c++) {
-		$refs[$c]['width'] = ceil($graphWidth*$refs[$c]['hits']/$total);
+		$hits = isset($refs[$c]['hits']) && is_numeric($refs[$c]['hits']) ? (float)$refs[$c]['hits'] : 0.0;
+		$refs[$c]['width'] = ceil($graphWidth*$hits/$total);
 		$output .= $refdObj->techo($refs[$c]);
 	}
 	$core->template->assign("_refd",$output);
@@ -324,6 +327,8 @@
 	$total = 0;
 	for($c=0;$c<$n;$c++) {
 		$ref = $core->dbo->fetch_assoc($r);
+		if (!is_array($ref) || !isset($ref['h'])) continue;
+		$ref['h'] = (float)$ref['h'];
 		if ($ref['referer'] == '') $ref['referer'] = 'BOOKMARK';
 		$refs[] = $ref;
 		$total += $ref['h'];
@@ -332,7 +337,8 @@
 	$refdObj = $core->template->get("_refh");
 	$output = "";
 	for($c=0;$c<$n;$c++) {
-		$refs[$c]['width'] = ceil($graphWidth*$refs[$c]['h']/$total);
+		$hits = isset($refs[$c]['h']) && is_numeric($refs[$c]['h']) ? (float)$refs[$c]['h'] : 0.0;
+		$refs[$c]['width'] = ceil($graphWidth*$hits/$total);
 		$output .= $refdObj->techo($refs[$c]);
 	}
 	$core->template->assign("_refh",$output);
@@ -346,6 +352,8 @@
 	$total = 0;
 	for($c=0;$c<$n;$c++) {
 		$ref = $core->dbo->fetch_assoc($r);
+		if (!is_array($ref) || !isset($ref['h'])) continue;
+		$ref['h'] = (float)$ref['h'];
 		$refs[] = $ref;
 		$total += $ref['h'];
 	}
@@ -353,7 +361,8 @@
 	$refdObj = $core->template->get("_refe");
 	$output = "";
 	for($c=0;$c<$n;$c++) {
-		$refs[$c]['width'] = ceil($graphWidth*$refs[$c]['h']/$total);
+		$hits = isset($refs[$c]['h']) && is_numeric($refs[$c]['h']) ? (float)$refs[$c]['h'] : 0.0;
+		$refs[$c]['width'] = ceil($graphWidth*$hits/$total);
 		$output .= $refdObj->techo($refs[$c]);
 	}
 	$core->template->assign("_refe",$output);
@@ -524,6 +533,8 @@
 				   );
 	for ($c=0;$c<$n;$c++) {
 	$ares = $core->dbo->fetch_assoc($r);
+		if (!is_array($ares) || !isset($ares['hits'])) continue;
+		$ares['hits'] = (float)$ares['hits'];
 		$res[] = $ares;
 		$total += $ares['hits'];
 		if (in_array($ares['resolution'],$cpack[DIM_ST])) {
@@ -542,8 +553,9 @@
 	$obj = $core->template->get("_res");
 	$output = "";
 	for ($c=0;$c<$n;$c++) {
-		$res[$c]['percent'] = 100*$res[$c]['hits'] / $total;
-		$res[$c]['width'] = ceil($innerWidth * $res[$c]['hits'] / $total);
+		$hits = isset($res[$c]['hits']) && is_numeric($res[$c]['hits']) ? (float)$res[$c]['hits'] : 0.0;
+		$res[$c]['percent'] = 100*$hits / $total;
+		$res[$c]['width'] = ceil($innerWidth * $hits / $total);
 		$output .= $obj->techo($res[$c]);
 		if ($res[$c]['percent'] < 0.25) break; # we don't care
 	}
@@ -582,15 +594,22 @@
 	$langs = array();
 	for ($c=0;$c<$n;$c++) {
 		$langs[$c] = $core->dbo->fetch_assoc($r);
+		if (!is_array($langs[$c]) || !isset($langs[$c]['hits'])) {
+			unset($langs[$c]);
+			continue;
+		}
+		$langs[$c]['hits'] = (float)$langs[$c]['hits'];
 		$t += $langs[$c]['hits'];
 	}
 	if ($t==0) $t=1;
 	$temp ="";
 	$obj = $core->template->get("_lang");
 	for ($c=0;$c<$n;$c++) {
-		$langs[$c]['percent'] = $langs[$c]['hits']/$t;
-		$langs[$c]['width'] = ceil($graphWidth * $langs[$c]['percent']);
-		$langs[$c]['percent'] *= 100;
-		$temp .= $obj->techo($langs[$c]);
+		$language = $langs[$c] ?? null;
+		if (!is_array($language) || !array_key_exists('hits',$language) || !is_numeric($language['hits'])) continue;
+		$language['percent'] = (float)$language['hits']/$t;
+		$language['width'] = ceil($graphWidth * $language['percent']);
+		$language['percent'] *= 100;
+		$temp .= $obj->techo($language);
 	}
 		$core->template->assign("_lang",$temp);

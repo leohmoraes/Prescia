@@ -629,16 +629,18 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 		# COOKIES?
 		if (isset($_COOKIE['scookie']) && $_COOKIE['scookie'] != "" && isset($_COOKIE['login']) && is_numeric($_COOKIE['login'])) {
 
-			$accept_sc = false; # sc = session cookie (cookie saves a login/session key pair, but no password)
-			$sql = $authModule->get_base_sql(CONS_AUTH_SESSIONMANAGERMODULE.".revalidatecode = ? AND ".CONS_AUTH_SESSIONMANAGERMODULE.".id_user = ?");
+				$accept_sc = false; # sc = session cookie (cookie saves a login/session key pair, but no password)
+				$sessionUserId = null;
+				$sql = $authModule->get_base_sql(CONS_AUTH_SESSIONMANAGERMODULE.".revalidatecode = ? AND ".CONS_AUTH_SESSIONMANAGERMODULE.".id_user = ?");
 			$data = array();
 			$r = null; $n = 0;
-			if ($this->parent->dbo->queryPrepared($sql, 'si', array((string)$_COOKIE['scookie'], (int)$_COOKIE['login']), $r, $n)) {
-				if ($n>0) {
-					$data = $this->parent->dbo->fetch_assoc($r);
-					if ($ip == $data['ip']) { # must maintain same IP
-						$sql = $userModule->get_base_sql(CONS_AUTH_USERMODULE.".id = ?");
-							if ($this->parent->dbo->queryPrepared($sql, 'i', array((int)$data['id_user']), $r, $n)) {
+				if ($this->parent->dbo->queryPrepared($sql, 'si', array((string)$_COOKIE['scookie'], (int)$_COOKIE['login']), $r, $n)) {
+					if ($n>0) {
+						$data = $this->parent->dbo->fetch_assoc($r);
+						if (is_array($data) && isset($data['ip'],$data['id_user']) && $ip == (string)$data['ip']) { # must maintain same IP
+							$sessionUserId = (int)$data['id_user'];
+							$sql = $userModule->get_base_sql(CONS_AUTH_USERMODULE.".id = ?");
+								if ($this->parent->dbo->queryPrepared($sql, 'i', array($sessionUserId), $r, $n)) {
 							$userdata = $this->parent->dbo->fetch_assoc($r);
 							if (is_array($userdata)) {
 							$accept_sc = true;
@@ -647,15 +649,15 @@ class CauthControlEx extends CauthControl { # Replaces basic auth control
 					}
 				}
 			}
-			if ($accept_sc) { # valid session cookie
-					$sql = "UPDATE ".$authModule->dbname." SET ip=?,lastaction=NOW() WHERE id_user=?";
-					$ok = $this->parent->dbo->queryPrepared($sql, 'si', array((string)$ip, (int)$data['id_user']), $r, $n);
-				if ($ok) { # managed to refresh cookie
-					$returnCode = $this->logUser($data['id_user'],CONS_AUTH_SESSION_KEEP);
+				if ($accept_sc && $sessionUserId !== null) { # valid session cookie
+						$sql = "UPDATE ".$authModule->dbname." SET ip=?,lastaction=NOW() WHERE id_user=?";
+					$ok = $this->parent->dbo->queryPrepared($sql, 'si', array((string)$ip, $sessionUserId), $r, $n);
+					if ($ok) { # managed to refresh cookie
+						$returnCode = $this->logUser($sessionUserId,CONS_AUTH_SESSION_KEEP);
 					if ($returnCode == CONS_AUTH_SESSION_NEW) {
 						# renews cookie
 							$this->setAuthCookie('scookie',(string)$_COOKIE['scookie'],time()+CONS_COOKIE_TIME);
-							$this->setAuthCookie('login',(string)$data['id_user'],time()+CONS_COOKIE_TIME);
+								$this->setAuthCookie('login',(string)$sessionUserId,time()+CONS_COOKIE_TIME);
 						$this->parent->errorControl->raise(301,'','',$_SESSION[CONS_SESSION_ACCESS_USER]['login']);
 					}
 					return $returnCode;

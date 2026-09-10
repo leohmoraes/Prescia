@@ -84,10 +84,11 @@ class CKFinder_Connector_CommandHandler_ImageResize extends CKFinder_Connector_C
             $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_FILE_NOT_FOUND);
         }
 
-        $newWidth = isset($_POST['width']) ? trim((string) $_POST['width']) : '';
-        $newHeight = isset($_POST['height']) ? trim((string) $_POST['height']) : '';
-        $quality = 80;
-        $resizeOriginal = !empty($_POST['width']) && !empty($_POST['height']);
+	        $newWidth = isset($_POST['width']) ? trim((string) $_POST['width']) : '';
+	        $newHeight = isset($_POST['height']) ? trim((string) $_POST['height']) : '';
+	        $quality = 80;
+	        $newFilePath = $filePath;
+	        $resizeOriginal = !empty($_POST['width']) && !empty($_POST['height']);
 
         if ($resizeOriginal) {
             if (!preg_match("/^[1-9]\d*$/", $newWidth) || !preg_match("/^[1-9]\d*$/", $newHeight)) {

@@ -424,10 +424,13 @@
 
 				// prepare filters
 
-					if (isset($_REQUEST[$name]) && !is_array($_REQUEST[$name]) && $_REQUEST[$name] != '0' && $_REQUEST[$name] != "") {
-						// filter this on, so we will fill this select instead of showing "select other fields ..."
-						$addPreparedWhere($module->name.".".$name."$compare",$_REQUEST[$name]);
-					$sqlin['SELECT'][] = "if (".$mod->name.".".$mod->keys[0].$compare."'".$_REQUEST[$name]."',1,0) as selected";
+						if (isset($_REQUEST[$name]) && !is_array($_REQUEST[$name]) && $_REQUEST[$name] != '0' && $_REQUEST[$name] != "") {
+							// filter this on, so we will fill this select instead of showing "select other fields ..."
+							$addPreparedWhere($module->name.".".$name."$compare",$_REQUEST[$name]);
+							$selectedCompare = in_array($compare,array('=','<>','>','<',' LIKE '),true) ? $compare : '=';
+							$sqlin['SELECT'][] = "if (".$mod->name.".".$mod->keys[0].$selectedCompare."?,1,0) as selected";
+							$sqlin['_preparedTypes'] = 's';
+							$sqlin['_preparedParams'] = array((string)$_REQUEST[$name]);
 					$filtering++;
 					$isFilteringThis = true;
 					if ($useSF) {
@@ -990,10 +993,12 @@
 										$tp = new CKTemplate($core->template);
 										$tp->tbreak($xtp);
 										$innersql = "";
-										if (isset($_REQUEST['affreferer']) && isset($_REQUEST['affrefererkeys']) && $_REQUEST['affreferer'] == $module->fields[$possibleField][CONS_XML_MODULE] && count($remoteModule->keys)==1) { // only one key, TODO: multikey
-											$innersql = $remoteModule->get_base_sql();
-								$innersql['SELECT'][] = "if (".$remoteModule->name.".".$remoteModule->keys[0]."='".addslashes_EX((string)$_REQUEST['affrefererkeys'],true,$core->dbo)."',1,0) as selected";
-										}
+											if (isset($_REQUEST['affreferer']) && isset($_REQUEST['affrefererkeys']) && $_REQUEST['affreferer'] == $module->fields[$possibleField][CONS_XML_MODULE] && count($remoteModule->keys)==1) { // only one key, TODO: multikey
+												$innersql = $remoteModule->get_base_sql();
+												$innersql['SELECT'][] = "if (".$remoteModule->name.".".$remoteModule->keys[0]."=?,1,0) as selected";
+												$innersql['_preparedTypes'] = 's';
+												$innersql['_preparedParams'] = array((string)$_REQUEST['affrefererkeys']);
+											}
 										$core->runContent($remoteModule,$tp,$innersql,'_items',false);
 										$la = '<span id="la_'.$possibleField.'_ara" style="width:90%"><select onchange="selectChange(\'la_'.$possibleField.'\');" style="width:100%;margin:0px;border:1px;padding:1px;font-size:9px" name="la_'.$possibleField.'" id="la_'.$possibleField.'">'.$tp->techo().'</select></span>';
 										$laFields[] = $possibleField;
@@ -1094,10 +1099,12 @@
 							$tp = new CKTemplate($core->template);
 							$tp->tbreak($xtp);
 							$innersql = "";
-							if (isset($_REQUEST['affreferer']) && isset($_REQUEST['affrefererkeys']) && $_REQUEST['affreferer'] == $module->fields[$field][CONS_XML_MODULE] && count($rmd->keys)==1) { // only one key, TODO: multikey
-								$innersql = $rmd->get_base_sql();
-								$innersql['SELECT'][] = "if (".$rmd->name.".".$rmd->keys[0]."='".addslashes_EX((string)$_REQUEST['affrefererkeys'],true,$core->dbo)."',1,0) as selected";
-							}
+								if (isset($_REQUEST['affreferer']) && isset($_REQUEST['affrefererkeys']) && $_REQUEST['affreferer'] == $module->fields[$field][CONS_XML_MODULE] && count($rmd->keys)==1) { // only one key, TODO: multikey
+									$innersql = $rmd->get_base_sql();
+									$innersql['SELECT'][] = "if (".$rmd->name.".".$rmd->keys[0]."=?,1,0) as selected";
+									$innersql['_preparedTypes'] = 's';
+									$innersql['_preparedParams'] = array((string)$_REQUEST['affrefererkeys']);
+								}
 							$core->runContent($rmd,$tp,$innersql,'_items',false);
 							$la = '<span id="la_'.$field.'_ara" style="width:90%"><select onchange="selectChange(\'la_'.$field.'\');" style="width:100%;margin:0px;border:1px;padding:1px;font-size:9px" name="la_'.$field.'" id="la_'.$field.'">'.$tp->techo().'</select><span>';
 							$laFields[] = $field;

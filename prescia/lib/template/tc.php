@@ -442,7 +442,7 @@ class CKTemplate {
 				$escapedContent = \Prescia\Services\Sanitizer::escapeHtml(str_replace("&amp;","&",$content));
 				return isset($params[0])?str_replace('&#039;','',$escapedContent):$escapedContent;
 		case "htmlentities":
-  			return htmlentities_ex($content);
+			return \Prescia\Services\Sanitizer::escapeHtml((string)$content);
 		case "url":
 			if ($content == "")
 				return "#";
@@ -473,9 +473,9 @@ class CKTemplate {
 					return substr($temp,$initTagL,strlen($temp)-strlen($initTag)-1-$initTagL);
 			}
 			return $content;
-  		case "nohtml": # removes HTML, if parameter is set, also remove quotes
+		case "nohtml": # removes HTML, if parameter is set, also remove quotes
 			$temp = trim($content);
-			$temp = stripHTML($temp);
+			$temp = \Prescia\Services\Sanitizer::stripTags((string)$temp);
 			if (isset($params[0])) $temp = str_replace("\"","",$temp);
 			return $temp;
   		case "map": // maps output (map,map,map|default)

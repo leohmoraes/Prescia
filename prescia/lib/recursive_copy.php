@@ -24,9 +24,9 @@
 		          safe_chmod($destination.$name,0775);
 	      	} else
 	      		@unlink($source.$name);
-	      } else if(is_dir($source.$name)) { // dir
-	        if (!is_dir($destination.$name))
-	         safe_mkdir($destination.$name);
+		      } else if(is_dir($source.$name)) { // dir
+		        if (!is_dir($destination.$name))
+		        (new \Prescia\Services\FileService())->ensureDirectory($destination.$name);
 	        $counter += recursive_copy($source.$name,$destination.$name);
 	      }
 	    }
