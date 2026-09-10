@@ -45,9 +45,9 @@ class mod_bi_undo extends CscriptedModule  {
 			$undoModule = $this->parent->loaded($this->moduleRelation);
 			$sql = "SELECT id, files FROM ".$undoModule->dbname." WHERE files<>'' AND data<NOW() - INTERVAL 1 WEEK";
 			$r = false;
-			$n = 0;
-				$core->dbo->queryPrepared($sql,'',array(),$r,$n);
-			if ($n>0) {
+				$n = 0;
+					$core->dbo->queryPrepared($sql,'',array(),$r,$n);
+				if ((int) $n > 0) {
 				for ($c=0;$c<$n;$c++) {
 					list($id,$files) = $core->dbo->fetch_row($r);
 					$files = presciaSafeUnserialize($files);
