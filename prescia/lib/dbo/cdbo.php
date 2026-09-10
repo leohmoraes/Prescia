@@ -192,9 +192,20 @@ class CDBO {
     	} else
     		// FREE RESOURCES
     	return false;
-	} // fetch
+		} // fetch
 
-	function insert_id() { // SHOULD BE EXTENDED
+	/**
+	 * Quote a single SQL identifier after validating its metadata-derived shape.
+	 * Values must use prepared statements; this method is only for identifiers.
+	 */
+	function quoteIdentifier($identifier) {
+		if (!is_string($identifier) || preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $identifier) !== 1) {
+			throw new InvalidArgumentException('Invalid SQL identifier');
+		}
+		return CONS_SQL_QUOTE.$identifier.CONS_SQL_QUOTE;
+	}
+
+		function insert_id() { // SHOULD BE EXTENDED
 		return false; // LAST AUTO_INCREMENT ID
 	}
 

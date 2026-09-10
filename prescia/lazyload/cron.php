@@ -8,6 +8,8 @@
 /** @var CPrescia $this Runtime cron context injected by the framework. */
 /** @var bool|string $forceCron Cron mode supplied by CPrescia::cronCheck(). */
 
+require_once CONS_PATH_INCLUDE."autoClean.php";
+
 if ($forceCron=='day' || $forceCron=='all' || (date("d") != $this->dimconfig['_cronD'] && $forceCron != 'hour')) { // Daily cron
 
 	if ($this->debugmode) $this->errorControl->raise(1002,$forceCron,"CRON");
@@ -73,15 +75,22 @@ if ($forceCron=='day' || $forceCron=='all' || (date("d") != $this->dimconfig['_c
 	foreach ($this->modules as $name => &$module) {
 		if (isset($module->options[CONS_MODULE_AUTOCLEAN]) && $module->options[CONS_MODULE_AUTOCLEAN] != "" && (strpos($module->options[CONS_MODULE_AUTOCLEAN],"DAY") !== false || strpos($module->options[CONS_MODULE_AUTOCLEAN],"WEEK") !== false || strpos($module->options[CONS_MODULE_AUTOCLEAN],"MONTH") !== false || strpos($module->options[CONS_MODULE_AUTOCLEAN],"YEAR") !== false)) {
 
-			# daily only runs autocleans with DAY, WEEK, MONTH or YEAR
-			if ($module->options[CONS_MODULE_VOLATILE]) {
-				$sql = "DELETE FROM ".$module->dbname." WHERE ".$module->options[CONS_MODULE_AUTOCLEAN];
-				$this->dbo->simpleQuery($sql);
-			} else {
-				$sql = "SELECT * FROM ".$module->dbname." WHERE ".$module->options[CONS_MODULE_AUTOCLEAN];
+				# daily only runs autocleans with DAY, WEEK, MONTH or YEAR
+				try {
+					$autoclean = CPresciaAutoClean::compile($module->options[CONS_MODULE_AUTOCLEAN],$module,$this->dbo);
+					$table = $this->dbo->quoteIdentifier($module->dbname);
+				} catch (InvalidArgumentException $exception) {
+					$this->log[] = "Rejected invalid autoclean for module ".$name;
+					continue;
+				}
 				$r = false;
 				$n = 0;
-				if ($this->dbo->query($sql,$r,$n)) {
+				if ($module->options[CONS_MODULE_VOLATILE]) {
+					$sql = "DELETE FROM ".$table." WHERE ".$autoclean['sql'];
+					$this->dbo->queryPrepared($sql,$autoclean['types'],$autoclean['params'],$r,$n);
+				} else {
+					$sql = "SELECT * FROM ".$table." WHERE ".$autoclean['sql'];
+					if ($this->dbo->queryPrepared($sql,$autoclean['types'],$autoclean['params'],$r,$n)) {
 					$this->safety = false;
 					$c = 0;
 					while (is_array($data = $this->dbo->fetch_assoc($r))) {
@@ -147,14 +156,21 @@ if ($forceCron=='hour' || $forceCron=='all' || $this->dimconfig['_cronH'] != dat
 		if (isset($module->options[CONS_MODULE_AUTOCLEAN]) && $module->options[CONS_MODULE_AUTOCLEAN] != "" && (strpos($module->options[CONS_MODULE_AUTOCLEAN],"HOUR") !== false || strpos($module->options[CONS_MODULE_AUTOCLEAN],"MINUTE") !== false)) {
 
 			# hourly only runs autocleans with HOUR or MINUTE
-			if ($module->options[CONS_MODULE_VOLATILE]) {
-				$sql = "DELETE FROM ".$module->dbname." WHERE ".$module->options[CONS_MODULE_AUTOCLEAN];
-				$this->dbo->simpleQuery($sql);
-			} else {
-				$sql = "SELECT * FROM ".$module->dbname." WHERE ".$module->options[CONS_MODULE_AUTOCLEAN];
+			try {
+				$autoclean = CPresciaAutoClean::compile($module->options[CONS_MODULE_AUTOCLEAN],$module,$this->dbo);
+				$table = $this->dbo->quoteIdentifier($module->dbname);
+				} catch (InvalidArgumentException $exception) {
+					$this->log[] = "Rejected invalid autoclean for module ".$name;
+					continue;
+				}
 				$r = false;
 				$n = 0;
-				if ($this->dbo->query($sql,$r,$n)) {
+				if ($module->options[CONS_MODULE_VOLATILE]) {
+					$sql = "DELETE FROM ".$table." WHERE ".$autoclean['sql'];
+					$this->dbo->queryPrepared($sql,$autoclean['types'],$autoclean['params'],$r,$n);
+				} else {
+					$sql = "SELECT * FROM ".$table." WHERE ".$autoclean['sql'];
+					if ($this->dbo->queryPrepared($sql,$autoclean['types'],$autoclean['params'],$r,$n)) {
 					$this->safety = false;
 					$c = 0;
 					while (is_array($data = $this->dbo->fetch_assoc($r))) {
@@ -202,10 +218,12 @@ if ($forceCron=='hour' || $forceCron=='all' || $this->dimconfig['_cronH'] != dat
 			if ($module->dbname != "" && !in_array($module->dbname,$mods))
 				$mods[] = $module->dbname;
 		}
+		$quotedMods = array();
+		foreach ($mods as $mod) $quotedMods[] = $this->dbo->quoteIdentifier($mod);
 		// optimize
-		$sql = "REPAIR TABLE ".implode(",",$mods);
+		$sql = "REPAIR TABLE ".implode(",",$quotedMods);
 		$this->dbo->simpleQuery($sql,false);
-		$sql = "OPTIMIZE TABLE ".implode(",",$mods);
+		$sql = "OPTIMIZE TABLE ".implode(",",$quotedMods);
 		$this->dbo->simpleQuery($sql,false);
 		// backup
 		if (!$this->nearTimeLimit()) {

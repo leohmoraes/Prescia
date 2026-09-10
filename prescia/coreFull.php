@@ -623,7 +623,7 @@ class CPresciaFull extends CPrescia {
 					if ($tmpConnection) {
 						$this->log[] = "Connected to server and trying to create database";
 						$this->dbchanged = true;
-						$ok = $this->dbo->simpleQuery("CREATE DATABASE ".CONS_SQL_QUOTE.CONS_DB_BASE.CONS_SQL_QUOTE." DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;");
+							$ok = $this->dbo->simpleQuery("CREATE DATABASE ".$this->dbo->quoteIdentifier(CONS_DB_BASE)." DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;");
 						if (!$ok) {
 							$this->log[] = "Unable to create database using CREATE DATABASE command";
 							$this->errorControl->raise(122);
@@ -648,19 +648,21 @@ class CPresciaFull extends CPrescia {
 	function check_sql() {
 		foreach($this->modules as $nome => $module) {
 		  if ($module->dbname != "") {
-			$chave = $module->keys[0];
-			$sql = "SHOW TABLES LIKE '".$module->dbname."'";
-			if (!$this->dbo->fetch($sql)) { # table does not exists (else would return it's name)
+				$chave = $module->keys[0];
+				$table = $this->dbo->quoteIdentifier($module->dbname);
+				if (!$this->dbo->fetchPrepared("SHOW TABLES LIKE ?",'s',array($module->dbname))) { # table does not exists (else would return it's name)
 				$sql = "";
 				foreach ($module->fields as $cnome => $campo) {
 					if ($campo[CONS_XML_SQL] != "") {
-						if ($cnome == 'id')
-							$sql = CONS_SQL_QUOTE.$cnome.CONS_SQL_QUOTE." ".$campo[CONS_XML_SQL].",".$sql;
-						else
-							$sql .= CONS_SQL_QUOTE.$cnome.CONS_SQL_QUOTE." ".$campo[CONS_XML_SQL].",";
+							if ($cnome == 'id')
+								$sql = $this->dbo->quoteIdentifier($cnome)." ".$campo[CONS_XML_SQL].",".$sql;
+							else
+								$sql .= $this->dbo->quoteIdentifier($cnome)." ".$campo[CONS_XML_SQL].",";
 					}
 				}
-				$sql = "CREATE TABLE ".CONS_SQL_QUOTE.$module->dbname.CONS_SQL_QUOTE." ( $sql PRIMARY KEY(".implode(",",$module->keys).")) ENGINE=MYISAM";
+					$quotedKeys = array();
+					foreach ($module->keys as $key) $quotedKeys[] = $this->dbo->quoteIdentifier($key);
+					$sql = "CREATE TABLE ".$table." ( $sql PRIMARY KEY(".implode(",",$quotedKeys).")) ENGINE=MYISAM";
 				if ($this->dbo->simpleQuery($sql)) {
 					$this->dbchanged = true;
 					array_push($this->log,"Base ".$module->dbname." for ".$module->name." not detected and created!");
@@ -670,7 +672,7 @@ class CPresciaFull extends CPrescia {
 				}
 			} else {
 				# checks if all fields are ok
-				$sql = "SHOW FIELDS FROM ".CONS_SQL_QUOTE.$module->dbname.CONS_SQL_QUOTE;
+					$sql = "SHOW FIELDS FROM ".$table;
 				$r = false;
 				$n = 0;
 				$this->dbo->query($sql,$r,$n);
@@ -683,7 +685,7 @@ class CPresciaFull extends CPrescia {
 				foreach ($module->fields as $nome => $campo) {
 					if ($campo[CONS_XML_SQL] != "" && !in_array($nome,$camposdb)) {
 						array_push($this->log,"Missing field at ".$module->dbname.":$nome");
-						$sql = "ALTER TABLE ".CONS_SQL_QUOTE.$module->dbname.CONS_SQL_QUOTE." ADD ".CONS_SQL_QUOTE.$nome.CONS_SQL_QUOTE." ".$campo[CONS_XML_SQL];
+							$sql = "ALTER TABLE ".$table." ADD ".$this->dbo->quoteIdentifier($nome)." ".$campo[CONS_XML_SQL];
 						if (!$this->dbo->simpleQuery($sql)) {
 							$this->errorState = true;
 							array_push($this->log,"Unable to create it! (triggered errorState)");
@@ -694,7 +696,7 @@ class CPresciaFull extends CPrescia {
 					}
 				}
 				# checks keys and uniques
-				$sql = "SHOW KEYS FROM ".CONS_SQL_QUOTE.$module->dbname.CONS_SQL_QUOTE;
+					$sql = "SHOW KEYS FROM ".$table;
 				$r = false;
 				$n = 0;
 				$this->dbo->query($sql,$r,$n);
@@ -715,10 +717,12 @@ class CPresciaFull extends CPrescia {
 				foreach ($module->keys as $x => $nome) {
 					if (!in_array($nome,$camposdb)) {
 						array_push($this->log,"Missing key at ".$module->dbname.":$nome");
-						$sql = "ALTER TABLE ".CONS_SQL_QUOTE.$module->dbname.CONS_SQL_QUOTE." DROP PRIMARY KEY, ADD PRIMARY KEY (".implode(",",$module->keys).")";
+							$quotedKeys = array();
+							foreach ($module->keys as $key) $quotedKeys[] = $this->dbo->quoteIdentifier($key);
+							$sql = "ALTER TABLE ".$table." DROP PRIMARY KEY, ADD PRIMARY KEY (".implode(",",$quotedKeys).")";
 						if (!$this->dbo->simpleQuery($sql)) {
 							array_push($this->log,"Error updating keys! Trying without drop ...");
-							$sql = "ALTER TABLE ".CONS_SQL_QUOTE.$module->dbname.CONS_SQL_QUOTE." ADD PRIMARY KEY (".implode(",",$module->keys).")";
+								$sql = "ALTER TABLE ".$table." ADD PRIMARY KEY (".implode(",",$quotedKeys).")";
 							if (!$this->dbo->simpleQuery($sql)) {
 								$this->errorState = true;
 								array_push($this->log,"Error updating keys! (triggered errorState)");
@@ -734,7 +738,7 @@ class CPresciaFull extends CPrescia {
 				foreach ($module->unique as $name) {
 					if (!in_array($name,$uniquedb)) {
 						$this->log[] = "Missing unique key at ".$module->dbname.":".$name;
-						$sql = "ALTER TABLE  ".CONS_SQL_QUOTE.$module->dbname.CONS_SQL_QUOTE." ADD UNIQUE ($name)";
+							$sql = "ALTER TABLE ".$table." ADD UNIQUE (".$this->dbo->quoteIdentifier($name).")";
 						if (!$this->dbo->simpleQuery($sql)) {
 							$this->errorState = true;
 							array_push($this->log,"Error updating unique! (triggered errorState)");
@@ -748,7 +752,7 @@ class CPresciaFull extends CPrescia {
 				foreach ($module->hash as $name) {
 					if (!in_array($name,$normalkeys)) {
 						$this->log[] = "Missing hash key at ".$module->dbname.":".$name;
-						$sql = "ALTER TABLE  ".CONS_SQL_QUOTE.$module->dbname.CONS_SQL_QUOTE." ADD INDEX ($name)";
+							$sql = "ALTER TABLE ".$table." ADD INDEX (".$this->dbo->quoteIdentifier($name).")";
 						if (!$this->dbo->simpleQuery($sql)) {
 							$this->errorState = true;
 							array_push($this->log,"Error updating index! (triggered errorState)");
