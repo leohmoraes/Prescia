@@ -1,101 +1,129 @@
-# Auditoria do Prescia — 10 de setembro de 2026
+# Auditoria do Prescia — 2026-09-10
 
 ## Conclusão executiva
 
-O repositório foi sincronizado com `origin/master` e não possui pull requests abertas. Existem **sete issues abertas**, todas correspondentes ao backlog de segurança e encapsulamento já conhecido; não foi identificada uma nova issue criada após o fechamento da issue #43. A elevação da análise estática para o **PHPStan nível 3** revelou **26 diagnósticos**, concentrados em sete arquivos e agrupados principalmente em contratos de arrays legados, validação de resultados de banco de dados e tipagem de parâmetros por referência.
+A auditoria foi executada sobre o commit `7088f64` (`docs: add security and phpstan audit report (#186)`), no branch `master`, sincronizado com `origin/master`. O GitHub não apresenta **issues abertas** nem **pull requests abertas** no momento da consulta.
 
-A varredura de segurança não encontrou chamadas genéricas de `query()` ou `simpleQuery()` fora da camada de banco, execução de comandos do sistema ou uso de `eval()`. O cliente `loadURL()` aplica restrições de esquema, porta, DNS público, TLS, tamanho de resposta e ausência de redirecionamentos. A auditoria de dependências também não encontrou advisories conhecidos. Permanecem, entretanto, duas frentes prioritárias: a migração completa de SQL dinâmico acompanhada pela issue #94 e a revisão dos 114 arquivos legados do CKFinder acompanhada pela issue #67.
+A coleta de indicadores de segurança foi concluída, mas a validação dinâmica e estática local ficou **impedida** pela ausência de `php`, `composer`, `vendor/bin/phpstan` e `vendor/bin/phpunit` no ambiente. Portanto, este relatório não declara PHPStan, lint, Composer Audit ou PHPUnit como aprovados ou reprovados; esses itens permanecem pendentes de execução em ambiente PHP 8.3 com dependências instaladas.
+
+Não foram alterados arquivos de produção. Os resultados brutos estão em `reports/audit-work/` e são artefatos temporários de coleta.
 
 ## Estado do repositório
 
 | Item | Resultado |
 |---|---|
-| Branch analisada | `master` sincronizada com `origin/master` |
-| Pull requests abertas | Nenhuma |
-| Arquivos PHP em `prescia/` | 183 |
-| PHPStan nível 3 | 26 diagnósticos |
-| PHPUnit focalizado | 101 testes, 532 assertions, 0 falhas |
-| Lint PHP | Aprovado nos arquivos analisados |
-| Composer audit | Nenhum advisory conhecido |
-| Arquivos com permissões graváveis por grupo/outros | Nenhum encontrado em `prescia`, `tools` e `tests` |
+| Repositório | `leohmoraes/Prescia` |
+| Branch | `master` |
+| Commit analisado | `7088f64` |
+| Sincronização | `master` alinhado com `origin/master` |
+| Working tree antes do relatório | Limpa |
+| Alteração desta auditoria | Apenas este relatório técnico |
+| Baseline PHPStan | Sem crescimento nesta auditoria |
 
-## Issues abertas
+## Issues e pull requests
 
-| Issue | Tema | Prioridade observada |
-|---:|---|---|
-| [#94][1] | Migrar leituras e escritas SQL genéricas restantes dos módulos | Alta; segurança |
-| [#67][2] | Revisão completa dos 114 arquivos PHP legados do CKFinder | Segurança |
-| [#66][3] | Monitoramento de tentativas de SSRF em runtime | Segurança |
-| [#65][4] | Testes e mitigações adicionais contra DNS rebinding em `loadURL` | Segurança |
-| [#42][5] | Encapsular funções globais de sanitização e arquivos | Média; segurança e PHP 8.3 |
-| [#24][6] | Substituir sanitização HTML por escaping contextual e biblioteca segura | Média; segurança |
-| [#9][7] | Substituir SQL concatenado por prepared statements | Alta; segurança |
+A consulta autenticada ao GitHub retornou zero resultados em ambas as categorias:
 
-Não há uma nova issue aberta além desse conjunto. A issue #43 foi resolvida e fechada após a eliminação dos diagnósticos de PHPStan nível 2.
+| Tipo | Estado | Resultado |
+|---|---|---:|
+| Issues abertas | `open` | 0 |
+| Pull requests abertas | `open` | 0 |
+
+A Issue [#43 — Atualizar o PHPStan e elevar gradualmente o nível de análise](https://github.com/leohmoraes/Prescia/issues/43) está **fechada**. Seus comentários registram a conclusão da PR #184 e a ausência de diagnósticos no PHPStan nível 2 naquele ciclo. O plano local ainda contém referências históricas à Issue #43 e deve ser tratado como documentação de contexto, não como backlog aberto atual.
 
 ## Diagnósticos PHPStan nível 3
 
-| Arquivo | Quantidade | Classe do problema | Próxima ação sugerida |
-|---|---:|---|---|
-| `prescia/lib/dbo/mysqli.php` | 1 | Parâmetro `&$numrows` recebe união `int|string` | Normalizar o contador para `int` antes da chamada ou corrigir o contrato de saída do driver |
-| `prescia/plugins/bi_adm/payload/content/preview.php` | 4 | Acesso a offset em valor que pode ser `false` | Guardar o resultado antes de acessar offsets e tratar falha de resolução de imagem |
-| `prescia/plugins/bi_auth/authControl.php` | 3 | Array de sessão inferido como vazio sem a chave `id_user` | Validar a forma da sessão antes do uso e declarar o shape esperado |
-| `prescia/plugins/bi_dev/module.php` | 1 | Offset `0` em array potencialmente vazio | Verificar resultado antes de acessar o primeiro elemento |
-| `prescia/plugins/bi_stats/payload/content/stats_analytics.php` | 6 | Shapes de arrays incompletos (`hits`, `h`) | Declarar shapes completos e normalizar linhas de agregação SQL |
-| `prescia/plugins/bi_stats/payload/content/stats_pathajax.php` | 6 | Shapes de arrays incompletos (`hits`) | Ajustar shapes e validar campos agregados antes da renderização |
-| `prescia/plugins/bi_stats/payload/content/stats_ref.php` | 5 | Shapes de arrays incompletos (`hits`, `h`) | Centralizar shape das linhas de estatística e adicionar guards |
-| **Total** | **26** |  |  |
+A execução planejada foi:
 
-A ordem técnica recomendada é iniciar pelo contrato do driver `mysqli`, seguir para os guards de `bi_adm`, `bi_auth` e `bi_dev`, e concluir com um shape compartilhado para as três telas de estatísticas. Essa ordem reduz diagnósticos estruturais antes de tratar os acessos repetidos aos arrays agregados.
+```bash
+vendor/bin/phpstan analyse --level=3 --error-format=raw
+```
+
+Resultado: **não executada**, com impedimento `vendor/bin/phpstan: No such file or directory`. Como `composer` também não está disponível, não foi possível instalar as dependências nesta coleta.
+
+A documentação histórica registra diagnósticos anteriores de `variable.undefined`, contratos dinâmicos de `$core`/`$this`, símbolos legados, métodos ausentes e caminhos de inclusão. Esses números não foram tratados como métricas atuais, pois correspondem a commits e execuções anteriores. O próximo ciclo deve executar o PHPStan no commit atual e substituir essas fotografias históricas por uma contagem reproduzível.
 
 ## Varredura de segurança
 
-### SQL e injeção
+As buscas abaixo são **indicadores**, não confirmações automáticas de vulnerabilidade.
 
-A busca por chamadas `->query()` e `->simpleQuery()` fora da camada de banco não encontrou resultados. As consultas remanescentes observadas utilizam predominantemente `queryPrepared()` e `fetchPrepared()`. A interpolação de nomes de tabela, coluna e cláusulas ainda aparece em módulos genéricos, estatísticas e undo, mas esses valores são derivados de metadados internos do módulo ou de listas construídas pelo framework. Mesmo quando não há entrada direta do usuário, esse padrão mantém uma superfície de manutenção arriscada e deve permanecer no escopo das issues #9 e #94.
+| Indicador coletado | Ocorrências aproximadas | Interpretação inicial |
+|---|---:|---|
+| Chamadas genéricas `query`/`simpleQuery` | 51 | Inclui várias asserções dos testes; requer separação entre produção e testes. |
+| SQL com interpolação segundo a heurística | 256 | Parte usa `queryPrepared()` e concatena identificadores de metadados; requer confirmação de allowlist e origem. |
+| Superglobais | 684 | Esperado em framework web legado; requer revisão por fluxo e sink. |
+| Sinks de saída | 878 | Inclui templates, mensagens fixas e métodos de escape; requer classificação por contexto. |
+| Chamadas de rede/arquivo | 4 | Inclui `loadURL()`, POP3 e leituras locais; SSRF requer testes focalizados. |
+| Execução de comandos | 0 | Nenhum `exec`, `system`, `shell_exec`, `passthru`, `proc_open` ou `popen`. |
+| `unserialize()`/`eval()` | 0 | Nenhum resultado na busca atual. |
+| Marcadores TODO/FIXME/HACK/XXX | 67 | Pendências técnicas e comentários de manutenção; não são vulnerabilidades por si só. |
 
-O principal risco residual não é uma chamada SQL genérica isolada, mas a combinação entre SQL dinâmico legado, identificadores derivados de configuração e múltiplos caminhos de montagem de filtros. A próxima ação de segurança deve ser concluir uma auditoria por origem de cada identificador e aplicar whitelists centralizadas para tabelas, colunas, ordenação e limites.
+### Itens prioritários para revisão
 
-### SSRF e rede
+**SQL e identificadores dinâmicos.** A varredura encontrou concatenações em plugins como `bi_undo` e `bi_stats`, especialmente com propriedades como `dbname`, `title`, `keys` e listas construídas por `implode()`. O changelog registra uma migração ampla para execução preparada, mas valores usados como nomes de tabela, coluna, alias, `ORDER BY` ou estrutura SQL não podem ser protegidos apenas por placeholders. Deve-se confirmar, em cada call site, que esses valores vêm exclusivamente de metadados internos validados e que não recebem entrada externa livre. É uma pendência de confirmação contextual, não uma vulnerabilidade confirmada pela regex.
 
-O `loadURL()` atualmente rejeita esquemas diferentes de HTTP/HTTPS, credenciais embutidas, portas não permitidas, hosts inválidos e endereços que não resolvem para IPs públicos. A conexão é aberta contra os IPs previamente validados, usa verificação TLS de peer e nome, não segue redirecionamentos e limita o tamanho da resposta. Esses controles cobrem o caminho principal e justificam a continuidade das issues #65 e #66 para testes de regressão, telemetria e defesa contra mudanças futuras.
+**XSS e saída contextual.** Há saídas diretas e atribuições de template em payloads de estatística, labels, administração e CMS. Permanecem necessárias validações focalizadas para `label_template`, `id`, `name`, `content`, `imgpath` e valores de referer, distinguindo HTML, atributo, URL, JavaScript e texto simples.
 
-Existe uma função FTP legada `fget()` em `prescia/lib/loadURL.php`, mas a varredura não encontrou chamadas no código do projeto. Ela ainda aceita um host sem passar pelo mesmo pipeline de validação do `loadURL()`. Recomenda-se desativá-la, removê-la ou protegê-la antes de qualquer reuso futuro.
+**SSRF e chamadas externas.** `prescia/lib/loadURL.php` usa `stream_socket_client()`. O changelog registra controles recentes de DNS, IP público, limites e eventos de rejeição, mas os testes não puderam ser executados neste ambiente. Deve-se validar em PHP 8.3 esquema inválido, credenciais embutidas, redirecionamento, resolução para IP privado, múltiplas respostas DNS, timeout, tamanho de resposta e TLS.
 
-### XSS, desserialização e execução de comandos
+**Entradas administrativas e de arquivo.** A busca encontrou parâmetros de labels, file manager, preview, importação e administração. Os fluxos devem continuar validando autorização, CSRF, tipos, allowlists de campos e contenção canônica de caminhos. Os resultados são indicadores que exigem rastreamento até o sink.
 
-A busca não encontrou `exec()`, `system()`, `shell_exec()`, `passthru()`, `proc_open()`, `popen()` ou `eval()` no código analisado. A desserialização está concentrada em `prescia/lib/serialization.php` e usa `allowed_classes`, o que reduz o risco de instanciação arbitrária. Os sinks de template ainda exigem revisão contextual, especialmente nos fluxos administrativos e no CKFinder; essa frente permanece coberta pelas issues #24 e #67.
+**Exposição de diagnóstico.** `index.php` e `prescia/index.php` contêm saídas de warnings/errors condicionadas ao modo de desenvolvimento. Deve ser confirmado que produção não habilita esses handlers nem expõe caminhos, linhas ou mensagens internas.
 
-### Dependências e exposição de arquivos
+## Varredura de otimização e pendências técnicas
 
-`composer audit` retornou **“No security vulnerability advisories found.”** Não foram encontrados arquivos com permissões de escrita para grupo ou outros em `prescia`, `tools` e `tests`. A listagem contém configurações de exemplo e arquivos de configuração de páginas, que devem continuar fora de credenciais reais e ser protegidos pela configuração de exposição HTTP do projeto.
+Os marcadores mais relevantes concentram-se em compatibilidade com chaves múltiplas, importação e processamento de imagens:
 
-## Varredura de otimização
+| Área | Arquivos indicados | Pendência |
+|---|---|---|
+| Chaves múltiplas | `bi_adm` e `bi_dev` | Caminhos explicitamente marcados como não suportando múltiplas chaves. |
+| Importação | `prescia/plugins/bi_adm/payload/importer.php` | O código registra que a importação ainda não está concluída. |
+| Reordenação/edição | `reorder.php`, `edit.php`, `options.php`, `list.php` | Limitações registradas para múltiplas chaves ou links complexos. |
+| Upload/arquivos | `bi_undo/module.php`, `components/module.php` | Nota sobre arquivos enviados armazenados com chave incorreta; requer plano seguro. |
+| Estatísticas | `bi_stats` | Consultas agregadas devem ser avaliadas com profiling antes de otimizações. |
+| CMS/logging | `core.php`, `bi_cms` | TODO sobre logging de estatísticas e processamento de conteúdo/cache. |
 
-A busca identificou aproximadamente 196 referências aos helpers globais de arquivo e sanitização, indicando dívida relevante para a issue #42. Também foram encontrados vários pontos de SQL dentro de fluxos de módulos e loops de processamento, sobretudo em estatísticas, undo e administração. Esses pontos podem produzir padrão N+1 quando percorrem agregações ou entidades relacionadas; a confirmação deve ser feita com profiling de consultas em um ambiente de integração MySQL.
+Nenhuma otimização foi aplicada durante a auditoria. A confirmação de N+1, consultas dentro de loops ou custos excessivos requer profiling ou testes de integração com dados representativos.
 
-Os hotspots mais promissores são:
+## Verificações impedidas
 
-1. consultas por entidade dentro dos loops de agregação em `bi_stats`;
-2. reconstruções de dados e consultas de relacionamento em `bi_undo`;
-3. carregamento de conteúdo e referências no módulo administrativo;
-4. chamadas repetidas de `date()` e consultas de contadores no fluxo de estatísticas;
-5. usos globais de leitura, escrita e criação de diretórios que dificultam instrumentação e testes isolados.
+| Verificação | Resultado | Motivo |
+|---|---|---|
+| PHPStan nível 3 | Não executada | `vendor/bin/phpstan` ausente |
+| Composer Audit | Não executada | `composer` ausente |
+| Composer show | Não executada | `composer` ausente |
+| Lint PHP global | Não executado | `php` ausente |
+| PHPUnit focado | Não executado | `vendor/bin/phpunit` ausente |
+| Testes completos | Não executados | `php`/dependências ausentes |
 
-A recomendação é não fazer micro-otimizações antes de medir. O próximo lote deve adicionar contadores ou logs de tempo de consulta nos testes de integração, identificar os três maiores consumidores e só então consolidar consultas ou introduzir cache com invalidação explícita.
+Esses impedimentos devem ser reproduzidos em ambiente PHP 8.3 com as extensões declaradas pelo projeto. A instalação de ferramentas não foi feita nesta auditoria para evitar alterar o ambiente e introduzir artefatos não solicitados.
 
 ## Próximo ciclo recomendado
 
-O próximo ciclo deve começar por `prescia/lib/dbo/mysqli.php`, pois o contrato de contador por referência influencia vários diagnósticos e chamadas preparadas. Em seguida, devem ser corrigidos os quatro diagnósticos de `bi_adm`, os três de `bi_auth` e o diagnóstico de `bi_dev`. O último lote deve tratar os 17 diagnósticos de `bi_stats` com shapes explícitos e uma função comum de normalização de linhas agregadas.
+1. Executar `composer install --no-interaction --no-progress` em ambiente PHP 8.3 compatível.
+2. Executar PHPStan no nível configurado e no nível 3 sem alterar `phpstan.neon.dist`, salvando a saída completa.
+3. Executar `php -l` em todos os arquivos PHP e `vendor/bin/phpunit`, separando falhas, deprecations e skips.
+4. Executar `composer audit --no-interaction` e registrar o estado do lockfile.
+5. Reclassificar SQL por origem do identificador, uso de prepared statements e allowlist de metadados.
+6. Fazer revisão focalizada de XSS nos payloads de labels, CMS e estatísticas.
+7. Validar testes SSRF de `loadURL()` e controles de upload/caminhos em PHP 8.3.
+8. Atualizar o plano PHPStan para marcar referências históricas já resolvidas, sem reabrir a Issue #43.
+9. Criar nova issue somente se a execução atual produzir diagnóstico reproduzível sem issue correspondente; não há duplicata aberta a reutilizar.
 
-Depois da elevação do PHPStan, cada PR deve executar PHPStan nível 3, PHPUnit completo, lint global, `composer audit` e os testes de regressão de segurança. As issues #94 e #67 devem ser tratadas como trilhas paralelas de segurança, sem misturar refatorações de tipagem com alterações de autorização, caminhos de arquivos ou montagem de SQL.
+## Referências e artefatos
 
-## Referências
+- Commit analisado: [`7088f64`](https://github.com/leohmoraes/Prescia/commit/7088f64)
+- Issue histórica fechada: [#43](https://github.com/leohmoraes/Prescia/issues/43)
+- Plano PHPStan: [`docs/PLANO_PHPSTAN_PROXIMO_LOTE.md`](../docs/PLANO_PHPSTAN_PROXIMO_LOTE.md)
+- Relatório de progresso: [`docs/RELATORIO_PHPSTAN_PROGRESSO.md`](../docs/RELATORIO_PHPSTAN_PROGRESSO.md)
+- Artefatos brutos locais: `reports/audit-work/`
 
-[1]: https://github.com/leohmoraes/Prescia/issues/94 "Issue #94 — Migrar SQL genérico restante"
-[2]: https://github.com/leohmoraes/Prescia/issues/67 "Issue #67 — Revisão completa do CKFinder"
-[3]: https://github.com/leohmoraes/Prescia/issues/66 "Issue #66 — Monitoramento de SSRF"
-[4]: https://github.com/leohmoraes/Prescia/issues/65 "Issue #65 — DNS rebinding em loadURL"
-[5]: https://github.com/leohmoraes/Prescia/issues/42 "Issue #42 — Encapsulamento de funções globais"
-[6]: https://github.com/leohmoraes/Prescia/issues/24 "Issue #24 — Sanitização HTML e escaping contextual"
-[7]: https://github.com/leohmoraes/Prescia/issues/9 "Issue #9 — Prepared statements"
+Comandos de coleta usados:
+
+```bash
+git fetch origin --prune
+git switch master
+git reset --hard origin/master
+/home/ubuntu/skills/prescia-security-phpstan-audit/scripts/run_audit.sh \
+  /home/ubuntu/Prescia /home/ubuntu/Prescia/reports/audit-work
+```
