@@ -802,6 +802,17 @@ PHP, $route);
         self::assertStringNotContainsString('$core->dbo->simpleQuery($sql);', $undo);
     }
 
+    public function testCronMaintenanceUsesPreparedExecutionForInternalIdentifiers(): void
+    {
+        $cron = (string) file_get_contents(__DIR__ . '/../prescia/lazyload/cron.php');
+
+        self::assertStringContainsString('REPAIR TABLE ".implode(",",$quotedMods)', $cron);
+        self::assertStringContainsString('OPTIMIZE TABLE ".implode(",",$quotedMods)', $cron);
+        self::assertSame(2, substr_count($cron, '$this->dbo->queryPrepared($sql,"",array(),$maintenanceResult,$maintenanceRows,false);'));
+        self::assertStringNotContainsString('$this->dbo->simpleQuery($sql,false);', $cron);
+        self::assertStringContainsString('$this->dbo->quoteIdentifier($mod)', $cron);
+    }
+
     public function testAdministrativeUndoRoutesValidateRequestIdsBeforeBuildingSql(): void
     {
         $undo = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/actions/undo.php');

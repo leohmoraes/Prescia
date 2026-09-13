@@ -222,9 +222,13 @@ if ($forceCron=='hour' || $forceCron=='all' || $this->dimconfig['_cronH'] != dat
 		foreach ($mods as $mod) $quotedMods[] = $this->dbo->quoteIdentifier($mod);
 		// optimize
 		$sql = "REPAIR TABLE ".implode(",",$quotedMods);
-		$this->dbo->simpleQuery($sql,false);
+		$maintenanceResult = false;
+		$maintenanceRows = 0;
+		$this->dbo->queryPrepared($sql,"",array(),$maintenanceResult,$maintenanceRows,false);
 		$sql = "OPTIMIZE TABLE ".implode(",",$quotedMods);
-		$this->dbo->simpleQuery($sql,false);
+		$maintenanceResult = false;
+		$maintenanceRows = 0;
+		$this->dbo->queryPrepared($sql,"",array(),$maintenanceResult,$maintenanceRows,false);
 		// backup
 		if (!$this->nearTimeLimit()) {
 			$mods = array();
