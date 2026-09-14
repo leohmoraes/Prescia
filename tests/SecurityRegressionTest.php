@@ -113,6 +113,18 @@ SQL, $payload);
         }
     }
 
+    public function testPresciaTesterNextstepUsesPreparedDatabaseReads(): void
+    {
+        $nextstep = (string) file_get_contents(__DIR__ . '/../pages/presciatester/actions/nextstep.php');
+
+        self::assertSame(3, substr_count($nextstep, '$this->dbo->fetchPrepared('));
+        self::assertStringContainsString('$this->dbo->queryPrepared("SELECT alpha,beta,oneofakind FROM dbp LIMIT 2", "", array(), $r, $n)', $nextstep);
+        self::assertStringContainsString('SELECT id FROM auth_users WHERE login=?', $nextstep);
+        self::assertStringNotContainsString('$this->dbo->fetch("SELECT id FROM dba LIMIT 1")', $nextstep);
+        self::assertStringNotContainsString('$this->dbo->query("SELECT alpha,beta,oneofakind FROM dbp LIMIT 2"', $nextstep);
+        self::assertStringNotContainsString("WHERE login='wd40user'", $nextstep);
+    }
+
     public function testUndoCleanupLookupAndRemoteChecksUsePreparedQueries(): void
     {
         $undo = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_undo/module.php');
