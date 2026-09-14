@@ -229,7 +229,7 @@ class mod_bi_stats extends CscriptedModule  {
 			$ignoreme = false;
 			foreach ($iip as $ip) {
 				$ip = trim($ip);
-				if ($ip != '' && strpos(CONS_IP,trim($ip))!==-1) {
+		if ($ip != '' && strpos(CONS_IP,trim($ip)) !== false) {
 					$ignoreme = true;
 					break;
 				};
