@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the conservative migration helper in `tools/migrate_php83.php`, with dry-run, timestamped backups and a security blocker report.
 
 ### Changed
+- Continued PHPStan level-4 Lot 1 in `stats_analytics.php`: rendering loops now iterate over accumulated references, resolutions and languages, reducing the focused `bi_stats` inventory from 105 to 91 diagnostics without baseline expansion.
 - Started PHPStan level-4 Lot 1 for `bi_stats`: corrected reference/page rendering loops to iterate over accumulated collections, reducing the focused diagnostics from 119 to 105 without baseline expansion.
 - Promoted the official PHPStan configuration from level 2 to level 3 after a full-repository exploratory run returned zero diagnostics; the baseline was not expanded.
 - Promoted the official PHPStan configuration from level 1 to level 2 after a full-repository exploratory run returned zero diagnostics; the baseline was not expanded.

@@ -24,7 +24,7 @@ O resultado atual substitui as referências anteriores que descreviam centenas d
 
 ## Lote 1 — bi_stats — execução parcial
 
-O inventário focalizado inicial encontrou 119 diagnósticos PHPStan nível 4 no diretório `prescia/plugins/bi_stats`. O primeiro subgrupo corrigiu os loops de renderização de referências e páginas para iterar sobre as coleções efetivamente acumuladas, reduzindo o inventário para 105 diagnósticos. A validação focalizada nível 4 permanece deliberadamente pendente enquanto os arquivos de analytics e o módulo principal forem tratados em sublotes posteriores; a análise global oficial nível 3 continua com zero erros, PHPUnit permanece em 144 testes e a baseline não foi expandida.
+O inventário focalizado inicial encontrou 119 diagnósticos PHPStan nível 4 no diretório `prescia/plugins/bi_stats`. O primeiro subgrupo corrigiu os loops de renderização de referências e páginas para iterar sobre as coleções efetivamente acumuladas, reduzindo o inventário para 105 diagnósticos. O Sublote 1.2 corrigiu os loops de saída de referências, resoluções e idiomas em `stats_analytics.php`, reduzindo o inventário focalizado para 91 diagnósticos. Os loops de leitura SQL e o módulo principal permanecem para sublotes posteriores; a análise global oficial nível 3 continua com zero erros, PHPUnit permanece em 144 testes e a baseline não foi expandida.
 
 ## Resumo executivo
 

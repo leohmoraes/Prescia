@@ -311,7 +311,7 @@
 	if ($total == 0) $total = 1;
 	$refdObj = $core->template->get("_refd");
 	$output = "";
-	for($c=0;$c<$n;$c++) {
+	for($c=0;$c<count($refs);$c++) {
 		$hits = isset($refs[$c]['hits']) && is_numeric($refs[$c]['hits']) ? (float)$refs[$c]['hits'] : 0.0;
 		$refs[$c]['width'] = ceil($graphWidth*$hits/$total);
 		$output .= $refdObj->techo($refs[$c]);
@@ -336,7 +336,7 @@
 	if ($total == 0) $total = 1;
 	$refdObj = $core->template->get("_refh");
 	$output = "";
-	for($c=0;$c<$n;$c++) {
+	for($c=0;$c<count($refs);$c++) {
 		$hits = isset($refs[$c]['h']) && is_numeric($refs[$c]['h']) ? (float)$refs[$c]['h'] : 0.0;
 		$refs[$c]['width'] = ceil($graphWidth*$hits/$total);
 		$output .= $refdObj->techo($refs[$c]);
@@ -360,7 +360,7 @@
 	if ($total == 0) $total = 1;
 	$refdObj = $core->template->get("_refe");
 	$output = "";
-	for($c=0;$c<$n;$c++) {
+	for($c=0;$c<count($refs);$c++) {
 		$hits = isset($refs[$c]['h']) && is_numeric($refs[$c]['h']) ? (float)$refs[$c]['h'] : 0.0;
 		$refs[$c]['width'] = ceil($graphWidth*$hits/$total);
 		$output .= $refdObj->techo($refs[$c]);
@@ -552,7 +552,7 @@
 	if ($total == 0) $total = 1;
 	$obj = $core->template->get("_res");
 	$output = "";
-	for ($c=0;$c<$n;$c++) {
+	for ($c=0;$c<count($res);$c++) {
 		$hits = isset($res[$c]['hits']) && is_numeric($res[$c]['hits']) ? (float)$res[$c]['hits'] : 0.0;
 		$res[$c]['percent'] = 100*$hits / $total;
 		$res[$c]['width'] = ceil($innerWidth * $hits / $total);
@@ -604,7 +604,7 @@
 	if ($t==0) $t=1;
 	$temp ="";
 	$obj = $core->template->get("_lang");
-	for ($c=0;$c<$n;$c++) {
+	for ($c=0;$c<count($langs);$c++) {
 		$language = $langs[$c] ?? null;
 		if (!is_array($language) || !array_key_exists('hits',$language) || !is_numeric($language['hits'])) continue;
 		$language['percent'] = (float)$language['hits']/$t;
