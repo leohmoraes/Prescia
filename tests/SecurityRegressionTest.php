@@ -72,6 +72,18 @@ SQL, $payload);
         self::assertStringNotContainsString('define("CONS_DB_PASS","root")', $config);
     }
 
+    public function testLabelTestValidatesDimensionsAndCellBudget(): void
+    {
+        $labelTest = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_labels/payload/content/label_test.php');
+
+        self::assertStringContainsString('filter_var($value, FILTER_VALIDATE_INT)', $labelTest);
+        self::assertStringContainsString('$cols * $rows > 10000', $labelTest);
+        self::assertStringContainsString('$_REQUEST[\'cols\'] ?? null', $labelTest);
+        self::assertStringContainsString('$_REQUEST[\'rows\'] ?? null', $labelTest);
+        self::assertStringNotContainsString('$cols = $_REQUEST[\'cols\'];', $labelTest);
+        self::assertStringNotContainsString('$rows = $_REQUEST[\'rows\'];', $labelTest);
+    }
+
     public function testUndoCleanupLookupAndRemoteChecksUsePreparedQueries(): void
     {
         $undo = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_undo/module.php');
