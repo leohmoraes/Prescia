@@ -280,3 +280,4 @@ Applied the `phpstan-legacy-remediation` skill to `prescia/lazyload/ajaxQuery.ph
 - Fixed the compatibility regression that rejected PHP 8.4 and 8.5 while the CI matrix explicitly tested those supported PHP 8 versions.
 - Replaced template property `unset()` with a null assignment so PHPStan passes consistently on PHP 8.3 through 8.5.
 - Normalized legacy `(integer)` casts to `(int)` in the date utility for PHP 8.5 compatibility.
+- Added the final CKFinder modernization report with the 83-file inventory, PHP 8.3–8.5 matrix evidence, PHPStan, PHPUnit, Docker/Trivy, Semgrep and Gitleaks results.
