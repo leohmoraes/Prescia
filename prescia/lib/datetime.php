@@ -249,8 +249,8 @@ if (!defined('ADODB_ALLOW_NEGATIVE_TS')) define('ADODB_NO_NEGATIVE_TS',1);
   // Assumes that if 2-digit is more than 30 years in future, then previous century.
   function adodb_year_digit_check($y)  {
     if ($y < 100) {
-      $yr = (integer) date("Y");
-      $century = (integer) ($yr /100);
+	  $yr = (int) date("Y");
+	  $century = (int) ($yr /100);
       if ($yr%100 > 50) {
         $c1 = $century + 1;
         $c0 = $century;

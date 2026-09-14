@@ -641,3 +641,7 @@ A matriz de CI agora possui um contrato de teste coerente com o próprio workflo
 ### PHPStan PHP 8.4/8.5 corrigido
 
 O fechamento do template foi ajustado de `unset($this->template)` para atribuição de `null`, eliminando a incompatibilidade de análise relacionada a propriedades potencialmente com hooks. A matriz remota deve ser reexecutada para confirmar PHP 8.3, 8.4 e 8.5, além do build Docker/Trivy no job PHP 8.3.
+
+### Casts PHP 8.5 corrigidos
+
+Os dois casts `(integer)` remanescentes no cálculo de anos ADODB foram normalizados para `(int)`, eliminando a deprecation específica do PHP 8.5. A nova execução da matriz deve concluir os três jobs e liberar o fechamento formal da Issue #202.

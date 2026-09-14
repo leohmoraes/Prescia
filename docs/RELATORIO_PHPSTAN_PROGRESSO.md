@@ -793,3 +793,7 @@ A execução CI do commit `d0b4a5f` revelou que `Php83CompatibilityTest` ainda e
 ## Correção do PHPStan em PHP 8.4/8.5
 
 A execução da matriz após a PR #206 aprovou PHPUnit, lint e PHPStan em PHP 8.3, mas falhou em PHP 8.4 e 8.5 com `Cannot unset property CPresciaVar::$template because it might have hooks in a subclass` em `prescia/core.php:391`. O método `CPrescia::close()` passou a atribuir `null` à propriedade, liberando a referência do template sem usar `unset()` e mantendo compatibilidade com a análise das versões novas. Validação local em PHP 8.3: PHPUnit 144 testes/3093 asserções, PHPStan 0 e lint aprovado.
+
+## Correção final de compatibilidade PHP 8.5
+
+Após a correção do `unset()` em `CPrescia::close()`, a matriz ficou verde em PHP 8.3 e 8.4. O PHP 8.5 ainda reportou a deprecation de casts não padronizados `(integer)` em `prescia/lib/datetime.php:252-253`. Ambos foram substituídos pelo cast canônico `(int)`. A validação local em PHP 8.3 permaneceu aprovada: PHPUnit 144 testes/3093 asserções, PHPStan 0 e lint aprovado.
