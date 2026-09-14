@@ -233,3 +233,12 @@ A revisão do relatório de segurança confirmou que os achados SEC-001, SEC-002
 Como hardening adicional do SEC-005, `prescia/lib/loadURL.php::fget()` passou a aceitar somente URLs `ftp://`, validar host e porta, resolver exclusivamente IPs públicos, limitar tentativas e conectar apenas aos IPs previamente validados. Foi adicionada a regressão `testFgetValidatesFtpHostsAndConnectsOnlyToResolvedPublicIps()` em `tests/SecurityRegressionTest.php`.
 
 A alteração foi publicada na PR [#196](https://github.com/leohmoraes/Prescia/pull/196), cujo CI concluiu com sucesso nos cinco checks obrigatórios. O merge squash resultou no SHA `186eb9d` em `origin/master`. A baseline PHPStan não foi alterada. Como PHP, Composer e dependências não estão disponíveis localmente, a validação executável foi delegada ao CI remoto.
+
+
+## Lote de segurança — leituras do presciatester — 2026-09-13
+
+A reauditoria após o hardening FTP encontrou quatro leituras SQL legadas em `pages/presciatester/actions/nextstep.php`: duas consultas sem valores externos e dois lookups do usuário de teste `wd40user`. Todas foram migradas para `fetchPrepared()`/`queryPrepared()`; o lookup de login passou a usar placeholder `?` com tipo `s`.
+
+Foi adicionada a regressão `testPresciaTesterNextstepUsesPreparedDatabaseReads()` em `tests/SecurityRegressionTest.php`, rejeitando os executores legados e a interpolação do login. A PR [#197](https://github.com/leohmoraes/Prescia/pull/197) passou nos cinco checks obrigatórios e foi mergeada no SHA `95370e8`. A baseline PHPStan permaneceu inalterada.
+
+A varredura pós-merge confirmou que não há issues ou PRs abertas. Os únicos `simpleQuery()` restantes estão no `reset.php` do presciatester, protegido por `!CONS_ONSERVER && CONS_DB_BASE === 'presciatester'`, no plugin de contador do próprio testador e no bootstrap interno de criação/configuração do framework. São operações estáticas ou destrutivas de ambiente de teste/bootstrap, sem entrada externa identificada, e permanecem explicitamente fora do próximo lote.
