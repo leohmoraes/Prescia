@@ -2,8 +2,8 @@ includes:
     - phpstan-baseline.neon
 
 parameters:
-    # Level 2 is enabled after the level-1 baseline reached zero diagnostics.
-    level: 2
+    # Level 3 is enabled after exploratory level-3 analysis reached zero diagnostics.
+    level: 3
     bootstrapFiles:
         - tools/phpstan-bootstrap.php
     stubFiles:
