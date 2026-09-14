@@ -387,8 +387,9 @@ class CPrescia extends CPresciaVar {
 	 * Usefull for situations where you expect delay (processing a file or whatever)
 	 * calling a dbconnect after this should enable you to resume working with the system transparently
 	 */
-	function close($stop = true) {
-		unset($this->template);
+		function close($stop = true) {
+			// Assigning null releases the template without triggering PHP 8.4 property-hook analysis.
+			$this->template = null;
 		if ($this->dbo->errorRaised) $this->errorControl->raise(606,"","core",vardump($this->dbo->log));
 		$this->dbo->close();
 		if ($stop) exit();
