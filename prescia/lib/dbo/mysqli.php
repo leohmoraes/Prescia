@@ -100,7 +100,11 @@ class CDBO_mysqli extends CDBO  {
     	}
 	    } // query
 
-		function queryPrepared($sql, $types, $params, &$result, &$numrows, $debugmode = null) {
+    /**
+     * @param-out mixed $result Driver-specific result object or false.
+     * @param-out int $numrows Number of rows returned by the driver.
+     */
+    function queryPrepared($sql, $types, $params, &$result, &$numrows, $debugmode = null) {
 			$result = false;
 			$numrows = 0;
 				if ($this->delayedconn == 1) $this->connect();
@@ -128,7 +132,7 @@ class CDBO_mysqli extends CDBO  {
 				return false;
 			}
 				$result = $stmt->get_result();
-				if ($result instanceof mysqli_result) $numrows = (int)$result->num_rows;
+                    if ($result instanceof mysqli_result) $numrows = max(0, (int)$result->num_rows);
 				$stmt->close();
 			return true;
 		}
