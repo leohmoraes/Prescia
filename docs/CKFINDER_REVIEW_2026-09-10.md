@@ -1,16 +1,18 @@
 # Revisão CKFinder — 2026-09-10
 
+> **Atualização de estado — 2026-09-14:** este relatório registra a fotografia histórica de 120 arquivos. Após a modernização posterior, o inventário atual contém **83 arquivos PHP**, a árvore `core/connector/php/php4` foi removida fisicamente e o runtime ativo usa exclusivamente `core/connector/php/modern`. Os itens abaixo que descrevem PHP4 como presente ou desativado no repositório devem ser lidos como histórico; a evidência vigente é `tests/CKFinderModernizationTest.php` e o changelog da modernização. Não há correção de código pendente identificada nesta revisão; este update corrige apenas a defasagem documental.
+
 ## Conclusão
 
-A revisão percorreu **120 arquivos PHP** presentes em `pages/_js/ckfinder`. Todos passaram por `php -l`. O entrypoint ativo fixa o runtime PHP5, e o caminho PHP4 não é selecionável no runtime suportado pelo projeto. Os controles de upload, ACL, contenção canônica de caminhos, callbacks, downloads e tipos de recurso são cobertos pelas regressões de segurança existentes.
+A revisão original percorreu **120 arquivos PHP** presentes em `pages/_js/ckfinder`; todos passaram por `php -l` naquele ciclo. Depois, a modernização removeu os arquivos legados e o inventário atual passou a conter **83 arquivos PHP**. O entrypoint ativo fixa o runtime moderno, e o caminho PHP4 não existe nem é selecionável no runtime suportado pelo projeto. Os controles de upload, ACL, contenção canônica de caminhos, callbacks, downloads e tipos de recurso são cobertos pelas regressões de segurança existentes.
 
 A análise PHPStan isolada foi executada em configuração temporária porque `phpstan.neon.dist` exclui deliberadamente o legado. O resultado produziu diagnósticos residuais apenas em includes relativos da árvore legada e em colisões de classes PHP4/PHP5 analisadas simultaneamente. Os diagnósticos de variáveis indefinidas nos handlers ativos foram corrigidos neste ciclo. Nenhuma entrada foi adicionada à baseline.
 
 ## Contexto de execução
 
-`pages/_js/ckfinder/ckfinder.php` carrega `core/ckfinder_php5.php`. `core/connector/php/constants.php` fixa `CKFINDER_CONNECTOR_PHP_MODE` em `5` e aponta `CKFINDER_CONNECTOR_LIB_DIR` para `./php5`. `config.php` exige sessão administrativa, atribui o papel `admin`, usa limites positivos para uploads e não anuncia o tipo Flash ativo.
+`pages/_js/ckfinder/ckfinder.php` carrega o entrypoint moderno. `core/connector/php/constants.php` aponta `CKFINDER_CONNECTOR_LIB_DIR` para `./modern`. `config.php` exige sessão administrativa, atribui o papel `admin`, usa limites positivos para uploads e não anuncia o tipo Flash ativo.
 
-A árvore PHP4 permanece no repositório para compatibilidade histórica, mas foi classificada como **desativada no runtime suportado**. Ela não foi promovida à baseline nem considerada um caminho de produção. A remoção física depende de confirmação de consumidores externos e deve ser tratada como mudança posterior separada.
+A árvore PHP4 permanecia no repositório na data desta revisão, mas foi posteriormente removida como parte da modernização CKFinder. A remoção foi acompanhada por regressões que impedem o retorno do bootstrap, dos seletores e da árvore PHP4 ao runtime.
 
 ## Achados e correções deste ciclo
 
@@ -23,13 +25,13 @@ A árvore PHP4 permanece no repositório para compatibilidade histórica, mas fo
 | Download | `DownloadFile.php` | Content-Disposition seguro, nome controlado e `nosniff` |
 | Imagem | `Thumbnail.php`, `imageresize/plugin.php`, `watermark/plugin.php` | Recursos inicializados com falha segura; parâmetros de resize validados |
 | Configuração | `config.php` | Erros não são exibidos; modos de arquivo/diretório são restritivos; ACL exige `admin` |
-| PHPStan | análise isolada temporária | Resíduos classificados como includes relativos/runtime PHP4-PHP5; baseline intacta |
+| PHPStan | análise isolada temporária no ciclo original | Resíduos históricos classificados como includes relativos/runtime PHP4-PHP5; baseline intacta |
 
 ## Validação
 
 | Verificação | Resultado |
 | --- | --- |
-| Arquivos PHP CKFinder | 120 encontrados |
+| Arquivos PHP CKFinder | 120 no ciclo original; 83 no estado atual |
 | `php -l` na árvore CKFinder | Aprovado em todos os arquivos |
 | `phpstan.neon.dist` nível 3 | Aprovado sem diagnósticos |
 | PHPUnit completo | Aprovado: 136 testes, 3.345 asserções; 2 skipped e 2 deprecações existentes |
