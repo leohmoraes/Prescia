@@ -5,6 +5,8 @@
 **Skills instaladas:** `phpstan-legacy-remediation` e `prescia-install-config`
 **Estado das skills:** ambas validadas pelo `quick_validate.py`; as cópias instaladas em `/home/ubuntu/skills/` são idênticas às versões versionadas.
 
+> **Atualização de estado — 2026-09-14:** este backlog registra a fotografia do commit `668dcb7`. Depois dela, o README foi expandido, a documentação foi revisada e a PR #210 foi mesclada no `master`. Os critérios e pendências abaixo continuam válidos, mas o SHA mergeado e os check-runs do próximo ciclo devem ser registrados quando o CI for revalidado.
+
 ## Estado atual
 
 A árvore de trabalho local estava limpa e o `master` local estava alinhado a `origin/master`. A consulta ao GitHub não encontrou issues abertas no momento da auditoria. Portanto, as referências a issues nos planos antigos são **histórico de governança**, não evidência de que existam tickets abertos atualmente.
@@ -51,7 +53,7 @@ Parar o loop e registrar bloqueio quando ocorrer qualquer uma destas condições
 
 ## Estado do ciclo 2026-09-14
 
-O repositório foi clonado em `/home/ubuntu/Prescia`, permaneceu sem alterações de código pendentes, e a consulta ao GitHub confirmou zero issues abertas e zero PRs abertas. As skills versionadas foram instaladas e validadas. A revisão dos achados da auditoria confirmou que os três itens de segurança acionáveis já estão no `master`, com regressões em `tests/SecurityRegressionTest.php`; portanto, não foi criado um commit artificial de correção nem um merge sem mudança funcional. A suíte local continua bloqueada pela ausência de PHP 8.3, Composer, PHPUnit, PHPStan e Docker; o CI remoto é a fonte de validação executável.
+O repositório foi clonado em `/home/ubuntu/Prescia` e a fotografia original não possuía alterações de código pendentes. As skills versionadas foram instaladas e validadas. A revisão dos achados da auditoria confirmou que os três itens de segurança acionáveis já estão no `master`, com regressões em `tests/SecurityRegressionTest.php`; portanto, não foi criado um commit artificial de correção. A atualização documental do README foi publicada posteriormente na PR #210. A suíte local continua bloqueada pela ausência de PHP 8.3, Composer, PHPUnit, PHPStan e Docker; o CI remoto é a fonte de validação executável.
 
 ## Primeiro ciclo recomendado
 
