@@ -2,7 +2,7 @@
 
 /** @var CPrescia $this Core context that includes this page action. */
 
-	if (isset($_REQUEST['haveinfo'])) {
+		if (isset($_REQUEST['haveinfo']) && !CONS_ONSERVER && CONS_DB_BASE === 'presciatester') {
 		$this->dbo->simpleQuery("TRUNCATE dbp");
 		$this->dbo->simpleQuery("TRUNCATE dba");
 		$this->dbo->simpleQuery("TRUNCATE dbb");
