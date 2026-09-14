@@ -156,10 +156,23 @@ function loadURL($url, $agent = 'PHP', $method = 'get') {
 }
 
 function fget($url,$login,$pass,$file,$tries=1,$tmpfile="",$mode=FTP_ASCII) {
-    if ($tmpfile == "") $tmpfile = "tmpdlw.tmp";
-    if (is_file($tmpfile)) @unlink($tmpfile);
-    while ($tries>0) {
-        $fp = ftp_connect($url);
+	$url = is_string($url) ? trim($url) : '';
+	$parts = $url !== '' ? parse_url(strpos($url, '://') === false ? 'ftp://' . $url : $url) : false;
+	$scheme = is_array($parts) && isset($parts['scheme']) ? strtolower($parts['scheme']) : '';
+	$host = is_array($parts) && isset($parts['host']) ? strtolower($parts['host']) : '';
+	$port = is_array($parts) && isset($parts['port']) ? (int)$parts['port'] : 21;
+	if ($scheme !== 'ftp' || !presciaLoadUrlIsValidHost($host) || $port < 1 || $port > 65535) return false;
+	$ips = presciaLoadUrlResolvePublicIps($host);
+	if (!$ips) return false;
+	$tries = max(1, min((int)$tries, 3));
+	if ($tmpfile == "") $tmpfile = "tmpdlw.tmp";
+	if (is_file($tmpfile)) @unlink($tmpfile);
+	while ($tries>0) {
+		$fp = false;
+		foreach ($ips as $ip) {
+			$fp = @ftp_connect($ip, $port, 10);
+			if ($fp) break;
+		}
         if ($fp) {
             $login = ftp_login($fp, $login, $pass);
             if ($login) {

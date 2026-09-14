@@ -1057,6 +1057,17 @@ PHP, $route);
         }));
     }
 
+    public function testFgetValidatesFtpHostsAndConnectsOnlyToResolvedPublicIps(): void
+    {
+        $loader = (string) file_get_contents(__DIR__ . '/../prescia/lib/loadURL.php');
+        $fget = substr($loader, strpos($loader, 'function fget('));
+
+        self::assertStringContainsString("\$scheme !== 'ftp'", $fget);
+        self::assertStringContainsString('presciaLoadUrlResolvePublicIps($host)', $fget);
+        self::assertStringContainsString('ftp_connect($ip, $port, 10)', $fget);
+        self::assertStringNotContainsString('ftp_connect($url)', $fget);
+    }
+
     public function testFrontControllerEmitsBaselineSecurityHeaders(): void
     {
         $frontController = (string) file_get_contents(__DIR__ . '/../index.php');
