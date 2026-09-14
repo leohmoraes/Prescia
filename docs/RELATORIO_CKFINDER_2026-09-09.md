@@ -36,6 +36,12 @@ A issue **#67 permanece aberta**: a revisão foi executada e os achados foram li
 
 A revisão estrutural foi concluída. PHP, Composer, Docker e PHPStan não estão disponíveis localmente; lint, PHPUnit e PHPStan isolado serão executados pelo GitHub Actions. Nenhuma alteração no baseline é permitida para mascarar os achados.
 
+## Atualização do plano CKF-MODERN-2026 — lote PHP4
+
+Em 2026-09-14 foi executada a primeira fase do plano registrado nas issues [#198](https://github.com/leohmoraes/Prescia/issues/198) e [#199](https://github.com/leohmoraes/Prescia/issues/199). Os 36 arquivos do connector PHP4 e o bootstrap `core/ckfinder_php4.php` foram removidos do produto. O entrypoint deixou de carregar a verificação/fallback específico de PHP4, e `SecurityRegressionTest` passou a exigir a ausência da árvore PHP4 e do bootstrap legado.
+
+O inventário PHP do CKFinder caiu de 120 para 83 arquivos. `git diff --check` passou e nenhuma referência funcional a PHP4 permanece fora das próprias asserções que verificam sua ausência. PHP, PHPUnit e PHPStan não estão instalados no ambiente local; a validação de lint, testes e análise estática deve ocorrer na CI PHP 8.3 antes do merge. Permanecem como próximos lotes a consolidação da variante PHP5 para uma implementação sem nomenclatura/runtime legado, a modernização dos 48 arquivos compartilhados/plugins e a validação de deploy.
+
 ## Atualização do loop — lote de upload e callbacks
 
 A revisão do código atual confirmou que parte de CKF-01 e CKF-02 já havia sido corrigida em lotes anteriores: os callbacks PHP5 usam `json_encode()` com flags hexadecimais, e `FileUpload` valida estrutura de `$_FILES`, códigos `UPLOAD_ERR_*`, `is_uploaded_file()`, tamanho e MIME ativo. O lote atual adiciona regressão explícita para esses controles e rejeita estruturas malformadas no comando `CopyFiles`, evitando warnings e coerções de arrays para strings em `name`, `type`, `folder` e `options`.
