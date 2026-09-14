@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - 2026-08-31
 
 ### Added
+- Added the `prescia-install-config` project skill and synchronized both versioned skills into the local skill registry; the 2026-09-14 cycle also reconciled the SQL/security backlog with the already-merged implementation and regression evidence.
 - Added PHPUnit-based PHP 8.3 compatibility tests in `tests/Php83CompatibilityTest.php`.
 - Added the Semgrep/Gitleaks scanner report in `reports/scanner-audit-2026-09-14.md`; Gitleaks found no secrets, while contextual review kept two hardening items open for `ajaxqueryunique.php` and `stats_refdet.php`.
 - Added `tests/CKFinderModernizationTest.php`, a deterministic inventory regression that rejects reintroduction of CKFinder PHP4/PHP5 runtime trees and legacy selectors.
