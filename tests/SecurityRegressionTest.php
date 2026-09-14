@@ -62,6 +62,16 @@ SQL, $payload);
         self::assertStringContainsString('return CONS_AUTH_SESSION_FAIL_UNKNOWN;', $authControl);
     }
 
+    public function testPresciaTesterDoesNotShipDefaultDatabaseCredentials(): void
+    {
+        $config = (string) file_get_contents(__DIR__ . '/../pages/presciatester/_config/config.php');
+
+        self::assertStringContainsString('getenv("PRESCIA_DB_USER")', $config);
+        self::assertStringContainsString('getenv("PRESCIA_DB_PASSWORD")', $config);
+        self::assertStringNotContainsString('define("CONS_DB_USER","root")', $config);
+        self::assertStringNotContainsString('define("CONS_DB_PASS","root")', $config);
+    }
+
     public function testUndoCleanupLookupAndRemoteChecksUsePreparedQueries(): void
     {
         $undo = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_undo/module.php');
