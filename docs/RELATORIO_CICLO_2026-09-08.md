@@ -224,3 +224,12 @@ Foi adicionada a regressão `testRssUsesPreparedStructuredExecution()`.
 O URL Dispatch Manager concatenava nomes de pastas virtuais no SQL, tanto no modo simples quanto na validação de árvores. O lote preserva `checkHackAttempt()`, filtros declarativos e relações parentais, mas vincula cada valor de pasta com placeholders tipados conforme o campo do módulo e executa por `queryPrepared()`.
 
 Foi adicionada a regressão `testUdmVirtualFolderValuesUsePreparedExecution()`. A correção também usa o índice correto da pasta em cada nível da árvore, mantendo a intenção do algoritmo de validação parental.
+
+
+## Lote de segurança — validação do helper FTP — 2026-09-13
+
+A revisão do relatório de segurança confirmou que os achados SEC-001, SEC-002, SEC-003 e SEC-006 já haviam sido corrigidos nos lotes anteriores. O SEC-004 foi revisado em `pages/_js/ckfinder/config.php` e cópias de configuração: não foram encontrados segredos reais, as licenças permanecem vazias, a autenticação depende de sessão administrativa e os limites de upload estão ativos.
+
+Como hardening adicional do SEC-005, `prescia/lib/loadURL.php::fget()` passou a aceitar somente URLs `ftp://`, validar host e porta, resolver exclusivamente IPs públicos, limitar tentativas e conectar apenas aos IPs previamente validados. Foi adicionada a regressão `testFgetValidatesFtpHostsAndConnectsOnlyToResolvedPublicIps()` em `tests/SecurityRegressionTest.php`.
+
+A alteração foi publicada na PR [#196](https://github.com/leohmoraes/Prescia/pull/196), cujo CI concluiu com sucesso nos cinco checks obrigatórios. O merge squash resultou no SHA `186eb9d` em `origin/master`. A baseline PHPStan não foi alterada. Como PHP, Composer e dependências não estão disponíveis localmente, a validação executável foi delegada ao CI remoto.
