@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the conservative migration helper in `tools/migrate_php83.php`, with dry-run, timestamped backups and a security blocker report.
 
 ### Changed
+- Expanded the PHP compatibility workflow from PHP 8.3-only to a parallel PHP 8.3, 8.4 and 8.5 matrix; Docker/Trivy validation remains explicitly scoped to the PHP 8.3 production image.
 - Started the CKFinder modernization plan (#198–#203): removed the 36-file PHP4 connector and its legacy bootstrap, added regression assertions that the runtime is not shipped, and reduced the CKFinder PHP inventory from 120 to 83 files; PHP lint, PHPUnit and PHPStan remain required CI validations because they are unavailable in the local environment.
 - Consolidated the CKFinder connector into the single `core/ckfinder.php` entrypoint and `core/connector/php/modern` tree for PHP 8.3+, removed the legacy connector mode constant, updated security regression paths, and eliminated obsolete version-gated image extension logic; CI validation is required before merge.
 - Resolved the PHPStan level-3 residual: mysqli row counts, empty database results, upload image metadata, authentication cookie data and bi_stats aggregate row shapes are now guarded or normalized without baseline growth; the full suite remains green on PHP 8.3.
