@@ -10,10 +10,11 @@ final class Php83CompatibilityTest extends TestCase
 {
     private const ROOT = __DIR__ . '/..';
 
-    public function testRuntimeIsPhp83AndRequiredExtensionsAreLoaded(): void
+    public function testRuntimeIsSupportedPhp83OrNewerAndRequiredExtensionsAreLoaded(): void
     {
         self::assertSame(8, PHP_MAJOR_VERSION);
-        self::assertSame(3, PHP_MINOR_VERSION);
+        self::assertGreaterThanOrEqual(3, PHP_MINOR_VERSION);
+        self::assertLessThan(6, PHP_MINOR_VERSION);
         self::assertTrue(extension_loaded('mysqli'), 'mysqli extension is required.');
         self::assertTrue(extension_loaded('pdo_mysql'), 'pdo_mysql extension is required.');
         self::assertTrue(extension_loaded('mbstring'), 'mbstring extension is required.');

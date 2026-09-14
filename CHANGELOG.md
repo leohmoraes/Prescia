@@ -277,3 +277,4 @@ Applied the `phpstan-legacy-remediation` skill to `prescia/lazyload/ajaxQuery.ph
 - Parameterized `autoPrune()` selection/update queries and parental-cycle lookups, preserving composite-key behavior and PHP 8.3 compatibility.
 - Parameterized `CPrescia::deleteAllFrom()` UPDATE and cascade SELECT queries, removing key-value interpolation from cascading relationship cleanup.
 - Parameterized group-level authorization lookups in the `bi_groups` plugin for update and delete actions.
+- Fixed the compatibility regression that rejected PHP 8.4 and 8.5 while the CI matrix explicitly tested those supported PHP 8 versions.

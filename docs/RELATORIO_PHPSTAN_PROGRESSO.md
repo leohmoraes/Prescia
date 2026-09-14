@@ -785,3 +785,7 @@ O terceiro lote da migração SQL parametrizou `CPrescia::deleteAllFrom()`. Tant
 ## Quarto lote de segurança — validações do plugin bi_groups
 
 As consultas de nível em `mod_bi_groups::edit_parse()` passaram de `fetch()` com ID concatenado para `fetchPrepared()` nos fluxos de atualização e exclusão. PHPStan focalizado, lint PHP 8.3, PHPUnit e verificação de diff foram aprovados.
+
+## Correção da matriz PHP 8.3–8.5
+
+A execução CI do commit `d0b4a5f` revelou que `Php83CompatibilityTest` ainda exigia exatamente PHP 8.3, embora o workflow já validasse PHP 8.4 e 8.5. O teste foi ajustado para aceitar PHP 8.x a partir de 8.3 e abaixo de 8.6, mantendo as extensões obrigatórias. Em PHP 8.3 local, a suíte concluiu com 144 testes, 3.091 asserções, 2 deprecations e 2 skips existentes; PHPStan global e lint do teste foram aprovados.

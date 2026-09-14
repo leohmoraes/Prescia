@@ -633,3 +633,7 @@ Com o inventário PHPStan zerado, a execução autônoma retomou a issue de segu
 ### Quarto lote de segurança concluído
 
 O plugin `bi_groups` não concatena mais IDs recebidos nas verificações de autorização de atualização e exclusão. O inventário de SQL dinâmico continua sendo revisado por consumidor, com prioridade para autenticação, administração e estatísticas.
+
+### Compatibilidade PHP 8.3–8.5 corrigida
+
+A matriz de CI agora possui um contrato de teste coerente com o próprio workflow: versões PHP 8.3, 8.4 e 8.5 são aceitas, sem relaxar para PHP 9 ou versões abaixo de 8.3. O próximo passo da Issue #202 é aguardar/reexecutar a matriz remota e registrar os resultados dos scanners e do build Docker.
