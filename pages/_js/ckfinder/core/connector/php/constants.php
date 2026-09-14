@@ -54,10 +54,8 @@ define('CKFINDER_CONNECTOR_DEFAULT_USER_FILES_PATH',"/userfiles/");
 define('CKFINDER_CONNECTOR_LANG_PATH',"./lang");
 define('CKFINDER_CONNECTOR_CONFIG_FILE_PATH',"./../../../config.php");
 
-// The PHP4 connector was retired. The supported connector is PHP5-compatible
-// source executed by the application's supported PHP runtime.
-define('CKFINDER_CONNECTOR_PHP_MODE', 5);
-define('CKFINDER_CONNECTOR_LIB_DIR', "./php5");
+// The connector has one implementation executed by the application's supported PHP runtime.
+define('CKFINDER_CONNECTOR_LIB_DIR', "./modern");
 
 define('CKFINDER_CHARS', '123456789ABCDEFGHJKLMNPQRSTUVWXYZ');
 define('CKFINDER_REGEX_IMAGES_EXT', '/\.(jpg|gif|png|bmp|jpeg)$/i');

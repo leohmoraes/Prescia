@@ -30,7 +30,7 @@ class CKFinder
 	public $RememberLastFolder = true ;
 	public $StartupFolderExpanded = false ;
 
-	// PHP 5 Constructor
+	// modern Constructor
 	function __construct( $basePath = CKFINDER_DEFAULT_BASEPATH, $width = '100%', $height = 400, $selectFunction = null )
 	{
 		$this->BasePath			= $basePath ;

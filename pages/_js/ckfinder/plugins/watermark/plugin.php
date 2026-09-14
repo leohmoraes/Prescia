@@ -143,10 +143,10 @@ class Watermark
         {
             if(function_exists('imagesavealpha') && function_exists('imagecolorallocatealpha') )
             {
-                 $bg = imagecolorallocatealpha($oImage, 255, 255, 255, 127); // (PHP 4 >= 4.3.2, PHP 5)
+                 $bg = imagecolorallocatealpha($oImage, 255, 255, 255, 127);
                  imagefill($oImage, 0, 0 , $bg);
                  imagealphablending($oImage, false);
-                 imagesavealpha($oImage, true);  // (PHP 4 >= 4.3.2, PHP 5)
+                 imagesavealpha($oImage, true);
             }
         }
         if ($watermarkImageAttr['mime'] == 'image/png') {
