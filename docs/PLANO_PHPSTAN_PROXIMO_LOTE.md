@@ -637,3 +637,7 @@ O plugin `bi_groups` não concatena mais IDs recebidos nas verificações de aut
 ### Compatibilidade PHP 8.3–8.5 corrigida
 
 A matriz de CI agora possui um contrato de teste coerente com o próprio workflow: versões PHP 8.3, 8.4 e 8.5 são aceitas, sem relaxar para PHP 9 ou versões abaixo de 8.3. O próximo passo da Issue #202 é aguardar/reexecutar a matriz remota e registrar os resultados dos scanners e do build Docker.
+
+### PHPStan PHP 8.4/8.5 corrigido
+
+O fechamento do template foi ajustado de `unset($this->template)` para atribuição de `null`, eliminando a incompatibilidade de análise relacionada a propriedades potencialmente com hooks. A matriz remota deve ser reexecutada para confirmar PHP 8.3, 8.4 e 8.5, além do build Docker/Trivy no job PHP 8.3.
