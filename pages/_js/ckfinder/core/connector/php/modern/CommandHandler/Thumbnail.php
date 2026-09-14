@@ -242,7 +242,7 @@ class CKFinder_Connector_CommandHandler_Thumbnail extends CKFinder_Connector_Com
 
         if ($sourceImageAttr['mime'] == 'image/png')
         {
-            $bg = imagecolorallocatealpha($oThumbImage, 255, 255, 255, 127); // (PHP 4 >= 4.3.2, PHP 5)
+            $bg = imagecolorallocatealpha($oThumbImage, 255, 255, 255, 127);
             imagefill($oThumbImage, 0, 0 , $bg);
             imagealphablending($oThumbImage, false);
             imagesavealpha($oThumbImage, true);

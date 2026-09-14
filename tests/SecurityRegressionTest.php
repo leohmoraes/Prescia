@@ -962,10 +962,10 @@ PHP, $route);
 
     public function testCkfinderUploadAndCopyHandlersRejectMalformedInputAndUseSafeCallbacks(): void
     {
-        $upload = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/FileUpload.php');
-        $fileUploadErrors = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/ErrorHandler/FileUpload.php');
-        $quickUploadErrors = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/ErrorHandler/QuickUpload.php');
-        $copy = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/CopyFiles.php');
+        $upload = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/modern/CommandHandler/FileUpload.php');
+        $fileUploadErrors = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/modern/ErrorHandler/FileUpload.php');
+        $quickUploadErrors = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/modern/ErrorHandler/QuickUpload.php');
+        $copy = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/modern/CommandHandler/CopyFiles.php');
 
         self::assertStringContainsString('is_uploaded_file($uploadedFile[\'tmp_name\'])', $upload);
         self::assertStringContainsString('UPLOAD_ERR_OK', $upload);
@@ -978,7 +978,7 @@ PHP, $route);
 
     public function testCkfinderFolderHandlerContainsResourceAndThumbnailPaths(): void
     {
-        $folderHandler = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/Core/FolderHandler.php');
+        $folderHandler = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/modern/Core/FolderHandler.php');
 
         self::assertStringContainsString('isPathInside($this->_resourceTypeConfig->getDirectory(), $this->_serverPath)', $folderHandler);
         self::assertStringContainsString('isPathInside($_thumbnailsConfig->getDirectory(), $this->_thumbsServerPath)', $folderHandler);
@@ -1110,16 +1110,18 @@ PHP, $route);
         self::assertStringNotContainsString('Content-Security-Policy-Report-Only:', $frontController);
     }
 
-    public function testCkfinderDoesNotShipThePhp4Runtime(): void
+    public function testCkfinderUsesOnlyTheModernRuntime(): void
     {
         $entrypoint = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/ckfinder.php');
         $constants = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/constants.php');
 
-        self::assertStringContainsString("require_once 'core/ckfinder_php5.php';", $entrypoint);
-        self::assertStringNotContainsString("require_once 'core/ckfinder_php4.php'", $entrypoint);
-        self::assertStringContainsString("define('CKFINDER_CONNECTOR_PHP_MODE', 5);", $constants);
-        self::assertStringContainsString("define('CKFINDER_CONNECTOR_LIB_DIR', \"./php5\");", $constants);
+        self::assertStringContainsString("require_once 'core/ckfinder.php';", $entrypoint);
+        self::assertStringNotContainsString('ckfinder_php4.php', $entrypoint);
+        self::assertStringNotContainsString('ckfinder_php5.php', $entrypoint);
+        self::assertStringContainsString("define('CKFINDER_CONNECTOR_LIB_DIR', \"./modern\");", $constants);
         self::assertStringNotContainsString('"./php4"', $constants);
+        self::assertStringNotContainsString('"./php5"', $constants);
+        self::assertStringNotContainsString('CKFINDER_CONNECTOR_PHP_MODE', $constants);
         self::assertDirectoryDoesNotExist(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php4');
         self::assertFileDoesNotExist(__DIR__ . '/../pages/_js/ckfinder/core/ckfinder_php4.php');
     }
@@ -1138,8 +1140,8 @@ PHP, $route);
 
     public function testCKFinderUploadValidatesMimeAndCanonicalDestination(): void
     {
-        $upload = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/FileUpload.php');
-        $resourceConfig = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/Core/ResourceTypeConfig.php');
+        $upload = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/modern/CommandHandler/FileUpload.php');
+        $resourceConfig = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/modern/Core/ResourceTypeConfig.php');
 
         self::assertStringContainsString("is_uploaded_file(", $upload);
         self::assertStringContainsString("finfo_open(FILEINFO_MIME_TYPE)", $upload);
@@ -1150,7 +1152,7 @@ PHP, $route);
 
     public function testCKFinderDownloadUsesSafeContentDisposition(): void
     {
-        $download = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/DownloadFile.php');
+        $download = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/modern/CommandHandler/DownloadFile.php');
 
         self::assertStringContainsString("filename*=UTF-8''", $download);
         self::assertStringContainsString('X-Content-Type-Options: nosniff', $download);
@@ -1189,7 +1191,7 @@ PHP, $config);
 
     public function testCKFinderUploadEnforcesSizeBeforeScalingAndDetectsHtmlForAllExtensions(): void
     {
-        $upload = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/FileUpload.php');
+        $upload = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/modern/CommandHandler/FileUpload.php');
 
         self::assertStringContainsString('if ($maxSize && $uploadedFile[\'size\']>$maxSize)', $upload);
         self::assertStringContainsString(<<<'PHP'
@@ -1201,34 +1203,34 @@ PHP, $upload);
 
     public function testCKFinderImageValidationNormalizesUppercaseExtensions(): void
     {
-        $upload = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/FileUpload.php');
+        $upload = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/modern/CommandHandler/FileUpload.php');
 
         self::assertSame(2, substr_count($upload, 'strtolower(CKFinder_Connector_Utils_FileSystem::getExtension($sFileNameOrginal))'));
     }
 
     public function testCKFinderMutableHandlersUseCanonicalPathContainment(): void
     {
-        $fileSystem = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/Utils/FileSystem.php');
+        $fileSystem = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/modern/Utils/FileSystem.php');
         self::assertStringContainsString('public static function isPathInside($basePath, $candidatePath)', $fileSystem);
         self::assertStringContainsString('$base = realpath($basePath);', $fileSystem);
         self::assertStringContainsString('$candidate = realpath($candidatePath);', $fileSystem);
         self::assertStringContainsString('self::combinePaths($parent, basename($candidatePath))', $fileSystem);
 
         foreach (array('CopyFiles', 'MoveFiles', 'RenameFile', 'RenameFolder', 'DeleteFile', 'DeleteFolder', 'CreateFolder') as $handler) {
-            $source = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/' . $handler . '.php');
+            $source = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/modern/CommandHandler/' . $handler . '.php');
             self::assertStringContainsString('isPathInside(', $source, $handler . ' must validate canonical paths');
         }
     }
 
     public function testCKFinderDownloadAndCallbacksRejectHeaderAndScriptInjection(): void
     {
-        $download = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/DownloadFile.php');
+        $download = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/modern/CommandHandler/DownloadFile.php');
         self::assertStringContainsString('isPathInside($_resourceTypeInfo->getDirectory(), $filePath)', $download);
         self::assertStringContainsString('strpbrk($fileName, "\\r\\n\\0")', $download);
         self::assertStringContainsString('X-Content-Type-Options: nosniff', $download);
 
         foreach (array('FileUpload', 'QuickUpload') as $handler) {
-            $source = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/ErrorHandler/' . $handler . '.php');
+            $source = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/modern/ErrorHandler/' . $handler . '.php');
             self::assertStringContainsString('json_encode(', $source, $handler . ' must encode callback values as JSON');
             self::assertStringContainsString('JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP', $source);
             self::assertStringNotContainsString("str_replace(\"'\", \"\\\\'\"", $source);
@@ -1237,7 +1239,7 @@ PHP, $upload);
 
     public function testCKFinderUploadValidatesTheCompleteHttpUploadContract(): void
     {
-        $upload = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/FileUpload.php');
+        $upload = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/modern/CommandHandler/FileUpload.php');
 
         foreach (array('name', 'type', 'tmp_name', 'error', 'size') as $field) {
             self::assertStringContainsString("'" . $field . "'", $upload);
@@ -1250,9 +1252,9 @@ PHP, $upload);
 
     public function testCKFinderUploadAndCallbacksRejectAmbiguousRequestShapes(): void
     {
-        $upload = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/FileUpload.php');
-        $fileUploadError = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/ErrorHandler/FileUpload.php');
-        $quickUploadError = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/ErrorHandler/QuickUpload.php');
+        $upload = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/modern/CommandHandler/FileUpload.php');
+        $fileUploadError = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/modern/ErrorHandler/FileUpload.php');
+        $quickUploadError = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/modern/ErrorHandler/QuickUpload.php');
 
         self::assertStringContainsString('count($_FILES) !== 1', $upload);
         self::assertStringContainsString("is_scalar(\$_GET['CKFinderFuncNum'])", $fileUploadError);
@@ -1267,7 +1269,7 @@ PHP, $upload);
 
     public function testCKFinderUploadReservesDestinationWithoutCheckThenMoveRace(): void
     {
-        $upload = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/FileUpload.php');
+        $upload = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/modern/CommandHandler/FileUpload.php');
 
         self::assertStringContainsString("fopen(\$sFilePath, 'x')", $upload);
         self::assertStringContainsString('fclose($destinationHandle)', $upload);
@@ -1277,9 +1279,9 @@ PHP, $upload);
 
     public function testCKFinderMutableCopiesPublishAtomically(): void
     {
-        $fileSystem = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/Utils/FileSystem.php');
-        $copy = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/CopyFiles.php');
-        $move = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/MoveFiles.php');
+        $fileSystem = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/modern/Utils/FileSystem.php');
+        $copy = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/modern/CommandHandler/CopyFiles.php');
+        $move = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/modern/CommandHandler/MoveFiles.php');
 
         self::assertStringContainsString('public static function copyFileAtomic($sourcePath, $destinationPath)', $fileSystem);
         self::assertStringContainsString('tempnam(dirname($destinationPath), \'.ckfinder-\')', $fileSystem);
@@ -1290,7 +1292,7 @@ PHP, $upload);
 
     public function testCKFinderRenameFolderValidatesThumbnailDestinationAndNeverDeletesOnFailure(): void
     {
-        $rename = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php5/CommandHandler/RenameFolder.php');
+        $rename = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/modern/CommandHandler/RenameFolder.php');
 
         self::assertStringContainsString('$oldThumbsServerPath = $this->_currentFolder->getThumbsServerPath();', $rename);
         self::assertStringContainsString('isPathInside($_thumbnailsConfig->getDirectory(), $newThumbsServerPath)', $rename);

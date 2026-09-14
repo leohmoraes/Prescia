@@ -42,6 +42,8 @@ Em 2026-09-14 foi executada a primeira fase do plano registrado nas issues [#198
 
 O inventário PHP do CKFinder caiu de 120 para 83 arquivos. `git diff --check` passou e nenhuma referência funcional a PHP4 permanece fora das próprias asserções que verificam sua ausência. PHP, PHPUnit e PHPStan não estão instalados no ambiente local; a validação de lint, testes e análise estática deve ocorrer na CI PHP 8.3 antes do merge. Permanecem como próximos lotes a consolidação da variante PHP5 para uma implementação sem nomenclatura/runtime legado, a modernização dos 48 arquivos compartilhados/plugins e a validação de deploy.
 
+Em seguida, a árvore de 36 arquivos anteriormente denominada PHP5 foi consolidada em `core/connector/php/modern`, o bootstrap foi renomeado para `core/ckfinder.php`, e todas as regressões foram atualizadas para os novos caminhos. A constante de modo legado foi removida e a validação de extensões de imagem deixou de depender de versões históricas. O inventário permanece com 83 arquivos PHP, agora com 36 arquivos no connector moderno e sem as árvores PHP4/PHP5. O lote requer CI PHP 8.3 verde antes do merge.
+
 ## Atualização do loop — lote de upload e callbacks
 
 A revisão do código atual confirmou que parte de CKF-01 e CKF-02 já havia sido corrigida em lotes anteriores: os callbacks PHP5 usam `json_encode()` com flags hexadecimais, e `FileUpload` valida estrutura de `$_FILES`, códigos `UPLOAD_ERR_*`, `is_uploaded_file()`, tamanho e MIME ativo. O lote atual adiciona regressão explícita para esses controles e rejeita estruturas malformadas no comando `CopyFiles`, evitando warnings e coerções de arrays para strings em `name`, `type`, `folder` e `options`.
