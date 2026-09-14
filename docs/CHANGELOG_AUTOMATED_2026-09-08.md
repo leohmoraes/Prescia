@@ -7,6 +7,8 @@ Este documento foi gerado a partir do histórico Git do repositório Prescia no 
 **Referência atual:** `ab5e2e1` — merge do PR #104  
 **PRs recentes relacionados:** [#69][1], [#73][2], [#74][3], [#75][4], [#76][5], [#77][6], [#78][7], [#79][8], [#80][9], [#81][10], [#82][11], [#83][12], [#84][13], [#85][14], [#86][15], [#87][16], [#88][17], [#89][18], [#90][19], [#96][20], [#97][21], [#98][22], [#99][23], [#100][24], [#101][25], [#102][26], [#103][27], [#104][28] e [#105][29].
 
+> **Atualização de estado — 2026-09-14:** este arquivo continua sendo uma fotografia do intervalo encerrado em 8 de setembro. A recomendação abaixo sobre remoção do CKFinder PHP4 foi superada pela modernização posterior: o inventário atual possui 83 arquivos PHP, não possui a árvore PHP4/PHP5 legada e usa o runtime moderno. Consulte `CKFINDER_REVIEW_2026-09-10.md` e `../reports/prescia-audit-2026-09-14.md` para a evidência vigente.
+
 ## Resumo executivo
 
 O período foi dominado por uma campanha de **endurecimento de segurança**, modernização de compatibilidade com PHP 8.3 e ampliação da validação automatizada. Os commits mais recentes concentram-se em prepared statements para fluxos administrativos e de autenticação, proteção de uploads e downloads do CKFinder, contenção canônica de caminhos, segurança do Docker e recuperação de regressões no CI.
@@ -58,7 +60,7 @@ A base de desenvolvimento foi modernizada com Composer, PHPUnit, PHPStan 2.x, wo
 
 ## Próximos pontos recomendados
 
-A prioridade técnica remanescente é reduzir ou remover o CKFinder PHP4 legado, mantendo o conector PHP5 como caminho preferencial durante a transição. Também é recomendável continuar a substituição de SQL legado por prepared statements, manter o PHPStan sem expansão do baseline e ampliar testes comportamentais para upload, traversal, MIME falso, symlinks e autorização administrativa.
+A prioridade técnica remanescente **na data deste changelog** era reduzir ou remover o CKFinder PHP4 legado, mantendo o conector PHP5 como caminho preferencial durante a transição. Essa frente foi concluída posteriormente. As prioridades atuais são continuar a substituição de SQL legado por prepared statements, manter o PHPStan sem expansão da baseline e ampliar testes comportamentais para upload, traversal, MIME falso, symlinks e autorização administrativa.
 
 ## Metodologia de geração
 

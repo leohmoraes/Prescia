@@ -4,6 +4,8 @@
 **Base:** auditoria do commit `68a430a`  
 **Objetivo:** reduzir imediatamente o risco de comprometimento da aplicação, corrigir os controles de autenticação e entrada, e estabelecer uma base verificável de segurança e compatibilidade com PHP 8.3.
 
+> **Atualização de estado — 2026-09-14:** este plano preserva a priorização da auditoria original. A frente CKFinder evoluiu depois da sua redação: o inventário atual possui 83 arquivos PHP, a árvore PHP4/PHP5 legada foi removida e a evidência vigente está em `tests/CKFinderModernizationTest.php`, `docs/CKFINDER_REVIEW_2026-09-10.md` e `reports/prescia-audit-2026-09-14.md`. Os números e estados abaixo continuam históricos quando não houver nota de atualização explícita.
+
 ## 1. Estratégia de execução
 
 A correção deve seguir uma abordagem **defense-in-depth**: primeiro limitar a exposição e impedir os caminhos de comprometimento mais graves; depois corrigir autenticação, sessão e entrada; em seguida reduzir a superfície de ataque do servidor; por fim automatizar testes e controles para evitar regressões.
@@ -167,6 +169,8 @@ Foi removido o uso de `eval()` em `prescia/lib/zipfile.php`, substituído por `p
 
 ## Atualização do ciclo autônomo — 2026-09-10
 
+> Os números de testes e o estado de CKFinder descritos nesta subseção são uma fotografia do ciclo de 2026-09-10. Para o estado posterior, consulte `../reports/prescia-audit-2026-09-14.md`; a validação posterior registrou 144 testes, 3.091 asserções e o inventário moderno de 83 arquivos PHP.
+
 O lote de PHPStan nível 3 da issue #185 foi concluído sem alteração de baseline. Foram corrigidos os contratos de `numrows`, resultados vazios em preview/auth/dev e shapes agregados de `bi_stats`. A análise global no nível 3 não reporta diagnósticos, e a suíte completa executa 135 testes com 3.340 asserções, duas deprecações existentes e dois testes pulados documentados pela configuração.
 
 A frente de SQL genérico avançou nos filtros do `ajaxQuery`, nos selected markers dos linkers administrativos e nos reads de metadados do bootstrap. Os valores externos passaram a viajar por placeholders e os identificadores continuam derivados de metadados internos. A varredura de consumidores não encontrou chamadas de `query()` ou `fetch()` genéricas fora do driver e dos caminhos de reset/teste; `simpleQuery()` restante está restrito a DDL e agregações internas com identificadores citados ou a cron controlado.
@@ -176,5 +180,7 @@ A frente de sanitização passou a encaminhar `cleanHTML()`, `stripHTML()` e esc
 A frente SSRF foi reforçada com rejeição de hosts numéricos e nomes curtos, eliminação do fallback DNS IPv4 incompleto e cobertura determinística para re-resolução, IPv6 privado e representações alternativas. O contrato operacional de eventos, métricas, alertas, retenção e homologação está em `docs/SSRF_MONITORING_RUNBOOK.md`.
 
 A revisão CKFinder confirmou 120 arquivos PHP, todos aprovados por `php -l`; o entrypoint ativo fixa o connector PHP5 e o runtime PHP4 não é selecionável. Os handlers PHP5 cobertos por regressões mantêm ACL administrativa, allowlists de upload, contenção de caminhos canônicos, validação de MIME/tamanho, callbacks codificados e downloads com headers seguros. A análise PHPStan global continua excluindo o legado por configuração deliberada; uma execução focalizada deve usar um arquivo PHPStan temporário separado e seus diagnósticos devem ser classificados antes de alterar a baseline.
+
+O inventário acima é histórico. Após a modernização posterior, o runtime ativo usa a árvore moderna, as árvores PHP4/PHP5 legadas foram removidas e a regressão vigente está em `tests/CKFinderModernizationTest.php`.
 
 As validações do ciclo são: `composer audit --locked` sem advisories, lint PHP completo sem erros, PHPStan global nível 1 e nível 3 sem diagnósticos, PHPUnit completo verde, `git diff --check` limpo e regressões de segurança verdes. As pendências que exigem ambiente externo permanecem limitadas à execução dos cenários DNS controlados de homologação e à publicação efetiva dos limiares no agregador de logs de produção.

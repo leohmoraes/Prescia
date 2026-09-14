@@ -1,5 +1,7 @@
 # Auditoria de Dependências Composer e npm
 
+> **Atualização de estado — 2026-09-14:** o `composer.json` atual declara PHP `>=8.3 <8.6`, portanto a frase histórica da linha 30 que dizia `>=8.3 <8.4` foi corrigida. A conclusão sobre o PHPUnit permanece uma recomendação de atualização major separada.
+
 **Projeto:** Prescia
 **Repositório:** `leohmoraes/Prescia`
 **Branch:** `master`
@@ -27,7 +29,7 @@ Foi identificada uma atualização possível para a dependência de desenvolvime
 |---|---|---:|---:|---|---|
 | `phpunit/phpunit` | Desenvolvimento | `10.5.64` | `12.5.34` | Sem advisory reportado pelo Composer | Planejar atualização major separada, após revisar compatibilidade da suíte e da versão mínima de PHP |
 
-O projeto declara PHP `>=8.3 <8.4`. A atualização do PHPUnit deve ser tratada como uma mudança de compatibilidade de testes, não como uma correção automática de segurança. O lockfile não deve ser alterado sem uma execução dedicada de atualização, testes completos e revisão das mudanças transitivas.
+O projeto declara PHP `>=8.3 <8.6`. A atualização do PHPUnit deve ser tratada como uma mudança de compatibilidade de testes, não como uma correção automática de segurança. O lockfile não deve ser alterado sem uma execução dedicada de atualização, testes completos e revisão das mudanças transitivas.
 
 ## Comandos executados
 

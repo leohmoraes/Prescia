@@ -5,6 +5,8 @@
 **Commit analisado:** `7e4f273` (`security: prepare cron maintenance queries`)
 **Escopo:** código PHP de produção, plugins, endpoints administrativos, bibliotecas legadas, configuração, workflows, dependências bloqueadas, testes e arquivos rastreados.
 
+> **Atualização de estado — 2026-09-14:** o relatório permanece uma fotografia do commit `7e4f273`. A constraint atual do `composer.json` é `>=8.3 <8.6`; a referência histórica a `<8.4` foi corrigida abaixo.
+
 ## Conclusão executiva
 
 A análise não encontrou um novo caso confirmado de injeção SQL nos fluxos de produção examinados. Os principais sinks SQL do lote anterior estão usando `queryPrepared()` ou `fetchPrepared()`, e o commit analisado está alinhado com `origin/master`.
@@ -17,7 +19,7 @@ Esses pontos são **achados de revisão**, não foram corrigidos neste ciclo. A 
 
 O checkout foi sincronizado por fast-forward/reset seguro com `origin/master`. O estado final está limpo em `7e4f273`. O repositório contém workflows de PHP 8.3, PHPStan, CodeQL, revisão de dependências e auditoria semanal de segurança.
 
-A configuração Composer declara PHP `>=8.3 <8.4`, PHPUnit 10.5 e PHPStan 2.2. O lockfile está versionado. Não há manifesto ou lockfile npm no repositório. As ferramentas locais `php`, `composer`, `phpstan`, `phpunit`, Semgrep, Trivy e Gitleaks não estão instaladas no sandbox; por isso, a validação executada localmente foi baseada em inspeção estática, buscas determinísticas, revisão dos workflows e documentação já versionada. Os workflows remotos continuam sendo a fonte de validação executável para PHP 8.3, PHPStan, Composer audit, CodeQL e Trivy.
+A configuração Composer declara PHP `>=8.3 <8.6`, PHPUnit 10.5 e PHPStan 2.2. O lockfile está versionado. Não há manifesto ou lockfile npm no repositório. As ferramentas locais `php`, `composer`, `phpstan`, `phpunit`, Semgrep, Trivy e Gitleaks não estavam instaladas no sandbox daquela auditoria; por isso, a validação executada localmente foi baseada em inspeção estática, buscas determinísticas, revisão dos workflows e documentação já versionada. Os workflows remotos continuam sendo a fonte de validação executável para PHP 8.3, PHPStan, Composer audit, CodeQL e Trivy.
 
 ## Matriz de achados
 

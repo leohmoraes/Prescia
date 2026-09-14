@@ -5,6 +5,8 @@
 **Estado de referência:** `master` em `055adcd`
 **Autor:** Manus AI
 
+> **Atualização de estado — 2026-09-14:** este plano permanece um documento de execução criado em `055adcd`. Desde então, os resultados dos scanners foram versionados em `../reports/`, a documentação de instalação/configuração foi expandida no README e a PR #210 foi mesclada. As referências abaixo a “próximo marco” devem ser lidas como o plano original; o próximo ciclo agora é revalidar os artefatos no CI/staging e atualizar este plano com o SHA correspondente.
+
 ## Objetivo
 
 A migração dos fluxos de Legacy SQL de produção foi concluída em lotes pequenos, com regressões e validação remota. Este documento transforma as recomendações seguintes em um plano operacional priorizado. O objetivo é preservar os controles existentes, confirmar a segurança do deployment real e reduzir a probabilidade de regressões futuras.
@@ -98,7 +100,7 @@ Essa ordem prioriza controles que impedem regressões antes de investir em valid
 
 ## Estado atual e próximos marcos
 
-O repositório não possui issues ou pull requests abertas no momento da elaboração deste plano. O último lote de código foi mergeado no SHA `95370e8`, e a documentação mais recente está no SHA `055adcd`. O próximo marco operacional é executar os scanners no CI ou em staging e versionar os resultados no diretório `docs/`.
+No momento da elaboração deste plano, o repositório não possuía issues ou pull requests abertas. O último lote de código daquela fotografia foi mergeado no SHA `95370e8`, e a documentação de referência estava no SHA `055adcd`. Os resultados posteriores dos scanners estão em `../reports/`; o próximo marco operacional é revalidá-los no CI ou em staging e registrar o SHA e o ambiente efetivamente usados.
 
 ## Referências
 
