@@ -2,8 +2,8 @@ includes:
     - phpstan-baseline.neon
 
 parameters:
-    # First incremental strictness step; raise to level 2 after baseline cleanup.
-    level: 1
+    # Level 2 is enabled after the level-1 baseline reached zero diagnostics.
+    level: 2
     bootstrapFiles:
         - tools/phpstan-bootstrap.php
     stubFiles:
