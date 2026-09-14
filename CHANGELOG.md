@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the conservative migration helper in `tools/migrate_php83.php`, with dry-run, timestamped backups and a security blocker report.
 
 ### Changed
+- Started the CKFinder modernization plan (#198–#203): removed the 36-file PHP4 connector and its legacy bootstrap, added regression assertions that the runtime is not shipped, and reduced the CKFinder PHP inventory from 120 to 83 files; PHP lint, PHPUnit and PHPStan remain required CI validations because they are unavailable in the local environment.
 - Resolved the PHPStan level-3 residual: mysqli row counts, empty database results, upload image metadata, authentication cookie data and bi_stats aggregate row shapes are now guarded or normalized without baseline growth; the full suite remains green on PHP 8.3.
 - Migrated the generic AJAX select filters and administrative linker selected markers to prepared parameters, including remote-key translation and metadata-derived identifiers; removed the remaining production consumers of `safe_mkdir()` in favor of `FileService`.
 - Routed legacy HTML helper behavior through the central DOM allowlist and contextual UTF-8 escaping service, covering `cleanHTML()`, `stripHTML()` and template escaping while preserving compatibility wrappers.

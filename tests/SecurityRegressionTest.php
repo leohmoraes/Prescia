@@ -1110,17 +1110,18 @@ PHP, $route);
         self::assertStringNotContainsString('Content-Security-Policy-Report-Only:', $frontController);
     }
 
-    public function testCkfinderDoesNotSelectOrAdvertiseThePhp4Runtime(): void
+    public function testCkfinderDoesNotShipThePhp4Runtime(): void
     {
         $entrypoint = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/ckfinder.php');
         $constants = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/constants.php');
 
-        self::assertStringContainsString("throw new RuntimeException('CKFinder no longer supports PHP 4.');", $entrypoint);
         self::assertStringContainsString("require_once 'core/ckfinder_php5.php';", $entrypoint);
         self::assertStringNotContainsString("require_once 'core/ckfinder_php4.php'", $entrypoint);
         self::assertStringContainsString("define('CKFINDER_CONNECTOR_PHP_MODE', 5);", $constants);
         self::assertStringContainsString("define('CKFINDER_CONNECTOR_LIB_DIR', \"./php5\");", $constants);
         self::assertStringNotContainsString('"./php4"', $constants);
+        self::assertDirectoryDoesNotExist(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php4');
+        self::assertFileDoesNotExist(__DIR__ . '/../pages/_js/ckfinder/core/ckfinder_php4.php');
     }
 
     public function testCKFinderP0UploadPolicyUsesPositiveLimitsAndNoActiveTypes(): void
@@ -1272,22 +1273,6 @@ PHP, $upload);
         self::assertStringContainsString('fclose($destinationHandle)', $upload);
         self::assertStringContainsString('@unlink($sFilePath)', $upload);
         self::assertStringNotContainsString('if (file_exists($sFilePath))', $upload);
-    }
-
-    public function testCKFinderLegacyPhp4UploadUsesSamePathAndUploadBoundaries(): void
-    {
-        $upload = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php4/CommandHandler/FileUpload.php');
-        $fileSystem = (string) file_get_contents(__DIR__ . '/../pages/_js/ckfinder/core/connector/php/php4/Utils/FileSystem.php');
-
-        self::assertStringContainsString('is_uploaded_file(', $upload);
-        self::assertStringContainsString("finfo_open(FILEINFO_MIME_TYPE)", $upload);
-        self::assertStringContainsString('isPathInside($sServerDir, $sFilePath)', $upload);
-        self::assertStringContainsString("fopen(\$sFilePath, 'x')", $upload);
-        self::assertStringContainsString('fclose($destinationHandle)', $upload);
-        self::assertStringContainsString('@unlink($sFilePath)', $upload);
-        self::assertStringNotContainsString('if (file_exists($sFilePath))', $upload);
-        self::assertStringContainsString('function isPathInside(', $fileSystem);
-        self::assertStringContainsString('realpath($candidatePath)', $fileSystem);
     }
 
     public function testCKFinderMutableCopiesPublishAtomically(): void
