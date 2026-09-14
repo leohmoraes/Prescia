@@ -94,6 +94,25 @@ SQL, $payload);
         self::assertStringNotContainsString('CONS_PATH_LOGS.$code', $logs);
     }
 
+    public function testPresciaTesterResetRequiresNonProductionTestDatabase(): void
+    {
+        $reset = (string) file_get_contents(__DIR__ . '/../pages/presciatester/actions/reset.php');
+        $dockerfile = (string) file_get_contents(__DIR__ . '/../Dockerfile');
+        $configs = array(
+            (string) file_get_contents(__DIR__ . '/../pages/prescia/_config/config.php'),
+            (string) file_get_contents(__DIR__ . '/../pages/_newProjectTemplate/_config/config.php'),
+        );
+
+        self::assertStringContainsString("!CONS_ONSERVER && CONS_DB_BASE === 'presciatester'", $reset);
+        self::assertStringContainsString('DirectoryMatch "^/var/www/app/pages/(presciatester|_newProjectTemplate)(/|$)"', $dockerfile);
+        foreach ($configs as $config) {
+            self::assertStringContainsString('getenv("PRESCIA_DB_USER")', $config);
+            self::assertStringContainsString('getenv("PRESCIA_DB_PASSWORD")', $config);
+            self::assertStringNotContainsString('define("CONS_DB_USER","root")', $config);
+            self::assertStringNotContainsString('define("CONS_DB_PASS","root")', $config);
+        }
+    }
+
     public function testUndoCleanupLookupAndRemoteChecksUsePreparedQueries(): void
     {
         $undo = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_undo/module.php');

@@ -21,10 +21,13 @@ RUN printf '%s\n' \
     '    Require all denied' \
     '</FilesMatch>' \
     'Alias /pages/ /var/www/app/pages/' \
-    '<Directory "/var/www/app/pages/">' \
-    '    Require all granted' \
-    '</Directory>' \
-    '<DirectoryMatch "^/var/www/app/(config|prescia|tests|tools|docs)(/|$)">' \
+	    '<Directory "/var/www/app/pages/">' \
+	    '    Require all granted' \
+	    '</Directory>' \
+	    '<DirectoryMatch "^/var/www/app/pages/(presciatester|_newProjectTemplate)(/|$)">' \
+	    '    Require all denied' \
+	    '</DirectoryMatch>' \
+	    '<DirectoryMatch "^/var/www/app/(config|prescia|tests|tools|docs)(/|$)">' \
     '    Require all denied' \
     '</DirectoryMatch>' \
     > /etc/apache2/conf-available/prescia-hardening.conf \
