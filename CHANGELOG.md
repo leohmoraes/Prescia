@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Added PHPUnit-based PHP 8.3 compatibility tests in `tests/Php83CompatibilityTest.php`.
+- Added `tests/CKFinderModernizationTest.php`, a deterministic inventory regression that rejects reintroduction of CKFinder PHP4/PHP5 runtime trees and legacy selectors.
 - Added Composer project metadata and the `composer test` command.
 - Added GitHub Actions validation for PHP 8.3, required extensions and Docker build in `.github/workflows/php83.yml`.
 - Added the prioritized security remediation plan in `docs/PLANO_ACAO_SEGURANCA.md`.
