@@ -8,24 +8,38 @@
 **Data de consolidação:** 8 de setembro de 2026
 **Issue principal:** [#43 — Atualizar o PHPStan e elevar gradualmente o nível de análise][1]
 
+## Atualização executável — 2026-09-14
+
+Esta seção é a referência vigente para o estado do repositório. A análise foi executada localmente sobre a árvore correspondente ao `master` após o merge da documentação no commit `c262bd4f5b8a5ec4058e4af2839853f4cba1f786`, usando PHP 8.3.6, Composer com o lockfile versionado e a configuração oficial `phpstan.neon.dist`.
+
+| Verificação | Resultado | Evidência |
+|---|---|---|
+| PHPStan global | **Aprovado** | PHPStan 2.2.13, nível 1, `vendor/bin/phpstan analyse --configuration=phpstan.neon.dist --no-progress --error-format=json`, `0 errors`, `0 file_errors` |
+| PHPUnit completo | **Aprovado com observações** | 144 testes, 3.093 asserções, 2 deprecações e 2 testes pulados |
+| Lint PHP | **Aprovado** | Todos os arquivos PHP rastreados passaram em `php -l`; 0 erros de sintaxe |
+| Baseline | **Sem expansão nesta execução** | PHPStan terminou sem diagnósticos e `phpstan-baseline.neon` não foi alterado |
+| Ambiente | **Reproduzido localmente** | PHP 8.3.6; dependências instaladas a partir de `composer.lock` |
+
+O resultado atual substitui as referências anteriores que descreviam centenas de diagnósticos ou contagens menores de testes. As seções posteriores que mencionam rankings, commits e números antigos continuam preservadas como histórico de evolução e não devem ser usadas como fotografia do estado atual.
+
 ## Resumo executivo
 
-O projeto avançou para uma análise estática incremental com **PHPStan 2.x no nível 1**, baseline sem supressões e contratos explícitos para os principais contextos dinâmicos do framework. No master atual, a análise global, a suíte PHP 8.3, o PHPUnit e o lint estão aprovados; a configuração não introduz novas supressões.
+O projeto mantém uma análise estática incremental com **PHPStan 2.x no nível 1**, baseline sem supressões novas e contratos explícitos para os principais contextos dinâmicos do framework. Na execução de 2026-09-14, a análise global, o PHPUnit e o lint foram executados localmente em PHP 8.3.6 com resultado aprovado, com duas deprecações e dois testes pulados já registrados pela configuração.
 
 O progresso mais significativo ocorreu na separação entre o núcleo `CPrescia`, módulos concretos e payloads incluídos dinamicamente. Essa separação eliminou os diagnósticos de contexto em vários fluxos de administração, autenticação, fórum, cron e labels. Também foram corrigidos fluxos de variáveis indefinidas em listagens, ações de teste, cron e callbacks de módulos.
 
-A principal limitação atual é que o workflow completo analisa todo o repositório e ainda exibe centenas de diagnósticos distribuídos por payloads, módulos e bibliotecas legadas. O formatter do PHPStan atingiu o limite de 1.000 registros em fases anteriores, portanto números históricos acima desse limite devem ser tratados como limites de observação, e não como contagens exatas.
+As contagens de centenas de diagnósticos e o limite histórico de 1.000 registros pertencem a execuções anteriores. Nesta execução, o formatter JSON oficial retornou zero erros; a validação futura deve repetir a mesma configuração e registrar o SHA analisado antes de comparar resultados.
 
 ## Estado atual
 
 | Área | Estado | Evidência |
 |---|---|---|
-| PHP 8.3 | **Aprovada no lote atual** | `php -l` global sem warnings e `composer test` aprovado no commit `1127c0e` |
-| PHPStan focalizado nos arquivos corrigidos | **Aprovado** | Todos os lotes recentes terminaram com `[OK] No errors` |
-| PHPStan completo do repositório | **Aprovado** | Run CI `34263723139` no commit `26a5f029`; `[OK] No errors` |
-| PHPUnit | **Aprovado** | `73 testes`, `3014 asserções`, PHP 8.3.6 |
+| PHP 8.3 | **Aprovada na execução atual** | Lint global sem erros e `composer test` aprovado em PHP 8.3.6 |
+| PHPStan focalizado nos arquivos corrigidos | **Aprovado** | Execução global oficial retornou `0 errors` e `0 file_errors` |
+| PHPStan completo do repositório | **Aprovado** | PHPStan 2.2.13, nível 1, `phpstan.neon.dist`, JSON sem erros no commit analisado |
+| PHPUnit | **Aprovado com observações** | `144 testes`, `3.093 asserções`, 2 deprecações e 2 skips |
 | Baseline | **Sem novos ocultamentos** | `phpstan-baseline.neon` permanece sem entradas de `ignoreErrors` adicionadas durante os ciclos recentes |
-| Branch e working tree | **Consolidado** | `master`, código em `4fa70ad3`; documentação atualizada neste lote |
+| Branch e working tree | **Consolidado** | Árvore limpa; o relatório foi atualizado em branch documental para publicação no `master` |
 
 ## Linha do tempo das correções
 
