@@ -15,12 +15,16 @@ Esta seção é a referência vigente para o estado do repositório. Após a an�
 | Verificação | Resultado | Evidência |
 |---|---|---|
 | PHPStan global | **Aprovado** | PHPStan 2.2.13, nível 3, `vendor/bin/phpstan analyse --configuration=phpstan.neon.dist --no-progress --error-format=json`, `0 errors`, `0 file_errors` |
-| PHPUnit completo | **Aprovado com observações** | 144 testes, 3.093 asserções, 2 deprecações e 2 testes pulados |
+| PHPUnit completo | **Aprovado com observações** | 144 testes, 3.093 asserções, 0 depreciações e 2 testes pulados |
 | Lint PHP | **Aprovado** | Todos os arquivos PHP rastreados passaram em `php -l`; 0 erros de sintaxe |
 | Baseline | **Sem expansão nesta execução** | PHPStan terminou sem diagnósticos e `phpstan-baseline.neon` não foi alterado |
 | Ambiente | **Reproduzido localmente** | PHP 8.3.6; dependências instaladas a partir de `composer.lock` |
 
 O resultado atual substitui as referências anteriores que descreviam centenas de diagnósticos ou contagens menores de testes. As seções posteriores que mencionam rankings, commits e números antigos continuam preservadas como histórico de evolução e não devem ser usadas como fotografia do estado atual.
+
+## Lote 1 — bi_stats — execução parcial
+
+O inventário focalizado inicial encontrou 119 diagnósticos PHPStan nível 4 no diretório `prescia/plugins/bi_stats`. O primeiro subgrupo corrigiu os loops de renderização de referências e páginas para iterar sobre as coleções efetivamente acumuladas, reduzindo o inventário para 105 diagnósticos. A validação focalizada nível 4 permanece deliberadamente pendente enquanto os arquivos de analytics e o módulo principal forem tratados em sublotes posteriores; a análise global oficial nível 3 continua com zero erros, PHPUnit permanece em 144 testes e a baseline não foi expandida.
 
 ## Resumo executivo
 

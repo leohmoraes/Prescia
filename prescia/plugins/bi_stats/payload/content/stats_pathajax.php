@@ -83,7 +83,7 @@
 	if ($outsideEntry > $biggest) $biggest= $outsideEntry;
 		$showOE = false;
 		if ($total == 0) $total = 1;
-		for($c=0;$c<$n;$c++) {
+		for($c=0;$c<count($pages);$c++) {
 			$pageHits = isset($pages[$c]['hits']) && is_numeric($pages[$c]['hits']) ? (float)$pages[$c]['hits'] : 0.0;
 			if ($outsideEntry > $pageHits && !$showOE) {
 			$pw = $outsideEntry / $biggest;
@@ -127,7 +127,7 @@
 	if ($outsideExits > $biggest) $biggest= $outsideExits;
 		$showOE = false;
 		if ($total == 0) $total = 1;
-		for($c=0;$c<$n;$c++) {
+		for($c=0;$c<count($pages);$c++) {
 			$pageHits = isset($pages[$c]['hits']) && is_numeric($pages[$c]['hits']) ? (float)$pages[$c]['hits'] : 0.0;
 			if ($outsideExits > $pageHits && !$showOE) {
 			$pw = $outsideExits / $biggest;

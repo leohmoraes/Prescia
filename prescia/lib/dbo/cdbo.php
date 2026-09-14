@@ -114,8 +114,8 @@ class CDBO {
 
 		/** Execute a parameterized query. Connectors should override this method. */
 		/**
-		 * @param mixed &$result Driver-specific result object or false.
-		 * @param int &$numrows Number of rows returned by the driver.
+     * @param-out mixed $result Driver-specific result object or false.
+     * @param-out int $numrows Number of rows returned by the driver.
 		 * @return bool Whether execution succeeded.
 		 */
 		function queryPrepared($sql, $types, $params, &$result, &$numrows, $debugmode = null) {
