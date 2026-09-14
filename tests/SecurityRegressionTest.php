@@ -84,6 +84,16 @@ SQL, $payload);
         self::assertStringNotContainsString('$rows = $_REQUEST[\'rows\'];', $labelTest);
     }
 
+    public function testMasterLogsRestrictsTenantCodeToCanonicalLogDirectory(): void
+    {
+        $logs = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_adm/payload/content/master_logs.php');
+
+        self::assertStringContainsString('preg_match(\'/^[A-Za-z0-9_-]+$/\', $code)', $logs);
+        self::assertStringContainsString('realpath(CONS_PATH_LOGS)', $logs);
+        self::assertStringContainsString('dirname($logDirectory) !== rtrim($logRoot, DIRECTORY_SEPARATOR)', $logs);
+        self::assertStringNotContainsString('CONS_PATH_LOGS.$code', $logs);
+    }
+
     public function testUndoCleanupLookupAndRemoteChecksUsePreparedQueries(): void
     {
         $undo = (string) file_get_contents(__DIR__ . '/../prescia/plugins/bi_undo/module.php');
