@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the conservative migration helper in `tools/migrate_php83.php`, with dry-run, timestamped backups and a security blocker report.
 
 ### Changed
+- Audited PHPStan level 5 experimentally: the repository currently reports 458 file errors across 38 identifiers and 78 files, so the official level remains 3 while the diagnostics are triaged into follow-up remediation lots; the baseline was not expanded.
 - Started PHPStan level-4 Lot 3 for the front controllers: marked runtime configuration guards as dynamic constants, reducing the focused `index.php` and `prescia/index.php` inventory from 23 diagnostics to zero without changing runtime code or expanding the baseline.
 - Promoted the official PHPStan configuration from level 2 to level 3 after a full-repository exploratory run returned zero diagnostics; the baseline was not expanded.
 - Promoted the official PHPStan configuration from level 1 to level 2 after a full-repository exploratory run returned zero diagnostics; the baseline was not expanded.
