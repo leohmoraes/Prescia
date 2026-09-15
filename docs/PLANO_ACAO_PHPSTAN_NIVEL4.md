@@ -28,7 +28,24 @@ O nível oficial permanecerá em 3 durante a remediação. Cada lote deverá ser
 
 Os números devem ser comparados por `file_errors`, por identificador, por arquivo e por linha. O campo `totals.errors` do formatter JSON não deve ser usado isoladamente, pois a execução observada reportou `errors: 0` e `file_errors: 458` enquanto os diagnósticos estavam presentes em `.files[].messages[]`.
 
-## 3. Escopo técnico do nível 4
+## 3. Diagnósticos mais comuns esperados
+
+Os diagnósticos abaixo são os mais prováveis durante a promoção do nível 3 para o nível 4, com base na análise exploratória de nível 5 e no histórico dos Lotes 1–3. Eles devem ser tratados como sinais para investigação do contrato real, e não como autorização automática para remover condições ou adicionar supressões.
+
+| Categoria | Origem provável no Prescia | Risco principal | Tratamento recomendado |
+|---|---|---|---|
+| `smaller.alwaysFalse`, `greater.alwaysFalse` | Contadores, limites e resultados de consultas estreitados pelo analisador | Remoção indevida de caminhos válidos | Confirmar intervalos e preservar `false`, `null`, zero e listas vazias |
+| `booleanAnd.alwaysFalse`, `booleanOr.alwaysTrue` | Guards de configuração, autenticação e payloads dinâmicos | Desativação acidental de validações | Revisar o fluxo real antes de alterar a condição |
+| `equal.alwaysTrue`, `equal.alwaysFalse`, `notEqual.*` | Constantes literais, coerção de tipos e valores sentinela | Código morto aparente ou comparação semanticamente incorreta | Corrigir o contrato de origem e preferir comparações explícitas |
+| `argument.type` | `mail()`, `number_format()`, `str_replace()` e chamadas com entrada externa | Falha em runtime ou normalização incompleta | Validar e normalizar na origem; evitar casts indiscriminados |
+| `deadCode.unreachable` | `die()`, `exit()`, retornos estreitos e includes dinâmicos | Remoção de fluxo legítimo do framework | Confirmar carregadores e caminhos de exceção antes de remover código |
+| `isset.offset`, `nullCoalesce.offset`, `foreach.emptyArray` | Arrays de formulário, sessão, consulta, JSON/XML e payloads | Avisos, chaves ausentes ou contratos de array incorretos | Documentar a forma real e normalizar no limite do payload |
+| `argument.byRef` | Construtores e funções que recebem variáveis por referência | Erro de chamada com expressão temporária | Passar uma variável real e preservar o contrato de referência |
+| Contexto de `$this` e `$core` | Includes procedurais dentro de `CPrescia` e módulos concretos | Métodos ou propriedades atribuídos ao objeto errado | Confirmar o include e documentar o tipo concreto sem criar globais artificiais |
+
+As prioridades são: primeiro, contratos dinâmicos e fluxos de autenticação, autorização, SQL e e-mail; depois, arrays e resultados de consultas; por fim, comparações cosméticas e resíduos de módulos. O nível 4 não deve ser promovido enquanto esses diagnósticos estiverem apenas ocultos por `mixed`, `@phpstan-ignore` ou novas entradas na baseline.
+
+## 4. Escopo técnico do nível 4
 
 O nível 4 deverá ser tratado em cinco eixos. A ordem prioriza contratos que causam muitos diagnósticos derivados e riscos de comportamento executável.
 
