@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - 2026-08-31
 
 ### Added
+- Added `docs/RELATORIO_CICLO_2026-09-15.md`, recording the administrative SQL-flow inventory, the absence of executable legacy DBO calls in `bi_adm`/`components`, the unchanged PHPStan baseline, and the local toolchain validation blocker.
 - Updated `docs/CKFINDER_REVIEW_2026-09-10.md` to distinguish its historical 120-file snapshot from the current 83-file modernized inventory, with the PHP4 runtime removed and no code correction pending from that report.
 - Added the `prescia-install-config` project skill and synchronized both versioned skills into the local skill registry; the 2026-09-14 cycle also reconciled the SQL/security backlog with the already-merged implementation and regression evidence.
 - Added PHPUnit-based PHP 8.3 compatibility tests in `tests/Php83CompatibilityTest.php`.
