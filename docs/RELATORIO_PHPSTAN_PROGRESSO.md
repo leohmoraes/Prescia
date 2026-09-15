@@ -22,6 +22,10 @@ Esta seção é a referência vigente para o estado do repositório. Após a an�
 
 O resultado atual substitui as referências anteriores que descreviam centenas de diagnósticos ou contagens menores de testes. As seções posteriores que mencionam rankings, commits e números antigos continuam preservadas como histórico de evolução e não devem ser usadas como fotografia do estado atual.
 
+## Lote 2 — Sublote 2.1 — `prescia/core.php`
+
+O inventário focalizado do Lote 2 começou com 84 diagnósticos nível 4 no bootstrap e front controllers, dos quais 41 estavam em `prescia/core.php`. O Sublote 2.1 corrigiu dois problemas comportamentais: removeu o bloco inalcançável ao final de `addLink()` e transformou o teste de caminho de `_meta.xml` em uma verificação real com `is_file()`. O inventário de `core.php` foi reduzido para 39 diagnósticos, sem expansão da baseline. Os demais achados permanecem em triagem por dependerem de constantes de ambiente e contratos dinâmicos do framework.
+
 ## Resumo executivo
 
 O projeto mantém uma análise estática incremental com **PHPStan 2.x no nível 3**, baseline sem supressões novas e contratos explícitos para os principais contextos dinâmicos do framework. Na execução de 2026-09-14, a análise global, o PHPUnit e o lint foram executados localmente em PHP 8.3.6 com resultado aprovado, com dois testes pulados já registrados pela configuração.

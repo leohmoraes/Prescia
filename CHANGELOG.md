@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the conservative migration helper in `tools/migrate_php83.php`, with dry-run, timestamped backups and a security blocker report.
 
 ### Changed
+- Started PHPStan level-4 Lot 2 in `prescia/core.php`: removed unreachable `addLink()` fallback code and corrected the `_meta.xml` existence check to use `is_file()`, reducing the focused core diagnostics from 41 to 39 without baseline expansion.
 - Promoted the official PHPStan configuration from level 2 to level 3 after a full-repository exploratory run returned zero diagnostics; the baseline was not expanded.
 - Promoted the official PHPStan configuration from level 1 to level 2 after a full-repository exploratory run returned zero diagnostics; the baseline was not expanded.
 - Replaced deprecated `implode(NULL, ...)` calls in `prescia/lib/zipfile.php` with explicit empty separators; PHPUnit now completes without PHP deprecations.

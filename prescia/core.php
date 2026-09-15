@@ -480,10 +480,8 @@ class CPrescia extends CPresciaVar {
 					$this->template->constants['HEADCSSTAGS'] .= "\t<link rel=\"stylesheet\" type=\"text/css\" href=\"".CONS_INSTALL_ROOT.$file."\" />\n";
 			}
 			return true;
-		}
-		$this->errorControl->raise(8,'File not found',$file,"addLink");
-		return false;
-	}# addLink
+			}
+		}# addLink
 #--
 	/* checkActions
 	 * domainLoad -> parseRequest -> loadIntlControl -> checkActions -> renderPage* -> showHeaders -> showTemplate*
@@ -1199,7 +1197,7 @@ class CPrescia extends CPresciaVar {
 					$this->template->constants['CANONICAL'] .= "?id=".$_REQUEST['id'];
 			}
 			$metadata = $this->template->constants['METATAGS'];
-			if (CONS_PATH_PAGES.$_SESSION['CODE']."/template/_meta.xml")
+			if (is_file(CONS_PATH_PAGES.$_SESSION['CODE']."/template/_meta.xml"))
 				$metadata .= cReadFile(CONS_PATH_PAGES.$_SESSION['CODE']."/template/_meta.xml");
 			$metadata .= "\t<link rel=\"canonical\" href=\"".$this->template->constants['CANONICAL']."\" />\n";
 			if ($this->template->constants['METAKEYS'] != '')
