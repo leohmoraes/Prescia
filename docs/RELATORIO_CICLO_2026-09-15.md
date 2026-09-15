@@ -22,6 +22,10 @@ Conclusão: **não foi identificado neste sublote um defeito de produção com c
 
 A ausência do toolchain local é um bloqueio documentado, não uma evidência de sucesso. A baseline permaneceu exatamente sem entradas (`ignoreErrors: []`).
 
+## Publicação e CI
+
+O registro foi publicado na PR [#230](https://github.com/leohmoraes/Prescia/pull/230), commit `73bb846d0b4f43445aa5e008ce5a4778057c74cd`. A PR ficou `mergeable/clean` após os checks e foi mesclada em 2026-09-15. O SHA real resultante em `master` é `8d09991552f0c8e44da880f8bbd3eeb2e468fc54`. Os workflows pós-merge `PHP compatibility matrix` (run `34935479495`) e `PHP static analysis` (run `34935479688`) concluíram com `status=completed` e `conclusion=success`. A baseline não foi alterada.
+
 ## Resultado e próximo passo
 
 O item 4 foi **analisado, não concluído**: a varredura não encontrou chamadas DBO legadas executáveis, mas a suíte e o PHPStan não puderam ser repetidos localmente. O próximo ciclo deve continuar pelo primeiro diagnóstico PHPStan nível 4 ainda aberto e não conflitante com os PRs existentes, após a conclusão/limpeza dessas branches ou uma decisão explícita de escopo no GitHub.
