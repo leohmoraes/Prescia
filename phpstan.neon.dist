@@ -2,6 +2,13 @@ includes:
     - phpstan-baseline.neon
 
 parameters:
+    dynamicConstantNames:
+        - CONS_AFF_ERRORHANDLER
+        - CONS_AFF_ERRORHANDLER_NOWARNING
+        - CONS_CACHE
+        - CONS_DEVELOPER
+        - CONS_ECONOMICMODE
+        - CONS_HONEYPOT
     # Level 3 is enabled after exploratory level-3 analysis reached zero diagnostics.
     level: 3
     bootstrapFiles:
