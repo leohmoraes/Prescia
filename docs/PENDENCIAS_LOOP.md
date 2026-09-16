@@ -1,11 +1,11 @@
 # Pendências e loop de execução — Prescia
 
-**Data da auditoria:** 2026-09-15
-**Commit auditado:** `9e581b7` (`master`)
+**Data da auditoria:** 2026-09-16
+**Commit auditado:** `20ae614` (`master`)
 **Skills instaladas:** `phpstan-legacy-remediation` e `prescia-install-config`
 **Estado das skills:** ambas validadas pelo `quick_validate.py`; as cópias instaladas em `/home/ubuntu/skills/` são idênticas às versões versionadas.
 
-> **Atualização de estado — 2026-09-15:** este backlog registra a fotografia do commit `9e581b7`. A varredura administrativa do item 4 foi executada sem encontrar chamadas DBO legadas executáveis em `bi_adm`/`components`; a validação PHP/Composer/PHPUnit/PHPStan/Docker continua bloqueada pela ausência do toolchain local.
+> **Atualização de estado — 2026-09-16:** a fotografia foi atualizada para `20ae614`. O item 4 continua sendo o primeiro item não concluído: a análise administrativa anterior não encontrou chamadas DBO legadas executáveis, mas a validação PHP/Composer/PHPUnit/PHPStan continua bloqueada pela ausência do toolchain local. As PRs abertas #227 e #228 permanecem conflitantes e não foram alteradas.
 
 ## Estado atual
 
@@ -58,6 +58,11 @@ O repositório foi clonado em `/home/ubuntu/Prescia` e a fotografia original nã
 ## Estado do ciclo 2026-09-15
 
 No commit `9e581b7`, foi feita a varredura dos 53 arquivos PHP de `prescia/plugins/bi_adm` e dos fluxos compartilhados em `prescia/components`. Não foram encontradas chamadas DBO executáveis a `query()`, `fetch()` ou `simpleQuery()`; as ocorrências `fetch()` restantes carregam templates e a ocorrência de `simpleQuery()` está comentada. Os SQLs administrativos examinados usam `queryPrepared()`/`fetchPrepared()`, com valores externos em placeholders e identificadores derivados de metadados. Os testes estáticos existentes em `tests/SecurityRegressionTest.php` já cobrem os principais contratos preparados. O item foi analisado, mas não marcado como concluído porque PHP, Composer, PHPUnit, PHPStan e Docker não estão disponíveis localmente. A documentação foi publicada na PR #230, mesclada no SHA `8d09991552f0c8e44da880f8bbd3eeb2e468fc54`; os workflows pós-merge `34935479495` e `34935479688` concluíram com `completed/success`. Evidência detalhada: `docs/RELATORIO_CICLO_2026-09-15.md`.
+No commit `9e581b7`, foi feita a varredura dos 53 arquivos PHP de `prescia/plugins/bi_adm` e dos fluxos compartilhados em `prescia/components`. Não foram encontradas chamadas DBO executáveis a `query()`, `fetch()` ou `simpleQuery()`; as ocorrências `fetch()` restantes carregam templates e a ocorrência de `simpleQuery()` está comentada. Os SQLs administrativos examinados usam `queryPrepared()`/`fetchPrepared()`, com valores externos em placeholders e identificadores derivados de metadados. Os testes estáticos existentes em `tests/SecurityRegressionTest.php` já cobrem os principais contratos preparados. O item foi analisado, mas não marcado como concluído porque PHP, Composer, PHPUnit, PHPStan e Docker não estão disponíveis localmente. A documentação foi publicada na PR #230, mesclada no SHA `8d09991552f0c8e44da880f8bbd3eeb2e468fc54`; os workflows pós-merge `34935479495` e `34935479688` concluíram com `completed/success`. Evidência detalhada: `docs/RELATORIO_CICLO_2026-09-15.md`.
+
+## Estado do ciclo 2026-09-16
+
+O repositório foi sincronizado em `master` no commit `20ae614`. O primeiro item não concluído continua sendo o item 4, mas não há ambiente local para confirmar runtime, lint, PHPUnit ou PHPStan: `php`, `composer`, `vendor/bin/phpunit` e `vendor/bin/phpstan` estão ausentes; Docker também não está disponível no shell efetivo. As PRs abertas #227 e #228 foram consultadas e estão `mergeable=CONFLICTING`/`mergeStateStatus=DIRTY`, portanto não foram misturadas ao ciclo. Não houve alteração de PHP, testes funcionais, baseline ou criação de issue. O ciclo está bloqueado e documentado em `docs/RELATORIO_CICLO_2026-09-16.md`; nenhuma PR de código foi aberta ou mesclada.
 
 ## Primeiro ciclo recomendado
 
