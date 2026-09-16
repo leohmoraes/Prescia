@@ -62,7 +62,7 @@ No commit `9e581b7`, foi feita a varredura dos 53 arquivos PHP de `prescia/plugi
 
 ## Estado do ciclo 2026-09-16
 
-O repositório foi sincronizado em `master` no commit `20ae614`. O primeiro item não concluído continua sendo o item 4, mas não há ambiente local para confirmar runtime, lint, PHPUnit ou PHPStan: `php`, `composer`, `vendor/bin/phpunit` e `vendor/bin/phpstan` estão ausentes; Docker também não está disponível no shell efetivo. As PRs abertas #227 e #228 foram consultadas e estão `mergeable=CONFLICTING`/`mergeStateStatus=DIRTY`, portanto não foram misturadas ao ciclo. Não houve alteração de PHP, testes funcionais, baseline ou criação de issue. O ciclo está bloqueado e documentado em `docs/RELATORIO_CICLO_2026-09-16.md`; nenhuma PR de código foi aberta ou mesclada.
+O repositório foi sincronizado em `master` no commit `20ae614`. O primeiro item não concluído continua sendo o item 4, mas não há ambiente local para confirmar runtime, lint, PHPUnit ou PHPStan: `php`, `composer`, `vendor/bin/phpunit` e `vendor/bin/phpstan` estão ausentes; Docker também não está disponível no shell efetivo. As PRs abertas #227 e #228 foram consultadas e estão `mergeable=CONFLICTING`/`mergeStateStatus=DIRTY`, portanto não foram misturadas ao ciclo. Não houve alteração de PHP, testes funcionais, baseline ou criação de issue. O registro foi publicado na PR #232, que recebeu 9 checks `completed/success` e foi mesclada; o SHA resultante de `master` é `999a08e0a20df2ffbb27e0bdedcecc09e02157c0`, e o workflow pós-merge #35062355570 concluiu com `success`, incluindo PHP 8.3/8.4/8.5, PHPStan e build/scan Docker no job PHP 8.3. O ciclo permanece bloqueado para correção de código e está documentado em `docs/RELATORIO_CICLO_2026-09-16.md`.
 
 ## Primeiro ciclo recomendado
 

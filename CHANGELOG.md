@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Added `docs/RELATORIO_CICLO_2026-09-16.md`, recording the unchanged first pending backlog item, the conflicting open PHPStan PRs, and the missing PHP/Composer/PHPUnit/PHPStan toolchain that blocks safe implementation and validation; no artificial code change was made.
+- Recorded that PR #232 was merged after 9 successful check-runs and that master SHA `999a08e0a20df2ffbb27e0bdedcecc09e02157c0c` passed the post-merge compatibility/PHPStan workflow `35062355570`.
 - Added `docs/RELATORIO_CICLO_2026-09-15.md`, recording the administrative SQL-flow inventory, the absence of executable legacy DBO calls in `bi_adm`/`components`, the unchanged PHPStan baseline, and the local toolchain validation blocker.
 - Recorded the successful merge of the 2026-09-15 administrative inventory cycle in PR #230; post-merge compatibility and PHPStan workflows passed for master SHA `8d09991552f0c8e44da880f8bbd3eeb2e468fc54`.
 - Updated `docs/CKFINDER_REVIEW_2026-09-10.md` to distinguish its historical 120-file snapshot from the current 83-file modernized inventory, with the PHP4 runtime removed and no code correction pending from that report.
