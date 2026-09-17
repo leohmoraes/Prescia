@@ -1,11 +1,11 @@
 # Pendências e loop de execução — Prescia
 
-**Data da auditoria:** 2026-09-16
-**Commit auditado:** `20ae614` (`master`)
+**Data da auditoria:** 2026-09-17
+**Commit auditado:** `e7740b6` (`master`)
 **Skills instaladas:** `phpstan-legacy-remediation` e `prescia-install-config`
 **Estado das skills:** ambas validadas pelo `quick_validate.py`; as cópias instaladas em `/home/ubuntu/skills/` são idênticas às versões versionadas.
 
-> **Atualização de estado — 2026-09-16:** a fotografia foi atualizada para `20ae614`. O item 4 continua sendo o primeiro item não concluído: a análise administrativa anterior não encontrou chamadas DBO legadas executáveis, mas a validação PHP/Composer/PHPUnit/PHPStan continua bloqueada pela ausência do toolchain local. As PRs abertas #227 e #228 permanecem conflitantes e não foram alteradas.
+> **Atualização de estado — 2026-09-17:** a fotografia foi atualizada para `e7740b6`. O item 4 continua sendo o primeiro item não concluído: a análise administrativa anterior não encontrou chamadas DBO legadas executáveis, mas a validação PHP/Composer/PHPUnit/PHPStan continua bloqueada pela ausência do toolchain local. As PRs abertas #227 e #228 permanecem conflitantes e não foram alteradas. O ciclo está registrado em `docs/RELATORIO_CICLO_2026-09-17.md`; não houve alteração de código, baseline, issue ou PR.
 
 ## Estado atual
 
@@ -75,6 +75,7 @@ Começar pelo item 1, `getTags()`/`getArchieveDates()`, somente após confirmar 
 - Plano do próximo lote: `docs/PLANO_PHPSTAN_PROXIMO_LOTE.md`.
 - Plano de segurança: `docs/PLANO_ACAO_SEGURANCA.md`.
 - CI principal: `.github/workflows/php83.yml`.
+- Relatório do ciclo atual: `docs/RELATORIO_CICLO_2026-09-17.md`.
 - APIs livres identificadas por busca no commit auditado: `getTags()`, `getArchieveDates()` e `getContents()`.
 
 > Este documento é um backlog operacional. Cada ciclo deve atualizar o status e anexar a evidência antes de declarar a pendência concluída.
