@@ -5,7 +5,7 @@
 **Skills instaladas:** `phpstan-legacy-remediation` e `prescia-install-config`
 **Estado das skills:** ambas validadas pelo `quick_validate.py`; as cópias instaladas em `/home/ubuntu/skills/` são idênticas às versões versionadas.
 
-> **Atualização de estado — 2026-09-17:** a fotografia foi atualizada para `e7740b6`. O item 4 continua sendo o primeiro item não concluído: a análise administrativa anterior não encontrou chamadas DBO legadas executáveis, mas a validação PHP/Composer/PHPUnit/PHPStan continua bloqueada pela ausência do toolchain local. As PRs abertas #227 e #228 permanecem conflitantes e não foram alteradas. O ciclo está registrado em `docs/RELATORIO_CICLO_2026-09-17.md`; não houve alteração de código, baseline, issue ou PR.
+> **Atualização de estado — 2026-09-18:** a fotografia foi atualizada no `master` sincronizado neste ciclo. O item 4 continua sendo o primeiro item não concluído: a análise administrativa anterior não encontrou chamadas DBO legadas executáveis, mas a validação PHP/Composer/PHPUnit/PHPStan continua bloqueada pela ausência do toolchain local. As PRs abertas #227 e #228 permanecem conflitantes e não foram alteradas. O ciclo está registrado em `docs/RELATORIO_CICLO_2026-09-18.md`; não houve alteração de código, baseline ou issue.
 
 ## Estado atual
 
