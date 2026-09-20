@@ -41,8 +41,14 @@ O item 4 permanece pendente e bloqueado. Itens posteriores não foram promovidos
 - PHP, Composer, PHPUnit, PHPStan e Docker: indisponíveis localmente; portanto não foram declarados como aprovados.
 - Issues e PRs abertas: consulta concluída sem resultados.
 
+## Publicação e validação pós-merge
+
+A documentação foi publicada na [PR #237](https://github.com/leohmoraes/Prescia/pull/237), cujo SHA `916fdab950927dbc84cd4a7edf52b37263edf619` ficou `MERGEABLE`/`CLEAN` e recebeu 9 checks `completed/success`. O merge gerou o `master` SHA `4a2f3c33687aae5b286021a6096c2ac36548180f`.
+
+No SHA mesclado, os workflows `PHP compatibility matrix` e `PHP static analysis` terminaram com `completed/success`. Os quatro check-runs confirmados foram PHP 8.3 tests, PHP 8.4 tests, PHP 8.5 tests e PHPStan on PHP 8.3.
+
 ## Resultado e próximo passo
 
-O ciclo está **bloqueado e documentado**. A branch deste ciclo é exclusivamente documental, para preservar a evidência do bloqueio, e não representa uma correção PHPStan. O próximo ciclo deve retomar o item 4 somente com PHP 8.3, Composer, PHPUnit e PHPStan disponíveis localmente ou com evidência executável equivalente produzida pelo CI; então deverá repetir a confirmação dos call sites e do contrato antes de qualquer alteração.
+O ciclo está **bloqueado e documentado**. A documentação foi mesclada e os checks do `master` estão verdes, mas isso não remove o bloqueio local nem transforma a varredura administrativa em correção funcional. O próximo ciclo deve retomar o item 4 somente com PHP 8.3, Composer, PHPUnit e PHPStan disponíveis localmente ou com evidência executável equivalente produzida pelo CI; então deverá repetir a confirmação dos call sites e do contrato antes de qualquer alteração.
 
 O `phpstan-baseline.neon` não foi expandido.

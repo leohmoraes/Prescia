@@ -7,6 +7,8 @@
 
 > **Atualização de estado — 2026-09-20:** a fotografia foi atualizada no `master` sincronizado neste ciclo. O item 4 continua sendo o primeiro item não concluído: a análise administrativa anterior não encontrou chamadas DBO legadas executáveis, mas a validação PHP/Composer/PHPUnit/PHPStan continua bloqueada pela ausência do toolchain local. A consulta atual não encontrou issues nem PRs abertas. O ciclo está registrado em `docs/RELATORIO_CICLO_2026-09-20.md`; não houve alteração de código, baseline ou issue.
 
+> **Fechamento — 2026-09-20:** a documentação foi mesclada na PR #237. O `master` resultante é `4a2f3c33687aae5b286021a6096c2ac36548180f`; os workflows PHP 8.3/8.4/8.5 e PHPStan terminaram com `completed/success`. O item 4 continua pendente e bloqueado por ambiente local, sem promoção de itens posteriores.
+
 ## Estado atual
 
 A árvore de trabalho local estava limpa e o `master` local estava alinhado a `origin/master`. A consulta ao GitHub não encontrou issues abertas no momento da auditoria. Portanto, as referências a issues nos planos antigos são **histórico de governança**, não evidência de que existam tickets abertos atualmente.
