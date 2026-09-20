@@ -1,11 +1,11 @@
 # Pendências e loop de execução — Prescia
 
-**Data da auditoria:** 2026-09-19
-**Commit auditado:** `48efe79` (`master`)
+**Data da auditoria:** 2026-09-20
+**Commit auditado:** `072a8c2` (`master`)
 **Skills instaladas:** `phpstan-legacy-remediation` e `prescia-install-config`
 **Estado das skills:** ambas validadas pelo `quick_validate.py`; as cópias instaladas em `/home/ubuntu/skills/` são idênticas às versões versionadas.
 
-> **Atualização de estado — 2026-09-19:** a fotografia foi atualizada no `master` sincronizado neste ciclo. O item 4 continua sendo o primeiro item não concluído: a análise administrativa anterior não encontrou chamadas DBO legadas executáveis, mas a validação PHP/Composer/PHPUnit/PHPStan continua bloqueada pela ausência do toolchain local. As PRs abertas #227 e #228 permanecem conflitantes e não foram alteradas. O ciclo está registrado em `docs/RELATORIO_CICLO_2026-09-19.md`; não houve alteração de código, baseline ou issue.
+> **Atualização de estado — 2026-09-20:** a fotografia foi atualizada no `master` sincronizado neste ciclo. O item 4 continua sendo o primeiro item não concluído: a análise administrativa anterior não encontrou chamadas DBO legadas executáveis, mas a validação PHP/Composer/PHPUnit/PHPStan continua bloqueada pela ausência do toolchain local. A consulta atual não encontrou issues nem PRs abertas. O ciclo está registrado em `docs/RELATORIO_CICLO_2026-09-20.md`; não houve alteração de código, baseline ou issue.
 
 ## Estado atual
 

@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - 2026-08-31
 
 ### Added
+- Added `docs/RELATORIO_CICLO_2026-09-20.md`, recording that backlog item 4 remains the first real pending item, the local PHP/Composer/PHPUnit/PHPStan/Docker toolchain is unavailable, and the current GitHub query found no open issues or pull requests; no functional code, baseline, or issue change was made.
 - Added `docs/RELATORIO_CICLO_2026-09-19.md`, recording that backlog item 4 remains the first real pending item, the local PHP/Composer/PHPUnit/PHPStan/Docker toolchain is unavailable, and open PRs #227 and #228 remain conflicting; no functional code, baseline, or issue change was made.
 - Added `docs/RELATORIO_CICLO_2026-09-18.md`, recording that backlog item 4 remains the first real pending item, the local PHP/Composer/PHPUnit/PHPStan/Docker toolchain is unavailable, and open PRs #227 and #228 remain conflicting; no artificial code change or issue mutation was made.
 - Added `docs/RELATORIO_CICLO_2026-09-17.md`, recording the unchanged first pending backlog item, the existing open issues, the conflicting PHPStan pull requests, and the missing local PHP/Composer/PHPUnit/PHPStan/Docker toolchain; no artificial code change or pull request was created.
