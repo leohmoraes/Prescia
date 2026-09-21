@@ -49,3 +49,11 @@ O item 4 permanece pendente e bloqueado. Os itens 5 e 6 também não foram promo
 ## Resultado e próximo passo
 
 O ciclo está **bloqueado e documentado**. O próximo ciclo deve retomar o item 4 somente com PHP 8.3, Composer, PHPUnit e PHPStan disponíveis localmente ou com evidência executável equivalente produzida pelo CI; então deverá repetir a confirmação dos call sites e do contrato antes de qualquer alteração. Se o bloqueio persistir, deve registrar novo estado sem criar mudança artificial.
+
+## Fechamento pós-merge
+
+A PR [#241](https://github.com/leohmoraes/Prescia/pull/241), no SHA `d73d59d1634d5d2d094e0a8c51ce79d2f0fefd16`, ficou `MERGEABLE`/`CLEAN` com quatro check-runs `completed/success` e foi mesclada em 2026-09-21. O merge resultou no `master` SHA `c8a08b8e5533c61b00e9c8b81647002de892d61c`.
+
+No SHA mesclado, os workflows pós-merge concluíram com sucesso: `PHP compatibility matrix`, run `35567054119`, e `PHP static analysis`, run `35567054068`. A matriz executou os testes PHP 8.3, 8.4 e 8.5; o workflow de análise executou PHPStan. O job PHP 8.3 também concluiu lint, auditoria Composer, build e scan Docker com sucesso. As anotações do runner sobre a futura migração do Ubuntu e a depreciação do Node.js 20 não são falhas do ciclo.
+
+O item 4 permanece pendente e bloqueado para nova implementação local. A PR mesclada apenas registra o estado; não transforma a varredura administrativa em correção funcional nem promove itens posteriores.
