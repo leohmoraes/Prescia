@@ -1,6 +1,6 @@
 # Pendências e loop de execução — Prescia
 
-**Data da auditoria:** 2026-09-20
+**Data da auditoria:** 2026-09-21
 **Commit auditado:** `072a8c2` (`master`)
 **Skills instaladas:** `phpstan-legacy-remediation` e `prescia-install-config`
 **Estado das skills:** ambas validadas pelo `quick_validate.py`; as cópias instaladas em `/home/ubuntu/skills/` são idênticas às versões versionadas.
@@ -8,6 +8,8 @@
 > **Atualização de estado — 2026-09-20:** a fotografia foi atualizada no `master` sincronizado neste ciclo. O item 4 continua sendo o primeiro item não concluído: a análise administrativa anterior não encontrou chamadas DBO legadas executáveis, mas a validação PHP/Composer/PHPUnit/PHPStan continua bloqueada pela ausência do toolchain local. A consulta atual não encontrou issues nem PRs abertas. O ciclo está registrado em `docs/RELATORIO_CICLO_2026-09-20.md`; não houve alteração de código, baseline ou issue.
 
 > **Fechamento — 2026-09-20:** a documentação foi mesclada na PR #237. O `master` resultante é `4a2f3c33687aae5b286021a6096c2ac36548180f`; os workflows PHP 8.3/8.4/8.5 e PHPStan terminaram com `completed/success`. O item 4 continua pendente e bloqueado por ambiente local, sem promoção de itens posteriores.
+
+> **Atualização de estado — 2026-09-21:** o `master` sincronizado está no SHA `ec993ec13bfbadccaa60d3b5cc278e8b82cd4e44`. As issues abertas são #216–#220, #224–#226, #239 e #240; as PRs #227 e #228 continuam abertas com estado de merge desconhecido. Os workflows pós-merge `35494113225` (compatibilidade) e `35494113208` (PHPStan) terminaram com `completed/success`. O item 4 continua sendo o primeiro pendente e está bloqueado porque `php`, Composer, PHPUnit, PHPStan e Docker não estão disponíveis localmente. O ciclo foi registrado em `docs/RELATORIO_CICLO_2026-09-21.md`; não houve alteração funcional, expansão da baseline, criação de issue, PR ou merge artificial.
 
 ## Estado atual
 
