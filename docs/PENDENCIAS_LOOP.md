@@ -11,6 +11,8 @@
 
 > **Atualização de estado — 2026-09-21:** o `master` sincronizado está no SHA `ec993ec13bfbadccaa60d3b5cc278e8b82cd4e44`. As issues abertas são #216–#220, #224–#226, #239 e #240; as PRs #227 e #228 continuam abertas com estado de merge desconhecido. Os workflows pós-merge `35494113225` (compatibilidade) e `35494113208` (PHPStan) terminaram com `completed/success`. O item 4 continua sendo o primeiro pendente e está bloqueado porque `php`, Composer, PHPUnit, PHPStan e Docker não estão disponíveis localmente. O ciclo foi registrado em `docs/RELATORIO_CICLO_2026-09-21.md`; não houve alteração funcional, expansão da baseline, criação de issue, PR ou merge artificial.
 
+> **Fechamento — 2026-09-21:** a PR #241 foi mesclada após quatro checks `completed/success` no SHA `d73d59d1634d5d2d094e0a8c51ce79d2f0fefd16`. O `master` resultante é `c8a08b8e5533c61b00e9c8b81647002de892d61c`; os workflows pós-merge `35567054119` (PHP 8.3/8.4/8.5, lint, Composer, Docker) e `35567054068` (PHPStan) terminaram com `completed/success`. O item 4 permanece pendente e bloqueado; a evidência final está em `docs/RELATORIO_CICLO_2026-09-21.md`.
+
 ## Estado atual
 
 A árvore de trabalho local estava limpa e o `master` local estava alinhado a `origin/master`. A consulta ao GitHub não encontrou issues abertas no momento da auditoria. Portanto, as referências a issues nos planos antigos são **histórico de governança**, não evidência de que existam tickets abertos atualmente.
