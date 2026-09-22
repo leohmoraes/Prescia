@@ -1,9 +1,11 @@
 # Pendências e loop de execução — Prescia
 
-**Data da auditoria:** 2026-09-21
-**Commit auditado:** `072a8c2` (`master`)
+**Data da auditoria:** 2026-09-22
+**Commit auditado:** `83233e0` (`master`)
 **Skills instaladas:** `phpstan-legacy-remediation` e `prescia-install-config`
 **Estado das skills:** ambas validadas pelo `quick_validate.py`; as cópias instaladas em `/home/ubuntu/skills/` são idênticas às versões versionadas.
+
+> **Atualização de estado — 2026-09-22:** o `master` foi sincronizado no SHA `83233e0683c271ce4280d94d4063ff953cf1a45c`. O item 4 continua sendo o primeiro item não concluído e permanece bloqueado porque `php`, Composer, PHPUnit, PHPStan e Docker estão ausentes localmente. A varredura estática confirmou 47 usos das APIs preparadas no escopo administrativo/componentes; as ocorrências restantes de `fetch()` são de templates e o `simpleQuery()` encontrado está comentado. As issues abertas são #216–#220, #224–#226, #239 e #240; as PRs #227 e #228 continuam abertas e conflitantes (`mergeable=CONFLICTING`, `mergeStateStatus=DIRTY`). Os seis check-runs do SHA atual de `master` estão `completed/success`. O ciclo foi registrado em `docs/RELATORIO_CICLO_2026-09-22.md`; não houve alteração funcional, expansão da baseline, criação de issue, PR ou merge artificial.
 
 > **Atualização de estado — 2026-09-20:** a fotografia foi atualizada no `master` sincronizado neste ciclo. O item 4 continua sendo o primeiro item não concluído: a análise administrativa anterior não encontrou chamadas DBO legadas executáveis, mas a validação PHP/Composer/PHPUnit/PHPStan continua bloqueada pela ausência do toolchain local. A consulta atual não encontrou issues nem PRs abertas. O ciclo está registrado em `docs/RELATORIO_CICLO_2026-09-20.md`; não houve alteração de código, baseline ou issue.
 
