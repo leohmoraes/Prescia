@@ -2,7 +2,7 @@
 
 ## Escopo e base
 
-Este ciclo foi executado sobre o `master` sincronizado de `leohmoraes/Prescia`, no SHA `83233e0683c271ce4280d94d4063ff953cf1a45c`. Foram consultados as issues e PRs abertas, as skills versionadas, `docs/PENDENCIAS_LOOP.md`, `CHANGELOG.md`, `phpstan.neon.dist`, `phpstan-baseline.neon`, o relatório PHPStan consolidado e os relatórios recentes.
+Este ciclo foi executado sobre o `master` sincronizado de `leohmoraes/Prescia`, inicialmente no SHA `83233e0683c271ce4280d94d4063ff953cf1a45c` e, após o merge documental, no SHA final `de79188f933adc99035eeabcdf59e182c7880c5b`. Foram consultados as issues e PRs abertas, as skills versionadas, `docs/PENDENCIAS_LOOP.md`, `CHANGELOG.md`, `phpstan.neon.dist`, `phpstan-baseline.neon`, o relatório PHPStan consolidado e os relatórios recentes.
 
 A regra de seleção foi aplicada literalmente: escolher somente o primeiro item real não concluído, confirmar call sites e contrato antes de alterar código e não misturar lotes.
 
@@ -10,7 +10,7 @@ A regra de seleção foi aplicada literalmente: escolher somente o primeiro item
 
 As issues abertas são #216, #217, #218, #219, #220, #224, #225, #226, #239 e #240. As PRs abertas são #227 (`fix/phpstan-level4-bi-stats`) e #228 (`fix/phpstan-level4-core`). Ambas estão `OPEN`, `mergeable=CONFLICTING` e `mergeStateStatus=DIRTY`; seus checks registrados estão completos e verdes, mas não podem ser incorporadas neste ciclo porque estão conflitantes e não são o lote selecionado.
 
-O SHA atual de `master` é `83233e0683c271ce4280d94d4063ff953cf1a45c`. Seus seis check-runs consultados estão `completed/success`: auditoria de dependências e segurança, PHPStan em PHP 8.3 (dois registros), e testes PHP 8.3, 8.4 e 8.5.
+O SHA inicial de `master` foi `83233e0683c271ce4280d94d4063ff953cf1a45c`, com seis check-runs `completed/success`. A PR documental #243 foi criada, recebeu nove checks `completed/success`, ficou `mergeable/clean` e foi mesclada. No SHA final `de79188f933adc99035eeabcdf59e182c7880c5b`, os quatro check-runs pós-merge consultados — testes PHP 8.3, 8.4, 8.5 e PHPStan em PHP 8.3 — estão `completed/success` nos workflows `35693424527` e `35693424752`.
 
 Nenhuma issue foi criada, fechada ou alterada. Nenhuma PR de implementação foi criada.
 
@@ -51,4 +51,4 @@ Não foi criada mudança artificial de código. Como há um bloqueio real e docu
 
 ## Resultado e próximo passo
 
-O ciclo está **bloqueado e documentado**. O próximo ciclo deve retomar o item 4 somente com PHP 8.3, Composer, PHPUnit e PHPStan disponíveis localmente ou com evidência executável equivalente produzida em um ambiente suportado. Deve repetir a confirmação dos call sites e do contrato antes de qualquer correção, adicionar regressão, validar globalmente e só então publicar uma PR. Se o bloqueio persistir, deve registrar novo estado sem criar mudança artificial.
+O ciclo está **bloqueado e documentado**. A PR #243 foi mesclada e os checks do SHA final de `master` foram confirmados como `completed/success`. O próximo ciclo deve retomar o item 4 somente com PHP 8.3, Composer, PHPUnit e PHPStan disponíveis localmente ou com evidência executável equivalente produzida em um ambiente suportado. Deve repetir a confirmação dos call sites e do contrato antes de qualquer correção, adicionar regressão, validar globalmente e só então publicar uma PR. Se o bloqueio persistir, deve registrar novo estado sem criar mudança artificial.
