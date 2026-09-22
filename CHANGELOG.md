@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - 2026-08-31
 
 ### Added
+- Added `docs/RELATORIO_CICLO_2026-09-22.md`, recording that backlog item 4 remains the first pending and blocked item, the local PHP/Composer/PHPUnit/PHPStan/Docker toolchain is unavailable, the open issues and conflicting pull requests were inspected, and the current master SHA `83233e0683c271ce4280d94d4063ff953cf1a45c` has six completed/successful check-runs; no functional code, baseline, issue, PR, or merge change was made.
 - Recorded that maintenance PR #241 was merged and that master SHA `c8a08b8e5533c61b00e9c8b81647002de892d61c` passed post-merge runs `35567054119` and `35567054068`; backlog item 4 remains blocked by the unavailable local toolchain.
 - Added `docs/RELATORIO_CICLO_2026-09-21.md`, recording that backlog item 4 remains the first pending and blocked item, the local PHP/Composer/PHPUnit/PHPStan/Docker toolchain is unavailable, the open issues and pull requests were inspected, and the current master checks are green; no functional code, baseline, issue, PR, or merge change was made.
 - Recorded that maintenance PR #237 was merged and that master SHA `4a2f3c33687aae5b286021a6096c2ac36548180f` passed the PHP 8.3/8.4/8.5 and PHPStan post-merge checks; backlog item 4 remains blocked by the unavailable local toolchain.
