@@ -13,12 +13,21 @@ final class CoreRegressionTest extends TestCase
     public function testAddLinkChecksResolvedJavascriptAndStylesheetFiles(): void
     {
         $core = (string) file_get_contents(self::CORE);
+        $javascriptError = <<<'PHP'
+'Javascript not found',$file,"addLink"
+PHP;
+        $styleError = <<<'PHP'
+'Style not found',$file,"addLink"
+PHP;
+        $genericError = <<<'PHP'
+'File not found',$file,"addLink"
+PHP;
 
         self::assertStringContainsString("else if (!is_file(\$file)) {", $core);
         self::assertStringContainsString("else if (!is_file(\$tfile)) {", $core);
-        self::assertStringContainsString("'Javascript not found',$file,\"addLink\"", $core);
-        self::assertStringContainsString("'Style not found',$file,\"addLink\"", $core);
-        self::assertStringNotContainsString("'File not found',$file,\"addLink\"", $core);
+        self::assertStringContainsString($javascriptError, $core);
+        self::assertStringContainsString($styleError, $core);
+        self::assertStringNotContainsString($genericError, $core);
     }
 
     public function testMetadataReadsMetaXmlOnlyWhenTheFileExists(): void
