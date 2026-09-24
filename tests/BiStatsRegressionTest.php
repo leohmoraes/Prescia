@@ -17,11 +17,11 @@ final class BiStatsRegressionTest extends TestCase
         $references = (string) file_get_contents(self::ROOT . '/prescia/plugins/bi_stats/payload/content/stats_ref.php');
 
         self::assertSame(3, substr_count($analytics, 'for($c=0;$c<count($refs);$c++)'));
-        self::assertSame(1, substr_count($analytics, 'for ($c=0; $c<count($res);$c++)'));
-        self::assertSame(1, substr_count($analytics, 'for ($c=0; $c<count($langs);$c++)'));
+        self::assertSame(1, substr_count($analytics, 'for ($c=0;$c<count($res);$c++)'));
+        self::assertSame(1, substr_count($analytics, 'for ($c=0;$c<count($langs);$c++)'));
         self::assertSame(2, substr_count($pathAjax, 'for($c=0;$c<count($pages);$c++)'));
         self::assertSame(3, substr_count($references, 'for($c=0;$c<count($refs);$c++)'));
-        self::assertSame(1, substr_count($references, 'for ($c=0; $c<count($query);$c++)'));
+        self::assertSame(1, substr_count($references, 'for ($c=0;$c<count($query);$c++)'));
     }
 
     public function testIpFilterTreatsPositionZeroAsAValidMatch(): void
