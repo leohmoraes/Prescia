@@ -49,3 +49,7 @@ Foi criada somente esta atualização documental, acompanhada da atualização d
 ## Resultado e próximo passo
 
 O ciclo está **bloqueado e documentado**, sem mudança artificial. O próximo ciclo deve retomar o item 4 somente com PHP 8.3, Composer, PHPUnit e PHPStan disponíveis localmente ou com evidência executável equivalente em ambiente suportado. Deve repetir a confirmação dos call sites e do contrato, adicionar regressão somente se houver fluxo real a corrigir, validar globalmente e publicar uma PR pequena. Se o bloqueio persistir, deve registrar novo estado sem promover itens posteriores.
+
+## Fechamento pós-merge
+
+A PR documental #247 foi mesclada em 2026-09-24 após confirmação de `mergeable=MERGEABLE`, `mergeStateStatus=CLEAN` e nove check-runs `completed/success` no SHA `27b564836ec899fe3954c993289d124ca3c11380`. O `master` resultante é `f603a737f0c986473a5b51d6d4f61f76c4d38181`. Os quatro check-runs pós-merge — PHP 8.3, PHP 8.4, PHP 8.5 e PHPStan em PHP 8.3 — terminaram `completed/success`. O backlog permanece no item 4, sem promoção de itens posteriores.
