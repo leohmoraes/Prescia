@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the conservative migration helper in `tools/migrate_php83.php`, with dry-run, timestamped backups and a security blocker report.
 
 ### Changed
+- Corrected `CPrescia::addLink()` unreachable fallback handling and guarded optional `_meta.xml` loading with `is_file()`; added `CoreRegressionTest` coverage for missing assets and metadata files in PR #228.
 - Documented the most common PHPStan level-4 diagnostics expected in Prescia, including constant-flow narrowing, argument type mismatches, unreachable code, array offsets, by-reference calls and dynamic `$this`/`$core` payload context; the remediation plan now defines risk-based treatment rules without baseline growth.
 - Audited PHPStan level 5 experimentally: the repository currently reports 458 file errors across 38 identifiers and 78 files, so the official level remains 3 while the diagnostics are triaged into follow-up remediation lots; the baseline was not expanded.
 - Started PHPStan level-4 Lot 3 for the front controllers: marked runtime configuration guards as dynamic constants, reducing the focused `index.php` and `prescia/index.php` inventory from 23 diagnostics to zero without changing runtime code or expanding the baseline.
