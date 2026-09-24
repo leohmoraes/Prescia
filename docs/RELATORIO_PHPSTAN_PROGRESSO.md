@@ -15,16 +15,24 @@ Esta seção é a referência vigente para o estado do repositório. Após a an�
 | Verificação | Resultado | Evidência |
 |---|---|---|
 | PHPStan global | **Aprovado** | PHPStan 2.2.13, nível 3, `vendor/bin/phpstan analyse --configuration=phpstan.neon.dist --no-progress --error-format=json`, `0 errors`, `0 file_errors` |
-| PHPUnit completo | **Aprovado com observações** | 144 testes, 3.093 asserções, 0 depreciações e 2 testes pulados |
+| PHPUnit completo | **Aprovado com observações** | 144 testes, 3.093 asserções, 2 deprecações e 2 testes pulados |
 | Lint PHP | **Aprovado** | Todos os arquivos PHP rastreados passaram em `php -l`; 0 erros de sintaxe |
 | Baseline | **Sem expansão nesta execução** | PHPStan terminou sem diagnósticos e `phpstan-baseline.neon` não foi alterado |
 | Ambiente | **Reproduzido localmente** | PHP 8.3.6; dependências instaladas a partir de `composer.lock` |
 
 O resultado atual substitui as referências anteriores que descreviam centenas de diagnósticos ou contagens menores de testes. As seções posteriores que mencionam rankings, commits e números antigos continuam preservadas como histórico de evolução e não devem ser usadas como fotografia do estado atual.
 
-## Lote 1 — bi_stats — execução parcial
+## Lote 2 — Sublote 2.1 — `prescia/core.php`
 
-O inventário focalizado inicial encontrou 119 diagnósticos PHPStan nível 4 no diretório `prescia/plugins/bi_stats`. O primeiro subgrupo corrigiu os loops de renderização de referências e páginas para iterar sobre as coleções efetivamente acumuladas, reduzindo o inventário para 105 diagnósticos. O Sublote 1.2 corrigiu os loops de saída de referências, resoluções e idiomas em `stats_analytics.php`, reduzindo o inventário focalizado para 91 diagnósticos. O Sublote 1.3 corrigiu a comparação de `strpos()` usada no filtro de IP em `module.php`, reduzindo o inventário para 90 diagnósticos. Os diagnósticos restantes do módulo são majoritariamente derivados do contrato legado de `queryPrepared()` e permanecem separados para uma melhoria dedicada do DBO; a análise global oficial nível 3 continua com zero erros, PHPUnit permanece em 144 testes e a baseline não foi expandida.
+O Sublote 2.1 corrigiu dois problemas no núcleo: removeu o bloco inalcançável ao final de `addLink()` e transformou o teste de caminho de `_meta.xml` em uma verificação real com `is_file()`. A regressão foi coberta por `tests/CoreRegressionTest.php`, que protege a validação de arquivos ausentes e a leitura condicional de metadados. A baseline não foi expandida.
+
+## Lote 1 — `bi_stats` — atualização da PR #227
+
+O lote corrigiu a comparação de `strpos()` no filtro de IP, ajustou os loops de renderização para iterar sobre as coleções efetivamente acumuladas após o descarte de linhas inválidas e documentou os parâmetros de saída de `queryPrepared()` nos drivers DBO. `tests/BiStatsRegressionTest.php` cobre esses contratos, sem expansão da baseline.
+
+## Lote 3 — front controllers
+
+O escopo inicial dos front controllers (`index.php` e `prescia/index.php`) continha 23 diagnósticos nível 4, causados pela propagação de valores literais dos stubs de configuração para guards que são variáveis em runtime. A configuração PHPStan agora declara `CONS_AFF_ERRORHANDLER`, `CONS_AFF_ERRORHANDLER_NOWARNING`, `CONS_CACHE`, `CONS_DEVELOPER`, `CONS_ECONOMICMODE` e `CONS_HONEYPOT` em `dynamicConstantNames`. Isso mantém os valores determinísticos do bootstrap de análise, mas impede que o PHPStan elimine caminhos válidos de error handling, cache, developer mode e honeypot. O resultado focalizado do Lote 3 é zero diagnósticos, sem alteração do código de runtime e sem expansão da baseline.
 
 ## Resumo executivo
 
@@ -815,3 +823,26 @@ A execução da matriz após a PR #206 aprovou PHPUnit, lint e PHPStan em PHP 8.
 ## Correção final de compatibilidade PHP 8.5
 
 Após a correção do `unset()` em `CPrescia::close()`, a matriz ficou verde em PHP 8.3 e 8.4. O PHP 8.5 ainda reportou a deprecation de casts não padronizados `(integer)` em `prescia/lib/datetime.php:252-253`. Ambos foram substituídos pelo cast canônico `(int)`. A validação local em PHP 8.3 permaneceu aprovada: PHPUnit 144 testes/3093 asserções, PHPStan 0 e lint aprovado.
+
+## Auditoria exploratória — PHPStan nível 5
+
+Em 2026-09-14, foi executada uma análise exploratória global com PHPStan 2.2.13, PHP 8.3.6 e `--level=5`, usando a configuração vigente do nível 3 e a branch `fix/phpstan-level4-front-controllers` no commit `6cd5571`. O resultado foi de **458 diagnósticos em 38 identificadores**, distribuídos por 78 arquivos. O nível oficial permanece em 3 porque a promoção para o nível 5 neste momento faria a verificação de CI falhar.
+
+| Identificador | Ocorrências | Interpretação inicial |
+|---|---:|---|
+| `smaller.alwaysFalse` | 69 | Fluxos estreitados por configurações literais, índices ou valores sentinela; requer confirmação do contrato de runtime. |
+| `booleanAnd.alwaysFalse` | 41 | Condições compostas consideradas impossíveis pelo analisador; priorizar casos que possam ocultar guards legítimos. |
+| `argument.type` | 39 | Tipos incompatíveis em chamadas, incluindo `mail()`, `number_format()` e `str_replace()`; tratar por contrato e validação de entrada. |
+| `equal.alwaysTrue` | 34 | Comparações constantes ou efeito de stubs/configuração; separar falsos positivos de código morto real. |
+| `greater.alwaysFalse` | 33 | Comparações numéricas estreitadas; revisar limites, contadores e resultados de consultas. |
+| `deadCode.unreachable` | 25 | Trechos considerados inalcançáveis; confirmar includes, `die`/`exit` e contratos de retorno antes de remover código. |
+| `isset.offset` | 21 | Acessos a chaves em arrays com forma excessivamente estreita; revisar PHPDoc e normalização de payloads. |
+
+Os arquivos com maior concentração foram `prescia/plugins/bi_stats/payload/content/stats_analytics.php` (56), `prescia/core.php` (31), `prescia/plugins/bi_auth/authControl.php` (25), `prescia/plugins/bi_stats/module.php` (24) e `prescia/components/module.php` (22). O próximo ciclo recomendado é separar diagnósticos de tipos de argumentos e contratos de configuração dos diagnósticos de fluxo impossível, começando por `bi_stats` e `core`, sem alterar o nível oficial até que a análise focalizada e global retornem zero.
+
+| Verificação | Resultado |
+|---|---|
+| Análise exploratória nível 5 | **458 erros de arquivo**; formatter JSON confirmou `file_errors=458` |
+| Nível oficial | **Mantido em 3**; nenhuma alteração em `phpstan.neon.dist` |
+| Baseline | **Sem expansão** |
+| Correções de runtime | **Nenhuma nesta auditoria** |
