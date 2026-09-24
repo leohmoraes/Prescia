@@ -26,6 +26,10 @@ O resultado atual substitui as referências anteriores que descreviam centenas d
 
 O Sublote 2.1 corrigiu dois problemas no núcleo: removeu o bloco inalcançável ao final de `addLink()` e transformou o teste de caminho de `_meta.xml` em uma verificação real com `is_file()`. A regressão foi coberta por `tests/CoreRegressionTest.php`, que protege a validação de arquivos ausentes e a leitura condicional de metadados. A baseline não foi expandida.
 
+## Lote 1 — `bi_stats` — atualização da PR #227
+
+O lote corrigiu a comparação de `strpos()` no filtro de IP, ajustou os loops de renderização para iterar sobre as coleções efetivamente acumuladas após o descarte de linhas inválidas e documentou os parâmetros de saída de `queryPrepared()` nos drivers DBO. `tests/BiStatsRegressionTest.php` cobre esses contratos, sem expansão da baseline.
+
 ## Lote 3 — front controllers
 
 O escopo inicial dos front controllers (`index.php` e `prescia/index.php`) continha 23 diagnósticos nível 4, causados pela propagação de valores literais dos stubs de configuração para guards que são variáveis em runtime. A configuração PHPStan agora declara `CONS_AFF_ERRORHANDLER`, `CONS_AFF_ERRORHANDLER_NOWARNING`, `CONS_CACHE`, `CONS_DEVELOPER`, `CONS_ECONOMICMODE` e `CONS_HONEYPOT` em `dynamicConstantNames`. Isso mantém os valores determinísticos do bootstrap de análise, mas impede que o PHPStan elimine caminhos válidos de error handling, cache, developer mode e honeypot. O resultado focalizado do Lote 3 é zero diagnósticos, sem alteração do código de runtime e sem expansão da baseline.
