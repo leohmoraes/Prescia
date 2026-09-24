@@ -24,7 +24,11 @@ O resultado atual substitui as referências anteriores que descreviam centenas d
 
 ## Lote 2 — Sublote 2.1 — `prescia/core.php`
 
-O inventário focalizado do Lote 2 começou com 84 diagnósticos nível 4 no bootstrap e front controllers, dos quais 41 estavam em `prescia/core.php`. O Sublote 2.1 corrigiu dois problemas comportamentais: removeu o bloco inalcançável ao final de `addLink()` e transformou o teste de caminho de `_meta.xml` em uma verificação real com `is_file()`. O inventário de `core.php` foi reduzido para 39 diagnósticos, sem expansão da baseline. Os demais achados permanecem em triagem por dependerem de constantes de ambiente e contratos dinâmicos do framework.
+O Sublote 2.1 corrigiu dois problemas no núcleo: removeu o bloco inalcançável ao final de `addLink()` e transformou o teste de caminho de `_meta.xml` em uma verificação real com `is_file()`. A regressão foi coberta por `tests/CoreRegressionTest.php`, que protege a validação de arquivos ausentes e a leitura condicional de metadados. A baseline não foi expandida.
+
+## Lote 3 — front controllers
+
+O escopo inicial dos front controllers (`index.php` e `prescia/index.php`) continha 23 diagnósticos nível 4, causados pela propagação de valores literais dos stubs de configuração para guards que são variáveis em runtime. A configuração PHPStan agora declara `CONS_AFF_ERRORHANDLER`, `CONS_AFF_ERRORHANDLER_NOWARNING`, `CONS_CACHE`, `CONS_DEVELOPER`, `CONS_ECONOMICMODE` e `CONS_HONEYPOT` em `dynamicConstantNames`. Isso mantém os valores determinísticos do bootstrap de análise, mas impede que o PHPStan elimine caminhos válidos de error handling, cache, developer mode e honeypot. O resultado focalizado do Lote 3 é zero diagnósticos, sem alteração do código de runtime e sem expansão da baseline.
 
 ## Resumo executivo
 
@@ -815,3 +819,26 @@ A execução da matriz após a PR #206 aprovou PHPUnit, lint e PHPStan em PHP 8.
 ## Correção final de compatibilidade PHP 8.5
 
 Após a correção do `unset()` em `CPrescia::close()`, a matriz ficou verde em PHP 8.3 e 8.4. O PHP 8.5 ainda reportou a deprecation de casts não padronizados `(integer)` em `prescia/lib/datetime.php:252-253`. Ambos foram substituídos pelo cast canônico `(int)`. A validação local em PHP 8.3 permaneceu aprovada: PHPUnit 144 testes/3093 asserções, PHPStan 0 e lint aprovado.
+
+## Auditoria exploratória — PHPStan nível 5
+
+Em 2026-09-14, foi executada uma análise exploratória global com PHPStan 2.2.13, PHP 8.3.6 e `--level=5`, usando a configuração vigente do nível 3 e a branch `fix/phpstan-level4-front-controllers` no commit `6cd5571`. O resultado foi de **458 diagnósticos em 38 identificadores**, distribuídos por 78 arquivos. O nível oficial permanece em 3 porque a promoção para o nível 5 neste momento faria a verificação de CI falhar.
+
+| Identificador | Ocorrências | Interpretação inicial |
+|---|---:|---|
+| `smaller.alwaysFalse` | 69 | Fluxos estreitados por configurações literais, índices ou valores sentinela; requer confirmação do contrato de runtime. |
+| `booleanAnd.alwaysFalse` | 41 | Condições compostas consideradas impossíveis pelo analisador; priorizar casos que possam ocultar guards legítimos. |
+| `argument.type` | 39 | Tipos incompatíveis em chamadas, incluindo `mail()`, `number_format()` e `str_replace()`; tratar por contrato e validação de entrada. |
+| `equal.alwaysTrue` | 34 | Comparações constantes ou efeito de stubs/configuração; separar falsos positivos de código morto real. |
+| `greater.alwaysFalse` | 33 | Comparações numéricas estreitadas; revisar limites, contadores e resultados de consultas. |
+| `deadCode.unreachable` | 25 | Trechos considerados inalcançáveis; confirmar includes, `die`/`exit` e contratos de retorno antes de remover código. |
+| `isset.offset` | 21 | Acessos a chaves em arrays com forma excessivamente estreita; revisar PHPDoc e normalização de payloads. |
+
+Os arquivos com maior concentração foram `prescia/plugins/bi_stats/payload/content/stats_analytics.php` (56), `prescia/core.php` (31), `prescia/plugins/bi_auth/authControl.php` (25), `prescia/plugins/bi_stats/module.php` (24) e `prescia/components/module.php` (22). O próximo ciclo recomendado é separar diagnósticos de tipos de argumentos e contratos de configuração dos diagnósticos de fluxo impossível, começando por `bi_stats` e `core`, sem alterar o nível oficial até que a análise focalizada e global retornem zero.
+
+| Verificação | Resultado |
+|---|---|
+| Análise exploratória nível 5 | **458 erros de arquivo**; formatter JSON confirmou `file_errors=458` |
+| Nível oficial | **Mantido em 3**; nenhuma alteração em `phpstan.neon.dist` |
+| Baseline | **Sem expansão** |
+| Correções de runtime | **Nenhuma nesta auditoria** |
