@@ -56,3 +56,17 @@ Foi criada somente esta atualização documental, acompanhada da atualização d
 O ciclo está **bloqueado e documentado**, sem mudança funcional artificial. O próximo ciclo deve retomar o item 4 somente com PHP 8.3, Composer, PHPUnit e PHPStan disponíveis localmente ou com evidência executável equivalente em ambiente suportado. Deve repetir a confirmação dos call sites e do contrato, adicionar regressão somente se houver fluxo real a corrigir, validar globalmente e publicar uma PR pequena. Se o bloqueio persistir, deve registrar novo estado sem promover itens posteriores.
 
 Não foi feito merge neste ciclo: não houve PR deste ciclo nem um SHA novo a validar. A PR #246 existente não é deste lote e não satisfaz os critérios de merge.
+
+## Fechamento pós-merge
+
+A PR documental #251 foi mesclada em `2026-09-26T06:15:05Z` após confirmação de `mergeable=true`, `mergeable_state=clean` e nove checks `completed/success` no SHA da PR `a927e21f3ba353abd2cd4ca8094784fe6ba44e51`. O `master` resultante é `920bbc7f434703194725dd38a1cd5f74adde6fe1`.
+
+A validação direta do SHA real pós-merge confirmou os quatro checks obrigatórios, todos `completed/success`:
+
+- PHP 8.3 tests — [job 108352170027](https://github.com/leohmoraes/Prescia/actions/runs/36223189295/job/108352169969)
+- PHP 8.4 tests — [job 108352170027](https://github.com/leohmoraes/Prescia/actions/runs/36223189295/job/108352170027)
+- PHP 8.5 tests — [job 108352169976](https://github.com/leohmoraes/Prescia/actions/runs/36223189295/job/108352169976)
+- PHPStan on PHP 8.3 — [job 108352169949](https://github.com/leohmoraes/Prescia/actions/runs/36223189290/job/108352169949)
+
+O item 4 permanece pendente e bloqueado pela ausência do toolchain local; nenhum item posterior foi promovido. A baseline continua sem expansão.
+- PHP 8.3 tests — [job 108352169969](https://github.com/leohmoraes/Prescia/actions/runs/36223189295/job/108352169969)
